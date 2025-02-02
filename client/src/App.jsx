@@ -24,7 +24,7 @@ function App() {
 
       <Route path= '/register' element = {<Signup />}></Route>
       <Route path= '/login' element = {<Login />}></Route>
-      <Route path='/home' element={<Homepage />}></Route>
+      <Route path='/' element={<Homepage />}></Route>
       <Route path='/seat-selection/:busId' element={<SeatSelection />}></Route>
       <Route path="/payment/:selectedSeats" element={<Payment />} />
       <Route path="/payment-success/:selectedSeats" element={<PaymentSuccess />} />
