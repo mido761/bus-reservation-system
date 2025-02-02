@@ -17,7 +17,7 @@ port = 3001
 
 const app = express()
 app.use(express.json())
-const clientOrigin = 'https://bus-reservation-system-client.vercel.app';
+const clientOrigin = '*';
 
 app.use(cors({
   origin: clientOrigin,         // Allow the frontend origin
