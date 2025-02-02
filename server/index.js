@@ -45,7 +45,7 @@ app.use('/contact', contactRoutes);
 
 //MongoDB connection 
 mongoose
-.connect("mongodb://127.0.0.1:27017/bus-system")
+.connect("mongodb+srv://midotareq2:bmNS1j6FLban6kZv@cluster0.ntwma.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 .then( ()=> console.log("MongoDB connected"))
 .catch((err)=> console.error(err));
 
