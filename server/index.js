@@ -27,7 +27,7 @@ app.use(cors({
 }));
 
 // Handle OPTIONS preflight request for CORS
-app.options(clientOrigin, (req, res) => {
+app.options('*', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', clientOrigin);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -43,7 +43,7 @@ app.use(session({
     cookie: {
         httpOnly: true,
         maxAge:5000000,
-    }
+    }   
 }))
 
 app.use('/', (req, res) => {res.send("Server is running")} );
