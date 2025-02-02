@@ -15,7 +15,7 @@ function Signup() {
 
     const handleSubmit = (e)=>{
       e.preventDefault()
-      axios.post('http://localhost:3001/register',{name,phoneNumber,email,password})
+      axios.post('https://bus-reservation-system-server.vercel.app/register',{name,phoneNumber,email,password})
       .then(result => {console.log(result)
         if (result.status === 201){
           setAllertMessage("Registered successfuly")
