@@ -33,6 +33,7 @@ app.use(session({
     }
 }))
 
+app.use('/', (req, res) => {res.send("Server is running")} );
 app.use('/buses', busRoutes);
 // app.use('/api', bookingRoutes);
 app.use('/seatselection',SeatSelection);
