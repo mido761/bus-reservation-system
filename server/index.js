@@ -200,6 +200,8 @@ app.post("/payment",async (req,res)=>{
    
 })
 
-app.listen(process.env.PORT || 3001 , () =>{
-    console.log("sever is running")
-})
+// app.listen(process.env.PORT || 3001 , () =>{
+//     console.log("sever is running")
+// })
+
+module.exports = app
