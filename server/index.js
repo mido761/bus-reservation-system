@@ -26,6 +26,15 @@ app.use(cors({
   credentials: true,            // Allow credentials (cookies/tokens) to be included
 }));
 
+// Handle OPTIONS preflight request for CORS
+app.options('*', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.sendStatus(200); // Respond with 200 for preflight requests
+  });
+
 app.use(session({
     secret: "ARandomStringThatIsHardToGuess12345",
     resave: false,
