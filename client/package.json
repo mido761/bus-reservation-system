@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "react-scripts build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
@@ -28,9 +27,7 @@
     "react-router-dom": "^7.1.1",
     "react-scripts": "^5.0.1",
     "react-transition-group": "^4.4.5",
-    "web-vitals": "^4.2.4"
-  },
-  "devDependencies": {
+    "web-vitals": "^4.2.4",
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.26.3",
