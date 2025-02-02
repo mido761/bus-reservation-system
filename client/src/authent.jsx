@@ -11,7 +11,7 @@ const navigate = useNavigate();
 useEffect(() => {
     const checkAuth = async () => {
     try {
-        const response = await axios.get("http://localhost:3001/auth", { withCredentials: true });
+        const response = await axios.get("https://bus-reservation-system-server.vercel.app/auth", { withCredentials: true });
         if (response.data.authenticated) {
         setIsAuthenticated(true);
         return response.data.userId
