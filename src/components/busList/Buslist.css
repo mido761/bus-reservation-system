@@ -1,0 +1,88 @@
+/* Layout for the Find Buses button */
+.find-bus-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Basic layout for the bus list */
+.bus-list {
+  padding: 9px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* Each bus container style */
+.bus-container {
+  background-color: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* .bus-container:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+} */
+
+/* Styling for each bus detail paragraph */
+.bus-container p {
+  font-size: 16px;
+  margin: 5px 0;
+  color: #555;
+}
+
+/* Header styling */
+.bus-container h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Styling for the Find Buses button */
+.button {
+  background-color: #960000;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: auto;
+  margin-bottom: 1rem;
+}
+
+.button:hover {
+  background-color: #9b2222;
+}
+
+/* Styling for Delete Bus button */
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+/* Loading message styling */
+.bus-list p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Styling when no buses are found */
+.bus-list p {
+  color: #888;
+  font-size: 18px;
+}
