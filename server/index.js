@@ -19,21 +19,21 @@ const app = express()
 app.use(express.json())
 const clientOrigin = 'https://bus-reservation-system-client.vercel.app';
 
-// app.use(cors({
-//   origin: clientOrigin,         // Allow the frontend origin
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods, including OPTIONS
-//   allowedHeaders: ['Content-Type', 'Authorization'], // Allow headers like Content-Type and Authorization
-//   credentials: true,            // Allow credentials (cookies/tokens) to be included
-// }));
+app.use(cors({
+  origin: clientOrigin,         // Allow the frontend origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods, including OPTIONS
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow headers like Content-Type and Authorization
+  credentials: true,            // Allow credentials (cookies/tokens) to be included
+}));
 
 // Handle OPTIONS preflight request for CORS
-// app.options('*', (req, res) => {
-//     res.setHeader('Access-Control-Allow-Origin', clientOrigin);
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//     res.setHeader('Access-Control-Allow-Credentials', 'true');
-//     res.sendStatus(200); // Respond with 200 for preflight requests
-//   });
+app.options('*', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', clientOrigin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.sendStatus(200); // Respond with 200 for preflight requests
+  });
 
 app.use(session({
     secret: "ARandomStringThatIsHardToGuess12345",
