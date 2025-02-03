@@ -11,7 +11,7 @@ const navigate = useNavigate();
 useEffect(() => {
     const auth = (req, res, next) => {
         console.log(req.session)
-        if (req?.session?.isAuthenticated) return next(); // User is authenticated, allow them to proceed
+        if (req?.session) return next(); // User is authenticated, allow them to proceed
         res.redirect("/login"); // Redirect to login page if not authenticated
     };
 
