@@ -8,6 +8,8 @@ const [isAuthenticated, setIsAuthenticated] = useState(false);
 const [isLoading, setIsLoading] = useState(true); // Track loading state
 const navigate = useNavigate();
 // Check authentication on component load
+
+
 useEffect(() => {
     const checkAuth = async () => {
     try {
