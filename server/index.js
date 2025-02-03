@@ -102,6 +102,7 @@ app.post('/login', async  (req,res)=> {
 
         // Set session ID
         req.session.userId = user._id;
+        console.log(req)
         res.status(200).json("Login successful");
     } catch (err) {
         res.status(500).json("Internal server error");
