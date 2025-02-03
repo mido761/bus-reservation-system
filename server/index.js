@@ -42,7 +42,7 @@ app.use(session({
     store: MonogoStore.create({mongoUrl: "mongodb+srv://midotareq2:bmNS1j6FLban6kZv@cluster0.ntwma.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"}),
     cookie: {
         httpOnly: true,
-        sameSite: 'none', // For cross-origin
+        sameSite: 'None', // For cross-origin
         secure : true,
         maxAge:5000000,
     }   
@@ -103,11 +103,11 @@ app.post('/login', async  (req,res)=> {
 
         // Set session ID
         req.session.userId = user._id;
-        res.cookie('session_id', req.sessionID, {
-            httpOnly: true,
-            secure: true,
-            maxAge: 600000,
-          });
+        // res.cookie('session_id', req.sessionID, {
+        //     httpOnly: true,
+        //     secure: true,
+        //     maxAge: 600000,
+        //   });
         console.log(req.session)
         res.status(200).json("Login successful");
     } catch (err) {
