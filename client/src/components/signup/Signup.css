@@ -1,0 +1,101 @@
+/* Styling for the Signup Component */
+.register-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #ffffff; /* White background for the container */
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for professionalism */
+    color: #333333; /* Dark gray text for readability */
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .register-container h2 {
+    text-align: center;
+    color: #b71c1c; /* Dark red header color */
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .register-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .register-container label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555555; /* Medium gray for labels */
+  }
+  
+  .register-container input {
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #cccccc; /* Light gray border for inputs */
+    border-radius: 6px;
+    background-color: #f9f9f9; /* Very light gray for input background */
+    color: #333333; /* Dark gray text */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .register-container input:focus {
+    outline: none;
+    border-color: #b71c1c; /* Dark red focus border */
+    box-shadow: 0 0 5px rgba(183, 28, 28, 0.4); /* Subtle glow effect */
+  }
+  
+  .register-container button {
+    padding: 12px;
+    font-size: 16px;
+    background-color: #b71c1c; /* Dark red button */
+    color: #ffffff; /* White text */
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .register-container button:hover {
+    background-color: #ff5252; /* Lighter red on hover */
+    transform: scale(1.02); /* Slight scale effect on hover */
+  }
+  
+  .register-container button:active {
+    background-color: #a81919; /* Darker red on click */
+    transform: scale(0.98); /* Slight shrink on click */
+  }
+  
+  .register-container a {
+    text-align: center;
+    display: block;
+    margin-top: 15px;
+    color: #b71c1c; /* Dark red for links */
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .register-container a:hover {
+    color: #ff5252; /* Lighter red on hover */
+  }
+  
+  @media (max-width: 500px) {
+    .register-container {
+      padding: 20px;
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); /* Adjust shadow for smaller screens */
+    }
+  
+    .register-container h2 {
+      font-size: 20px;
+    }
+  
+    .register-container input,
+    .register-container button {
+      font-size: 14px;
+    }
+  }
+  

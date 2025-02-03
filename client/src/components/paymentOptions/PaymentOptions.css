@@ -1,0 +1,48 @@
+.payment-page {
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+  }
+  
+  .payment-page h1 {
+    text-align: center;
+    color: #800000; /* Dark red */
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    font-size: 1.1em;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .pay-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #800000; /* Dark red color */
+    color: white;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .pay-button:hover {
+    background-color: #b30000; /* Lighter dark red */
+  }
+  

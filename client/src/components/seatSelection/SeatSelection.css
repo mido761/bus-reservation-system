@@ -1,0 +1,212 @@
+/* Seat Selection Page Styles */
+.seat-selection-page {
+  padding: 20px;
+  margin: auto;
+  max-width: 550px;
+  width: 100%;
+}
+
+.header {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #800000;
+  color: white;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.bus-details {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.bus-details h2 {
+  font-size: 1.5em;
+  color: #800000; /* Dark red color */
+}
+
+.bus-details p {
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.bus-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.bus-seats{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 250px;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+  width: 250px;
+  justify-items: center;
+}
+
+.seat {
+  width: 40px;
+  height: 40px;
+  background-color: #f0f0f0;
+  text-align: center;
+  line-height: 40px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.seat:hover {
+  background-color: #ffe6e6; /* Light red */
+  border-color: #800000;
+}
+
+.seat.selected {
+  border: 2px solid red; /* Dark red color */
+  /* color: white; */
+}
+
+.seat.current-user {
+  background-color: green; /* Dark red color */
+  color: white;
+}
+/* Style for booked seats */
+.seat.booked {
+  background-color: #b30000; /* Darker red color */
+  color: white;
+  cursor: not-allowed; /* Make booked seats unclickable */
+}
+
+/* Confirm button style */
+.confirm-btn {
+  background-color: #800000; /* Dark red color */
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 1.1em;
+  cursor: pointer;
+  width: 100%;
+}
+
+.confirm-btn-transition-enter{
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.confirm-btn-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.confirm-btn-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.confirm-btn-transition-exit-active {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.confirm-btn:hover {
+  background-color: #b30000; /* Lighter dark red */
+}
+
+.seat-confirmation {
+  margin-top: 20px;
+  font-size: 1.2em;
+  color: #800000; /* Dark red color */
+}
+
+.payment-bar {
+  margin-top: 20px;
+  background-color: #800000; /* Dark red color */
+  padding: 10px;
+  text-align: center;
+  color: white;
+}
+
+.proceed-btn {
+  background-color: #800000; /* Dark red color */
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 1.1em;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.proceed-btn:hover {
+  background-color: #b30000; /* Lighter dark red */
+}
+
+.proceed-btn:disabled {
+  background-color: #f0f0f0;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  /* .seat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  } */
+  .seat-selection-page{
+    max-width: 400px;
+   }
+  .bus-container{
+    flex-direction: column;
+  }
+  .bus-details{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .bus-data{
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* .seat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  } */
+/* 
+  .seat {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+  } */
+
+  /* .confirm-btn, .proceed-btn {
+    font-size: 1em;
+    padding: 8px;
+  } */
+
+}
