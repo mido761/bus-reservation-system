@@ -171,6 +171,7 @@ app.get("/auth/:busId" , (req,res)=>{
 
 
 app.get("/auth" , (req,res)=>{
+    console.log(req.session)
     if(req.session.userId){
         res.status(200).json({authenticated: true,"userId": req.session.userId, "busId":req.session.busId});
     }else{
