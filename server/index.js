@@ -170,7 +170,7 @@ app.get("/auth" , (req,res)=>{
     if(req.session.userId){
         res.status(200).json({authenticated: true,"userId": req.session.userId, "busId":req.session.busId});
     }else{
-        res.status(401).json({authenticated: false})
+        res.status(401).json({authenticated: false}, req)
     }
 })
 
