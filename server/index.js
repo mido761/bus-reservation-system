@@ -17,10 +17,9 @@ port = 3001
 
 const app = express()
 app.use(express.json())
-const clientOrigin = 'https://bus-reservation-system-nine.vercel.app';
-
+const allowedOrigins = ['https://bus-reservation-system-client.vercel.app', 'https://bus-reservation-system-client-tau.vercel.app'];
 app.use(cors({
-  origin: clientOrigin,         // Allow the frontend origin
+  origin: allowedOrigins,         // Allow the frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods, including OPTIONS
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow headers like Content-Type and Authorization
   credentials: true,            // Allow credentials (cookies/tokens) to be included
@@ -28,7 +27,7 @@ app.use(cors({
 
 // Handle OPTIONS preflight request for CORS
 app.options('*', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', clientOrigin);
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigins);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
