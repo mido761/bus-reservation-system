@@ -35,6 +35,7 @@ function Login() {
                 sessionStorage.setItem('authToken', userId)
 
                 // Alert the user that the login was successful and Navigate to the home or seat selection page
+                console.log(response)
                 setAlertMessage("Login successful")
                 setAlertFlag(true)
                 setTimeout(() => {
