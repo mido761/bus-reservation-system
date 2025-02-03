@@ -103,6 +103,11 @@ app.post('/login', async  (req,res)=> {
 
         // Set session ID
         req.session.userId = user._id;
+        res.cookie('session_id', req.sessionID, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 600000,
+          });
         console.log(req.session)
         res.status(200).json("Login successful");
     } catch (err) {
