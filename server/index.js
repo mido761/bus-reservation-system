@@ -42,6 +42,7 @@ app.use(session({
     store: MonogoStore.create({mongoUrl: "mongodb+srv://midotareq2:bmNS1j6FLban6kZv@cluster0.ntwma.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"}),
     cookie: {
         httpOnly: true,
+        secure : true,
         maxAge:5000000,
     }   
 }))
