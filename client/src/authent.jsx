@@ -9,6 +9,12 @@ const [isLoading, setIsLoading] = useState(true); // Track loading state
 const navigate = useNavigate();
 // Check authentication on component load
 useEffect(() => {
+    const auth = (req, res, next) => {
+        console.log(req.session)
+        if (req?.session?.isAuthenticated) return next(); // User is authenticated, allow them to proceed
+        res.redirect("/login"); // Redirect to login page if not authenticated
+    };
+
     const checkAuth = async () => {
     try {
         const response = await axios.get("https://bus-reservation-system-server.vercel.app/auth", { withCredentials: true });
@@ -29,6 +35,7 @@ useEffect(() => {
     }
     };
     checkAuth();
+    auth()
 }, [navigate]);
 
 // Show loading state or redirect unauthenticated users
