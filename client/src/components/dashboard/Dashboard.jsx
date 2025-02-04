@@ -4,7 +4,7 @@ import authen from '../../authent';
 import axios from "axios";
 import { get } from "mongoose";
 import "./dashboard.css"
-const port = 3001;
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const Dashboard = () => {
     authen();
@@ -26,14 +26,14 @@ const Dashboard = () => {
     const fetchUsers = async () => {
         try{
             // Get session data
-            const req_user = await axios.get(`http://localhost:${port}/auth`, { withCredentials: true });
+            const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
             
             // Store user ID in userID state from session data 
             setUserId(req_user.data.userId);
             const userId = req_user.data.userId;
 
             // Get user data
-            const res = await axios.get(`http://localhost:${port}/user/profile/${userId}`);
+            const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
             setUserDetails(res.data);
 
             const userDetails = res.data;
@@ -41,7 +41,7 @@ const Dashboard = () => {
 
             let buses = [];
             for(let i = 0; i < busIds.length; i++){
-                const busDetails = await axios.get(`http://localhost:${port}/buses/${busIds[i]}`);
+                const busDetails = await axios.get(`${backEndUrl}/buses/${busIds[i]}`);
                 buses.push(busDetails.data)
                 console.log(busDetails.data)
             }
@@ -64,7 +64,7 @@ const Dashboard = () => {
 
         const fetchBusDetails = async () => {
             try {
-                const req_user = await axios.get(`http://localhost:${port}/auth`, { withCredentials: true });
+                const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
 
                 setUserId(req_user.data.userId);
                 const userId = req_user.data.userId;

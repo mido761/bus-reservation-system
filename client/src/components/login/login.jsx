@@ -4,8 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Overlay from "../overlayScreen/overlay";
 import '../signup/Signup.css';
 import '../login/login.css';
-
-
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -20,8 +19,9 @@ function Login() {
             console.log("Email", email);
             console.log("Password", password);
             // Make the POST request for login
+            console.log(backEndUrl);
             const response = await axios.post(
-                "https://bus-reservation-system-server.vercel.app/login",
+                `${backEndUrl}/api/login`,
                 { email, password },
                 { withCredentials: true } 
             );

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import axios from 'axios';
 // import "../App.css";
 import './AddBus.css';
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const port = 3001
 const AddBus = () => {
@@ -20,10 +21,10 @@ const AddBus = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try{
-            const res = await axios.get(`http://localhost:${port}/buses`);
+            const res = await axios.get(`${backEndUrl}/buses`);
             const buses = res.data;
 
-            await axios.post(`http://localhost:${port}/buses`, {totalSeats, schedule, minNoPassengers, price, pickupLocation, 
+            await axios.post(`${backEndUrl}/buses`, {totalSeats, schedule, minNoPassengers, price, pickupLocation, 
                 arrivalLocation, departureTime, arrivalTime, cancelTimeAllowance, 
                 bookingTimeAllowance, allowedNumberOfBags});
             alert('Bus added successfully');

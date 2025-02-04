@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 function authen(){
 
@@ -13,7 +14,7 @@ const navigate = useNavigate();
 useEffect(() => {
     const checkAuth = async () => {
     try {
-        const response = await axios.get("https://bus-reservation-system-server.vercel.app/auth", { withCredentials: true });
+        const response = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
         console.log(response)
         if (response.data.authenticated) {
         setIsAuthenticated(true);

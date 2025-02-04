@@ -4,8 +4,7 @@ import axios from "axios";
 import "./Homepage.css";
 import authent from "../../authent";
 import Footer from "../footer/footer";
-
-const port = 3001
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const Homepage = () => {
   const navigate = useNavigate();
@@ -39,8 +38,8 @@ const Homepage = () => {
 
   // Get available buses
   const fetchBuses = async () =>{
-    try {
-      const res = await axios.get(`http://localhost:${port}/buses`);
+    try {`${backEndUrl}/buses`
+      const res = await axios.get(`${backEndUrl}/buses`);
       setBuses(res.data);
       setFilteredBuses(res.data); // Ensure filteredBuses syncs with buses
     } catch (error) {
@@ -70,7 +69,7 @@ const Homepage = () => {
   // Handle selected bus 
   const handleBusSelect = async bus => {
     console.log(bus._id)
-    const req_user = await axios.get(`http://localhost:${port}/auth/${bus._id}`, { withCredentials: true }); 
+    const req_user = await axios.get(`${backEndUrl}/auth/${bus._id}`, { withCredentials: true }); 
 
     navigate(`/seat-selection/${bus._id}`);//to get the bus id in the seat selection
   };
@@ -96,7 +95,7 @@ const Homepage = () => {
   // Logout handler
   const handleLogout = async () => {
     try {
-      const response = await axios.post(`http://localhost:${port}/logout`, null, { withCredentials: true });
+      const response = await axios.post(`${backEndUrl}/logout`, null, { withCredentials: true });
       console.log("Logout response:", response);
       if (response.status === 200) {
         setAlertMessage("Logged out successfully")
@@ -140,7 +139,7 @@ const Homepage = () => {
     };
 
     try {
-      const response = await axios.post(`http://localhost:${port}/contact`, contactData);
+      const response = await axios.post(`${backEndUrl}/contact`, contactData);
       setResponseMessage('Message sent successfully');
       console.log('Contact message saved:', response.data);
     } catch (error) {

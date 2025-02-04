@@ -6,7 +6,7 @@ import axios from "axios";
 import authen from "../../authent";
 import Overlay from "../overlayScreen/overlay";
 
-const port = 3001;
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const SeatSelection = () => {
   const navigate = useNavigate();
@@ -38,12 +38,12 @@ const SeatSelection = () => {
   useEffect(() => {
     const fetchBusDetails = async () => {
       try {
-        const req_user = await axios.get(`http://localhost:${port}/auth`, {
+        const req_user = await axios.get(`${backEndUrl}/auth`, {
           withCredentials: true,
         });
         console.log(req_user);
         const response = await axios.get(
-          `http://localhost:${port}/seatselection/${busId}`
+          `${backEndUrl}/seatselection/${busId}`
         );
         setBusDetails(response.data);
         setUserId(req_user.data.userId);
@@ -62,7 +62,7 @@ const SeatSelection = () => {
 
   const handleSeatSelect = async (seat, index) => {
     try {
-      const req_user = await axios.get(`http://localhost:${port}/auth`, {
+      const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
       const userId = req_user.data.userId; // Ensure the token contains the user ID
@@ -129,7 +129,7 @@ const SeatSelection = () => {
     } else if (selectedSeats.length > 0 && type === "cancel") {
       // Delete selected seats
       const response = await axios.delete(
-        `http://localhost:${port}/seatselection/${busId}`,
+        `${backEndUrl}/seatselection/${busId}`,
         { data: { selectedSeats, userId }, withCredentials: true }
       );
       setBusDetails(response.data.updatedBus); // update bus details after deletion

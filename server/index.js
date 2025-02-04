@@ -11,13 +11,12 @@ const busRoutes = require('./routes/busRoutes');
 const userRouter = require('./routes/userRoutes')
 const SeatSelection = require('./routes/SeatSelection')
 const contactRoutes = require('./routes/contactRoutes');
+const path = require('path')
 
-
-port = 3001
 
 const app = express()
 app.use(express.json())
-const allowedOrigins = ['https://bus-reservation-system-client.vercel.app', 'https://bus-reservation-system-client-tau.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.108:5000'];
 app.use(cors({
   origin: allowedOrigins,         // Allow the frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods, including OPTIONS
@@ -25,7 +24,7 @@ app.use(cors({
   credentials: true,            // Allow credentials (cookies/tokens) to be included
 }));
 
-// Handle OPTIONS preflight request for CORS
+// // Handle OPTIONS preflight request for CORS
 app.options('*', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', allowedOrigins);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -38,12 +37,14 @@ app.use(session({
     secret: "ARandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
-    store: MonogoStore.create({mongoUrl: "mongodb+srv://midotareq2:bmNS1j6FLban6kZv@cluster0.ntwma.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"}),
+    store: MonogoStore.create({mongoUrl: process.env.MONGO_URI}),   
     cookie: {
         httpOnly: true,
-        sameSite: 'None', // For cross-origin
-        secure : true,
         maxAge:5000000,
+        sameSite: 'None',
+        Secure: true,
+        maxAge: 24 * 60 * 60 * 1000,  // 1 day expiration
+
     }   
 }))
 
@@ -59,7 +60,7 @@ app.use('/contact', contactRoutes);
 
 //MongoDB connection 
 mongoose
-.connect("mongodb+srv://midotareq2:bmNS1j6FLban6kZv@cluster0.ntwma.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+.connect(process.env.MONGO_URI)
 .then( ()=> console.log("MongoDB connected"))
 .catch((err)=> console.error(err));
 
@@ -70,7 +71,7 @@ mongoose
 
 
 
-app.post('/login', async  (req,res)=> {
+app.post('/api/login', async  (req,res)=> {
     // const {email,password} = req.body;
     // userModel.findOne({email:email})
     // .then(user => {
@@ -110,7 +111,7 @@ app.post('/login', async  (req,res)=> {
     }
 })
 
-app.post('/register', async (req , res) => {
+app.post('/api/register', async (req , res) => {
     // const {email,password} = req.body;
     // userModel.findOne({email})
     // .then(userExist => {
@@ -205,8 +206,16 @@ app.post("/payment",async (req,res)=>{
    
 })
 
-// app.listen(process.env.PORT || 3001 , () =>{
-//     console.log("sever is running")
-// })
+if (process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname, '../client/dist')));       
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../client/dist/index.html'));
+    });
+    console.log(process.env.NODE_ENV)
+}
+
+app.listen(process.env.PORT || 5000 , '0.0.0.0', () =>{
+    console.log("sever is running")
+})
 
 module.exports = app

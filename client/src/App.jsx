@@ -1,13 +1,13 @@
 import './App.css'
 import React from 'react'
-import Signup from './components/signup/Signup.jsx'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
-import Login from './components/login/login.jsx'
 import authen from './authent.jsx'
+
 //from components
+import Signup from './components/signup/Signup.jsx'
+import Login from './components/login/login.jsx'
 import AddBus from './components/addBus/AddBus.jsx';
 import BusList from './components/busList/Buslist.jsx';
-//form homepage
 import Homepage from './components/homePage/Homepage.jsx'
 import SeatSelection from './components/seatSelection/SeatSelection.jsx'
 import Payment from './components/payment/Payment.jsx';

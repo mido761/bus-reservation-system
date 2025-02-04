@@ -3,7 +3,7 @@ import { useNavigate , useParams} from 'react-router-dom';
 import './Ticketsummary.css';
 import axios from 'axios';
 import authen from '../../authent';
-const port = 3001
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const TicketSummary = () => {
   authen()
@@ -23,11 +23,11 @@ const TicketSummary = () => {
     
     const fetchBusDetails = async () => {
       try {
-        const req_user = await axios.get(`http://localhost:${port}/auth`, { withCredentials: true });
+        const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
         console.log(req_user)
         setUserId(req_user.data.userId)
         // const response = await axios.get(`http://localhost:${port}/seatselection/${busId}`);
-        const response = await axios.get(`http://localhost:${port}/seatselection/${req_user.data.busId}`);
+        const response = await axios.get(`${backEndUrl}/seatselection/${req_user.data.busId}`);
         console.log(response)
         setBusDetails(response.data);
       } catch (err) {
@@ -39,11 +39,11 @@ const TicketSummary = () => {
     };
 
     const fetchUsers = async () => {
-      const req_user = await axios.get(`http://localhost:${port}/auth`, { withCredentials: true });
+      const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
       console.log(req_user)
       setUserId(req_user.data.userId)
       const userId = req_user.data.userId
-      const res = await axios.get(`http://localhost:3001/user/profile/${userId}`);
+      const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
       setUserDetails(res.data);
       console.log("users", res.data);
     }
@@ -54,7 +54,7 @@ const TicketSummary = () => {
 
   // Handle redirection to home or another page
   const handleHomeRedirect = () => {
-    navigate('/home');
+    navigate('/');
   };
   if (loading) {
     return <p>Loading bus details...</p>;

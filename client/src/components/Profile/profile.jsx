@@ -5,7 +5,7 @@ import axios from "axios";
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
 import Footer from "../footer/footer";
-const port = 3001;
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const UserProfile = ({ user }) => {
   authen();
@@ -21,13 +21,13 @@ const UserProfile = ({ user }) => {
   useEffect(() => {
     const fetchBusDetails = async () => {
       try {
-        const req_user = await axios.get(`http://localhost:${port}/auth`, { withCredentials: true });
+        const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
         setUserId(req_user.data.userId);
 
         // Check if busId exists in the user data
         const busId = req_user.data.busId;
         if (busId) {
-          const response = await axios.get(`http://localhost:${port}/seatselection/${busId}`);
+          const response = await axios.get(`${backEndUrl}/seatselection/${busId}`);
           if (response.data) {
             setBusDetails(response.data);
           } else {
@@ -46,10 +46,10 @@ const UserProfile = ({ user }) => {
 
     const fetchUsers = async () => {
       try {
-        const req_user = await axios.get(`http://localhost:${port}/auth`, { withCredentials: true });
+        const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
         setUserId(req_user.data.userId);
         const userId = req_user.data.userId;
-        const res = await axios.get(`http://localhost:3001/user/profile/${userId}`);
+        const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
       } catch (err) {
         console.error("Error fetching user details:", err);

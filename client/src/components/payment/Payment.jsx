@@ -3,7 +3,8 @@ import { useNavigate , useParams} from 'react-router-dom';
 import './Payment.css';
 import axios from 'axios';
 import authen from '../../authent';
-const port = 3001
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
+
 
 const Payment = () => {
   authen()
@@ -48,7 +49,7 @@ const Payment = () => {
     setTimeout(async() => {
 
       //request form auth end the user id and bus id
-      const req_user = await axios.get(`http://localhost:${port}/auth`, { withCredentials: true }); 
+      const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true }); 
       // req_user.data.busId = busId
       console.log(req_user)
       const userId = req_user.data.userId; // Ensure the token contains the user ID
@@ -59,7 +60,7 @@ const Payment = () => {
        
       // Send the seat reservation request to the backend
       const response = await axios.post(
-        `http://localhost:${port}/seatselection/${busId}`,
+        `${backEndUrl}/seatselection/${busId}`,
         { selectedSeats, userId },
         { withCredentials: true }
       );

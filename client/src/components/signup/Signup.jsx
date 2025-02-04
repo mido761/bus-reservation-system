@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 
 function Signup() {
@@ -15,7 +16,7 @@ function Signup() {
 
     const handleSubmit = (e)=>{
       e.preventDefault()
-      axios.post('https://bus-reservation-system-server.vercel.app/register',{name,phoneNumber,email,password})
+      axios.post(`${backEndUrl}/api/register`,{name,phoneNumber,email,password})
       .then(result => {console.log(result)
         if (result.status === 201){
           setAllertMessage("Registered successfuly")
