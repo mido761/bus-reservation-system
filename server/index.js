@@ -15,7 +15,11 @@ const path = require('path')
 
 
 const app = express()
-app.use(express.json())
+
+// Middleware for parsing JSON and URL-encoded form data
+app.use(express.json());  // For JSON payloads
+app.use(express.urlencoded({ extended: true }));  // For URL-encoded form data
+
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.108:5000', process.env.BACK_END_URL];
 app.use(cors({
   origin: allowedOrigins,         // Allow the frontend origin
