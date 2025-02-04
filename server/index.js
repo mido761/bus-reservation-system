@@ -16,7 +16,7 @@ const path = require('path')
 
 const app = express()
 app.use(express.json())
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.108:5000'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.108:5000', process.env.BACK_END_URL];
 app.use(cors({
   origin: allowedOrigins,         // Allow the frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods, including OPTIONS
