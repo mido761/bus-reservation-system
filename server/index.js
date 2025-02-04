@@ -48,6 +48,20 @@ app.use(session({
     }   
 }))
 
+// Serve the verification file from the public folder
+app.get('/loaderio-a5bdf62eb0fac010d30429b361ba4fe3', (req, res) => {
+  // Path to the file in the public folder
+  const filePath = path.join(__dirname, './client/public', 'loaderio-xxxxxxxxxxxxxxxxxxxxxx');
+  
+  // Send the file to the client
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(500).send('Error while serving the verification file.');
+    }
+  });
+});
+
+
 app.use('/home', (req, res) => {res.send("Server is running")} );
 app.use('/buses', busRoutes);
 // app.use('/api', bookingRoutes);
