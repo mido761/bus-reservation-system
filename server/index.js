@@ -51,7 +51,7 @@ app.use(session({
 // Serve the verification file from the public folder
 app.get('/loaderio-a5bdf62eb0fac010d30429b361ba4fe3', (req, res) => {
   // Path to the file in the public folder
-  const filePath = path.join(__dirname, '../client/public', 'loaderio-xxxxxxxxxxxxxxxxxxxxxx');
+  const filePath = path.join(__dirname, 'client', 'public', 'loaderio-xxxxxxxxxxxxxxxxxxxxxx');
   
   // Send the file to the client
   res.sendFile(filePath, (err) => {
