@@ -109,99 +109,102 @@ const Payment = () => {
         paymentDetails.paymentMethod === "cash" ? "cash" : ""
       }`}
     >
-      <h1>Complete Your Payment</h1>
-      <form className="payment-form" onSubmit={handlePaymentSubmit}>
-        {/* Payment Method Selection */}
-        <div className="payment-method">
-          <label>
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="visa"
-              checked={paymentDetails.paymentMethod === "visa"}
-              onChange={(e) =>
-                setPaymentDetails({
-                  ...paymentDetails,
-                  paymentMethod: e.target.value,
-                })
-              }
-            />
-            Visa
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="cash"
-              checked={paymentDetails.paymentMethod === "cash"}
-              onChange={(e) =>
-                setPaymentDetails({
-                  ...paymentDetails,
-                  paymentMethod: e.target.value,
-                })
-              }
-            />
-            Cash
-          </label>
-        </div>
+      <div className="payment-box-container">
+        <h1>Complete Your Payment</h1>
+        <form className="payment-form" onSubmit={handlePaymentSubmit}>
+          {/* Payment Method Selection */}
+          <div className="payment-method">
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="visa"
+                checked={paymentDetails.paymentMethod === "visa"}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    paymentMethod: e.target.value,
+                  })
+                }
+              />
+              Visa
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="cash"
+                checked={paymentDetails.paymentMethod === "cash"}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    paymentMethod: e.target.value,
+                  })
+                }
+              />
+              Cash
+            </label>
+          </div>
 
-        {/* Visa Payment Form (only shown if Visa is selected) */}
-        {paymentDetails.paymentMethod === "visa" && (
-          <>
-            <input
-              type="text"
-              placeholder="Card Number"
-              value={paymentDetails.cardNumber}
-              onChange={(e) =>
-                setPaymentDetails({
-                  ...paymentDetails,
-                  cardNumber: formatCardNumber(e.target.value),
-                })
-              }
-              required
-            />
-            <input
-              type="text"
-              placeholder="Expiry Date (MM/YY)"
-              value={paymentDetails.cardExpiry}
-              onChange={(e) =>
-                setPaymentDetails({
-                  ...paymentDetails,
-                  cardExpiry: formatExpiryDate(e.target.value),
-                })
-              }
-              required
-            />
-            <input
-              type="text"
-              placeholder="CVV"
-              value={paymentDetails.cardCvv}
-              onChange={(e) =>
-                setPaymentDetails({
-                  ...paymentDetails,
-                  cardCvv: formatCvc(e.target.value),
-                })
-              }
-              required
-              maxLength="3" // Limit to 3 characters
-              pattern="\d{3}" // Regex to validate exactly 3 digits
-              title="CVV must be exactly 3 numeric characters"
-            />
-          </>
-        )}
+          {/* Visa Payment Form (only shown if Visa is selected) */}
+          {paymentDetails.paymentMethod === "visa" && (
+            <>
+              <input
+                type="text"
+                placeholder="Card Number"
+                value={paymentDetails.cardNumber}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    cardNumber: formatCardNumber(e.target.value),
+                  })
+                }
+                required
+              />
+              <input
+                type="text"
+                placeholder="Expiry Date (MM/YY)"
+                value={paymentDetails.cardExpiry}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    cardExpiry: formatExpiryDate(e.target.value),
+                  })
+                }
+                required
+              />
+              <input
+                type="text"
+                placeholder="CVV"
+                value={paymentDetails.cardCvv}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    cardCvv: formatCvc(e.target.value),
+                  })
+                }
+                required
+                maxLength="3" // Limit to 3 characters
+                pattern="\d{3}" // Regex to validate exactly 3 digits
+                title="CVV must be exactly 3 numeric characters"
+              />
+            </>
+          )}
 
-        <button type="submit" className="cta-button">
-          Pay Now
-        </button>
-      </form>
+          <button type="submit" className="cta-button">
+            Pay Now
+          </button>
+        </form>
 
-      {alertFlag && (
-        <Overlay
-          alertFlag={alertFlag}
-          alertMessage={alertMessage}
-          setAlertFlag={setAlertFlag}
-        />
-      )}
+        {alertFlag && (
+          <Overlay
+            alertFlag={alertFlag}
+            alertMessage={alertMessage}
+            setAlertFlag={setAlertFlag}
+          />
+        )}        
+      </div>
+
 
     </div>
   );

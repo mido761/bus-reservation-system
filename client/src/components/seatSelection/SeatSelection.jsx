@@ -137,9 +137,9 @@ const SeatSelection = () => {
       // Notification Message
       setAlertMessage("Seats cancelled successfully");
       setAlertFlag(true);
-      // setTimeout(() => {
-      //   setAlertFlag(false);
-      // }, 2000);
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2000);
     } else {
       setAlertMessage("Select at least one seat");
       setAlertFlag(true);
@@ -163,7 +163,7 @@ const SeatSelection = () => {
         <h1>Seat Selection</h1>
       </header>
 
-      <div className="bus-container">
+      <div className="bus-card">
         <div className="bus-details">
           <h2>Bus details</h2>
           <div className="bus-data">

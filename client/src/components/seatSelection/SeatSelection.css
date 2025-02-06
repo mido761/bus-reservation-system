@@ -1,10 +1,11 @@
 /* Seat Selection Page Styles */
 .seat-selection-page {
   padding: 20px;
+  padding-top: 15vh;
   margin: auto;
   max-width: 550px;
   width: 100%;
-  margin-top: 18%;
+  height: 86vh;
 }
 
 .header {
@@ -20,9 +21,23 @@
   margin: 0;
 }
 
+.seat-selection-page .bus-card{
+  max-width: 100%;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .bus-details {
   margin-bottom: 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .bus-details h2 {
@@ -176,8 +191,10 @@
   } */
   .seat-selection-page{
     max-width: 400px;
+    padding-top: 8vh;
    }
-  .bus-container{
+   .seat-selection-page .bus-card{
+    display: flex;
     flex-direction: column;
   }
   .bus-details{
@@ -194,20 +211,32 @@
   }
 }
 
-@media (max-width: 480px) {
-  /* .seat-grid {
-    grid-template-columns: repeat(2, 1fr);
-  } */
-/* 
-  .seat {
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-  } */
+@media (max-width: 430px) {
+  .seat-selection-page{
+    padding-top: 8vh;
+   }
+}
 
-  /* .confirm-btn, .proceed-btn {
-    font-size: 1em;
-    padding: 8px;
-  } */
+@media (max-width: 300px) {
+  .seat-selection-page{
+    padding-top: 5vh;
+   }
 
+   .seat-selection-page .bus-card{
+    overflow: hidden;
+    max-height: 65vh;
+   }
+
+   .bus-details{
+    justify-content: center;
+    overflow: hidden;
+   }
+
+   .bus-data{
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: row;
+   }
 }

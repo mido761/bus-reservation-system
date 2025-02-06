@@ -1,7 +1,7 @@
 nav {
     background-color: #8b0000;
     width: 100%;
-    min-height: 50px;
+    min-height: 6vh;
     padding: 6px;
     text-align: center;
     color: #ffffff;
@@ -13,16 +13,16 @@ nav {
 .nav-menu{
     display: flex;
     flex-direction: row;
-    gap: 7px;
+    gap: 15px;
     justify-content: space-between;
 }
 
 .nav-link{
-    background-color: white;
-    color: black;
-    height: fit-content;
-    padding: 5px 10px;
-    user-select: none;
+  background-color: transparent;
+  color: white;
+  min-width: fit-content;
+  padding: 5px;
+  user-select: none;
 }
 
 .nav-link:hover{
@@ -38,7 +38,7 @@ nav {
 }
 
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 550px) {
     .bus-card {
       width: 100%;
     }
@@ -67,12 +67,12 @@ nav {
     .nav-menu{
       position: absolute;
       right: 0;
-      top: 50px;
+      top: 6vh;
       background-color: #8b0000;
-      padding: 10px;
+      padding: 20px;
       display: none;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
       justify-content: space-between;
       border: #8b0000;
     }
@@ -85,6 +85,8 @@ nav {
       background-color: transparent;
       color: white;
       min-width: fit-content;
+      padding: 5px;
+      user-select: none;
     }
   
     .nav-link:hover{

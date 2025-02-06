@@ -67,15 +67,16 @@ const UserProfile = () => {
   }
 
   return (
-    <>
-      <div className="user-profile">
+    <div className="profile-container">
+    <div className="user-profile">
         <div className="avatar"></div>
         <h1>{userDetails?.name}</h1>
         <p>{userDetails?.email}</p>
         <p>{userDetails?.phoneNumber}</p>
       </div>
       <Dashboard busDetails={busDetails} error={error} /> {/* Pass error to Dashboard */}
-    </>
+    </div>
+
   );
 };
 

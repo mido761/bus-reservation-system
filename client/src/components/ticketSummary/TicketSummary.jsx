@@ -52,10 +52,6 @@ const TicketSummary = () => {
     
   }, []);
 
-  // Handle redirection to home or another page
-  const handleHomeRedirect = () => {
-    navigate('/');
-  };
   if (loading) {
     return <p>Loading bus details...</p>;
   }
@@ -66,42 +62,44 @@ const TicketSummary = () => {
 
   return (
     <div className="ticket-summary-page">
+                {/* <h1>Ticket Summary</h1> */}
+
       <div className="summary-container">
-        <h1>Ticket Summary</h1>
-          <h3 className="details-title">Passenger Information</h3>
 
-        <div className="details">
-          <p><strong>Name</strong> {userDetails.name}</p>
-          <p><strong>Email</strong> {userDetails.email}</p>
-          <p><strong>Phone</strong> {userDetails.phoneNumber}</p>
+        <div className="section">
+            <h3 className="details-title">Passenger Information</h3>
+          <div className="details">
+            <p><strong>Name</strong> {userDetails.name}</p>
+            <p><strong>Email</strong> {userDetails.email}</p>
+            <p><strong>Phone</strong> {userDetails.phoneNumber}</p>
+          </div>
         </div>
+
+        <div className="section">
           <h3 className="details-title">Bus Details</h3>
-
-        <div className="details">
-          <p><strong>Date</strong>{busDetails.schedule}</p>
-          <p><strong>Departure Time</strong> {busDetails.time.departureTime}</p>
-          <p><strong>Pickup</strong> {busDetails.location.pickupLocation}</p>
-          <p><strong>Arrival</strong> {busDetails.location.arrivalLocation}</p>
+          <div className="details">
+            <p><strong>Date</strong>{busDetails.schedule}</p>
+            <p><strong>Departure Time</strong> {busDetails.time.departureTime}</p>
+            <p><strong>Pickup</strong> {busDetails.location.pickupLocation}</p>
+            <p><strong>Arrival</strong> {busDetails.location.arrivalLocation}</p>
+          </div>
         </div>
-        
-        <h3 className="details-title">Seats Selected</h3>
-        <div className="details">
-          <p>{seats.map((index) => ( parseInt(index) + 1)).join(", ")} </p>
+ 
+ 
+        <div className='section'>
+          <h3 className="details-title">Seats Selected</h3>
+          <div className="details">
+            <p>{seats.map((index) => ( parseInt(index) + 1)).join(", ")} </p>
+          </div>
         </div>
 
-        <h3 className="details-title">Total Price</h3>
-        <div className="details">
-          <p>{busDetails.price * seats.length}</p>
-        </div>        
-
-
-        <button className="cta-button" onClick={handleHomeRedirect}>
-          Return to Home
-        </button>
-
-        <div className="summary-footer">
-          <p>If you need any assistance, feel free to contact us.</p>
+        <div className='section'>
+          <h3 className="details-title">Total Price</h3>
+          <div className="details">
+            <p>{busDetails.price * seats.length}</p>
+          </div>            
         </div>
+
       </div>
     </div>
   );

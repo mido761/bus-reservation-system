@@ -17,7 +17,7 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 86vh;
     /* gap: 10px; */
   }
   

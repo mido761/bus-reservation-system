@@ -2,15 +2,22 @@
   width: 100%;
   max-width: 500px;
   margin: auto;
+  padding-top: 17vh;
+  min-height: 86vh;
+}
+
+.payment-box-container {
+  width: 100%;
+  max-width: 500px;
+  margin: auto;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 15vh;
 }
 
 .payment-container.cash{
-  margin-top: 25vh;
+  padding-top: 25vh;
 }
 
 .payment-form {
@@ -40,7 +47,7 @@
 
 .cta-button {
   padding: 15px;
-  background-color: 800000; /* Dark Red */
+  background-color: #800000; /* Dark Red */
   color: #fff;
   border: none;
   border-radius: 5px;

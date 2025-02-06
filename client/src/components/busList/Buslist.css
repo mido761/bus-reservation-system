@@ -20,6 +20,7 @@ span{
   justify-content: center;
   align-items: center;
   gap: 15px;
+  min-height: 86vh;
 }
 
 /* Each bus container style */
