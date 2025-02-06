@@ -5,6 +5,10 @@
     box-sizing: border-box;
   }
   
+  .add-bus-page{
+    min-height: 86vh;
+  }
+
   /* Container for the form */
   .add-bus {
     width: 70%;
@@ -17,7 +21,6 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     flex-direction: column;
-    min-height: 86vh;
     /* gap: 10px; */
   }
   

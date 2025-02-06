@@ -1,62 +1,82 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, useLocation } from 'react-router-dom';
-import Overlay from "../overlayScreen/overlay"
+import React, { useEffect, useState, useRef } from "react";
+import Overlay from "../overlayScreen/overlay";
 import axios from "axios";
-import "../navbar/nav.css"
+import "../navbar/nav.css";
 import { useNavigate } from "react-router-dom";
-const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
-function Navbar(){
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
+
+function Navbar() {
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false)
-    // overlay screen
-    const [alertFlag, setAlertFlag] = useState(false)
-    const [alertMessage, setAlertMessage] = useState("")
+    const [isOpen, setIsOpen] = useState(false);
+    const [alertFlag, setAlertFlag] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const dropdownRef = useRef(null);  // Reference to the nav menu (dropdown)
+    const navbarRef = useRef(null);    // Reference to the navbar (optional if you need it for additional checks)
 
+    // Function to toggle the menu
     const toggleMenu = () => {
         setIsOpen(!isOpen);
-    }
+    };
+
     // Logout handler
     const handleLogout = async () => {
         try {
-        const response = await axios.post(`${backEndUrl}/logout`, null, { withCredentials: true });
-        console.log("Logout response:", response);
-        if (response.status === 200) {
-            setAlertMessage("Logged out successfully")
-            setAlertFlag(true)
-            setTimeout(() => {
-            setAlertFlag(false)
-            navigate("/login");
-            }, 2000);
-        }
+            const response = await axios.post(`${backEndUrl}/logout`, null, { withCredentials: true });
+            console.log("Logout response:", response);
+            if (response.status === 200) {
+                setAlertMessage("Logged out successfully");
+                setAlertFlag(true);
+                setTimeout(() => {
+                    setAlertFlag(false);
+                    navigate("/login");
+                }, 2000);
+            }
         } catch (error) {
-        console.error("Logout failed:", error);
-        setAlertMessage("Failed to log out")
-        setAlertFlag(true)
+            console.error("Logout failed:", error);
+            setAlertMessage("Failed to log out");
+            setAlertFlag(true);
         }
     };
 
-    return (   
+    // Close the dropdown if clicked outside of it
+    const handleClickOutside = (event) => {
+        if (
+            dropdownRef.current && !dropdownRef.current.contains(event.target) && 
+            navbarRef.current && !navbarRef.current.contains(event.target)
+        ) {
+            setIsOpen(false); // Close the dropdown
+        }
+    };
 
-        <nav className="navbar">
+    // Add event listener to detect click outside when the component mounts
+    useEffect(() => {
+        document.addEventListener("click", handleClickOutside);
+
+        // Cleanup event listener when the component unmounts
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, []);
+
+    return (
+        location.pathname === "/login" || location.pathname === "/register" ? null :
+        <nav ref={navbarRef} className="navbar">
             <h1 className="company-title" onClick={() => navigate("/")}>Bus Reservation</h1>
             <div className={`ham-icon ${isOpen ? "active" : ""}`} onClick={() => toggleMenu()}>
                 <div className="line"></div>
                 <div className="line"></div>
                 <div className="line"></div>
             </div>
-            <div className={`nav-menu ${isOpen ? "active" : ""}`}> 
-            { !(location.pathname === "/profile") && <button id="profile-btn" className="nav-link" onClick={() => navigate("/profile")}>Profile</button>}
-            { !(location.pathname === "/buses") && <button className="nav-link" onClick={() => navigate("/buses")}>Buses</button>}
-            { !(location.pathname === "/add-bus") && <button className="nav-link" onClick={() => navigate("/add-bus")}>Add bus</button>}
-            <button id="logout-btn" className="nav-link" onClick={handleLogout}>Logout</button>
+            <div ref={dropdownRef} className={`nav-menu ${isOpen ? "active" : ""}`}> 
+                {!(location.pathname === "/profile") && <button id="profile-btn" className="nav-link" onClick={() => navigate("/profile")}>Profile</button>}
+                {!(location.pathname === "/buses") && <button className="nav-link" onClick={() => navigate("/buses")}>Buses</button>}
+                {!(location.pathname === "/add-bus") && <button className="nav-link" onClick={() => navigate("/add-bus")}>Add bus</button>}
+                <button id="logout-btn" className="nav-link" onClick={handleLogout}>Logout</button>
             </div>
             <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag}/>
         </nav>
-    )
+    );
 }
 
 export default Navbar;
-
-
-

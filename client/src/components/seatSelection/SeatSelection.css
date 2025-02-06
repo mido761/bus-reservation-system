@@ -1,11 +1,11 @@
 /* Seat Selection Page Styles */
 .seat-selection-page {
-  padding: 20px;
-  padding-top: 15vh;
+  /* padding: 20px; */
+  /* padding-top: 10vh; */
   margin: auto;
   max-width: 550px;
   width: 100%;
-  height: 86vh;
+  min-height: 86vh;
 }
 
 .header {
@@ -191,7 +191,7 @@
   } */
   .seat-selection-page{
     max-width: 400px;
-    padding-top: 8vh;
+    padding-top: 3cap;
    }
    .seat-selection-page .bus-card{
     display: flex;
@@ -213,13 +213,13 @@
 
 @media (max-width: 430px) {
   .seat-selection-page{
-    padding-top: 8vh;
+    /* padding-top: 5vh; */
    }
 }
 
 @media (max-width: 300px) {
   .seat-selection-page{
-    padding-top: 5vh;
+    /* padding-top: 5vh; */
    }
 
    .seat-selection-page .bus-card{

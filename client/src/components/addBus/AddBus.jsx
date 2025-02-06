@@ -36,6 +36,7 @@ const AddBus = () => {
     }
 
     return (
+        <div className="add-bus-page">
         <form onSubmit={handleSubmit} className="add-bus">
             <h1>Add a new Bus</h1>
             {!next ?
@@ -84,6 +85,7 @@ const AddBus = () => {
     }      
         
         </form>
+        </div>
     );
 };
 

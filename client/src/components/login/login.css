@@ -1,8 +1,7 @@
 /* Styling for the Login Component */
 .login-container {
     height: 100vh;
-    /* margin: 50px auto; */
-    padding: 30px;
+    padding: 10vh 8vw;
     background-color: #ffffff; /* White background for the container */
     border-radius: 8px;
     color: #333333; /* Dark gray text for readability */
