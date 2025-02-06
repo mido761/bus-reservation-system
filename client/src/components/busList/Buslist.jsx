@@ -39,24 +39,19 @@ const handleDel = async (id) =>{
 
 return (
     <>
-    
-    <div className="home-bus-list">
-        <br /> <button onClick={() => fetchBuses()} className="button">Find Buses</button>
-        <br />
+        <br /> <div onClick={() => fetchBuses()} className="show-buses-btn">Show Available Buses</div>
+        <br />    
+    <div className="bus-list">
+
         {buses.length > 0 ? (
             buses.map((bus) => (
                 <div key={bus._id} className="bus-container">
                     <h1>Bus details</h1>
-                    <p>Pickup location: {bus.location.pickupLocation}</p>
-                    <p>Arrival location: {bus.location.arrivalLocation}</p>
+                    <p>{bus.location.pickupLocation} <span>to</span> {bus.location.arrivalLocation}</p>
                     <p>Seats: {bus.seats.totalSeats}</p>
                     <p>Price: {bus.price}</p>
-                    <p>schedule: {bus.schedule}</p>
-                    <p>Departure time: {bus.time.departureTime}</p>
-                    <p>Arrival time: {bus.time.arrivalTime}</p>
-                    <p>Minimum number of passengers: {bus.minNoPassengers}</p>
-                    <p>Cancel time allowance: {bus.allowance.cancelTimeAllowance}</p>
-                    <p>Booking time allowance: {bus.allowance.bookingTimeAllowance}</p>
+                    <p>Schedule: {bus.schedule}</p>
+                    <p>{bus.time.departureTime} <span>to</span> {bus.time.arrivalTime}</p>
                     <p>Allowed number of bags: {bus.allowedNumberOfBags}</p>
 
                     <button onClick={() => handleDel(bus._id)}>Delete Bus</button>

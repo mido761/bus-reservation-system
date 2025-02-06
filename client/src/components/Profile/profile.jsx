@@ -4,10 +4,11 @@ import authen from '../../authent';
 import axios from "axios";
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
+import Navbar from "../navbar/nav";
 import Footer from "../footer/footer";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
-const UserProfile = ({ user }) => {
+const UserProfile = () => {
   authen();
 
   const [busDetails, setBusDetails] = useState(null);
@@ -67,7 +68,6 @@ const UserProfile = ({ user }) => {
 
   return (
     <>
-      <nav></nav>
       <div className="user-profile">
         <div className="avatar"></div>
         <h1>{userDetails?.name}</h1>
@@ -75,7 +75,6 @@ const UserProfile = ({ user }) => {
         <p>{userDetails?.phoneNumber}</p>
       </div>
       <Dashboard busDetails={busDetails} error={error} /> {/* Pass error to Dashboard */}
-      <Footer/>
     </>
   );
 };

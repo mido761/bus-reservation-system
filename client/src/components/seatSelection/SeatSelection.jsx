@@ -137,9 +137,9 @@ const SeatSelection = () => {
       // Notification Message
       setAlertMessage("Seats cancelled successfully");
       setAlertFlag(true);
-      setTimeout(() => {
-        setAlertFlag(false);
-      }, 2000);
+      // setTimeout(() => {
+      //   setAlertFlag(false);
+      // }, 2000);
     } else {
       setAlertMessage("Select at least one seat");
       setAlertFlag(true);

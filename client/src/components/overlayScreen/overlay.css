@@ -1,7 +1,7 @@
 
 .alert-overlay{
     background-color: rgba(0, 0, 0, 0.5);
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0px;
     width: 100%;
@@ -23,9 +23,11 @@
     flex-wrap: nowrap;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     gap: 10px;
     padding: 15px;
     font-size: 1.2rem;
+    margin: 10px;
   }
 
   .overlay-content button{
@@ -36,6 +38,8 @@
     color: #f9f9f9;
     justify-self: center;
     padding: 0;
+    min-width: fit-content;
+    z-index: 1000;
   }
   .overlay-content button:hover{
     width: 30%;

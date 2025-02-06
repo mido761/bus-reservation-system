@@ -20,7 +20,7 @@ const app = express()
 app.use(express.json());  // For JSON payloads
 app.use(express.urlencoded({ extended: true }));  // For URL-encoded form data
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.108:5000', process.env.BACK_END_URL];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.108:5000', process.env.BACK_END_URL];
 app.use(cors({
   origin: allowedOrigins,         // Allow the frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods, including OPTIONS
@@ -48,7 +48,6 @@ app.use(session({
         sameSite: 'lax',
         Secure: process.env.NODE_ENV === 'production',
         maxAge: 24 * 60 * 60 * 1000,  // 1 day expiration
-
     }   
 }))
 
@@ -232,8 +231,8 @@ if (process.env.NODE_ENV === "production"){
     console.log(process.env.NODE_ENV)
 }
 
-// app.listen(process.env.PORT || 5000 , '0.0.0.0', () =>{
-//     console.log("sever is running")
-// })
+app.listen(process.env.PORT || 5000 , '0.0.0.0', () =>{
+    console.log("sever is running")
+})
 
 module.exports = app

@@ -4,10 +4,10 @@ body, html {
   min-height: 100%; /* Ensure the body spans the viewport */
 }
 
-#root {
+#app {
   display: flex;
   flex-direction: column; /* Arrange content vertically */
-  min-height: 100vh; /* Make the container full height of the viewport */
+  margin-bottom: 60px;
 }
 footer{
     width: 100%;
@@ -15,6 +15,7 @@ footer{
     color: white;
     background-color: #8b0000;
     margin-top: 20px;
-    position: relative;
+    position: fixed;
+    bottom: 0;
     z-index: -1;
 }

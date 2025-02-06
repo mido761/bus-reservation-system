@@ -15,10 +15,11 @@ function Overlay({alertFlag, alertMessage, setAlertFlag}){
                 >
                     <div className="alert-overlay">
                         <div className="overlay-content">
-                            <p>{alertMessage}</p>
+                            {alertMessage}
                             <button onClick={() => setAlertFlag(false)}>Close</button>
                         </div>
                     </div>
+                    
             </CSSTransition>
     )
 }

@@ -4,6 +4,7 @@
   margin: auto;
   max-width: 550px;
   width: 100%;
+  margin-top: 18%;
 }
 
 .header {
@@ -35,14 +36,14 @@
   align-items: center;
   flex-direction: column;
 }
-
+/* 
 .bus-container{
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-}
+} */
 
 .bus-seats{
   display: flex;

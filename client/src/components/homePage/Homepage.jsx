@@ -4,6 +4,8 @@ import axios from "axios";
 import "./Homepage.css";
 import authent from "../../authent";
 import Footer from "../footer/footer";
+import Navbar from "../navbar/nav";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const Homepage = () => {
@@ -33,6 +35,7 @@ const Homepage = () => {
   // Authentication 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
+  const [isOpen, setIsOpen] = useState(false)
   // Authentication handling function
   authent()
 
@@ -57,10 +60,10 @@ const Homepage = () => {
 
   // popular routes list
   const popularRoutes = [
-    { id: 1, route: 'Borg Al-Arab to Cairo' },
-    { id: 2, route: 'Alexandria to Borg Al-Arab' },
-    { id: 3, route: 'Borg Al-Arab to Alexandria' },
-    { id: 5, route: 'Sharm El-Sheikh to Alexandria' },
+    { id: 1, route: 'Borg to Cairo' },
+    { id: 2, route: 'Alex to Borg' },
+    { id: 3, route: 'Borg to Alex' },
+    { id: 5, route: 'Sharm to Alex' },
   ];
 
   // selected routes
@@ -92,35 +95,6 @@ const Homepage = () => {
     setFilteredBuses(filtered);
   };
 
-  // Logout handler
-  const handleLogout = async () => {
-    try {
-      const response = await axios.post(`${backEndUrl}/logout`, null, { withCredentials: true });
-      console.log("Logout response:", response);
-      if (response.status === 200) {
-        setAlertMessage("Logged out successfully")
-        setAlertFlag(true)
-        setTimeout(() => {
-          setAlertFlag(false)
-          navigate("/login");
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Logout failed:", error);
-      setAlertMessage("Failed to log out")
-      setAlertFlag(true)
-    }
-  };
-
-  // Profile handler
-  const handleProfile = async () => {
-    try {
-        navigate("/profile");
-    } catch (error) {
-      console.error("profile failed:", error);
-      alert("Failed to go to profile");
-    }
-  };
 
   // Show when loading or fetching data
   if (isLoading) {
@@ -148,59 +122,61 @@ const Homepage = () => {
     }
   };
 
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  }
+
 
   return (
     <div className="home-page">
-        <nav className="navbar">
-          <h1 className="company-title">Bus Reservation</h1>
-          <button id="profile-btn" onClick={handleProfile}>Profile</button>
-          <button id="logout-btn" onClick={handleLogout}>Logout</button>
+        {location.pathname === "/" && <button className="add-bus-btn" onClick={() => navigate("/add-bus")}>Add a new Bus</button>}
 
-          </nav>
+      <div className="search-container">
+          {/* Search Bar */}
+          <div className="bus-search-bar">
+            <select onChange={e => setPickupPoint(e.target.value)} value={pickupPoint}>
+              <option value="">Pickup Point</option>
+              <option value="Borg Al-Arab">Borg Al-Arab</option>
+              <option value="Alexandria">Alexandria</option>
+              <option value="Cairo">Cairo</option>
+              <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
+              <option value="Aswan">Aswan</option>
+              <option value="Luxor">Luxor</option>
+            </select>
+            <select onChange={e => setArrivalPoint(e.target.value)} value={arrivalPoint}>
+              <option value="">Arrival Point</option>
+              <option value="Cairo">Cairo</option>
+              <option value="Borg Al-Arab">Borg Al-Arab</option>
+              <option value="Alexandria">Alexandria</option>
+              <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
+              <option value="Aswan">Aswan</option>
+              <option value="Luxor">Luxor</option>
+              <option value="Hurghada">Hurghada</option>
+            </select>
+            <input
+              type="date"
+              onChange={e => setDate(e.target.value)}
+              value={date}
+            />
+            <button className="search-btn" onClick={handleSearch}>Search</button>
+          </div>
 
-      {/* Search Bar */}
-      <div className="bus-search-bar">
-        <select onChange={e => setPickupPoint(e.target.value)} value={pickupPoint}>
-          <option value="">Pickup Point</option>
-          <option value="Borg Al-Arab">Borg Al-Arab</option>
-          <option value="Alexandria">Alexandria</option>
-          <option value="Cairo">Cairo</option>
-          <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
-          <option value="Aswan">Aswan</option>
-          <option value="Luxor">Luxor</option>
-        </select>
-        <select onChange={e => setArrivalPoint(e.target.value)} value={arrivalPoint}>
-          <option value="">Arrival Point</option>
-          <option value="Cairo">Cairo</option>
-          <option value="Borg Al-Arab">Borg Al-Arab</option>
-          <option value="Alexandria">Alexandria</option>
-          <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
-          <option value="Aswan">Aswan</option>
-          <option value="Luxor">Luxor</option>
-          <option value="Hurghada">Hurghada</option>
-        </select>
-        <input
-          type="date"
-          onChange={e => setDate(e.target.value)}
-          value={date}
-        />
-        <button className="search-btn" onClick={handleSearch}>Search</button>
-      </div>
-
-      {/* Popular Routes */}
-      <div className="popular-routes">
-        <h3>Popular Routes</h3>
-        <div className="popular-routes-list">
-          {popularRoutes.map(route => (
-            <div
-              key={route.id}
-              className="route-card"
-              onClick={() => handleRouteSelect(route.route)}
-            >
-              {route.route}
+          {/* Popular Routes */}
+          <div className="popular-routes">
+            <h3>Popular Routes</h3>
+            <div className="popular-routes-list">
+              {popularRoutes.map(route => (
+                <div
+                  key={route.id}
+                  className="route-card"
+                  onClick={() => handleRouteSelect(route.route)}
+                >
+                  {route.route}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+
       </div>
 
       {/* Available Buses */}
@@ -210,11 +186,10 @@ const Homepage = () => {
       <div className="bus-list">
         {filteredBuses.length ? (
           filteredBuses.map(bus => (
-            <div className="bus-card" key={bus.id} onClick={() => handleBusSelect(bus)}>
-              <h3>{bus.name}</h3>
-              <p>schedule: {bus.schedule}</p>
-              <p>Pickup location: {bus.location.pickupLocation}</p>
-              <p>Arrival location: {bus.location.arrivalLocation}</p>
+            <div className="bus-container" key={bus.id} onClick={() => handleBusSelect(bus)}>
+              {/* <h3>{bus.name}</h3> */}
+              <p>Schedule: {bus.schedule}</p>
+              <p>{bus.location.pickupLocation} <span>To </span>{bus.location.arrivalLocation}</p>
               <p>Available Seats: {bus.seats.totalSeats}</p>
               <p>Price: {bus.price}</p>
               {/* <p>Departure time: {bus.time.departureTime}</p>
@@ -266,14 +241,8 @@ const Homepage = () => {
         </div>
       )}
 
-      <Footer/>
       {alertFlag && (
-          <div className="alert-overlay">
-          <div className="overlay-content">
-              <p>{alertMessage}</p>
-              <button onClick={() => setAlertFlag(false)}>Close</button>
-          </div>
-          </div>
+        <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag}/>
       )}
     </div>
   );

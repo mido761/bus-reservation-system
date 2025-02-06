@@ -6,6 +6,20 @@
     height: 40vmin;
     pointer-events: none;
   }
+
+  button {
+    background-color: #920000;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+    
+  button:hover {
+    background-color: #660000; 
+    transform: scale(1.05);
+  }
   
   @media (prefers-reduced-motion: no-preference) {
     .App-logo {

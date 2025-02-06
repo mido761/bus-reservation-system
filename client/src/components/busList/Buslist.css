@@ -4,21 +4,38 @@
   margin-bottom: 20px;
 }
 
+span{
+  font-size: 20px;
+  font-weight: 600;
+  color: #c82333;
+}
+
 /* Basic layout for the bus list */
 .bus-list {
   padding: 9px;
   background-color: #f9f9f9;
   border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
 }
 
 /* Each bus container style */
 .bus-container {
   background-color: #fff;
   padding: 20px;
-  margin-bottom: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  max-width: 330px;
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* .bus-container:hover {
@@ -40,8 +57,42 @@
   margin-bottom: 15px;
 }
 
+
+/* Bus list styling */
+.bus-list {
+  /* display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center; */
+}
+
+.bus-card {
+  /* background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 250px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.35s ease; */
+}
+
+.bus-card:hover {
+  /* transform: scale(1.05); */
+}
+
+.bus-card h3 {
+  /* margin: 0 0 10px;
+  color: #8b0000; */
+}
+
+.bus-card p {
+  /* margin: 5px 0;
+  font-size: 0.9rem; */
+}
+
+
 /* Styling for the Find Buses button */
-.button {
+.show-buses-btn {
   background-color: #960000;
   color: white;
   padding: 10px 20px;
@@ -52,6 +103,9 @@
   transition: background-color 0.3s ease;
   margin: auto;
   margin-bottom: 1rem;
+  width: fit-content;
+  text-align: center;
+  /* max-width: fit-content; */
 }
 
 .button:hover {
