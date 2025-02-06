@@ -225,7 +225,7 @@ app.post("/payment",async (req,res)=>{
 
 if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development"){
     app.use(express.static(path.join(__dirname, '../client/dist')));       
-    app.get('*', (req, res) => {
+    app.get('/', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../client/dist/index.html'));
     });
     console.log(process.env.NODE_ENV)
