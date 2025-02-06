@@ -65,7 +65,7 @@ app.get('/loaderio-a5bdf62eb0fac010d30429b361ba4fe3', (req, res) => {
 });
 
 
-app.use('/home', (req, res) => {res.send("Server is running")} );
+// app.use('/home', (req, res) => {res.send("Server is running")} );
 app.use('/buses', busRoutes);
 // app.use('/api', bookingRoutes);
 app.use('/seatselection',SeatSelection);

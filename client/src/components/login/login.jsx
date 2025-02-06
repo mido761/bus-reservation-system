@@ -40,7 +40,7 @@ function Login() {
                 setAlertFlag(true)
                 setTimeout(() => {
                     setAlertFlag(false)
-                    navigate('/')          
+                    navigate('/home')          
                 }, 2000);
             }
 

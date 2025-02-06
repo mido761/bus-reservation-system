@@ -62,7 +62,7 @@ function Navbar() {
     return (
         location.pathname === "/login" || location.pathname === "/register" ? null :
         <nav ref={navbarRef} className="navbar">
-            <h1 className="company-title" onClick={() => navigate("/")}>Bus Reservation</h1>
+            <h1 className="company-title" onClick={() => navigate("/home")}>Bus Reservation</h1>
             <div className={`ham-icon ${isOpen ? "active" : ""}`} onClick={() => toggleMenu()}>
                 <div className="line"></div>
                 <div className="line"></div>
