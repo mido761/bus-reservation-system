@@ -65,7 +65,7 @@ app.get('/loaderio-a5bdf62eb0fac010d30429b361ba4fe3', (req, res) => {
 });
 
 
-// app.use('/home', (req, res) => {res.send("Server is running")} );
+app.use('/home', (req, res) => {res.send("Server is running")} );
 app.use('/buses', busRoutes);
 // app.use('/api', bookingRoutes);
 app.use('/seatselection',SeatSelection);
@@ -223,12 +223,18 @@ app.post("/payment",async (req,res)=>{
    
 })
 
-if (process.env.NODE_ENV === "production"){
+if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development"){
     app.use(express.static(path.join(__dirname, '../client/dist')));       
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../client/dist/index.html'));
     });
     console.log(process.env.NODE_ENV)
+}
+
+if (process.env.NODE_ENV === "production"){
+    app.listen(process.env.PORT || 5000 , '0.0.0.0', () =>{
+        console.log("sever is running")
+    })
 }
 
 
