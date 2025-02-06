@@ -231,9 +231,11 @@ if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "developme
     console.log(process.env.NODE_ENV)
 }
 
-if (process.env.NODE_ENV === "development"){
-    app.listen(process.env.PORT || 5000 , '0.0.0.0', () =>{
-        console.log("sever is running")
-    })
-}
+// if (process.env.NODE_ENV === "development"){
+//     app.listen(process.env.PORT || 5000 , '0.0.0.0', () =>{
+//         console.log("sever is running")
+//     })
+// }
+
+
 module.exports = app
