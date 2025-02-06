@@ -223,18 +223,12 @@ app.post("/payment",async (req,res)=>{
    
 })
 
-if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development"){
+if (process.env.NODE_ENV === "production"){
     app.use(express.static(path.join(__dirname, '../client/dist')));       
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../client/dist/index.html'));
     });
     console.log(process.env.NODE_ENV)
-}
-
-if (process.env.NODE_ENV === "development"){
-    app.listen(process.env.PORT || 5000 , '0.0.0.0', () =>{
-        console.log("sever is running")
-    })
 }
 
 
