@@ -42,7 +42,8 @@ router.post("/:busId", async (req, res) => {
         return res.status(400).json({
           message: "Seat already booked",
           seat: seats[i],
-          busId,});
+          busId,})};
+          
       const updatedBus = await Bus.findByIdAndUpdate(
         busId,
         { $set: { [fieldToUpdate]: userId } },
