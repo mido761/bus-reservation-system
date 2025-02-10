@@ -20,7 +20,7 @@ const app = express()
 app.use(express.json());  // For JSON payloads
 app.use(express.urlencoded({ extended: true }));  // For URL-encoded form data
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.108:5000', process.env.BACK_END_URL];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000', 'http://192.168.0.138:5000', process.env.BACK_END_URL];
 app.use(cors({
   origin: allowedOrigins,         // Allow the frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods, including OPTIONS
@@ -223,12 +223,17 @@ app.post("/payment",async (req,res)=>{
    
 })
 
-if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "development"){
+if (process.env.NODE_ENV === "production"){
     app.use(express.static(path.join(__dirname, '../client/dist')));       
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../client/dist/index.html'));
     });
-    console.log(process.env.NODE_ENV)
+}
+
+if (process.env.NODE_ENV === "development"){
+    app.listen(process.env.PORT || 5000, () => {
+        console.log("Server is running")
+    })
 }
 
 module.exports = app
