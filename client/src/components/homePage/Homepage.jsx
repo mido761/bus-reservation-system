@@ -129,7 +129,8 @@ const Homepage = () => {
 
   return (
     <div className="home-page">
-        {location.pathname === "/" && <button className="add-bus-btn" onClick={() => navigate("/add-bus")}>Add a new Bus</button>}
+        {location.pathname === "/home" && <button className="add-bus-btn" onClick={() => navigate("/add-bus")}>Add a new Bus</button>}
+        {location.pathname === "/home" && <button className="add-bus-btn" onClick={() => navigate("/notifications")}>Test</button>}
 
       <div className="search-container">
           {/* Search Bar */}

@@ -2,6 +2,15 @@ const express = require("express");
 const router = express.Router();
 const Bus = require("../models/busModel");
 const User = require("../models/user");
+const Pusher = require('pusher');
+
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER,
+  useTLS: true,
+});
 
 router.get("/:id", async (req, res) => {
   try {
@@ -43,12 +52,21 @@ router.post("/:busId", async (req, res) => {
           message: "Seat already booked",
           seat: seats[i],
           busId,})};
-          
+
       const updatedBus = await Bus.findByIdAndUpdate(
         busId,
         { $set: { [fieldToUpdate]: userId } },
         { new: true }
       );
+
+      if (updatedBus) {
+        pusher.trigger("bus-channel", "seat-booked", {
+          busId: busId,
+          selectedSeats: seats,
+          userId: userId,
+        });
+      }
+      
     }
 
     if (user.bookedBuses.buses.indexOf(busId) === -1) {
@@ -94,6 +112,12 @@ router.delete("/:busId", async (req, res) => {
       { new: true }
     );
 
+    if (updatedBus) {
+      pusher.trigger("bus-channel", "seat-canceled", {
+        busId: busId,
+        canceledSeats: selectedSeats,
+        userId: userId,
+      });
     // const busSeats = bus.seats.bookedSeats;
     // const userHasBookedSeats = busSeats.some((seat) => seat === userId);
     // Check if the user still has any booked seats on this bus
@@ -134,9 +158,12 @@ router.delete("/:busId", async (req, res) => {
     //     {$pull: {'bookedBuses.buses': busId}},
     //   );
     // }
-  } catch (err) {
-    console.error("There was an error canceling the seat: ", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+  } 
+}catch (err) {
+  console.error("There was an error canceling the seat: ", err);
+  res.status(500).json({ message: "Internal server error" });
+}});
+
+
+
 module.exports = router;

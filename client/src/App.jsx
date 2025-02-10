@@ -17,6 +17,8 @@ import TicketSummary from "./components/ticketSummary/TicketSummary.jsx"; // Imp
 import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
 
+import Notifications from "./components/test/test.jsx";
+
 function App() {
   return (
     <BrowserRouter>
@@ -25,6 +27,7 @@ function App() {
         <Route path="/register" element={<Signup />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/home" element={<Homepage />}></Route>
+        <Route path="/notifications" element={<Notifications />}></Route>
         <Route
           path="/seat-selection/:busId"
           element={<SeatSelection />}

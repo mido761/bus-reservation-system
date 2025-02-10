@@ -26,6 +26,8 @@
     "mongod": "^2.0.0",
     "mongoose": "^8.9.2",
     "nodemailer": "^6.10.0",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "pusher": "^5.2.0",
+    "pusher-js": "^8.4.0"
   }
 }
