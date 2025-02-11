@@ -46,49 +46,34 @@ const Payment = () => {
     return value.replace(/\D/g, "").slice(0, 3); // Allow only digits, max length of 3
   };
 
-  const handlePaymentSubmit = (e) => {
+  const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    // Simulate successful payment and confirmation message
     setPaymentSuccess(true);
 
-    // Set a confirmation message with trip details
     setConfirmationMessage(`
       Your payment was made via ${
         paymentDetails.paymentMethod === "visa" ? "Visa" : "Cash"
       }.
     `);
-
-    // Simulate redirect to payment success page (e.g., navigate to a success page)
-    setTimeout(async () => {
-      //request form auth end the user id and bus id
+    try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
-      // req_user.data.busId = busId
-      console.log(req_user);
-      const userId = req_user.data.userId; // Ensure the token contains the user ID
-      const busId = req_user.data.busId;
-      console.log("Bus ID: ", busId); //bus Id from authentiction
-      // const Index =
-      console.log(selectedSeats);
 
-      // Send the seat reservation request to the backend
+      const userId = req_user.data.userId;
+      const busId = req_user.data.busId;
+
+      console.log("User ID:", userId, "Bus ID:", busId);
+      console.log("Selected Seats:", selectedSeats);
+
       const response = await axios.post(
         `${backEndUrl}/seatselection/${busId}`,
         { selectedSeats, userId },
         { withCredentials: true }
       );
-      
-      // updata the user booked buses
-      // const res_busId = await axios.post(`http://localhost:${port}/payment`,
-      //   { userId,busId},
-      //   { withCredentials: true }
-      // )
-
-      console.log(selectedSeats);
       setAlertMessage(
         <div className="payment-success-container">
-          <h1>Successful Payment </h1>
+          <h1>Successful Payment</h1>
           <p>
             Thank you for booking with us. <br /> <br />
             You will receive a confirmation message shortly.
@@ -97,10 +82,26 @@ const Payment = () => {
       );
       setAlertFlag(true);
       setTimeout(() => {
-          setAlertFlag(false)
-          navigate(`/ticket-summary/${selectedSeats}`);  // Redirects to the TicketSummary page
-      }, 2000); // Wait 2 seconds before navigating
-    }); 
+        setAlertFlag(false);
+        navigate(`/ticket-summary/${selectedSeats}`);
+      }, 2000);
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setAlertMessage(
+          <div className="payment-success-container">
+            <h1>Payment Failed</h1>
+            <p>
+              The selected seats are already booked. <br /> <br />
+              Please try again with different seats.
+            </p>
+          </div>
+        );
+        setAlertFlag(true);
+        setTimeout(() =>{ setAlertFlag(false); navigate(-1)}, 2000);
+      } else {
+        console.error("An error occurred:", error);
+      }
+    }
   };
 
   return (
@@ -202,10 +203,8 @@ const Payment = () => {
             alertMessage={alertMessage}
             setAlertFlag={setAlertFlag}
           />
-        )}        
+        )}
       </div>
-
-
     </div>
   );
 };

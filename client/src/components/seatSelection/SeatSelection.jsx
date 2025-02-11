@@ -17,6 +17,7 @@ const SeatSelection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [reservedSeats, setReservedSeats] = useState([]);
   const [confirmation, setConfirmation] = useState(false);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -30,7 +31,9 @@ const SeatSelection = () => {
         const req_user = await axios.get(`${backEndUrl}/auth`, {
           withCredentials: true,
         });
-        const response = await axios.get(`${backEndUrl}/seatselection/${busId}`);
+        const response = await axios.get(
+          `${backEndUrl}/seatselection/${busId}`
+        );
         setBusDetails(response.data);
         setUserId(req_user.data.userId);
       } catch (err) {
@@ -50,6 +53,11 @@ const SeatSelection = () => {
 
     const channel = pusher.subscribe("bus-channel");
 
+    channel.bind("seat-reserved", (data) => {
+      console.log(data);
+      setBusDetails(data.updatedBus);
+    });
+
     channel.bind("seat-booked", (data) => {
       if (data.busId === busId) {
         setBusDetails((prev) => {
@@ -59,25 +67,14 @@ const SeatSelection = () => {
           });
           return updatedBus;
         });
-        setAlertMessage(`Seats ${data.selectedSeats.join(", ")} booked.`);
-        setAlertFlag(true);
-        setTimeout(() => setAlertFlag(false), 2000);
+        // setAlertMessage(`Seats ${data.selectedSeats.join(", ")} booked.`);
+        // setAlertFlag(true);
+        // setTimeout(() => setAlertFlag(false), 2000);
       }
     });
 
     channel.bind("seat-canceled", (data) => {
-      if (data.busId === busId) {
-        setBusDetails((prev) => {
-          const updatedBus = { ...prev };
-          data.canceledSeats.forEach((seat) => {
-            updatedBus.seats.bookedSeats[seat] = "0";
-          });
-          return updatedBus;
-        });
-        setAlertMessage(`Seats ${data.canceledSeats.join(", ")} canceled.`);
-        setAlertFlag(true);
-        setTimeout(() => setAlertFlag(false), 2000);
-      }
+        setBusDetails(data.updatedBus);
     });
 
     return () => {
@@ -86,6 +83,12 @@ const SeatSelection = () => {
   }, [busId]);
 
   const handleSeatSelect = async (seat, index) => {
+    setReservedSeats(
+      busDetails.seats.reservedSeats
+        .filter((seat) => seat.reservedBy === userId)
+        .map((seat) => parseInt(seat.seatNumber))
+    );
+    console.log(reservedSeats === selectedSeats);
     try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
@@ -98,6 +101,7 @@ const SeatSelection = () => {
       }
       const isBooked = seat !== "0";
       const isCurrentUserSeat = seat === userId;
+      const isReserved = busDetails.seats.reservedSeats[seat] === index;
 
       setSelectedSeats((prev) => {
         const newSeats = [...prev];
@@ -113,8 +117,7 @@ const SeatSelection = () => {
           } else {
             newSeats.push(index);
           }
-        }
-        setConfirmation(true);
+        } else setConfirmation(true);
         return newSeats;
       });
     } catch (err) {
@@ -124,12 +127,36 @@ const SeatSelection = () => {
 
   const handleConfirmSeats = async (type) => {
     if (selectedSeats.length > 0 && type === "book") {
-      setAlertMessage("Successfully selected seats");
-      setAlertFlag(true);
-      setTimeout(() => {
-        setAlertFlag(false);
-        navigate(`/payment/${selectedSeats}`);
-      }, 2000);
+      try {
+        const response = await axios.post(
+          `${backEndUrl}/seatselection/reserve/${busId}`,
+          { data: { selectedSeats, userId }, withCredentials: true }
+        );
+        setAlertMessage("Successfully reserved seats");
+        setAlertFlag(true);
+        setTimeout(() => {
+          setAlertFlag(false);
+          navigate(`/payment/${selectedSeats}`);
+        }, 2000);
+      } catch (error) {
+        if (error.response && error.response.status === 400) {
+          setAlertMessage(
+            <div className="payment-success-container">
+              <h1>Payment Failed</h1>
+              <p>
+                The selected seats are already Reserved. <br /> <br />
+                Please try again with different seats.
+              </p>
+            </div>
+          );
+          setAlertFlag(true);
+          setTimeout(() => {
+            setAlertFlag(false);
+          }, 2000);
+        } else {
+          console.error("An error occurred:", error);
+        }
+      }
     } else if (selectedSeats.length > 0 && type === "cancel") {
       const response = await axios.delete(
         `${backEndUrl}/seatselection/${busId}`,
@@ -163,13 +190,28 @@ const SeatSelection = () => {
         <div className="bus-details">
           <h2>Bus details</h2>
           <div className="bus-data">
-            <p><strong>Time</strong> {busDetails.time.departureTime}</p>
-            <p><strong>Price</strong> {busDetails.price}</p>
-            <p><strong>Pickup</strong> {busDetails.location.pickupLocation}</p>
-            <p><strong>Arrival</strong> {busDetails.location.arrivalLocation}</p>
-            <p><strong>Date</strong> {busDetails.schedule}</p>
+            <p>
+              <strong>Time</strong> {busDetails.time.departureTime}
+            </p>
+            <p>
+              <strong>Price</strong> {busDetails.price}
+            </p>
+            <p>
+              <strong>Pickup</strong> {busDetails.location.pickupLocation}
+            </p>
+            <p>
+              <strong>Arrival</strong> {busDetails.location.arrivalLocation}
+            </p>
+            <p>
+              <strong>Date</strong> {busDetails.schedule}
+            </p>
           </div>
-          <CSSTransition in={confirmation && selectedSeats.length > 0} timeout={300} classNames="confirm-btn-transition" unmountOnExit>
+          <CSSTransition
+            in={confirmation && selectedSeats.length > 0}
+            timeout={300}
+            classNames="confirm-btn-transition"
+            unmountOnExit
+          >
             <div className="seat-confirmation">
               <h3>Seats Confirmed</h3>
               <p>{selectedSeats.map((seat) => seat + 1).join(", ")}</p>
@@ -182,27 +224,89 @@ const SeatSelection = () => {
               const isBooked = seat !== "0";
               const isCurrentUserBookedSeat = seat === userId;
               const isSelected = selectedSeats.includes(index);
+              const isReserved = busDetails.seats.reservedSeats
+                .map((seat) => seat.seatNumber)
+                .includes(String(index));
+              const isReservedForCurrentUser = busDetails.seats.reservedSeats
+                .filter((seat) => seat.reservedBy === userId)
+                .map((seat) => seat.seatNumber)
+                .includes(String(index));
+
               return (
                 <div
                   key={index}
-                  className={`seat ${isSelected ? "selected" : ""} ${isBooked && !isCurrentUserBookedSeat ? "booked" : ""} ${isCurrentUserBookedSeat ? "current-user" : ""}`}
-                  onClick={() => (!isBooked || isCurrentUserBookedSeat || isSelected) && handleSeatSelect(seat, index)}
-                  title={isBooked ? "Can't select this seat" : ""}
+                  className={`seat ${isSelected ? "selected" : ""} ${
+                    isReserved ? "reserved" : ""
+                  } 
+                  ${
+                    isReservedForCurrentUser ? "reserved-for-current-user" : ""
+                  } 
+                  ${isBooked && !isCurrentUserBookedSeat ? "booked" : ""} ${
+                    isCurrentUserBookedSeat ? "current-user" : ""
+                  }`}
+                  onClick={() =>
+                    (!isBooked || isCurrentUserBookedSeat || isSelected) &&
+                    handleSeatSelect(seat, index)
+                  }
+                  title={
+                    isBooked
+                      ? "This seat is booked"
+                      : "This seat is reserved temporarily"
+                  }
                 >
                   {index + 1}
                 </div>
               );
             })}
           </div>
-          <CSSTransition in={selectedSeats.length > 0 && selectedSeats.every(seat => busDetails.seats.bookedSeats[seat] === "0")} timeout={300} classNames="confirm-btn-transition" unmountOnExit>
-            <button className="confirm-btn" onClick={() => handleConfirmSeats("book")}>Proceed to payment</button>
-          </CSSTransition>
-          <CSSTransition in={selectedSeats.length > 0 && selectedSeats.every(seat => busDetails.seats.bookedSeats[seat] === userId)} timeout={300} classNames="confirm-btn-transition" unmountOnExit>
-            <button className="confirm-btn" onClick={() => handleConfirmSeats("cancel")}>Cancel Booking</button>
-          </CSSTransition>
+
+          <div className="btn-container">
+            <CSSTransition
+              in={
+                selectedSeats.length > 0 &&
+                selectedSeats.every(
+                  (seat) => busDetails.seats.bookedSeats[seat] === "0"
+                )
+              }
+              timeout={300}
+              classNames="confirm-btn-transition"
+              unmountOnExit
+            >
+              <button
+                className="confirm-btn"
+                onClick={() => handleConfirmSeats("book")}
+              >
+                Proceed to payment
+              </button>
+            </CSSTransition>
+            <CSSTransition
+              in={
+                selectedSeats.length > 0 &&
+                selectedSeats.every(
+                  (seat) =>
+                    busDetails.seats.bookedSeats[seat] === userId ||
+                    reservedSeats.includes(seat)
+                )
+              }
+              timeout={300}
+              classNames="confirm-btn-transition"
+              unmountOnExit
+            >
+              <button
+                className="confirm-btn"
+                onClick={() => handleConfirmSeats("cancel")}
+              >
+                Cancel Booking
+              </button>
+            </CSSTransition>
+          </div>
         </div>
       </div>
-      <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
+      <Overlay
+        alertFlag={alertFlag}
+        alertMessage={alertMessage}
+        setAlertFlag={setAlertFlag}
+      />
     </div>
   );
 };

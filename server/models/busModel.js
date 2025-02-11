@@ -1,11 +1,22 @@
 
 const mongoose = require('mongoose');
 
+const ReservedSeatSchema = new mongoose.Schema({
+    seatNumber: { type: String, required: true },
+    reservedBy: { type: String, required: true },
+    expiryDate: { 
+      type: Date, 
+      required: true, 
+      default: () => new Date(Date.now() + 10 * 60 * 1000) // Expires in 10 minutes
+    },
+  });
+
 const BusSchema = new mongoose.Schema({
     seats: {
         totalSeats: {type: Number, required: true},
-        bookedSeats: [{type: String,  required: false}],  
-        availableSeats: {type: Number, required: false} 
+        bookedSeats: [{type: String,  required: false}],
+        reservedSeats: [ReservedSeatSchema],  
+        availableSeats: {type: Number, required: false}
     },
     schedule: {type: String, required:false},
     minNoPassengers: {type: Number, required: false},

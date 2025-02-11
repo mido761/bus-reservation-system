@@ -5,6 +5,7 @@
   max-width: 550px;
   width: 100%;
   min-height: 86vh;
+  user-select: none;
 }
 
 .header {
@@ -104,11 +105,34 @@
   background-color: green; /* Dark red color */
   color: white;
 }
+
+
+/* Style for reserved seats */
+.seat.reserved {
+  background-color: #002ab3; /* Darker red color */
+  color: white;
+  cursor: not-allowed; /* Make reserved seats unclickable */
+
+}
+
+.seat.reserved-for-current-user {
+  background-color: #002ab3; /* Darker red color */
+  color: white;
+  cursor: pointer; /* Make User reserved seats clickable */
+}
+
 /* Style for booked seats */
 .seat.booked {
   background-color: #b30000; /* Darker red color */
   color: white;
   cursor: not-allowed; /* Make booked seats unclickable */
+}
+
+.btn-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
 }
 
 /* Confirm button style */
