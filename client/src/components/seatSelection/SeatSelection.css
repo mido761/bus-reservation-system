@@ -234,17 +234,9 @@
   }
 }
 
-@media (max-width: 430px) {
-  .seat-selection-page{
-    /* padding-top: 5vh; */
-   }
-}
+
 
 @media (max-width: 300px) {
-  .seat-selection-page{
-    /* padding-top: 5vh; */
-   }
-
    .seat-selection-page .bus-card{
     overflow: hidden;
     max-height: 65vh;
