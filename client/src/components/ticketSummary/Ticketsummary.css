@@ -1,26 +1,24 @@
 .ticket-summary-page {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  height: 86vh; /* Full viewport height */
-  background-color: #f8f8f8; /* Optional: Light background for contrast */
-  margin: 0; /* Remove any default margin */
-  padding: 0; /* Remove any default padding */
-  box-sizing: border-box; /* Ensure padding and borders are included in dimensions */
-  overflow: hidden; /* Hide any overflowing content */
+  height: 86vh;
+  background-color: #f8f8f8;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
   padding: 30px;
   user-select: none;
 }
 
-/* Main Summary Container */
 .summary-container {
   background-color: #ffffff;
   border-radius: 16px;
   padding: 25px 40px;
   max-width: 90vw;
-  /* max-height: 70vh; */
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -38,11 +36,6 @@
   align-items: center;
 }
 
-/* .summary-container:hover {
-  transform: translateY(-5px); 
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);  
-} */
-
 .summary-container h1 {
   color: #920000;
   font-size: 2.8rem;
@@ -57,7 +50,7 @@
   color: #333;
   font-weight: 600;
   margin-bottom: 12px;
-  text-transform: uppercase; /* Add professionalism */
+  text-transform: uppercase;
 }
 
 .summary-container p {
@@ -73,12 +66,10 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-
   text-align: center;
   justify-content: center;
   align-items: start;
   flex-wrap: wrap;
-  /* border: 1px solid #920000; */
 }
 
 .summary-container .section:nth-child(3) .details,
@@ -96,7 +87,7 @@
 }
 
 .summary-container .details-title {
-  text-align: left; /* Ensure all details are aligned left */
+  text-align: left;
   font-size: 0.8rem;
   padding: 10px;
   display: block;
@@ -107,20 +98,10 @@
   height: fit-content;
 }
 
-/* .summary-container .details-title::after{
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  height: 2px;
-  width: 100%;
-  background-color: #920000;
-} */
-
 .summary-container .details p {
-  text-align: center; /* Ensure all details are aligned left */
+  text-align: center;
   font-size: 0.9rem;
-  overflow-wrap: break-word; /* Forces text to break within the container */
+  overflow-wrap: break-word;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -182,15 +163,12 @@
   }
 }
 
-
 @media (max-width: 460px) {
-  .summary-container{
+  .summary-container {
     grid-template-columns: 1fr;
   }
 }
 
-
-/* Optional Animation for the Summary Box */
 @keyframes fadeIn {
   0% {
     opacity: 0;

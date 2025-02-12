@@ -74,7 +74,7 @@ const SeatSelection = () => {
     });
 
     channel.bind("seat-canceled", (data) => {
-        setBusDetails(data.updatedBus);
+      setBusDetails(data.updatedBus);
     });
 
     return () => {
@@ -83,12 +83,20 @@ const SeatSelection = () => {
   }, [busId]);
 
   const handleSeatSelect = async (seat, index) => {
-    setReservedSeats(
-      busDetails.seats.reservedSeats
-        .filter((seat) => seat.reservedBy === userId)
-        .map((seat) => parseInt(seat.seatNumber))
-    );
-    console.log(reservedSeats === selectedSeats);
+    // setReservedSeats(
+    //   busDetails.seats.reservedSeats
+    //     .filter((seat) => seat.reservedBy === userId)
+    //     .map((seat) => parseInt(seat.seatNumber))
+    // );
+    const isBooked = seat !== "0";
+    const isCurrentUserSeat = seat === userId;
+    const isReserved = busDetails.seats.reservedSeats
+      .map((seat) => seat.seatNumber)
+      .includes(String(index));
+    const isReservedForCurrentUser = busDetails.seats.reservedSeats
+      .filter((seat) => seat.reservedBy === userId)
+      .map((seat) => seat.seatNumber)
+      .includes(String(index));
     try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
@@ -99,9 +107,8 @@ const SeatSelection = () => {
         navigate("/login");
         return;
       }
-      const isBooked = seat !== "0";
-      const isCurrentUserSeat = seat === userId;
-      const isReserved = busDetails.seats.reservedSeats[seat] === index;
+
+      console.log("isReserved", isReserved, isCurrentUserSeat);
 
       setSelectedSeats((prev) => {
         const newSeats = [...prev];
@@ -149,10 +156,13 @@ const SeatSelection = () => {
               </p>
             </div>
           );
+          setSelectedSeats([]);
           setAlertFlag(true);
           setTimeout(() => {
             setAlertFlag(false);
           }, 2000);
+        } else if (error.response && error.response.status === 302) {
+            navigate(`/payment/${selectedSeats}`);
         } else {
           console.error("An error occurred:", error);
         }
@@ -236,20 +246,28 @@ const SeatSelection = () => {
                 <div
                   key={index}
                   className={`seat ${isSelected ? "selected" : ""} ${
-                    isReserved ? "reserved" : ""
+                    isReserved &&
+                    !isReservedForCurrentUser &&
+                    !isCurrentUserBookedSeat
+                      ? "reserved"
+                      : ""
                   } 
                   ${
-                    isReservedForCurrentUser ? "reserved-for-current-user" : ""
+                    isReservedForCurrentUser &&
+                    isReserved &&
+                    !isCurrentUserBookedSeat
+                      ? "reserved-for-current-user"
+                      : ""
                   } 
                   ${isBooked && !isCurrentUserBookedSeat ? "booked" : ""} ${
                     isCurrentUserBookedSeat ? "current-user" : ""
                   }`}
                   onClick={() =>
-                    (!isBooked || isCurrentUserBookedSeat || isSelected) &&
+                    (!isReserved || isReservedForCurrentUser) &&
                     handleSeatSelect(seat, index)
                   }
                   title={
-                    isBooked
+                    isBooked && !isCurrentUserBookedSeat
                       ? "This seat is booked"
                       : "This seat is reserved temporarily"
                   }
@@ -282,11 +300,15 @@ const SeatSelection = () => {
             <CSSTransition
               in={
                 selectedSeats.length > 0 &&
-                selectedSeats.every(
-                  (seat) =>
-                    busDetails.seats.bookedSeats[seat] === userId ||
-                    reservedSeats.includes(seat)
-                )
+                (selectedSeats.every(
+                  (seat) => busDetails.seats.bookedSeats[seat] === userId
+                ) ||
+                  selectedSeats.every((seat) =>
+                    busDetails.seats.reservedSeats
+                      .filter((seat) => seat.reservedBy === userId)
+                      .map((seat) => seat.seatNumber)
+                      .includes(String(seat))
+                  ))
               }
               timeout={300}
               classNames="confirm-btn-transition"

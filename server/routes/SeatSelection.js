@@ -104,10 +104,21 @@ router.post("/reserve/:busId", async (req, res) => {
         bus.seats.reservedSeats.some((r) => r.seatNumber === String(seat))
     );
 
-    if (alreadyReservedOrBooked.length > 0) {
+    const userBooked = bus.seats.reservedSeats.filter((seat) => seat.reservedBy === userId).map((seat) => seat.seatNumber);
+    const allSeatsReserved = selectedSeats.every((seat) => userBooked.includes(String(seat)));
+
+    console.log("User Booked:", userBooked);
+    if (alreadyReservedOrBooked.length > 0 && !(allSeatsReserved)) {
       return res.status(400).json({
         message: "Some seats are already reserved or booked",
         seats: alreadyReservedOrBooked,
+      });
+    }
+
+    if (allSeatsReserved) {
+      return res.status(302).json({
+        message: "You have already reserved some seats",
+        seats: userBooked,
       });
     }
 
