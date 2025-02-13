@@ -19,14 +19,11 @@ function Signup() {
   const [verificationFlag, setVerificationFlag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // useEffect(() => {
-  //   // setIsLoading(true); // Show loading before fetching
-  //   console.log("Loading: ", isLoading);
-  //   console.log("Alert: ", alertFlag);
-  //   setVerificationFlag(true)
-
-  // }),
-  //   [alertFlag, isLoading];
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
 
   const navigate = useNavigate();
 
@@ -58,10 +55,8 @@ function Signup() {
         setTimeout(() => {
           setAlertFlag(false);
           localStorage.setItem("verificationToken", result.data.token);
-            setVerificationFlag(true);
+          setVerificationFlag(true);
         }, 2500);
-
-
       }
     } catch (err) {
       if (err.status === 400) {
@@ -88,7 +83,10 @@ function Signup() {
       {!verificationFlag ? (
         <div className="register-container">
           <h2>Register for Bus Reservation</h2>
-          <form onSubmit={handleSubmit}>
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={(e) => handleKeyDown(e)}
+          >
             <label htmlFor="username">Username</label>
             <input
               type="text"

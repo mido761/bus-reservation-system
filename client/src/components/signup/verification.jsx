@@ -85,6 +85,12 @@ function Verification({ setVerificationFlag }) {
       newOtp[index] = "";
       setOtp(newOtp);
     }
+
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevents form submission
+      console.log("Enter key pressed, but form not submitted!");
+    }
+
     console.log(otp);
   };
 
@@ -127,7 +133,7 @@ function Verification({ setVerificationFlag }) {
             Resend Verification Code
           </button>
         </form> */}
-        <form className="otp-Form" onSubmit={handleVerify}>
+        <form className="otp-Form" onSubmit={handleVerify} >
           <span className="mainHeading">Enter OTP</span>
           <p className="otpSubheading">
             We have sent a verification code to your mobile number
