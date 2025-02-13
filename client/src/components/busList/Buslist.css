@@ -1,15 +1,13 @@
 /* Layout for the Find Buses button */
-.find-bus-container {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
 span{
   font-size: 20px;
   font-weight: 600;
   color: #c82333;
 }
 
+.bus-list-page{
+  min-height: 86vh;
+}
 /* Basic layout for the bus list */
 .bus-list {
   padding: 9px;

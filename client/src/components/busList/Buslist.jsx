@@ -46,7 +46,8 @@ const BusList = () => {
 
   return (
     <>
-      <br />{" "}
+    <div className="bus-list-page">
+    <br />{" "}
       <div onClick={() => fetchBuses()} className="show-buses-btn">
         Show Available Buses
       </div>
@@ -77,6 +78,8 @@ const BusList = () => {
           <p>No buses found.</p>
         )}
       </div>
+    </div>
+   
     </>
   );
 };
