@@ -5,6 +5,7 @@ import "./SeatSelection.css";
 import axios from "axios";
 import authen from "../../authent";
 import Overlay from "../overlayScreen/overlay";
+import LoadingPage from "../loadingPage/loadingPage";
 import Pusher from "pusher-js"; // Import Pusher
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -40,7 +41,9 @@ const SeatSelection = () => {
         console.error("Error fetching bus details:", err);
         setError("Failed to fetch bus details.");
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
       }
     };
 
@@ -188,7 +191,7 @@ const SeatSelection = () => {
     }
   };
 
-  if (loading) return <p>Loading bus details...</p>;
+  if (loading) return <LoadingPage/>;
   if (error) return <p>{error}</p>;
 
   return (

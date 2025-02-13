@@ -1,6 +1,9 @@
 .seat-selection-page {
   padding: 20px;
   margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   max-width: 550px;
   width: 100%;
   min-height: 86vh;

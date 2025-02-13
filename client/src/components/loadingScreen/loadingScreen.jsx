@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "./loading.css";
+import "./loadingScreen.css";
 
-function Loading() {
+function LoadingScreen() {
 
   return (
     <section className="dots-container">
@@ -14,4 +14,4 @@ function Loading() {
   );
 }
 
-export default Loading;
+export default LoadingScreen;

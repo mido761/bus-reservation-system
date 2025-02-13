@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import Overlay from "../overlayScreen/overlay";
-import Loading from "../loading/loading";
+import Loading from "../loadingScreen/loadingScreen";
 import "./verification.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;

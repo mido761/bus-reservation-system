@@ -11,8 +11,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
+  min-height: 86vh;
   flex-grow: 1; /* Push the footer to the bottom when there's little content */
 
 }
@@ -201,4 +202,19 @@ body {
 
 .contact-us-form button:hover {
   background-color: #a60000;
+}
+
+@media screen and (min-width: 540px) {
+  .search-container{
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .bus-search-bar{
+    flex-direction: row;
+  }
+
+  .popular-routes-list{
+    flex-direction: row;
+  }
 }

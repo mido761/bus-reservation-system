@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Verification from "./verification";
-import Loading from "../loading/loading";
+import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
 import { set } from "mongoose";
 
@@ -70,6 +70,16 @@ function Signup() {
           setAlertFlag(false);
         }, 2200);
         console.error("Email already exists", err.status);
+      }else {
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage("An error accured");
+          setAlertFlag(true);
+        }, 1000);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+        }, 2200);
       }
     }
   };
@@ -127,7 +137,7 @@ function Signup() {
           </form>
 
           <Link to="/login">Login</Link>
-          {isLoading && <Loading />}
+          {isLoading && <LoadingScreen />}
 
           {alertFlag && (
             <Overlay

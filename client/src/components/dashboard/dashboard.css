@@ -1,3 +1,12 @@
+.dashboard-cards{
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    overflow: scroll;
+    max-height: 200px;
+}
+
+
 .dashboard-card{
     display: flex;
     flex-direction: column;
@@ -7,4 +16,13 @@
     width: 200px;
     align-items: center;
     gap: 8px;
+}
+
+@media screen and (max-width: 500px){
+    .dashboard-cards{
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+    
 }

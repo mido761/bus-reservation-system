@@ -11,10 +11,11 @@
 
   /* Container for the form */
   .add-bus {
-    width: 70%;
-    max-width: 800px;
+    padding: 20px;
+    padding-bottom: 10px;
+    width: 90%;
+    max-width: 500px;
     margin: 20px auto;
-    padding: 30px;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -28,7 +29,7 @@
   .add-bus h1 {
     text-align: center;
     color: #a91d1dc3;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
   }
   
   /* Input fields */
@@ -131,12 +132,6 @@
   }
   /* Responsive design */
   @media (max-width: 768px) {
-    .add-bus {
-      padding: 20px;
-      /* margin: 20px; */
-      width: 90%;
-    }
-  
     .add-bus h2 {
       font-size: 22px;
     }

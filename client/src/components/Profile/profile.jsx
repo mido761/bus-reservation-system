@@ -4,8 +4,7 @@ import authen from '../../authent';
 import axios from "axios";
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
-import Navbar from "../navbar/nav";
-import Footer from "../footer/footer";
+import LoadingPage from "../loadingPage/loadingPage";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const UserProfile = () => {
@@ -41,7 +40,9 @@ const UserProfile = () => {
         console.error('Error fetching bus details:', err);
         setError('Failed to fetch bus details.');
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
       }
     };
 
@@ -63,7 +64,7 @@ const UserProfile = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading bus details...</p>;
+    return <LoadingPage/>;
   }
 
   return (
