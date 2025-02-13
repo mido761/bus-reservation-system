@@ -6,7 +6,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npm run build --prefix client && nodemon server/index.js",
     "build": "npm install && npm install --prefix client && npm run build --prefix client",
-    "devBuild": "npm run build --prefix client",
     "start": "node server/index.js",
     "lint": "eslint .",
     "preview": "vite preview"
