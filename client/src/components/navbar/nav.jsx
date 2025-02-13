@@ -101,8 +101,8 @@ function Navbar() {
             Profile
           </button>
         )}
-        {!(location.pathname === "/buses") && (
-          <button className="nav-link" onClick={() => navigate("/buses")}>
+        {!(location.pathname === "/bus-list") && (
+          <button className="nav-link" onClick={() => navigate("/bus-list")}>
             Buses
           </button>
         )}

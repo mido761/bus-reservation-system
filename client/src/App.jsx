@@ -42,7 +42,7 @@ function App() {
         <Route path="/authen" element={<authen />}></Route>
 
         <Route path="/add-bus" element={<AddBus />}></Route>
-        <Route path="/buses" element={<BusList />}></Route>
+        <Route path="/bus-list" element={<BusList />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
       </Routes>
       <Footer />
