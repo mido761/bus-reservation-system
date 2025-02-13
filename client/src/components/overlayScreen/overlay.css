@@ -1,9 +1,8 @@
-
 .alert-overlay{
     background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
     top: 0;
-    left: 0px;
+    left: 0;
     width: 100%;
     height: 100%;
     text-align: center;
@@ -19,6 +18,7 @@
     border-radius: 5px;
     width: max-content;
     height: max-content;
+    max-width: 300px;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
@@ -47,4 +47,26 @@
     height: 40%;
     background-color: #b71c1c;
     color: #f9f9f9;
+  }
+
+  .confirm-btn-transition-enter {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  
+  .confirm-btn-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms ease, transform 300ms ease;
+  }
+  
+  .confirm-btn-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .confirm-btn-transition-exit-active {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 300ms ease, transform 300ms ease;
   }

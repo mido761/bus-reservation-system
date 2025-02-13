@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Verification from "./verification";
+import Loading from "../loading/loading";
+import Overlay from "../overlayScreen/overlay";
+import { set } from "mongoose";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -11,14 +14,25 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [alertFlag, setAllertFlag] = useState(false);
-  const [alertMessage, setAllertMessage] = useState("");
+  const [alertFlag, setAlertFlag] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const [verificationFlag, setVerificationFlag] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // useEffect(() => {
+  //   // setIsLoading(true); // Show loading before fetching
+  //   console.log("Loading: ", isLoading);
+  //   console.log("Alert: ", alertFlag);
+  //   setVerificationFlag(true)
+
+  // }),
+  //   [alertFlag, isLoading];
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const result = await axios.post(`${backEndUrl}/api/register`, {
@@ -29,24 +43,45 @@ function Signup() {
       });
 
       if (result.status === 201) {
-        setAllertMessage("Registered successfully");
-        setAllertFlag(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage(
+            <p>
+              {" "}
+              <strong>Registered successfully</strong> <br />
+              <br /> Check your email for verification{" "}
+            </p>
+          );
+          setAlertFlag(true);
+        }, 1000);
 
         setTimeout(() => {
-          setAllertFlag(false);
+          setAlertFlag(false);
           localStorage.setItem("verificationToken", result.data.token);
-          setVerificationFlag(true);
-        }, 2000);
-      } else {
-        setAllertMessage("This email already exists");
-        setAllertFlag(true);
+            setVerificationFlag(true);
+        }, 2500);
+
+
       }
     } catch (err) {
-      console.error("Registration Error:", err);
-      setAllertMessage("An error occurred during registration.");
-      setAllertFlag(true);
+      if (err.status === 400) {
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage("This email already exists");
+          setAlertFlag(true);
+        }, 1000);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+        }, 2200);
+        console.error("Email already exists", err.status);
+      }
     }
   };
+
+  // if (isLoading) {
+  //   return <Loading />;
+  // }
 
   return (
     <div className="register-page">
@@ -94,18 +129,19 @@ function Signup() {
           </form>
 
           <Link to="/login">Login</Link>
+          {isLoading && <Loading />}
 
           {alertFlag && (
-            <div className="alert-overlay">
-              <div className="overlay-content">
-                <p>{alertMessage}</p>
-                <button onClick={() => setAllertFlag(false)}>Close</button>
-              </div>
-            </div>
+            <Overlay
+              alertFlag={alertFlag}
+              alertMessage={alertMessage}
+              setAlertFlag={setAlertFlag}
+            />
           )}
         </div>
       ) : (
-        <Verification />
+        <Verification setVerificationFlag={setVerificationFlag} />
+        // <Loading />
       )}
     </div>
   );

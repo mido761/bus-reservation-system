@@ -1,7 +1,6 @@
 /* Styling for the Signup Component */
 .register-page {
   height: 100vh;
-  padding: 30px;
 }
 
 .register-container {
@@ -87,6 +86,7 @@
 .register-container a:hover {
   color: #ff5252; /* Lighter red on hover */
 }
+
 
 @media (max-width: 500px) {
   .register-container {
