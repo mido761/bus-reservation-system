@@ -11,5 +11,11 @@
       "config": { "distDir": "client/dist" }
     }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "server/index.js" }]
+  "routes": [{ "src": "/(.*)", "dest": "server/index.js" }],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
