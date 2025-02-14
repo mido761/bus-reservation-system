@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Ticketsummary.css";
 import axios from "axios";
-import authen from "../../authent";
 import LoadingPage from "../loadingPage/loadingPage";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const TicketSummary = () => {
-  authen();
   const [busDetails, setBusDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

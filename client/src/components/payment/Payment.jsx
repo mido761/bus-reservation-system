@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Payment.css";
 import axios from "axios";
-import authen from "../../authent";
 import Overlay from "../overlayScreen/overlay";
 import PaymentSuccess from "../paymentSuccess/PaymentSuccess";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Payment = () => {
-  authen();
   const { selectedSeats } = useParams();
   const navigate = useNavigate();
   const [paymentDetails, setPaymentDetails] = useState({

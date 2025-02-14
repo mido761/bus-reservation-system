@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Homepage.css";
-import authent from "../../authent";
+import authent from "../../Auth";
 import Footer from "../footer/footer";
 import Navbar from "../navbar/nav";
 import LoadingPage from "../loadingPage/loadingPage";
+import authen from "../../Auth";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -36,9 +37,9 @@ const Homepage = () => {
   // Authentication
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+
   const [isOpen, setIsOpen] = useState(false);
   // Authentication handling function
-  authent();
 
   // Get available buses
   const fetchBuses = async () => {
@@ -58,6 +59,7 @@ const Homepage = () => {
   };
 
   useEffect(() => {
+
     setIsLoading(true); // Show loading before fetching
     fetchBuses();
   }, []);

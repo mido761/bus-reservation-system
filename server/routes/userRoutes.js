@@ -2,47 +2,48 @@ const express = require('express');
 const User = require('../models/user');
 const router = express.Router();
 const Bus =  require('../models/busModel');
+const middleware = require('../controllers/middleware')
 const { default: mongoose } = require('mongoose');
 const { route } = require('./busRoutes');
 
 // Add new User details
-router.post("/bus", async (req, res) => {
-    try {
-        const { name, email, password, bookedBuses } = req.body;
+// router.post("/bus", async (req, res) => {
+//     try {
+//         const { name, email, password, bookedBuses } = req.body;
 
-        console.log(req.body);
+//         console.log(req.body);
 
-        // Check if all required fields are provided
-        // !name || !email || !password || 
-        if (!bookedBuses) {
-            return res.status(400).json({
-                message: "Missing required fields",
-            });
-        }
+//         // Check if all required fields are provided
+//         // !name || !email || !password || 
+//         if (!bookedBuses) {
+//             return res.status(400).json({
+//                 message: "Missing required fields",
+//             });
+//         }
 
-        // console.log('Name:', name);
-        // console.log('Email:', email);
-        // console.log('Password:', password);
+//         // console.log('Name:', name);
+//         // console.log('Email:', email);
+//         // console.log('Password:', password);
 
-        const newUser = new User({
-            name: name,
-            email: email,
-            password: password,
-            bookedBuses: {
-                BusId: bookedBuses.BusId,
-                SeatsNumbers: bookedBuses.SeatsNumbers
-            }
-        });
+//         const newUser = new User({
+//             name: name,
+//             email: email,
+//             password: password,
+//             bookedBuses: {
+//                 BusId: bookedBuses.BusId,
+//                 SeatsNumbers: bookedBuses.SeatsNumbers
+//             }
+//         });
 
-        const user = await newUser.save();
-        res.status(201).json(user);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-})
+//         const user = await newUser.save();
+//         res.status(201).json(user);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// })
 
 // Get all Users
-router.get("/", async (req, res) => { 
+router.get("/",middleware.isAuthoraized ,async (req, res) => { 
     try {
         const users = await User.find();
         res.json(users);
@@ -53,7 +54,7 @@ router.get("/", async (req, res) => {
 
 
 // Get Specific User
-router.get("/profile/:userId", async (req, res) => { 
+router.get("/profile/:userId", middleware.isAuthenticated ,async (req, res) => { 
     const userId = req.params.userId
     try {
         const user = await User.findById(userId);
@@ -65,7 +66,7 @@ router.get("/profile/:userId", async (req, res) => {
 
 
 // get a specific bus
-router.get("/bus/:id", async (req, res) => {
+router.get("/bus/:id", middleware.isAuthenticated,async (req, res) => {
     try {
         const users = await User.find({ _id: req.params.id });
         // res.json(users);
@@ -80,7 +81,7 @@ router.get("/bus/:id", async (req, res) => {
 })
 
 
-router.delete("/bus/:id", async (req, res) => {
+router.delete("/bus/:id", middleware.isAuthenticated, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (user) {

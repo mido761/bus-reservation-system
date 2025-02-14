@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './PaymentSuccess.css';
-import authen from '../../authent';
+import authen from '../../Auth';
 
 const port = 3001
 

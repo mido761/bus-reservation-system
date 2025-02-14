@@ -1,7 +1,7 @@
 import "./App.css";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import authen from "./authent.jsx";
+import Auth from "./Auth.jsx";
 
 //from components
 import Navbar from "./components/navbar/nav.jsx";
@@ -17,33 +17,80 @@ import TicketSummary from "./components/ticketSummary/TicketSummary.jsx"; // Imp
 import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
 
-
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
+
       <Routes>
         <Route path="/register" element={<Signup />}></Route>
         <Route path="/login" element={<Login />}></Route>
-        <Route path="/" element={<Homepage />}></Route>
+        <Route
+          path="/"
+          element={
+            <Auth>
+              <Homepage />
+            </Auth>
+          }
+        ></Route>
         <Route
           path="/seat-selection/:busId"
-          element={<SeatSelection />}
+          element={
+            <Auth>
+              <SeatSelection />
+            </Auth>
+          }
         ></Route>
-        <Route path="/payment/:selectedSeats" element={<Payment />} />
+        <Route
+          path="/payment/:selectedSeats"
+          element={
+            <Auth>
+              <Payment />
+            </Auth>
+          }
+        />
         <Route
           path="/payment-success/:selectedSeats"
-          element={<PaymentSuccess />}
+          element={
+            <Auth>
+              <PaymentSuccess />
+            </Auth>
+          }
         />
         <Route
           path="/ticket-summary/:selectedSeats"
-          element={<TicketSummary />}
+          element={
+            <Auth>
+              <TicketSummary />
+            </Auth>
+          }
         />
-        <Route path="/authen" element={<authen />}></Route>
+        {/* <Route path="/authen" element={<authen />}></Route> */}
 
-        <Route path="/add-bus" element={<AddBus />}></Route>
-        <Route path="/bus-list" element={<BusList />}></Route>
-        <Route path="/profile" element={<Profile />}></Route>
+        <Route
+          path="/add-bus"
+          element={
+            <Auth requireAdmin={true} route="">
+              <AddBus />
+            </Auth>
+          }
+        ></Route>
+        <Route
+          path="/bus-list"
+          element={
+            <Auth requireAdmin={true} route="">
+              <BusList />
+            </Auth>
+          }
+        ></Route>
+        <Route
+          path="/profile"
+          element={
+            <Auth>
+              <Profile />
+            </Auth>
+          }
+        ></Route>
       </Routes>
       <Footer />
     </BrowserRouter>

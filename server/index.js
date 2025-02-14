@@ -11,10 +11,12 @@ const busRoutes = require("./routes/busRoutes");
 const userRouter = require("./routes/userRoutes");
 const SeatSelection = require("./routes/SeatSelection");
 const contactRoutes = require("./routes/contactRoutes");
+const middlleware = require('./controllers/middleware');
 const register = require("./routes/register");
 const path = require("path");
 // For email vraification
 const nodemailer = require("nodemailer");
+
 const Pusher = require("pusher");
 
 const pusher = new Pusher({
@@ -155,6 +157,7 @@ app.post("/api/login", async (req, res) => {
     // Set session ID
     console.log(req.session);
     req.session.userId = user._id;
+    req.session.userRole = user.role;
     console.log(req.session);
     res.status(200).json("Login successful");
   } catch (err) {
@@ -226,6 +229,7 @@ app.get("/auth", (req, res) => {
     res.status(200).json({
       authenticated: true,
       userId: req.session.userId,
+      userRole: req.session.userRole,
       busId: req.session.busId,
     });
   } else {

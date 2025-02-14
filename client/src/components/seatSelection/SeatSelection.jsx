@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import "./SeatSelection.css";
 import axios from "axios";
-import authen from "../../authent";
 import Overlay from "../overlayScreen/overlay";
 import LoadingPage from "../loadingPage/loadingPage";
 import Pusher from "pusher-js"; // Import Pusher
@@ -23,7 +22,6 @@ const SeatSelection = () => {
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
-  authen();
 
   // Fetch bus details and subscribe to Pusher updates
   useEffect(() => {

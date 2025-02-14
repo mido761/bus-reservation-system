@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import authen from '../../authent';
 import axios from "axios";
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
@@ -8,7 +7,6 @@ import LoadingPage from "../loadingPage/loadingPage";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const UserProfile = () => {
-  authen();
 
   const [busDetails, setBusDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +51,7 @@ const UserProfile = () => {
         const userId = req_user.data.userId;
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
+        console.log(res.data)
       } catch (err) {
         console.error("Error fetching user details:", err);
         setError("Failed to fetch user details.");

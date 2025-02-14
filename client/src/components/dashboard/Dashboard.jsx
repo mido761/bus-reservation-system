@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import authen from "../../authent";
+import authen from "../../Auth";
 import axios from "axios";
 import { get } from "mongoose";
 import "./dashboard.css";
@@ -8,8 +8,6 @@ import LoadingScreen from "../loadingScreen/loadingScreen";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Dashboard = () => {
-  authen();
-
   const navigate = useNavigate();
   const [busDetails, setBusDetails] = useState([]);
   const [error, setError] = useState(null);
