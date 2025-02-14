@@ -83,6 +83,7 @@ function App() {
             </Auth>
           }
         ></Route>
+
         <Route
           path="/profile"
           element={

@@ -54,7 +54,7 @@ router.get("/",middleware.isAuthoraized ,async (req, res) => {
 
 
 // Get Specific User
-router.get("/profile/:userId", middleware.isAuthenticated ,async (req, res) => { 
+router.get("/profile/:userId", async (req, res) => { 
     const userId = req.params.userId
     try {
         const user = await User.findById(userId);

@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./Buslist.css";
+import "./BusList.css";
 import LoadingPage from "../loadingPage/loadingPage";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-// import { set } from "mongoose";
-const port = 3001;
-
 const BusList = () => {
   const [buses, setBuses] = useState([]);
+  const [usersByBus, setUsersByBus] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  // const [busName, setBusName] = useState('');
-  // const [busId, setBusId] = useState('');
-  // const [userName, setUserName] = useState('');
-  // const [seatsBooked, setSeatsBooked] = useState('');
 
+  // Fetch all buses
   const fetchBuses = async () => {
     try {
       const res = await axios.get(`${backEndUrl}/buses`);
       setBuses(res.data);
-      console.log(res.data);
     } catch (error) {
       console.error("Error fetching Buses.");
     } finally {
@@ -29,10 +23,44 @@ const BusList = () => {
     }
   };
 
+  // Fetch users for a given bus
+  const fetchUsersForBus = async (bus) => {
+    try {
+      const bookedSeats = bus.seats.bookedSeats.filter((seat) => seat !== "0");
+
+      if (bookedSeats.length === 0) return; // No booked users, skip fetching
+
+      const responses = await Promise.all(
+        bookedSeats.map((userId) =>
+          axios.get(`${backEndUrl}/user/profile/${userId}`)
+        )
+      );
+
+      // Extract user details (name and phone number)
+      const userDetails = responses.map((response) => ({
+        name: response.data.name,
+        phoneNumber: response.data.phoneNumber, // Assuming the backend returns this field
+      }));
+
+      setUsersByBus((prev) => ({
+        ...prev,
+        [bus._id]: userDetails, // Store an array of user objects
+      }));
+    } catch (error) {
+      console.error("Error fetching User Details.");
+    }
+  };
+
+  // Fetch users when buses are loaded
   useEffect(() => {
     fetchBuses();
   }, []);
 
+  useEffect(() => {
+    buses.forEach((bus) => fetchUsersForBus(bus));
+  }, [buses]);
+
+  // Handle bus deletion
   const handleDel = async (id) => {
     try {
       await axios.delete(`${backEndUrl}/buses/${id}`);
@@ -45,10 +73,9 @@ const BusList = () => {
   };
 
   return (
-    <>
     <div className="bus-list-page">
-    <br />{" "}
-      <div onClick={() => fetchBuses()} className="show-buses-btn">
+      <br />
+      <div onClick={fetchBuses} className="show-buses-btn">
         Show Available Buses
       </div>
       <br />
@@ -61,14 +88,28 @@ const BusList = () => {
                 {bus.location.pickupLocation} <span>to</span>{" "}
                 {bus.location.arrivalLocation}
               </p>
-              <p>Seats: {bus.seats.totalSeats}</p>
+              <div className="booked-users">
+                <h3>Seats Booked By:</h3>
+                {usersByBus[bus._id]?.length > 0 ? (
+                  <ul>
+                    {usersByBus[bus._id].map((user, index) => (
+                      <p key={index} className="booked-user">
+                        <span className="user-name">{user.name}</span>
+                        <span className="user-phone">({user.phoneNumber})</span>
+                      </p>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No users booked</p>
+                )}
+              </div>
+
               <p>Price: {bus.price}</p>
               <p>Schedule: {bus.schedule}</p>
               <p>
                 {bus.time.departureTime} <span>to</span> {bus.time.arrivalTime}
               </p>
               <p>Allowed number of bags: {bus.allowedNumberOfBags}</p>
-
               <button onClick={() => handleDel(bus._id)}>Delete Bus</button>
             </div>
           ))
@@ -79,8 +120,6 @@ const BusList = () => {
         )}
       </div>
     </div>
-   
-    </>
   );
 };
 

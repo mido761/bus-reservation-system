@@ -27,7 +27,7 @@ span{
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  max-width: 330px;
+  max-width: 400px;
   width: 100%;
   height: fit-content;
   display: flex;
@@ -137,4 +137,39 @@ span{
 .bus-list p {
   color: #888;
   font-size: 18px;
+}
+.booked-users {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+}
+
+.booked-users h3 {
+  margin-bottom: 5px;
+  font-size: 18px;
+  color: #333;
+}
+
+.booked-users ul {
+  list-style: none;
+  padding: 0;
+}
+
+.booked-user {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-name {
+  font-weight: bold;
+  color: #960000;
+  margin-right: 10px;
+}
+
+.user-phone {
+  color: #555;
+  font-style: italic;
 }
