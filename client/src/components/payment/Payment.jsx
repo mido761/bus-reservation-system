@@ -3,17 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./Payment.css";
 import axios from "axios";
 import Overlay from "../overlayScreen/overlay";
-import PaymentSuccess from "../paymentSuccess/PaymentSuccess";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Payment = () => {
   const { selectedSeats } = useParams();
   const navigate = useNavigate();
   const [paymentDetails, setPaymentDetails] = useState({
-    paymentMethod: "visa", // Default to Visa
-    cardNumber: "",
-    cardExpiry: "",
-    cardCvc: "",
+    paymentMethod: "cash", // Default to Visa
   });
 
   // overlay screen
@@ -48,11 +44,11 @@ const Payment = () => {
     e.preventDefault();
     setPaymentSuccess(true);
 
-    setConfirmationMessage(`
-      Your payment was made via ${
-        paymentDetails.paymentMethod === "visa" ? "Visa" : "Cash"
-      }.
-    `);
+    // setConfirmationMessage(`
+    //   Your payment was made via ${
+    //     paymentDetails.paymentMethod === "visa" ? "Visa" : "Cash"
+    //   }.
+    // `);
     try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
@@ -111,9 +107,8 @@ const Payment = () => {
       <div className="payment-box-container">
         <h1>Complete Your Payment</h1>
         <form className="payment-form" onSubmit={handlePaymentSubmit}>
-          {/* Payment Method Selection */}
           <div className="payment-method">
-            <label>
+            {/* <label>
               <input
                 type="radio"
                 name="paymentMethod"
@@ -127,7 +122,7 @@ const Payment = () => {
                 }
               />
               Visa
-            </label>
+            </label> */}
             <label>
               <input
                 type="radio"
@@ -145,8 +140,8 @@ const Payment = () => {
             </label>
           </div>
 
-          {/* Visa Payment Form (only shown if Visa is selected) */}
-          {paymentDetails.paymentMethod === "visa" && (
+  
+          {/* {paymentDetails.paymentMethod === "visa" && (
             <>
               <input
                 type="text"
@@ -188,7 +183,7 @@ const Payment = () => {
                 title="CVV must be exactly 3 numeric characters"
               />
             </>
-          )}
+          )} */}
 
           <button type="submit" className="cta-button">
             Pay Now

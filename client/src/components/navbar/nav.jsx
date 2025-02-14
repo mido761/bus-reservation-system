@@ -4,6 +4,7 @@ import axios from "axios";
 import "../navbar/nav.css";
 import { useNavigate } from "react-router-dom";
 import LoadingScreen from "../loadingScreen/loadingScreen";
+import InlineAuth from "../../InlineAuth";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -15,6 +16,10 @@ function Navbar() {
   const [alertMessage, setAlertMessage] = useState("");
   const dropdownRef = useRef(null); // Reference to the nav menu (dropdown)
   const navbarRef = useRef(null); // Reference to the navbar (optional if you need it for additional checks)
+  // const [isAuthenticated, setIsAuthenticated] = useState(null);
+  // const [isAuthorized, setIsLoading] = useState(null);
+
+  const {isAuthenticated, isAuthorized} = InlineAuth()
 
   // Function to toggle the menu
   const toggleMenu = () => {
@@ -70,11 +75,13 @@ function Navbar() {
   // Add event listener to detect click outside when the component mounts
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
+    console.log(isAuthenticated, isAuthorized)
 
     // Cleanup event listener when the component unmounts
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
+
   }, []);
 
   return location.pathname === "/login" ||
@@ -101,12 +108,14 @@ function Navbar() {
             Profile
           </button>
         )}
-        {!(location.pathname === "/bus-list") && (
+
+        {!(location.pathname === "/bus-list") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/bus-list")}>
             Buses
           </button>
         )}
-        {!(location.pathname === "/add-bus") && (
+
+        {!(location.pathname === "/add-bus") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/add-bus")}>
             Add bus
           </button>
