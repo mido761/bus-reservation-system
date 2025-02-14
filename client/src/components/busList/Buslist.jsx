@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./BusList.css";
+import "./buslist.css";
 import LoadingPage from "../loadingPage/loadingPage";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
