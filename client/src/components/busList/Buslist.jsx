@@ -106,8 +106,10 @@ const BusList = () => {
                       </p>
                     ))}
                   </ul>
-                ) : (
+                ) : isLoading ? (
                   <LoadingComponent />
+                ): (
+                  <p>No booked seats</p>
                 )}
               </div>
 
