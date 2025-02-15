@@ -11,7 +11,7 @@ const busRoutes = require("./routes/busRoutes");
 const userRouter = require("./routes/userRoutes");
 const SeatSelection = require("./routes/SeatSelection");
 const contactRoutes = require("./routes/contactRoutes");
-const middlleware = require('./controllers/middleware');
+const middleware = require("./controllers/middleware");
 const register = require("./routes/register");
 const path = require("path");
 // For email vraification
@@ -76,16 +76,14 @@ app.use(
   })
 );
 
-
 app.post("/notifications", (req, res) => {
-    const {message, recepient} = req.body;
-    pusher.trigger("notifications", "message", {
-        message: message,
-        recepient: recepient,
-    });
-    res.status(200).send({message, recepient});  
+  const { message, recepient } = req.body;
+  pusher.trigger("notifications", "message", {
+    message: message,
+    recepient: recepient,
+  });
+  res.status(200).send({ message, recepient });
 });
-
 
 // Serve the verification file from the public folder
 app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
@@ -105,16 +103,16 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
 });
 
 // app.use('/home', (req, res) => {res.send("Server is running")} );
-app.use("/buses", busRoutes);
+app.use("/buses", middleware.isAuthenticated, busRoutes);
 // app.use('/api', bookingRoutes);
-app.use("/seatselection", SeatSelection);
-app.use("/user", userRouter);
+app.use("/seatselection", middleware.isAuthenticated, SeatSelection);
+app.use("/user", middleware.isAuthenticated, userRouter);
 
 // Email verifaction
 app.use("/api/register", register);
 
 // Contact routes
-app.use("/contact", contactRoutes);
+app.use("/contact", middleware.isAuthenticated, contactRoutes);
 
 //MongoDB connection
 mongoose
@@ -202,7 +200,7 @@ app.post("/api/login", async (req, res) => {
 //     }
 // })
 
-app.post("/logout", (req, res) => {
+app.post("/logout", middleware.isAuthenticated, (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json("failed to logout");
@@ -212,9 +210,8 @@ app.post("/logout", (req, res) => {
   });
 });
 
-app.get("/auth/:busId", (req, res) => {
+app.get("/auth/:busId", middleware.isAuthenticated, (req, res) => {
   const busId = req.params.busId;
-  console.log("Auth Response: ", req.session);
   req.session.busId = busId;
   if (req.session.userId) {
     res.status(200).json({ authenticated: true, busId: busId });
@@ -224,7 +221,6 @@ app.get("/auth/:busId", (req, res) => {
 });
 
 app.get("/auth", (req, res) => {
-  console.log(req.session);
   if (req.session.userId) {
     res.status(200).json({
       authenticated: true,
@@ -233,13 +229,12 @@ app.get("/auth", (req, res) => {
       busId: req.session.busId,
     });
   } else {
-    console.log(req.session);
     res.status(401).json({ authenticated: false });
   }
 });
 
 // for profile to show the bus that are reserved
-app.post("/payment", async (req, res) => {
+app.post("/payment", middleware.isAuthenticated, async (req, res) => {
   // const busId = req.params.busId;
   const { userId, busId } = req.body;
 
@@ -247,12 +242,11 @@ app.post("/payment", async (req, res) => {
   const user = await userModel.findById(userId);
 
   res.status(200).json(bus);
-  console.log(bus);
   if (!bus) {
-    console.log(res.status(404).json({ error: "bus not found" }));
+    res.status(404).json({ error: "bus not found" });
   }
   if (!user) {
-    console.log(res.status(404).json({ error: "user not found" }));
+    res.status(404).json({ error: "user not found" });
   }
 
   const updateduser = await userModel.findByIdAndUpdate(
@@ -267,7 +261,6 @@ if (process.env.NODE_ENV === "production") {
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
   });
-  console.log(process.env.NODE_ENV);
 }
 
 app.listen(process.env.PORT || 5000, () => {

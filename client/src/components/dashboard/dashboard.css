@@ -4,6 +4,7 @@
     margin-top: 10px;
     overflow: scroll;
     max-height: 200px;
+    user-select: none;
 }
 
 
@@ -16,6 +17,7 @@
     width: 200px;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 500px){

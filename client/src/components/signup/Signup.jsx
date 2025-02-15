@@ -34,19 +34,19 @@ function Signup() {
     };
 
     const validateEmail = (email) =>
-      /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+      /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email) || /^[a-zA-Z0-9._%+-]+@ejust\.edu\.eg$/.test(email);
     const validatePassword = (password) =>
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
         password
       );
 
-    // const passwordErrorMessage =
-    //   "Password must meet the following requirements:\n" +
-    //   "- At least 8 characters long\n" +
-    //   "- Include at least one uppercase\n" +
-    //   "- Include at least one lowercase letter\n" +
-    //   "- Include at least one number\n" +
-    //   "- Include at least one special character";
+    const passwordErrorMessage =
+      "Password must meet the following requirements:\n" +
+      "- At least 8 characters long\n" +
+      "- Include at least one uppercase\n" +
+      "- Include at least one lowercase letter\n" +
+      "- Include at least one number\n" +
+      "- Include at least one special character";
 
     let validationErrors = {};
     // console.log(e.target.value.length);
@@ -57,17 +57,13 @@ function Signup() {
     }
     if (!validateEmail(email) && e.target.name === "email")
       validationErrors.email = "Enter a valid Email";
-    if (!validatePassword(password) && e.target.name === "password");
+    if (!validatePassword(password) && e.target.name === "password")
     validationErrors.password =
-      (!/^\d{7,}$/.test(
-        password
-      ) ? "At least 8 characters long:\n" : "") 
-      // +
-      // (e.target.value.length < 8 ? "Include at least one uppercase\n:\n" : "");
+    passwordErrorMessage;
+      
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setIsLoading(false);
       return;
     }
   };
@@ -143,7 +139,7 @@ function Signup() {
       {!verificationFlag ? (
         <div className="register-container">
           <h2>Register for Bus Reservation</h2>
-          <form onSubmit={handleSubmit} onKeyDown={(e) => handleKeyDown(e)}>
+          <form onSubmit={handleSubmit}>
             <label htmlFor="username">Username</label>
             <input
               type="text"
@@ -191,9 +187,10 @@ function Signup() {
             <label htmlFor="password">Password</label>
             <div className="password-container">
               <input
-                type={"password"}
+                type="password"
                 id="password"
                 name="password"
+                maxLength="15"
                 required
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => handleValidation(e)}

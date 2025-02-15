@@ -3,6 +3,7 @@ const router = express.Router();
 const Bus = require("../models/busModel");
 const User = require("../models/user");
 const Pusher = require("pusher");
+const middleware = require("../controllers/middleware");
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -90,7 +91,6 @@ router.post("/reserve/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { selectedSeats, userId } = req.body.data;
 
-  console.log("Selected Seats:", selectedSeats);
   try {
     const bus = await Bus.findById(busId);
     if (!bus) {
@@ -107,7 +107,6 @@ router.post("/reserve/:busId", async (req, res) => {
     const userBooked = bus.seats.reservedSeats.filter((seat) => seat.reservedBy === userId).map((seat) => seat.seatNumber);
     const allSeatsReserved = selectedSeats.every((seat) => userBooked.includes(String(seat)));
 
-    console.log("User Booked:", userBooked);
     if (alreadyReservedOrBooked.length > 0 && !(allSeatsReserved)) {
       return res.status(400).json({
         message: "Some seats are already reserved or booked",
@@ -137,7 +136,6 @@ router.post("/reserve/:busId", async (req, res) => {
       pusher.trigger("bus-channel", "seat-reserved", {
         updatedBus,
       });
-      console.log("Reserved seats:", updatedBus.seats.reservedSeats);
     }
 
     res.status(200).json({ message: "Seat reserved successfully" });
@@ -198,7 +196,6 @@ router.delete("/:busId", async (req, res) => {
       const userHasOtherBookedSeats = busSeats.some(
         (seat) => seat === userId // Check if the user's ID exists in any booked seat
       );
-      console.log(busSeats);
 
       // If no seats are booked by the user, remove the bus from the user's booked buses
       if (!userHasOtherBookedSeats) {

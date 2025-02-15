@@ -37,7 +37,6 @@ const Homepage = () => {
   // Authentication
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-
   const [isOpen, setIsOpen] = useState(false);
   // Authentication handling function
 
@@ -59,21 +58,17 @@ const Homepage = () => {
   };
 
   useEffect(() => {
-
     setIsLoading(true); // Show loading before fetching
     fetchBuses();
   }, []);
 
   // popular routes list
   const popularRoutes = [
-    { id: 1, route: "Borg to Cairo" },
-    { id: 2, route: "Alex to Borg" },
-    { id: 3, route: "Borg to Alex" },
-    { id: 5, route: "Sharm to Alex" },
+    { id: 1, route: "Borg Al-Arab to Cairo" },
+    { id: 2, route: "Alexandria to Borg Al-Arab" },
+    { id: 3, route: "Cairo to Alexandria" },
+    { id: 3, route: "Cairo to Borg Al-Arab" },
   ];
-
-  // selected routes
-  const handleRouteSelect = (route) => setSelectedRoute(route);
 
   // Handle selected bus
   const handleBusSelect = async (bus) => {
@@ -101,6 +96,14 @@ const Homepage = () => {
         (date ? bus.schedule === date : true)
     );
     setFilteredBuses(filtered);
+  };
+  
+  // selected routes
+  const handleRouteSelect = (route) => {
+    const [pickup, arrival] = route.split(" to ");
+    setPickupPoint(pickup);
+    setArrivalPoint(arrival);
+    setTimeout(handleSearch, 0); // Ensures search runs after state update
   };
 
   // Show when loading or fetching data

@@ -11,25 +11,22 @@ function Login() {
     const [alertFlag, setAlertFlag] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const navigate = useNavigate();
+    const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent the default form submission
 
         try {
-            console.log("Email", email);
-            console.log("Password", password);
             // Make the POST request for login
             const response = await axios.post(
-                "http://localhost:3001/login",
+                `${backEndUrl}/api/login`,
                 { email, password },
                 { withCredentials: true } 
             );
 
-            console.log("Response", response);
             if (response.status === 200) {
                 // Store the token in sessionStorage upon successful login
                 const userId = response.data.userId;
-                const sessionID = response.data.sessionID;
                 const role = response.data.role; // Ensure you are sending the role from backend
 
                 sessionStorage.setItem('authToken', userId);
@@ -42,7 +39,7 @@ function Login() {
                 // Use setTimeout to wait a few seconds before navigating
                 setTimeout(() => {
                     setAlertFlag(false); // Hide the alert
-                    navigate('/home');   // Navigate to the homepage
+                    navigate('/');   // Navigate to the homepage
                 }, 2000); // Wait for 2 seconds before navigating
             }
         } catch (error) {

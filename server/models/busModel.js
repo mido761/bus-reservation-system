@@ -26,8 +26,8 @@ const BusSchema = new mongoose.Schema({
         arrivalLocation: {type: String, required: false},        
     },
     time: {
-        departureTime: {type: Number, required: false},
-        arrivalTime: {type: Number, required: false},        
+        departureTime: {type: String, required: false},
+        arrivalTime: {type: String, required: false},        
     },
     allowance: {
         cancelTimeAllowance: {type: Number, required: false},

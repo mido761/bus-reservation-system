@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Contact = require('../models/Contact');  // Import the Contact model
+const middleware = require("../controllers/middleware");
 
 // GET all contact messages
-router.get('/', async (req, res) => {
+router.get('/', middleware.isAuthoraized, async (req, res) => {
   try {
     console.log('Fetching all contact messages...');
     const contacts = await Contact.find();  // Retrieve all contacts
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST a new contact message
-router.post('/', async (req, res) => {
+router.post('/', middleware.isAuthenticated, async (req, res) => {
   const { name, email, message } = req.body;
   console.log('Received contact message:', req.body); // Log the incoming request data
 
@@ -38,7 +39,7 @@ router.post('/', async (req, res) => {
 });
 
 // DELETE a contact message by ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',  middleware.isAuthoraized, async (req, res) => {
   const contactId = req.params.id;
   console.log('Deleting contact message with ID:', contactId);
 

@@ -15,7 +15,7 @@ body {
   width: 100%;
   min-height: 86vh;
   flex-grow: 1; /* Push the footer to the bottom when there's little content */
-
+  user-select: none;
 }
 
 

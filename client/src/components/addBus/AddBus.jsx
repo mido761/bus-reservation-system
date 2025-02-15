@@ -30,14 +30,14 @@ const AddBus = () => {
 
   // Function to pre-fill form values
   const handleQuickAdd = () => {
-    setAllSeats("50");
-    setMinNoPassengers("10");
-    setPrice("20");
+    setAllSeats(15);
+    setMinNoPassengers(11);
+    setPrice(120);
     setPickupLocation("Borg Al-Arab");
     setArrivalLocation("Cairo");
-    setCancelTimeAllowance("2");
-    setBookingTimeAllowance("1");
-    setAllowedNumberOfBags("2");
+    setCancelTimeAllowance(2);
+    setBookingTimeAllowance(1);
+    setAllowedNumberOfBags(2);
     setSchedule(today); // Keep this empty for manual entry
     setDepartureTime("16:00"); // Keep this empty for manual entry
     setArrivalTime("21:00"); // Keep this empty for manual entry
@@ -141,7 +141,7 @@ const AddBus = () => {
             <div className="form-navigation">
               <button
                 type="button"
-                className="quick-add-btn"
+                id="quick-add-btn"
                 onClick={handleQuickAdd}
               >
                 Quick Add

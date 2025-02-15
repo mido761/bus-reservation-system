@@ -66,7 +66,7 @@ router.get("/profile/:userId", async (req, res) => {
 
 
 // get a specific bus
-router.get("/bus/:id", middleware.isAuthenticated,async (req, res) => {
+router.get("/bus/:id", async (req, res) => {
     try {
         const users = await User.find({ _id: req.params.id });
         // res.json(users);
@@ -81,7 +81,7 @@ router.get("/bus/:id", middleware.isAuthenticated,async (req, res) => {
 })
 
 
-router.delete("/bus/:id", middleware.isAuthenticated, async (req, res) => {
+router.delete("/bus/:id", async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (user) {
