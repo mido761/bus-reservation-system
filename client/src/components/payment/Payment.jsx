@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Payment.css";
 import axios from "axios";
+import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -15,6 +16,8 @@ const Payment = () => {
   // overlay screen
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [paymentSuccess, setPaymentSuccess] = useState(false); // New state for payment success
   const [confirmationMessage, setConfirmationMessage] = useState(""); // New state for the confirmation message
@@ -43,6 +46,7 @@ const Payment = () => {
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     setPaymentSuccess(true);
+    setIsLoading(true)
 
     // setConfirmationMessage(`
     //   Your payment was made via ${
@@ -62,33 +66,45 @@ const Payment = () => {
         { selectedSeats, userId },
         { withCredentials: true }
       );
-      setAlertMessage(
-        <div className="payment-success-container">
-          <h1>Successful Payment</h1>
-          <p>
-            Thank you for booking with us. <br /> <br />
-            You will receive a confirmation message shortly.
-          </p>
-        </div>
-      );
-      setAlertFlag(true);
+
       setTimeout(() => {
-        setAlertFlag(false);
-        navigate(`/ticket-summary/${selectedSeats}`);
-      }, 2000);
-    } catch (error) {
-      if (error.response && error.response.status === 400) {
+        setIsLoading(false);
         setAlertMessage(
           <div className="payment-success-container">
-            <h1>Payment Failed</h1>
+            <h1>Successful Payment</h1>
             <p>
-              The selected seats are already booked. <br /> <br />
-              Please try again with different seats.
+              Thank you for booking with us. <br /> <br />
+              You will receive a confirmation message shortly.
             </p>
           </div>
         );
         setAlertFlag(true);
-        setTimeout(() =>{ setAlertFlag(false); navigate(-1)}, 2000);
+      }, 1000);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+        navigate(`/ticket-summary/${selectedSeats}`);
+      }, 2200);
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage(
+            <div className="payment-success-container">
+              <h1>Payment Failed</h1>
+              <p>
+                The selected seats are already booked. <br /> <br />
+                Please try again with different seats.
+              </p>
+            </div>
+          );
+          setAlertFlag(true);
+        }, 1000);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+          navigate(-1);
+        }, 2200);
       } else {
         console.error("An error occurred:", error);
       }
@@ -137,7 +153,6 @@ const Payment = () => {
             </label>
           </div>
 
-  
           {/* {paymentDetails.paymentMethod === "visa" && (
             <>
               <input
@@ -186,6 +201,7 @@ const Payment = () => {
             Pay Now
           </button>
         </form>
+        {isLoading && <LoadingScreen />}
 
         {alertFlag && (
           <Overlay

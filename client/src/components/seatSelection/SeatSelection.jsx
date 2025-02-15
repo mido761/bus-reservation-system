@@ -5,6 +5,7 @@ import "./SeatSelection.css";
 import axios from "axios";
 import Overlay from "../overlayScreen/overlay";
 import LoadingPage from "../loadingPage/loadingPage";
+import LoadingScreen from "../loadingScreen/loadingScreen";
 import Pusher from "pusher-js"; // Import Pusher
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -22,6 +23,7 @@ const SeatSelection = () => {
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
+  const [isLoading, setIsLoading] = useState(false);
 
   // Fetch bus details and subscribe to Pusher updates
   useEffect(() => {
@@ -109,7 +111,6 @@ const SeatSelection = () => {
         return;
       }
 
-
       setSelectedSeats((prev) => {
         const newSeats = [...prev];
         if (!isBooked && !isCurrentUserSeat) {
@@ -133,18 +134,25 @@ const SeatSelection = () => {
   };
 
   const handleConfirmSeats = async (type) => {
+    setIsLoading(true);
+
     if (selectedSeats.length > 0 && type === "book") {
       try {
         const response = await axios.post(
           `${backEndUrl}/seatselection/reserve/${busId}`,
           { data: { selectedSeats, userId }, withCredentials: true }
         );
-        setAlertMessage("Successfully reserved seats");
-        setAlertFlag(true);
+
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage("Successfully reserved seats");
+          setAlertFlag(true);
+        }, 1000);
+
         setTimeout(() => {
           setAlertFlag(false);
           navigate(`/payment/${selectedSeats}`);
-        }, 2000);
+        }, 2200);
       } catch (error) {
         if (error.response && error.response.status === 400) {
           setAlertMessage(
@@ -157,12 +165,35 @@ const SeatSelection = () => {
             </div>
           );
           setSelectedSeats([]);
-          setAlertFlag(true);
+
+          setTimeout(() => {
+            setIsLoading(false);
+            setAlertMessage(
+              <div className="payment-success-container">
+                <h1>Payment Failed</h1>
+                <p>
+                  The selected seats are already Reserved. <br /> <br />
+                  Please try again with different seats.
+                </p>
+              </div>
+            );
+            setAlertFlag(true);
+          }, 1000);
+
           setTimeout(() => {
             setAlertFlag(false);
-          }, 2000);
+          }, 2200);
         } else if (error.response && error.response.status === 302) {
+          setTimeout(() => {
+            setIsLoading(false);
+            setAlertMessage("Successfully reserved seats");
+            setAlertFlag(true);
+          }, 1000);
+
+          setTimeout(() => {
+            setAlertFlag(false);
             navigate(`/payment/${selectedSeats}`);
+          }, 2500);
         } else {
           console.error("An error occurred:", error);
         }
@@ -174,21 +205,30 @@ const SeatSelection = () => {
       );
       setBusDetails(response.data.updatedBus);
       setSelectedSeats([]);
-      setAlertMessage("Seats canceled successfully");
-      setAlertFlag(true);
+
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage("Seats canceled successfully");
+        setAlertFlag(true);
+      }, 1000);
+
       setTimeout(() => {
         setAlertFlag(false);
-      }, 2000);
+      }, 2200);
     } else {
-      setAlertMessage("Select at least one seat");
-      setAlertFlag(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage("Select at least one seat");
+        setAlertFlag(true);
+      }, 1000);
+
       setTimeout(() => {
         setAlertFlag(false);
-      }, 2000);
+      }, 2200);
     }
   };
 
-  if (loading) return <LoadingPage/>;
+  if (loading) return <LoadingPage />;
   if (error) return <p>{error}</p>;
 
   return (
@@ -324,6 +364,9 @@ const SeatSelection = () => {
           </div>
         </div>
       </div>
+
+      {isLoading && <LoadingScreen />}
+
       <Overlay
         alertFlag={alertFlag}
         alertMessage={alertMessage}

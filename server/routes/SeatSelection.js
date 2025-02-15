@@ -85,7 +85,7 @@ router.post("/:busId", async (req, res) => {
         { $push: { "bookedBuses.buses": busId } }
       );
     }
-    console.log(updatedBus.seats.availableSeats);
+
     // Check if the bus needs to be duplicated
     if (updatedBus.seats.availableSeats === 0 ) {
       try {

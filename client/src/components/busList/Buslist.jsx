@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Buslist.css";
 import LoadingPage from "../loadingPage/loadingPage";
+import LoadingComponent from "../loadingComponent/loadingComponent";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const BusList = () => {
@@ -25,6 +27,7 @@ const BusList = () => {
 
   // Fetch users for a given bus
   const fetchUsersForBus = async (bus) => {
+    setIsLoading(true);
     try {
       const bookedSeats = bus.seats.bookedSeats.filter((seat) => seat !== "0");
 
@@ -48,6 +51,10 @@ const BusList = () => {
       }));
     } catch (error) {
       console.error("Error fetching User Details.");
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
     }
   };
 
@@ -90,7 +97,7 @@ const BusList = () => {
               </p>
               <div className="booked-users">
                 <h3>Seats Booked By:</h3>
-                {usersByBus[bus._id]?.length > 0 ? (
+                {usersByBus[bus._id]?.length > 0 && !isLoading ? (
                   <ul>
                     {usersByBus[bus._id].map((user, index) => (
                       <p key={index} className="booked-user">
@@ -100,7 +107,7 @@ const BusList = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p>No users booked</p>
+                  <LoadingComponent />
                 )}
               </div>
 
