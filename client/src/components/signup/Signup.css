@@ -103,3 +103,42 @@
     font-size: 14px;
   }
 }
+
+/* Eye Toggle Style for Password */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 30px; /* Make space for the eye icon */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #555555;
+}
+
+.password-toggle:hover {
+  color: #b71c1c; /* Red on hover */
+}
+
+/* Error Message Styling */
+.error {
+  color: #d32f2f; /* Red color for error messages */
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.error::before {
+  content: "⚠️ "; /* Optional: Adding a small warning icon */
+  font-size: 14px;
+}
+

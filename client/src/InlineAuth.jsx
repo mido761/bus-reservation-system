@@ -17,7 +17,6 @@ const InlineAuth = () => {
           withCredentials: true,
         });
 
-        console.log(response.data);
 
         if (response.data.authenticated) {
           setAuth({

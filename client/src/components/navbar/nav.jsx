@@ -75,7 +75,6 @@ function Navbar() {
   // Add event listener to detect click outside when the component mounts
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
-    console.log(isAuthenticated, isAuthorized)
 
     // Cleanup event listener when the component unmounts
     return () => {

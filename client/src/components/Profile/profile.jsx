@@ -51,7 +51,6 @@ const UserProfile = () => {
         const userId = req_user.data.userId;
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
-        console.log(res.data)
       } catch (err) {
         console.error("Error fetching user details:", err);
         setError("Failed to fetch user details.");

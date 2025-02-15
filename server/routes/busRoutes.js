@@ -92,7 +92,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", middleware.isAuthenticated, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const response = await Bus.findById(req.params.id);
     res.status(200).json(response);

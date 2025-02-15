@@ -41,7 +41,6 @@ const Dashboard = () => {
       for (let i = 0; i < busIds.length; i++) {
         const busDetails = await axios.get(`${backEndUrl}/buses/${busIds[i]}`);
         buses.push(busDetails.data);
-        console.log(busDetails.data);
       }
 
       setBusDetails((prevBuses) => [...prevBuses, ...buses]);
@@ -61,10 +60,7 @@ const Dashboard = () => {
 
     fetchUsers(); // Fetch user and bus details only once
   }, []);
-
-  useEffect(() => {
-    console.log(busDetails);
-  }, [busDetails]);
+ 
 
   const handleBusSelect = (bus) => {
     navigate(`/seat-selection/${bus._id}`); //to get the bus id in the seat selection

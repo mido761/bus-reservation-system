@@ -18,10 +18,50 @@ function Signup() {
   const [alertMessage, setAlertMessage] = useState("");
   const [verificationFlag, setVerificationFlag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
+    }
+  };
+
+  const handleValidation = (e) => {
+    const validatePhoneNumber = (number) => {
+      // Ensure phone number starts with "01" and is exactly 11 digits long
+      return /^\d{11}$/.test(number) && number.startsWith("01");
+    };
+
+    const validateEmail = (email) =>
+      /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+    const validatePassword = (password) =>
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+        password
+      );
+
+    // const passwordErrorMessage =
+    //   "Password must meet the following requirements:\n" +
+    //   "- At least 8 characters long\n" +
+    //   "- Include at least one uppercase\n" +
+    //   "- Include at least one lowercase letter\n" +
+    //   "- Include at least one number\n" +
+    //   "- Include at least one special character";
+
+    let validationErrors = {};
+    if (!validatePhoneNumber(phoneNumber))
+      validationErrors.phoneNumber =
+        "Phone number must start with '01' and be exactly 11 digits.";
+    if (!validateEmail(email))
+      validationErrors.email =
+        "Email must be a valid Gmail address (e.g., example@gmail.com).";
+    if (!validatePassword(password))
+      // validationErrors.password = passwordErrorMessage;
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setIsLoading(false);
+      return;
     }
   };
 
@@ -30,6 +70,9 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
+
+    // Validate Inputs
 
     try {
       const result = await axios.post(`${backEndUrl}/api/register`, {
@@ -70,7 +113,7 @@ function Signup() {
           setAlertFlag(false);
         }, 2200);
         console.error("Email already exists", err.status);
-      }else {
+      } else {
         setTimeout(() => {
           setIsLoading(false);
           setAlertMessage("An error accured");
@@ -93,45 +136,70 @@ function Signup() {
       {!verificationFlag ? (
         <div className="register-container">
           <h2>Register for Bus Reservation</h2>
-          <form
-            onSubmit={handleSubmit}
-            onKeyDown={(e) => handleKeyDown(e)}
-          >
+          <form onSubmit={handleSubmit} onKeyDown={(e) => handleKeyDown(e)}>
             <label htmlFor="username">Username</label>
             <input
               type="text"
               id="username"
               name="username"
+              value={name}
               required
               onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => handleValidation(e)}
             />
 
             <label htmlFor="phoneNumber">Phone Number</label>
             <input
-              type="number"
+              type="tel"
               id="phoneNumber"
               name="phoneNumber"
+              value={phoneNumber}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, "");
+                setPhoneNumber(value);
+              }}
+              onInput={(e) =>
+                (e.target.value = e.target.value.replace(/\D/g, ""))
+              }
+              maxLength="11"
               required
-              onChange={(e) => setPhoneNumber(e.target.value)}
             />
+            {errors.phoneNumber && (
+              <p className="error">{errors.phoneNumber}</p>
+            )}
 
             <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
               name="email"
+              value={email}
               required
               onChange={(e) => setEmail(e.target.value)}
             />
+            {errors.email && <p className="error">{errors.email}</p>}
 
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="password-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                required
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <span
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "👁️" : "👁️‍🗨️"}
+              </span>
+            </div>
+            {errors.password && (
+              <p className="error" style={{ whiteSpace: "pre-line" }}>
+                {errors.password}
+              </p>
+            )}
 
             <button type="submit">Register</button>
           </form>

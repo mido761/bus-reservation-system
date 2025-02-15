@@ -15,7 +15,6 @@ const TicketSummary = () => {
   const navigate = useNavigate();
   const { selectedSeats } = useParams();
   const seats = selectedSeats.split(",");
-  console.log(typeof selectedSeats);
   // const seatNumber = parseInt(selectedSeats) + 1;
 
   useEffect(() => {
@@ -24,13 +23,11 @@ const TicketSummary = () => {
         const req_user = await axios.get(`${backEndUrl}/auth`, {
           withCredentials: true,
         });
-        console.log(req_user);
         setUserId(req_user.data.userId);
         // const response = await axios.get(`http://localhost:${port}/seatselection/${busId}`);
         const response = await axios.get(
           `${backEndUrl}/seatselection/${req_user.data.busId}`
         );
-        console.log(response);
         setBusDetails(response.data);
       } catch (err) {
         console.error("Error fetching bus details:", err);
@@ -46,12 +43,10 @@ const TicketSummary = () => {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
-      console.log(req_user);
       setUserId(req_user.data.userId);
       const userId = req_user.data.userId;
       const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
       setUserDetails(res.data);
-      console.log("users", res.data);
     };
     fetchUsers();
     fetchBusDetails();

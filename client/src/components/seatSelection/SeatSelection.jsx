@@ -109,7 +109,6 @@ const SeatSelection = () => {
         return;
       }
 
-      console.log("isReserved", isReserved, isCurrentUserSeat);
 
       setSelectedSeats((prev) => {
         const newSeats = [...prev];

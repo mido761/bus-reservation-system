@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "./AddBus.css";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -24,41 +24,27 @@ const AddBus = () => {
   const [bookingTimeAllowance, setBookingTimeAllowance] = useState("");
   const [allowedNumberOfBags, setAllowedNumberOfBags] = useState("");
   const [next, setNext] = useState(false);
-  const [errors, setErrors] = useState({});
 
   // Get today's date in YYYY-MM-DD format to set as the minimum date
   const today = new Date().toISOString().split("T")[0];
 
-  // Time validation regex for 12-hour clock with AM/PM
-  const validateTime = (time) => {
-    const regex = /^(0[1-9]|1[0-2]):([0-5][0-9]) (AM|PM)$/;
-    return regex.test(time);
+  // Function to pre-fill form values
+  const handleQuickAdd = () => {
+    setAllSeats("50");
+    setMinNoPassengers("10");
+    setPrice("20");
+    setPickupLocation("Borg Al-Arab");
+    setArrivalLocation("Cairo");
+    setCancelTimeAllowance("2");
+    setBookingTimeAllowance("1");
+    setAllowedNumberOfBags("2");
+    setSchedule(today); // Keep this empty for manual entry
+    setDepartureTime("16:00"); // Keep this empty for manual entry
+    setArrivalTime("21:00"); // Keep this empty for manual entry
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    let formErrors = {};
-    let valid = true;
-
-    // Validate time inputs
-    if (!validateTime(departureTime)) {
-      formErrors.departureTime =
-        "Please enter a valid departure time (e.g., 03:00 PM).";
-      valid = false;
-    }
-
-    if (!validateTime(arrivalTime)) {
-      formErrors.arrivalTime =
-        "Please enter a valid arrival time (e.g., 05:00 AM).";
-      valid = false;
-    }
-
-    if (!valid) {
-      setErrors(formErrors);
-      return;
-    }
-
     try {
       await axios.post(`${backEndUrl}/buses`, {
         totalSeats,
@@ -84,124 +70,137 @@ const AddBus = () => {
     <div className="add-bus-page">
       <form onSubmit={handleSubmit} className="add-bus">
         <h1>Add a new Bus</h1>
-        {!next ? (
-          <div>
-            <label htmlFor="">Pickup location</label>
-            <select
-              value={pickupLocation}
-              onChange={(e) => setPickupLocation(e.target.value)}
-            >
-              <option value="">Select Pickup Location</option>
-              {locations.map((location) => (
-                <option key={location} value={location}>
-                  {location}
-                </option>
-              ))}
-            </select>
 
-            <label htmlFor="">Arrival location</label>
-            <select
-              value={arrivalLocation}
-              onChange={(e) => setArrivalLocation(e.target.value)}
-            >
-              <option value="">Select Arrival Location</option>
-              {locations.map((location) => (
-                <option key={location} value={location}>
-                  {location}
-                </option>
-              ))}
-            </select>
+        <div>
+          <label>Pickup location</label>
+          <select
+            value={pickupLocation}
+            onChange={(e) => setPickupLocation(e.target.value)}
+          >
+            <option value="">Select Pickup Location</option>
+            {locations.map((location) => (
+              <option key={location} value={location}>
+                {location}
+              </option>
+            ))}
+          </select>
 
-            <label>Departure time</label>
-            <input
-              type="text"
-              placeholder="e.g., 03:00 PM"
-              value={departureTime}
-              onChange={(e) => setDepartureTime(e.target.value)}
-            />
-            {errors.departureTime && (
-              <p className="error">{errors.departureTime}</p>
-            )}
+          <label>Arrival location</label>
+          <select
+            value={arrivalLocation}
+            onChange={(e) => setArrivalLocation(e.target.value)}
+          >
+            <option value="">Select Arrival Location</option>
+            {locations.map((location) => (
+              <option key={location} value={location}>
+                {location}
+              </option>
+            ))}
+          </select>
 
-            <label>Arrival time</label>
-            <input
-              type="text"
-              placeholder="e.g., 05:00 AM"
-              value={arrivalTime}
-              onChange={(e) => setArrivalTime(e.target.value)}
-            />
-            {errors.arrivalTime && (
-              <p className="error">{errors.arrivalTime}</p>
-            )}
+          <label>Departure time</label>
+          <input
+            type="time"
+            placeholder="Leaving time"
+            value={departureTime}
+            onChange={(e) => setDepartureTime(e.target.value)}
+          />
 
-            <label htmlFor="">Price</label>
-            <input
-              type="number"
-              placeholder="Trip Price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
+          <label>Arrival time</label>
+          <input
+            type="time"
+            placeholder="Arrival time"
+            value={arrivalTime}
+            onChange={(e) => setArrivalTime(e.target.value)}
+          />
 
-            <label htmlFor="">Min No. passengers</label>
-            <input
-              type="number"
-              placeholder="Minimium Number of passengers"
-              value={minNoPassengers}
-              onChange={(e) => setMinNoPassengers(e.target.value)}
-            />
-            <div className="next-btn" onClick={() => setNext(true)}>
-              →
-            </div>
-          </div>
-        ) : (
-          <div>
-            <label htmlFor="">Allowed Number Of Bags</label>
-            <input
-              type="number"
-              placeholder="Allowed Number Of Bags"
-              value={allowedNumberOfBags}
-              onChange={(e) => setAllowedNumberOfBags(e.target.value)}
-            />
+          <label>Price</label>
+          <input
+            type=""
+            placeholder="Trip Price"
+            maxLength={"3"}
+            max={10}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
 
-            <label htmlFor="">Booking Time Allowance</label>
-            <input
-              type="number"
-              placeholder="Booking Time Allowance"
-              value={bookingTimeAllowance}
-              onChange={(e) => setBookingTimeAllowance(e.target.value)}
-            />
+          {/* <label>Min No. passengers</label>
+            <input type="number" placeholder="Minimum Number of passengers" value={minNoPassengers} onChange={(e) => setMinNoPassengers(e.target.value)} /> */}
+          <label>Schedule</label>
+          <input
+            type="date"
+            placeholder="Schedule"
+            value={schedule}
+            onChange={(e) => setSchedule(e.target.value)}
+          />
 
-            <label htmlFor="">Cancel Time Allowance</label>
-            <input
-              type="number"
-              placeholder="Cancel Time Allowance"
-              value={cancelTimeAllowance}
-              onChange={(e) => setCancelTimeAllowance(e.target.value)}
-            />
-
-            <label htmlFor="">Total Seats</label>
-            <input
-              type="number"
-              placeholder="Total Number of Seats"
-              value={totalSeats}
-              onChange={(e) => setAllSeats(e.target.value)}
-            />
-
-            <label htmlFor="">Schedule</label>
-            <input
-              type="date"
-              placeholder="Schedule"
-              value={schedule}
-              onChange={(e) => setSchedule(e.target.value)}
-            />
+          <div className="form-buttons">
+            {/* <div className="next-btn" onClick={() => setNext(true)}>
+                →
+              </div> */}
             <div className="form-navigation">
-              <div className="back-btn" onClick={() => setNext(false)}>
-                ←
-              </div>
-              <button type="submit">Add Bus</button>
+              <button
+                type="button"
+                className="quick-add-btn"
+                onClick={handleQuickAdd}
+              >
+                Quick Add
+              </button>
+              <button type="submit" className="add-bus-btn">
+                Add Bus
+              </button>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* //   <div>
+        //     <label>Allowed Number Of Bags</label>
+        //     <input
+        //       type="number"
+        //       placeholder="Allowed Number Of Bags"
+        //       value={allowedNumberOfBags}
+        //       onChange={(e) => setAllowedNumberOfBags(e.target.value)}
+        //     />
+
+        //     <label>Booking Time Allowance</label>
+        //     <input
+        //       type="number"
+        //       placeholder="Booking Time Allowance"
+        //       value={bookingTimeAllowance}
+        //       onChange={(e) => setBookingTimeAllowance(e.target.value)}
+        //     />
+
+        //     <label>Cancel Time Allowance</label>
+        //     <input
+        //       type="number"
+        //       placeholder="Cancel Time Allowance"
+        //       value={cancelTimeAllowance}
+        //       onChange={(e) => setCancelTimeAllowance(e.target.value)}
+        //     />
+
+        //     <label>Total Seats</label>
+        //     <input
+        //       type="number"
+        //       placeholder="Total Number of Seats"
+        //       value={totalSeats}
+        //       onChange={(e) => setAllSeats(e.target.value)}
+        //     />
+
+        //     <label>Schedule</label>
+        //     <input
+        //       type="date"
+        //       placeholder="Schedule"
+        //       value={schedule}
+        //       onChange={(e) => setSchedule(e.target.value)}
+        //     />
+
+        //     <div className="form-navigation">
+        //       <div className="back-btn" onClick={() => setNext(false)}>
+        //         ←
+        //       </div>
+        //       <button type="submit">Add Bus</button>
+        //     </div>
+        //   </div> */}
       </form>
     </div>
   );

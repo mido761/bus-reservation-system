@@ -77,7 +77,6 @@ const Homepage = () => {
 
   // Handle selected bus
   const handleBusSelect = async (bus) => {
-    console.log(bus._id);
     const req_user = await axios.get(`${backEndUrl}/auth/${bus._id}`, {
       withCredentials: true,
     });
@@ -122,7 +121,6 @@ const Homepage = () => {
     try {
       const response = await axios.post(`${backEndUrl}/contact`, contactData);
       setResponseMessage("Message sent successfully");
-      console.log("Contact message saved:", response.data);
     } catch (error) {
       setResponseMessage("Failed to send message");
       console.error("Error sending contact message:", error);

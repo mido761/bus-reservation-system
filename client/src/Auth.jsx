@@ -16,7 +16,6 @@ const Auth = ({ requireAdmin = false, children , route="login"}) => {
         const response = await axios.get(`${backEndUrl}/auth`, {
           withCredentials: true,
         });
-        console.log(response.data)
 
         if (response.data.authenticated) {
           setIsAuthenticated(true);

@@ -57,9 +57,6 @@ const Payment = () => {
       const userId = req_user.data.userId;
       const busId = req_user.data.busId;
 
-      console.log("User ID:", userId, "Bus ID:", busId);
-      console.log("Selected Seats:", selectedSeats);
-
       const response = await axios.post(
         `${backEndUrl}/seatselection/${busId}`,
         { selectedSeats, userId },
