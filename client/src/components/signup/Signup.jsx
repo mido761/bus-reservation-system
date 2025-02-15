@@ -49,14 +49,18 @@ function Signup() {
     //   "- Include at least one special character";
 
     let validationErrors = {};
-    if (!validatePhoneNumber(phoneNumber))
-      validationErrors.phoneNumber =
-        "Phone number must start with '01' and be exactly 11 digits.";
-    if (!validateEmail(email))
-      validationErrors.email =
-        "Email must be a valid Gmail address (e.g., example@gmail.com).";
-    if (!validatePassword(password))
-      // validationErrors.password = passwordErrorMessage;
+    console.log(e.target.value.length);
+    if (!validatePhoneNumber(phoneNumber) && e.target.name === "phoneNumber") {
+      validationErrors.phoneNumber = "Enter a valid Phone number";
+    } else {
+      validationErrors.phoneNumber = "";
+    }
+    if (!validateEmail(email) && e.target.name === "email")
+      validationErrors.email = "Enter a valid Email";
+    if (!validatePassword(password) && e.target.name === "password");
+    validationErrors.password =
+      (e.target.value.length < 8 ? "At least 8 characters long:\n" : "") +
+      (e.target.value.length < 8 ? "Include at least one uppercase\n:\n" : "");
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -71,7 +75,7 @@ function Signup() {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
-
+    handleValidation(e);
     // Validate Inputs
 
     try {
@@ -158,6 +162,7 @@ function Signup() {
                 const value = e.target.value.replace(/\D/g, "");
                 setPhoneNumber(value);
               }}
+              onKeyDown={(e) => handleValidation(e)}
               onInput={(e) =>
                 (e.target.value = e.target.value.replace(/\D/g, ""))
               }
@@ -176,23 +181,25 @@ function Signup() {
               value={email}
               required
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => handleValidation(e)}
             />
             {errors.email && <p className="error">{errors.email}</p>}
 
             <label htmlFor="password">Password</label>
             <div className="password-container">
               <input
-                type={showPassword ? "text" : "password"}
+                type={"password"}
                 id="password"
                 name="password"
                 required
                 onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => handleValidation(e)}
               />
               <span
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? "👁️" : "👁️‍🗨️"}
+                {/* {showPassword ? "👁️" : "👁️‍🗨️"} */}
               </span>
             </div>
             {errors.password && (

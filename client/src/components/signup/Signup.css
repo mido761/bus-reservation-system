@@ -131,14 +131,7 @@
 /* Error Message Styling */
 .error {
   color: #d32f2f; /* Red color for error messages */
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: -10px;
-  margin-bottom: 15px;
+  font-size: 11px;
+  margin-top: -5px;
+  margin-left: 7px;
 }
-
-.error::before {
-  content: "⚠️ "; /* Optional: Adding a small warning icon */
-  font-size: 14px;
-}
-
