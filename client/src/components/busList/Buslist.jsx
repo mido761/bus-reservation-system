@@ -29,28 +29,31 @@ const BusList = () => {
   const fetchUsersForBus = async (bus) => {
     setIsLoading(true);
     try {
-      const bookedSeats = bus.seats.bookedSeats.filter((seat) => seat !== "0");
+      // Step 1: Count occurrences of each user ID
+      const userCounts = bus.seats.bookedSeats.reduce((acc, userId) => {
+        if (userId && userId !== "0") {
+          // Exclude invalid user IDs
+          acc[userId] = (acc[userId] || 0) + 1;
+        }
+        return acc;
+      }, {});
 
-      if (bookedSeats.length === 0) return; // No booked users, skip fetching
+      // Step 2: Fetch unique users
+      const uniqueUserIds = Object.keys(userCounts);
+      const response = await axios.post(`${backEndUrl}/user/profiles`, {
+        userIds: uniqueUserIds,
+      });
 
-      const responses = await Promise.all(
-        bookedSeats.map((userId) =>
-          axios.get(`${backEndUrl}/user/profile/${userId}`)
-        )
-      );
-
-      // Extract user details (name and phone number)
-      const userDetails = responses.map((response) => ({
-        name: response.data.name,
-        phoneNumber: response.data.phoneNumber, // Assuming the backend returns this field
+      // Step 3: Merge user data with counts
+      const usersWithCounts = response.data.map((user) => ({
+        ...user,
+        count: userCounts[user._id], // Add count of occurrences
       }));
 
-      setUsersByBus((prev) => ({
-        ...prev,
-        [bus._id]: userDetails, // Store an array of user objects
-      }));
+      setUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
+
     } catch (error) {
-      console.error("Error fetching User Details.");
+      console.error("Error fetching User Details.", error);
     } finally {
       setTimeout(() => {
         setIsLoading(false);
@@ -74,7 +77,6 @@ const BusList = () => {
       setBuses(buses.filter((bus) => bus._id !== id));
       alert("Bus deleted successfully!");
     } catch (err) {
-      console.log("Error deleting the bus", err);
       alert("Error deleting the bus.");
     }
   };
@@ -103,12 +105,14 @@ const BusList = () => {
                       <p key={index} className="booked-user">
                         <span className="user-name">{user.name}</span>
                         <span className="user-phone">({user.phoneNumber})</span>
+                        <span className="user-count"> &nbsp;x{user.count}</span>{" "}
+                        {/* Show count */}
                       </p>
                     ))}
                   </ul>
                 ) : isLoading ? (
                   <LoadingComponent />
-                ): (
+                ) : (
                   <p>No booked seats</p>
                 )}
               </div>

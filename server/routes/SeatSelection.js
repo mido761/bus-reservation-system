@@ -114,7 +114,6 @@ router.post("/:busId", async (req, res) => {
         });
 
         await newBus.save();
-        console.log("Bus duplicated successfully:", newBus);
       } catch (error) {
         console.error("Error duplicating bus:", error);
       }
