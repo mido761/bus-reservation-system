@@ -223,7 +223,7 @@ const Homepage = () => {
                   {bus.location.pickupLocation} <span>To </span>
                   {bus.location.arrivalLocation}
                 </p>
-                <p>Available Seats: {bus.seats.totalSeats}</p>
+                <p><span>{(bus.seats.availableSeats === 0) ? "Full": `Available Seats: ${bus.seats.availableSeats}`}</span></p>
                 <p>Price: {bus.price}</p>
               </div>
             ))

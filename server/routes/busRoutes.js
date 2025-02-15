@@ -54,6 +54,7 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     const newBus = new Bus({
       seats: {
         totalSeats: totalSeats,
+        availableSeats: totalSeats,
         // bookedSeats: new Array(totalSeats).fill(0)
         bookedSeats: Array.from({ length: totalSeats }, () => 0),
       },

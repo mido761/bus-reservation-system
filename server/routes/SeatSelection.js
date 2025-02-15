@@ -42,40 +42,82 @@ router.post("/:busId", async (req, res) => {
       return res.status(404).json({ message: "Bus not found" });
     }
 
-    for (let i = 0; i < seats.length; i++) {
-      // if(bus.seats.bookedSeats[(seats[i])] !== "0"){
-      //   return res.status(400).json(seats[i]);
-      // }
-      const fieldToUpdate = `seats.bookedSeats.${[seats[i]]}`;
+    // Check if any requested seats are already booked
+    const alreadyBooked = seats.filter(
+      (seat) => bus.seats.bookedSeats[seat] !== "0"
+    );
 
-      if (bus.seats.bookedSeats[seats[i]] !== "0") {
-        return res.status(400).json({
-          message: `Seat ${seats[i]} is already booked for bus ${busId}`,
-          seat: seats[i],
-          busId,
-        });
-      }
-      const updatedBus = await Bus.findByIdAndUpdate(
+    if (alreadyBooked.length > 0) {
+      return res.status(400).json({
+        message: `Seats already booked: ${alreadyBooked.join(", ")}`,
+        bookedSeats: alreadyBooked,
         busId,
-        { $set: { [fieldToUpdate]: userId } },
-        { new: true }
-      );
-
-      if (updatedBus) {
-        pusher.trigger("bus-channel", "seat-booked", {
-          busId: busId,
-          selectedSeats: seats,
-          userId: userId,
-        });
-      }
+      });
     }
 
-    if (user.bookedBuses.buses.indexOf(busId) === -1) {
-      const userBookedBuses = await User.updateOne(
+    let updateQuery = {};
+    seats.forEach((seat) => {
+      updateQuery[`seats.bookedSeats.${seat}`] = userId;
+    });
+
+    const updatedBus = await Bus.findByIdAndUpdate(
+      busId,
+      {
+        $set: updateQuery, // Assign userId to the correct seat positions
+        $inc: { "seats.availableSeats": -seats.length }
+      },
+      { new: true }
+    );
+
+    // Trigger Pusher event
+    if (updatedBus) {
+      pusher.trigger("bus-channel", "seat-booked", {
+        busId: busId,
+        selectedSeats: seats,
+        userId: userId,
+      });
+    }
+
+    // Update user's booked buses if not already booked
+    if (!user.bookedBuses.buses.includes(busId)) {
+      await User.updateOne(
         { _id: userId },
-        { $push: { "bookedBuses.buses": busId } },
-        { new: true }
+        { $push: { "bookedBuses.buses": busId } }
       );
+    }
+    console.log(updatedBus.seats.availableSeats);
+    // Check if the bus needs to be duplicated
+    if (updatedBus.seats.availableSeats === 0 ) {
+      try {
+        const newBus = new Bus({
+          seats: {
+            totalSeats: updatedBus.seats.totalSeats,
+            availableSeats: updatedBus.seats.totalSeats,
+            bookedSeats: Array.from({ length: updatedBus.seats.totalSeats }, () => 0),
+          },
+          schedule: updatedBus.schedule,
+          price: updatedBus.price,
+          minNoPassengers: updatedBus.minNoPassengers,
+          location: {
+            pickupLocation: updatedBus.location.pickupLocation,
+            arrivalLocation: updatedBus.location.arrivalLocation,
+          },
+          time: {
+            departureTime: updatedBus.time.departureTime,
+            arrivalTime: updatedBus.time.arrivalTime,
+          },
+          allowance: {
+            cancelTimeAllowance: updatedBus.allowance.cancelTimeAllowance,
+            bookingTimeAllowance: updatedBus.allowance.bookingTimeAllowance,
+          },
+          allowedNumberOfBags: updatedBus.allowedNumberOfBags,
+        });
+
+        await newBus.save();
+        console.log("Bus duplicated successfully:", newBus);
+      } catch (error) {
+        console.error("Error duplicating bus:", error);
+      }
     }
 
     res.status(200).json({ message: "Seat booked successfully" });
@@ -104,10 +146,14 @@ router.post("/reserve/:busId", async (req, res) => {
         bus.seats.reservedSeats.some((r) => r.seatNumber === String(seat))
     );
 
-    const userBooked = bus.seats.reservedSeats.filter((seat) => seat.reservedBy === userId).map((seat) => seat.seatNumber);
-    const allSeatsReserved = selectedSeats.every((seat) => userBooked.includes(String(seat)));
+    const userBooked = bus.seats.reservedSeats
+      .filter((seat) => seat.reservedBy === userId)
+      .map((seat) => seat.seatNumber);
+    const allSeatsReserved = selectedSeats.every((seat) =>
+      userBooked.includes(String(seat))
+    );
 
-    if (alreadyReservedOrBooked.length > 0 && !(allSeatsReserved)) {
+    if (alreadyReservedOrBooked.length > 0 && !allSeatsReserved) {
       return res.status(400).json({
         message: "Some seats are already reserved or booked",
         seats: alreadyReservedOrBooked,
@@ -171,21 +217,24 @@ router.delete("/:busId", async (req, res) => {
       return acc;
     }, {});
 
-
     const updatedBus = await Bus.findByIdAndUpdate(
       busId,
       {
         $set: seatUpdates,
         $pull: {
-          "seats.reservedSeats": { seatNumber:{$in: selectedSeats}, reservedBy: userId },
+          "seats.reservedSeats": {
+            seatNumber: { $in: selectedSeats },
+            reservedBy: userId,
+          },
         },
+        $inc: { "seats.availableSeats": selectedSeats.length },
       },
       { new: true }
     );
 
     if (updatedBus) {
       pusher.trigger("bus-channel", "seat-canceled", {
-        updatedBus
+        updatedBus,
       });
       // const busSeats = bus.seats.bookedSeats;
       // const userHasBookedSeats = busSeats.some((seat) => seat === userId);
@@ -229,7 +278,7 @@ router.delete("/:busId", async (req, res) => {
     }
   } catch (err) {
     console.error("There was an error canceling the seat: ", err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", err});
   }
 });
 
