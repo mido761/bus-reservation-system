@@ -49,7 +49,7 @@ function Signup() {
     //   "- Include at least one special character";
 
     let validationErrors = {};
-    console.log(e.target.value.length);
+    // console.log(e.target.value.length);
     if (!validatePhoneNumber(phoneNumber) && e.target.name === "phoneNumber") {
       validationErrors.phoneNumber = "Enter a valid Phone number";
     } else {
@@ -59,8 +59,11 @@ function Signup() {
       validationErrors.email = "Enter a valid Email";
     if (!validatePassword(password) && e.target.name === "password");
     validationErrors.password =
-      (e.target.value.length < 8 ? "At least 8 characters long:\n" : "") +
-      (e.target.value.length < 8 ? "Include at least one uppercase\n:\n" : "");
+      (!/^\d{7,}$/.test(
+        password
+      ) ? "At least 8 characters long:\n" : "") 
+      // +
+      // (e.target.value.length < 8 ? "Include at least one uppercase\n:\n" : "");
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
