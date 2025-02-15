@@ -32,7 +32,7 @@ const AddBus = () => {
   const handleQuickAdd = () => {
     setAllSeats(15);
     setMinNoPassengers(11);
-    setPrice(120);
+    setPrice(110);
     setPickupLocation("Borg Al-Arab");
     setArrivalLocation("Cairo");
     setCancelTimeAllowance(2);
