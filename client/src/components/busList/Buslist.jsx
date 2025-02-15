@@ -97,7 +97,7 @@ const BusList = () => {
               </p>
               <div className="booked-users">
                 <h3>Seats Booked By:</h3>
-                {usersByBus[bus._id]?.length > 0 && !isLoading ? (
+                {usersByBus[bus._id]?.length > 0 ? (
                   <ul>
                     {usersByBus[bus._id].map((user, index) => (
                       <p key={index} className="booked-user">
