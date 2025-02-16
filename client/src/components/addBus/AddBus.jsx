@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./AddBus.css";
+import LoadingScreen from "../loadingScreen/loadingScreen";
+import Overlay from "../overlayScreen/overlay";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const locations = [
@@ -24,7 +27,10 @@ const AddBus = () => {
   const [bookingTimeAllowance, setBookingTimeAllowance] = useState("");
   const [allowedNumberOfBags, setAllowedNumberOfBags] = useState("");
   const [next, setNext] = useState(false);
+  const [alertFlag, setAlertFlag] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
+  const [isLoading, setIsLoading] = useState(false);
   // Get today's date in YYYY-MM-DD format to set as the minimum date
   const today = new Date().toISOString().split("T")[0];
 
@@ -44,6 +50,8 @@ const AddBus = () => {
   };
 
   const handleSubmit = async (e) => {
+    setIsLoading(true);
+
     e.preventDefault();
     try {
       await axios.post(`${backEndUrl}/buses`, {
@@ -59,10 +67,26 @@ const AddBus = () => {
         bookingTimeAllowance,
         allowedNumberOfBags,
       });
-      alert("Bus added successfully");
+
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage("Bus added successfully");
+        setAlertFlag(true);
+      }, 1000);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     } catch (err) {
-      alert(err.response.data.message);
-      console.log(err);
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage(err.response.data.message);
+        setAlertFlag(true);
+      }, 1000);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     }
   };
 
@@ -139,11 +163,7 @@ const AddBus = () => {
                 →
               </div> */}
             <div className="form-navigation">
-              <button
-                type="button"
-                id="quick-add-btn"
-                onClick={handleQuickAdd}
-              >
+              <button type="button" id="quick-add-btn" onClick={handleQuickAdd}>
                 Quick Add
               </button>
               <button type="submit" className="add-bus-btn">
@@ -202,6 +222,12 @@ const AddBus = () => {
         //     </div>
         //   </div> */}
       </form>
+      {isLoading && <LoadingScreen />}
+      <Overlay
+        alertFlag={alertFlag}
+        alertMessage={alertMessage}
+        setAlertFlag={setAlertFlag}
+      />
     </div>
   );
 };

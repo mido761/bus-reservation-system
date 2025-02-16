@@ -3,6 +3,8 @@ import axios from "axios";
 import "./Buslist.css";
 import LoadingPage from "../loadingPage/loadingPage";
 import LoadingComponent from "../loadingComponent/loadingComponent";
+import LoadingScreen from "../loadingScreen/loadingScreen";
+import Overlay from "../overlayScreen/overlay";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -10,6 +12,8 @@ const BusList = () => {
   const [buses, setBuses] = useState([]);
   const [usersByBus, setUsersByBus] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [alertFlag, setAlertFlag] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   // Fetch all buses
   const fetchBuses = async () => {
@@ -51,7 +55,6 @@ const BusList = () => {
       }));
 
       setUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
-
     } catch (error) {
       console.error("Error fetching User Details.", error);
     } finally {
@@ -72,12 +75,30 @@ const BusList = () => {
 
   // Handle bus deletion
   const handleDel = async (id) => {
+    setIsLoading(true);
     try {
       await axios.delete(`${backEndUrl}/buses/${id}`);
       setBuses(buses.filter((bus) => bus._id !== id));
-      alert("Bus deleted successfully!");
+
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage("Bus deleted successfully!");
+        setAlertFlag(true);
+      }, 1000);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     } catch (err) {
-      alert("Error deleting the bus.");
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage("⚠️ Error deleting the bus");
+        setAlertFlag(true);
+      }, 1000);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     }
   };
 
@@ -105,7 +126,10 @@ const BusList = () => {
                       <p key={index} className="booked-user">
                         <span className="user-name">{user.name}</span>
                         <span className="user-phone">({user.phoneNumber})</span>
-                        <span className="user-count"> &nbsp;x{user.count}</span>{" "}
+                        <span className="user-count">
+                          {" "}
+                          &nbsp;x{user.count}
+                        </span>{" "}
                         {/* Show count */}
                       </p>
                     ))}
@@ -132,6 +156,13 @@ const BusList = () => {
           <p>No buses found.</p>
         )}
       </div>
+      {isLoading && <LoadingScreen />}
+
+      <Overlay
+        alertFlag={alertFlag}
+        alertMessage={alertMessage}
+        setAlertFlag={setAlertFlag}
+      />
     </div>
   );
 };
