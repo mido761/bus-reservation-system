@@ -14,21 +14,21 @@
   max-width: 500px;
   margin: auto;
   padding: 25px;
-  background-color: #fff;
+  background-color: var(--background-color);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--shadow-color);
   text-align: center;
   transition: 0.3s ease-in-out;
 }
 
 .payment-box-container:hover {
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 15px rgba(184, 134, 11, 0.3); /* Gold shadow for premium effect */
 }
 
 /* Heading */
 .payment-box-container h1 {
   font-size: 1.8rem;
-  color: #8b0000;
+  color: var(--primary-color);
   font-weight: bold;
   margin-bottom: 15px;
 }
@@ -57,7 +57,7 @@
 /* Input Fields */
 .payment-form input {
   padding: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   font-size: 16px;
   width: 100%;
@@ -65,9 +65,9 @@
 }
 
 .payment-form input:focus {
-  border-color: #8b0000;
+  border-color: var(--primary-color);
   outline: none;
-  box-shadow: 0 0 5px rgba(139, 0, 0, 0.2);
+  box-shadow: 0 0 5px rgba(212, 175, 55, 0.4); /* Golden glow */
 }
 
 /* Hide Number Input Arrows */
@@ -85,8 +85,8 @@
 /* CTA Button */
 .cta-button {
   padding: 15px;
-  background: linear-gradient(135deg, #8b0000, #a60000);
-  color: white;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  color: var(--button-text);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -97,7 +97,7 @@
 }
 
 .cta-button:hover {
-  background: linear-gradient(135deg, #a60000, #c40000);
+  background: linear-gradient(135deg, var(--secondary-hover), #ffd700); /* Brighter Gold */
   transform: scale(1.05);
 }
 
@@ -106,13 +106,13 @@
   text-align: center;
   margin-top: 20px;
   font-weight: 700;
-  color: #333;
+  color: var(--text-color);
 }
 
 /* Payment Success Container */
 .payment-success-container {
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
+  background-color: var(--background-color);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -122,11 +122,12 @@
   padding: 15px;
   position: relative;
   width: 100%;
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 /* Success Title */
 .payment-success-container h1 {
-  color: #8e3838;
+  color: var(--primary-color);
   font-size: 1.8rem;
   margin-bottom: 20px;
   font-weight: bold;
@@ -134,7 +135,7 @@
 
 /* Success Message */
 .payment-success-container p {
-  color: #555;
+  color: var(--text-color);
   font-size: 1.2rem;
   margin-bottom: 15px;
 }

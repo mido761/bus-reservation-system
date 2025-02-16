@@ -87,6 +87,8 @@ function Navbar() {
     location.pathname === "/register" ? null : (
     <nav ref={navbarRef} className="navbar">
       <h1 className="company-title" onClick={() => navigate("/")}>
+      <img src="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico" href="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico" className="logo"/>
+        
         VIP Travel
       </h1>
       <div
