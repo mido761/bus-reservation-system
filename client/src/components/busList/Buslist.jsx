@@ -12,6 +12,7 @@ const BusList = () => {
   const [buses, setBuses] = useState([]);
   const [usersByBus, setUsersByBus] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -75,13 +76,13 @@ const BusList = () => {
 
   // Handle bus deletion
   const handleDel = async (id) => {
-    setIsLoading(true);
+    setLoading(true);
     try {
       await axios.delete(`${backEndUrl}/buses/${id}`);
       setBuses(buses.filter((bus) => bus._id !== id));
 
       setTimeout(() => {
-        setIsLoading(false);
+        setLoading(false);
         setAlertMessage("Bus deleted successfully!");
         setAlertFlag(true);
       }, 1000);
@@ -91,7 +92,7 @@ const BusList = () => {
       }, 2200);
     } catch (err) {
       setTimeout(() => {
-        setIsLoading(false);
+        setLoading(false);
         setAlertMessage("⚠️ Error deleting the bus");
         setAlertFlag(true);
       }, 1000);
@@ -156,7 +157,7 @@ const BusList = () => {
           <p>No buses found.</p>
         )}
       </div>
-      {isLoading && <LoadingScreen />}
+      {loading && <LoadingScreen />}
 
       <Overlay
         alertFlag={alertFlag}
