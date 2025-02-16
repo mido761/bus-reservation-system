@@ -319,24 +319,7 @@ const SeatSelection = () => {
           </div>
 
           <div className="btn-container">
-            <CSSTransition
-              in={
-                selectedSeats.length > 0 &&
-                selectedSeats.every(
-                  (seat) => busDetails.seats.bookedSeats[seat] === "0"
-                )
-              }
-              timeout={300}
-              classNames="confirm-btn-transition"
-              unmountOnExit
-            >
-              <button
-                className="confirm-btn"
-                onClick={() => handleConfirmSeats("book")}
-              >
-                Proceed to payment
-              </button>
-            </CSSTransition>
+
             <CSSTransition
               in={
                 selectedSeats.length > 0 &&
@@ -358,7 +341,26 @@ const SeatSelection = () => {
                 className="confirm-btn"
                 onClick={() => handleConfirmSeats("cancel")}
               >
-                Cancel Booking
+                Cancel
+              </button>
+            </CSSTransition>
+
+            <CSSTransition
+              in={
+                selectedSeats.length > 0 &&
+                selectedSeats.every(
+                  (seat) => busDetails.seats.bookedSeats[seat] === "0"
+                )
+              }
+              timeout={300}
+              classNames="confirm-btn-transition"
+              unmountOnExit
+            >
+              <button
+                className="confirm-btn"
+                onClick={() => handleConfirmSeats("book")}
+              >
+                Proceed
               </button>
             </CSSTransition>
           </div>

@@ -5,29 +5,30 @@
   align-items: center;
   width: 100%;
   height: 86vh;
-  background-color: #f8f8f8;
+  background-color: var(--background-color);
   margin: 0;
-  padding: 0;
+  padding: 30px;
   box-sizing: border-box;
   overflow: hidden;
-  padding: 30px;
   user-select: none;
 }
 
+/* Summary Container */
 .summary-container {
-  background-color: #ffffff;
+  background-color: var(--form-background);
   border-radius: 16px;
   padding: 25px 40px;
   max-width: 90vw;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 24px var(--shadow-color);
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin: auto;
-  overflow: scroll;
+  overflow: auto;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   align-items: start;
   column-gap: 10px;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
 .summary-container .section {
@@ -37,7 +38,7 @@
 }
 
 .summary-container h1 {
-  color: #920000;
+  color: var(--primary-color);
   font-size: 2.8rem;
   font-weight: 700;
   margin-bottom: 25px;
@@ -47,19 +48,20 @@
 
 .summary-container .section-title {
   font-size: 1.6rem;
-  color: #333;
+  color: var(--text-color);
   font-weight: 600;
   margin-bottom: 12px;
   text-transform: uppercase;
 }
 
 .summary-container p {
-  color: #555;
+  color: var(--text-color);
   font-size: 1.2rem;
   line-height: 1.6;
   text-align: center;
 }
 
+/* Ticket Details */
 .summary-container .details {
   font-size: 10px;
   width: 100%;
@@ -91,11 +93,10 @@
   font-size: 0.8rem;
   padding: 10px;
   display: block;
-  color: #920000;
+  color: var(--primary-color);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  height: fit-content;
 }
 
 .summary-container .details p {
@@ -106,12 +107,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  text-align: center;
 }
 
+/* CTA Button */
 .summary-container .cta-button {
-  background-color: #920000;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: var(--button-text);
   padding: 16px 35px;
   font-size: 1.3rem;
   border: none;
@@ -121,30 +122,30 @@
   width: 100%;
   max-width: 250px;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
 }
 
 .summary-container .cta-button:hover {
-  background-color: #920000;
+  background-color: var(--primary-hover);
   transform: translateY(-4px);
 }
 
+/* Footer */
 .summary-footer {
   font-size: 1rem;
-  color: #888;
+  color: var(--text-color);
 }
 
 .summary-footer p {
   font-size: 1rem;
-  color: #888;
+  color: var(--text-color);
   margin-top: 20px;
   line-height: 1.5;
   text-align: center;
 }
 
 .summary-footer a {
-  color: #920000;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: bold;
 }
@@ -153,6 +154,7 @@
   text-decoration: underline;
 }
 
+/* Responsive Design */
 @media (max-width: 540px) {
   .summary-container {
     max-width: 100%;
@@ -169,6 +171,7 @@
   }
 }
 
+/* Fade In Animation */
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -178,8 +181,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.summary-container {
-  animation: fadeIn 0.8s ease-in-out;
 }

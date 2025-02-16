@@ -9,8 +9,8 @@
 .dashboard-card{
     display: flex;
     flex-direction: column;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: var(--background-color);
+    box-shadow: 0 4px 8px var(--box-shadow);
     padding: 20px;
     width: 200px;
     align-items: center;

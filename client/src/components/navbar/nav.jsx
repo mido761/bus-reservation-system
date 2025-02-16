@@ -87,7 +87,7 @@ function Navbar() {
     location.pathname === "/register" ? null : (
     <nav ref={navbarRef} className="navbar">
       <h1 className="company-title" onClick={() => navigate("/")}>
-        Bus Reservation
+        VIP Travel
       </h1>
       <div
         className={`ham-icon ${isOpen ? "active" : ""}`}

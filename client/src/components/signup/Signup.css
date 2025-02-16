@@ -7,16 +7,16 @@
   max-width: 400px;
   margin: 50px auto;
   padding: 30px;
-  background-color: #ffffff; /* White background for the container */
+  background-color: var(--form-background);
   border-radius: 8px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for professionalism */
-  color: #333333; /* Dark gray text for readability */
+  box-shadow: 0px 4px 12px var(--shadow-color);
+  color: var(--text-color);
   font-family: "Arial", sans-serif;
 }
 
 .register-container h2 {
   text-align: center;
-  color: #b71c1c; /* Dark red header color */
+  color: var(--primary-hover);
   margin-bottom: 20px;
   font-size: 24px;
   font-weight: bold;
@@ -31,30 +31,30 @@
 .register-container label {
   font-size: 14px;
   font-weight: bold;
-  color: #555555; /* Medium gray for labels */
+  color: var(--text-color);
 }
 
 .register-container input {
   padding: 12px;
   font-size: 14px;
-  border: 1px solid #cccccc; /* Light gray border for inputs */
+  border: 1px solid var(--input-border);
   border-radius: 6px;
-  background-color: #f9f9f9; /* Very light gray for input background */
-  color: #333333; /* Dark gray text */
+  background-color: var(--background-color);
+  color: var(--text-color);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .register-container input:focus {
   outline: none;
-  border-color: #b71c1c; /* Dark red focus border */
-  box-shadow: 0 0 5px rgba(183, 28, 28, 0.4); /* Subtle glow effect */
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 5px rgba(183, 28, 28, 0.4);
 }
 
 .register-container button {
   padding: 12px;
   font-size: 16px;
-  background-color: #b71c1c; /* Dark red button */
-  color: #ffffff; /* White text */
+  background-color: var(--secondary-hover);
+  color: var(--button-text);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -63,20 +63,20 @@
 }
 
 .register-container button:hover {
-  background-color: #ff5252; /* Lighter red on hover */
-  transform: scale(1.02); /* Slight scale effect on hover */
+  background-color: var(--primary-hover);
+  transform: scale(1.02);
 }
 
 .register-container button:active {
-  background-color: #a81919; /* Darker red on click */
-  transform: scale(0.98); /* Slight shrink on click */
+  background-color: var(--secondary-hover);
+  transform: scale(0.98);
 }
 
 .register-container a {
   text-align: center;
   display: block;
   margin-top: 15px;
-  color: #b71c1c; /* Dark red for links */
+  color: var(--primary-hover);
   text-decoration: none;
   font-size: 14px;
   font-weight: bold;
@@ -84,14 +84,13 @@
 }
 
 .register-container a:hover {
-  color: #ff5252; /* Lighter red on hover */
+  color: var(--secondary-hover);
 }
-
 
 @media (max-width: 500px) {
   .register-container {
     padding: 20px;
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); /* Adjust shadow for smaller screens */
+    box-shadow: 0px 2px 8px var(--shadow-color);
   }
 
   .register-container h2 {
@@ -121,16 +120,16 @@
   right: 10px;
   cursor: pointer;
   font-size: 18px;
-  color: #555555;
+  color: var(--text-color);
 }
 
 .password-toggle:hover {
-  color: #b71c1c; /* Red on hover */
+  color: var(--primary-hover);
 }
 
 /* Error Message Styling */
 .error {
-  color: #d32f2f; /* Red color for error messages */
+  color: #d32f2f;
   font-size: 11px;
   margin-top: -5px;
   margin-left: 7px;

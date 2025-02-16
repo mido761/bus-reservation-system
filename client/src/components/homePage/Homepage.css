@@ -1,10 +1,12 @@
+
+
 /* General styling */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 .home-page {
@@ -14,35 +16,9 @@ body {
   justify-content: center;
   width: 100%;
   min-height: 86vh;
-  flex-grow: 1; /* Push the footer to the bottom when there's little content */
+  flex-grow: 1;
   user-select: none;
 }
-
-
-/* #logout-btn{
-  height: 30px;
-  background-color: #ffffff;
-  color: #333;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-}
-#logout-btn:hover{
-  background-color: #000000;
-  color: #ffffff;
-}
-#profile-btn{
-  height: 30px;
-  background-color: #ffffff;
-  color: #333;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-}
-#profile-btn:hover{
-  background-color: #000000;
-  color: #ffffff;
-} */
 
 /* Search container */
 .search-container {
@@ -64,14 +40,13 @@ body {
 .bus-search-bar select,
 .bus-search-bar input[type="date"] {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
-  /* min-width: 200px; */
 }
 
 .bus-search-bar button {
-  background-color: #8b0000;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--button-text);
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
@@ -80,7 +55,7 @@ body {
 }
 
 .bus-search-bar button:hover {
-  background-color: #a60000;
+  background-color: var(--primary-hover);
 }
 
 /* Popular routes styling */
@@ -96,7 +71,7 @@ body {
 .popular-routes h3 {
   margin-bottom: 15px;
   font-size: 1.2rem;
-  color: #000000;
+  color: var(--text-color);
   display: none;
 }
 
@@ -108,10 +83,10 @@ body {
 }
 
 .route-card {
-  background-color: #8b0000; 
+  background-color: var(--card-background);
   min-width: 100px;
   height: 40px;
-  color: #fff;
+  color: var(--button-text);
   border-radius: 5px;
   font-size: 0.8rem;
   cursor: pointer;
@@ -123,19 +98,19 @@ body {
 }
 
 .route-card:hover {
-  background-color: #660000; 
+  background-color: var(--card-hover);
   transform: scale(1.05);
 }
 
 /* Contact Us bar styling */
 .contact-us-bar {
-  background-color: #a60000;
-  color: white;
+  background-color: var(--secondary-color);
+  color: var(--button-text);
   text-align: center;
   padding: 3px;
   border-radius: 50%;
   position: fixed;
-  bottom: 20px; /* Position at the bottom-right corner */
+  bottom: 20px;
   right: 10px;
   width: 70px;
   height: 70px;
@@ -144,36 +119,36 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for professionalism */
+  box-shadow: 0px 4px 12px var(--shadow-color);
   transition: all 0.3s ease;
 }
 
 .contact-us-bar:hover {
-  background-color: #770404;
+  background-color: var(--secondary-hover);
   transform: scale(1.1);
 }
 
 /* Contact Us form styling */
 .contact-us-form {
   position: fixed;
-  bottom: 80px; /* Position just above the "Contact Us" button */
+  bottom: 80px;
   right: 20px;
-  width: 250px; /* Smaller form width */
-  background-color: white;
+  width: 250px;
+  background-color: var(--form-background);
   padding: 15px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
-  display: none; /* Hide by default */
+  display: none;
   z-index: 999;
 }
 
 .contact-us-form.active {
-  display: block; /* Show when active */
+  display: block;
 }
 
 .contact-us-form h3 {
   margin: 0 0 10px;
-  color: #8b0000;
+  color: var(--primary-color);
 }
 
 .contact-us-form form {
@@ -185,13 +160,13 @@ body {
 .contact-us-form input,
 .contact-us-form textarea {
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
 }
 
 .contact-us-form button {
-  background-color: #8b0000;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--button-text);
   border: none;
   padding: 10px;
   border-radius: 4px;
@@ -199,20 +174,20 @@ body {
 }
 
 .contact-us-form button:hover {
-  background-color: #a60000;
+  background-color: var(--primary-hover);
 }
 
 @media screen and (min-width: 540px) {
-  .search-container{
+  .search-container {
     flex-direction: column;
     gap: 0;
   }
 
-  .bus-search-bar{
+  .bus-search-bar {
     flex-direction: row;
   }
 
-  .popular-routes-list{
+  .popular-routes-list {
     flex-direction: row;
   }
 }

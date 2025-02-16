@@ -1,17 +1,18 @@
 /* Layout for the Find Buses button */
-span{
+span {
   font-size: 20px;
   font-weight: 600;
-  color: #c82333;
+  color: var(--secondary-hover);
 }
 
-.bus-list-page{
+.bus-list-page {
   min-height: 86vh;
 }
+
 /* Basic layout for the bus list */
 .bus-list {
   padding: 9px;
-  background-color: #f9f9f9;
+  background-color: var(--background-color);
   border-radius: 8px;
   display: flex;
   flex-wrap: wrap;
@@ -22,10 +23,10 @@ span{
 
 /* Each bus container style */
 .bus-container {
-  background-color: #fff;
+  background-color: var(--form-background);
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px var(--shadow-color);
   transition: all 0.3s ease;
   max-width: 400px;
   width: 100%;
@@ -39,30 +40,27 @@ span{
 
 .bus-container:hover {
   transform: scale(1.02);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px var(--shadow-color);
 }
 
 /* Styling for each bus detail paragraph */
 .bus-container p {
   font-size: 16px;
   margin: 5px 0;
-  color: #555;
+  color: var(--text-color);
 }
 
 /* Header styling */
 .bus-container h1 {
   font-size: 24px;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 15px;
 }
 
-
-
-
 /* Styling for the Find Buses button */
 .show-buses-btn {
-  background-color: #960000;
-  color: white;
+  background-color: var(--primary-hover);
+  color: var(--button-text);
   padding: 10px 20px;
   font-size: 16px;
   border: none;
@@ -73,17 +71,16 @@ span{
   margin-bottom: 1rem;
   width: fit-content;
   text-align: center;
-  /* max-width: fit-content; */
 }
 
-.button:hover {
-  background-color: #9b2222;
+.show-buses-btn:hover {
+  background-color: var(--secondary-hover);
 }
 
 /* Styling for Delete Bus button */
 .delete-button {
-  background-color: #dc3545;
-  color: white;
+  background-color: var(--secondary-hover);
+  color: var(--button-text);
   padding: 8px 16px;
   border: none;
   border-radius: 5px;
@@ -93,14 +90,14 @@ span{
 }
 
 .delete-button:hover {
-  background-color: #c82333;
+  background-color: var(--primary-hover);
 }
 
 /* Loading message styling */
 .bus-list p {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 /* Styling when no buses are found */
@@ -108,17 +105,18 @@ span{
   color: #888;
   font-size: 18px;
 }
+
 .booked-users {
   margin-top: 10px;
   padding: 10px;
   border-radius: 5px;
-  background-color: #f8f9fa;
+  background-color: var(--background-color);
 }
 
 .booked-users h3 {
   margin-bottom: 5px;
   font-size: 18px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .booked-users ul {
@@ -130,16 +128,16 @@ span{
   display: flex;
   justify-content: space-between;
   padding: 5px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--input-border);
 }
 
 .user-name {
   font-weight: bold;
-  color: #960000;
+  color: var(--primary-hover);
   margin-right: 10px;
 }
 
 .user-phone {
-  color: #555;
+  color: var(--text-color);
   font-style: italic;
 }
