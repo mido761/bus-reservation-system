@@ -22,6 +22,10 @@ const Payment = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false); // New state for payment success
   const [confirmationMessage, setConfirmationMessage] = useState(""); // New state for the confirmation message
 
+
+  // if (isProcessing) return; // Prevent multiple submissions
+  // setIsProcessing(true);
+
   // Function to format card number
   const formatCardNumber = (value) => {
     return value
@@ -71,7 +75,7 @@ const Payment = () => {
         setIsLoading(false);
         setAlertMessage(
           <div className="payment-success-container">
-            <h1>Successful Payment</h1>
+            <h1>✅ Successful Payment</h1>
             <p>
               Thank you for booking with us. <br /> <br />
               You will receive a confirmation message shortly.
@@ -91,7 +95,7 @@ const Payment = () => {
           setIsLoading(false);
           setAlertMessage(
             <div className="payment-success-container">
-              <h1>Payment Failed</h1>
+              <h1>⚠️ Payment Failed</h1>
               <p>
                 The selected seats are already booked. <br /> <br />
                 Please try again with different seats.

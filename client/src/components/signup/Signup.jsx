@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Verification from "./verification";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
-import { set } from "mongoose";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -21,61 +20,44 @@ function Signup() {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-    }
-  };
-
-  const handleValidation = (e) => {
-    const validatePhoneNumber = (number) => {
-      // Ensure phone number starts with "01" and is exactly 11 digits long
-      return /^\d{11}$/.test(number) && number.startsWith("01");
-    };
-
-    const validateEmail = (email) =>
-      /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email) || /^[a-zA-Z0-9._%+-]+@ejust\.edu\.eg$/.test(email);
-    const validatePassword = (password) =>
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-        password
-      );
-
-    const passwordErrorMessage =
-      "Password must meet the following requirements:\n" +
-      "- At least 8 characters long\n" +
-      "- Include at least one uppercase\n" +
-      "- Include at least one lowercase letter\n" +
-      "- Include at least one number\n" +
-      "- Include at least one special character";
-
-    let validationErrors = {};
-    // console.log(e.target.value.length);
-    if (!validatePhoneNumber(phoneNumber) && e.target.name === "phoneNumber") {
-      validationErrors.phoneNumber = "Enter a valid Phone number";
-    } else {
-      validationErrors.phoneNumber = "";
-    }
-    if (!validateEmail(email) && e.target.name === "email")
-      validationErrors.email = "Enter a valid Email";
-    if (!validatePassword(password) && e.target.name === "password")
-    validationErrors.password =
-    passwordErrorMessage;
-      
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-  };
-
   const navigate = useNavigate();
+
+  // Validation Functions
+  const validatePhoneNumber = (number) => {
+    // Ensure phone number starts with "01" and is exactly 11 digits long
+    return /^\d{11}$/.test(number) && number.startsWith("01");
+  };
+
+  const validateEmail = (email) =>
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+  
+  const validatePassword = (password) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+
+  const passwordErrorMessage =
+    "Password must meet the following requirements:\n" +
+    "- At least 8 characters long\n" +
+    "- Include at least one uppercase\n" +
+    "- Include at least one lowercase letter\n" +
+    "- Include at least one number\n" +
+    "- Include at least one special character";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
-    handleValidation(e);
+
     // Validate Inputs
+    let validationErrors = {};
+    if (!validatePhoneNumber(phoneNumber)) validationErrors.phoneNumber = "Phone number must start with '01' and be exactly 11 digits.";
+    if (!validateEmail(email)) validationErrors.email = "Email must be a valid Gmail address (e.g., example@example.com).";
+    if (!validatePassword(password)) validationErrors.password = passwordErrorMessage;
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await axios.post(`${backEndUrl}/api/register`, {
@@ -90,9 +72,8 @@ function Signup() {
           setIsLoading(false);
           setAlertMessage(
             <p>
-              {" "}
               <strong>Registered successfully</strong> <br />
-              <br /> Check your email for verification{" "}
+              <br /> Check your email for verification.
             </p>
           );
           setAlertFlag(true);
@@ -105,34 +86,17 @@ function Signup() {
         }, 2500);
       }
     } catch (err) {
-      if (err.status === 400) {
-        setTimeout(() => {
-          setIsLoading(false);
-          setAlertMessage("This email already exists");
-          setAlertFlag(true);
-        }, 1000);
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage(err.response?.data?.message || "An error occurred.");
+        setAlertFlag(true);
+      }, 1000);
 
-        setTimeout(() => {
-          setAlertFlag(false);
-        }, 2200);
-        console.error("Email already exists", err.status);
-      } else {
-        setTimeout(() => {
-          setIsLoading(false);
-          setAlertMessage("An error accured");
-          setAlertFlag(true);
-        }, 1000);
-
-        setTimeout(() => {
-          setAlertFlag(false);
-        }, 2200);
-      }
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     }
   };
-
-  // if (isLoading) {
-  //   return <Loading />;
-  // }
 
   return (
     <div className="register-page">
@@ -146,9 +110,7 @@ function Signup() {
               id="username"
               name="username"
               value={name}
-              required
               onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => handleValidation(e)}
             />
 
             <label htmlFor="phoneNumber">Phone Number</label>
@@ -161,16 +123,11 @@ function Signup() {
                 const value = e.target.value.replace(/\D/g, "");
                 setPhoneNumber(value);
               }}
-              onKeyDown={(e) => handleValidation(e)}
-              onInput={(e) =>
-                (e.target.value = e.target.value.replace(/\D/g, ""))
-              }
+              onInput={(e) => e.target.value = e.target.value.replace(/\D/g, "")}
               maxLength="11"
               required
             />
-            {errors.phoneNumber && (
-              <p className="error">{errors.phoneNumber}</p>
-            )}
+            {errors.phoneNumber && <p className="error">⚠️ {errors.phoneNumber}</p>}
 
             <label htmlFor="email">Email</label>
             <input
@@ -178,34 +135,28 @@ function Signup() {
               id="email"
               name="email"
               value={email}
-              required
               onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => handleValidation(e)}
             />
-            {errors.email && <p className="error">{errors.email}</p>}
+            {errors.email && <p className="error">⚠️ {errors.email}</p>}
 
             <label htmlFor="password">Password</label>
             <div className="password-container">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                maxLength="15"
-                required
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => handleValidation(e)}
               />
               <span
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {/* {showPassword ? "👁️" : "👁️‍🗨️"} */}
+                {showPassword ? "👁️" : "👁️‍🗨️"}
               </span>
             </div>
             {errors.password && (
-              <p className="error" style={{ whiteSpace: "pre-line" }}>
-                {errors.password}
-              </p>
+              <p className="error" style={{ whiteSpace: "pre-line" }}>⚠️ {errors.password}</p>
             )}
 
             <button type="submit">Register</button>
@@ -213,18 +164,10 @@ function Signup() {
 
           <Link to="/login">Login</Link>
           {isLoading && <LoadingScreen />}
-
-          {alertFlag && (
-            <Overlay
-              alertFlag={alertFlag}
-              alertMessage={alertMessage}
-              setAlertFlag={setAlertFlag}
-            />
-          )}
+          {alertFlag && <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />}
         </div>
       ) : (
         <Verification setVerificationFlag={setVerificationFlag} />
-        // <Loading />
       )}
     </div>
   );

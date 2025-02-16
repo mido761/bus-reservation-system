@@ -29,12 +29,10 @@ const SeatSelection = () => {
   useEffect(() => {
     const fetchBusDetails = async () => {
       try {
-        const req_user = await axios.get(`${backEndUrl}/auth`, {
-          withCredentials: true,
-        });
-        const response = await axios.get(
-          `${backEndUrl}/seatselection/${busId}`
-        );
+        const [req_user, response] = await Promise.all([
+          axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
+          axios.get(`${backEndUrl}/seatselection/${busId}`),
+        ]);
         setBusDetails(response.data);
         setUserId(req_user.data.userId);
       } catch (err) {
@@ -57,31 +55,38 @@ const SeatSelection = () => {
     const channel = pusher.subscribe("bus-channel");
 
     channel.bind("seat-reserved", (data) => {
-      console.log(data);
-      setBusDetails(data.updatedBus);
+      setBusDetails((prev) => ({
+        ...prev,
+        seats: { ...prev.seats, reservedSeats: data.updatedBus.seats.reservedSeats },
+      }));
     });
-
+    
     channel.bind("seat-booked", (data) => {
       if (data.busId === busId) {
-        setBusDetails((prev) => {
-          const updatedBus = { ...prev };
-          data.selectedSeats.forEach((seat) => {
-            updatedBus.seats.bookedSeats[seat] = data.userId;
-          });
-          return updatedBus;
-        });
-        // setAlertMessage(`Seats ${data.selectedSeats.join(", ")} booked.`);
-        // setAlertFlag(true);
-        // setTimeout(() => setAlertFlag(false), 2000);
+        setBusDetails((prev) => ({
+          ...prev,
+          seats: {
+            ...prev.seats,
+            bookedSeats: prev.seats.bookedSeats.map((seat, index) =>
+              data.selectedSeats.includes(index) ? data.userId : seat
+            ),
+          },
+        }));
       }
     });
-
+    
     channel.bind("seat-canceled", (data) => {
-      setBusDetails(data.updatedBus);
+      setBusDetails((prev) => ({
+        ...prev,
+        seats: { ...prev.seats, bookedSeats: data.updatedBus.seats.bookedSeats },
+      }));
     });
+    
 
     return () => {
-      pusher.unsubscribe("bus-channel");
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
     };
   }, [busId]);
 
@@ -110,7 +115,7 @@ const SeatSelection = () => {
         navigate("/login");
         return;
       }
-
+    
       setSelectedSeats((prev) => {
         const newSeats = [...prev];
         if (!isBooked && !isCurrentUserSeat) {
@@ -155,15 +160,6 @@ const SeatSelection = () => {
         }, 2200);
       } catch (error) {
         if (error.response && error.response.status === 400) {
-          setAlertMessage(
-            <div className="payment-success-container">
-              <h1>Payment Failed</h1>
-              <p>
-                The selected seats are already Reserved. <br /> <br />
-                Please try again with different seats.
-              </p>
-            </div>
-          );
           setSelectedSeats([]);
 
           setTimeout(() => {
@@ -319,7 +315,6 @@ const SeatSelection = () => {
           </div>
 
           <div className="btn-container">
-
             <CSSTransition
               in={
                 selectedSeats.length > 0 &&

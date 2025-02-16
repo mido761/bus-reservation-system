@@ -11,6 +11,6 @@ footer{
     width: 100%;
     height: 8vh;
     color: white;
-    background-color: var(--primary-color);
+    background-color: #fff;
     z-index: -1;
 }

@@ -9,7 +9,7 @@
 .dashboard-card{
     display: flex;
     flex-direction: column;
-    background-color: var(--background-color);
+    background-color: var(--secondary-hover);
     box-shadow: 0 4px 8px var(--box-shadow);
     padding: 20px;
     width: 200px;

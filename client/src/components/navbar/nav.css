@@ -1,5 +1,5 @@
 nav {
-  background-color: var(--primary-color);
+  background-color: #fff;
   width: 100%;
   min-height: 6vh;
   padding: 6px;
@@ -27,7 +27,7 @@ nav {
 }
 
 .nav-link:hover {
-  background-color: rgba(155, 130, 130, 0.767);
+  background-color: var(--secondary-hover);
   color: var(--text-color);
 }
 

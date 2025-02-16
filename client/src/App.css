@@ -1,19 +1,20 @@
 
 /* Define a unified color palette */
 :root {
-  --primary-color: #8b0000;
-  --primary-hover: #a60000;
-  --secondary-color: #a60000;
-  --secondary-hover: #770404;
-  --text-color: #333;
-  --background-color: #f9f9f9;
-  --card-background: #8b0000;
-  --card-hover: #660000;
-  --button-text: white;
-  --input-border: #ccc;
-  --form-background: white;
-  --shadow-color: rgba(0, 0, 0, 0.1);
+  --primary-color: #d4af37;
+  --primary-hover: #b8860b;
+  --secondary-color: #b8860b; /* Rich Gold for accents */
+  --secondary-hover: #d4af37; /* Brighter Gold for emphasis */
+  --text-color: #000000; /* Black for strong contrast */
+  --background-color: #ffffff; /* Clean white background */
+  --card-background: #d4af37;
+  --card-hover: #b8860b;
+  --button-text: #000000; /* Black text for bold contrast */
+  --input-border: #b8860b; /* Gold border for elegance */
+  --form-background: #ffffff; /* White form background */
+  --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle black shadow for depth */
 }
+
 
 .App-logo {
   height: 40vmin;
@@ -21,7 +22,7 @@
 }
 
 button {
-  background-color: #920000;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   padding: 10px 15px;
@@ -30,7 +31,7 @@ button {
 }
 
 button:hover {
-  background-color: #660000;
+  background-color: var(--primary-hover);
   transform: scale(1.05);
 }
 
