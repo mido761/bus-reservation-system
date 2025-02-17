@@ -102,7 +102,7 @@ function Signup() {
     <div className="register-page">
       {!verificationFlag ? (
         <div className="register-container">
-          <h2>Register for Bus Reservation</h2>
+          <h2>Register</h2>
           <form onSubmit={handleSubmit}>
             <label htmlFor="username">Username</label>
             <input
