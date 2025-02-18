@@ -20,11 +20,18 @@ import Footer from "./components/footer/footer.jsx";
 function App() {
   return (
     <HashRouter basename="/">
-      <Navbar />
-
+      
       <Routes>
         <Route path="/register" element={<Signup />}></Route>
         <Route path="/login" element={<Login />}></Route>
+        <Route
+          path="/"
+          element={
+            <Auth>
+               <Navbar />
+            </Auth>
+          }
+        ></Route>
         <Route
           path="/"
           element={
