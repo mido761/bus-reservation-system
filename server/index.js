@@ -37,7 +37,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:5000",
-  "http://192.168.0.108:5000",
+  "http://192.168.0.130:5000",
   process.env.BACK_END_URL,
 ];
 app.use(

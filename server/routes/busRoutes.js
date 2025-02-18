@@ -93,6 +93,14 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Fetch multiple buses at once (Express.js)
+router.get("/userBuses", async (req, res) => {
+  const { ids } = req.query; // Expecting ids as comma-separated values
+  const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
+  res.json(busDetails);
+});
+
+
 router.get("/:id", async (req, res) => {
   try {
     const response = await Bus.findById(req.params.id);
