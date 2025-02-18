@@ -24,17 +24,12 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
 
     // Check if all required fields are provided
     if (
-      !totalSeats ||
       !schedule ||
-      !minNoPassengers ||
       !price ||
       !pickupLocation ||
       !arrivalLocation ||
       !departureTime ||
-      !arrivalTime ||
-      !cancelTimeAllowance ||
-      !bookingTimeAllowance ||
-      !allowedNumberOfBags
+      !arrivalTime
     ) {
       return res.status(400).json({
         message: "Missing required fields",
@@ -53,10 +48,10 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     // console.log('Allowed Number of Bags:', allowedNumberOfBags);
     const newBus = new Bus({
       seats: {
-        totalSeats: totalSeats,
+        totalSeats: 15,
         availableSeats: totalSeats,
         // bookedSeats: new Array(totalSeats).fill(0)
-        bookedSeats: Array.from({ length: totalSeats }, () => 0),
+        bookedSeats: Array.from({ length: 15 }, () => 0),
       },
       schedule: schedule,
       price: price,
@@ -93,7 +88,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Fetch multiple buses at once (Express.js)
+// Fetch multiple buses at once
 router.get("/userBuses", async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
   const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
