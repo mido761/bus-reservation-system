@@ -1,6 +1,7 @@
 /* From Uiverse.io by adamgiebl */
 .loading-component{
   background-color: transparent;
+  height: 100%;
 }
 
 .loading-component > .dots-container {
@@ -9,6 +10,7 @@
   justify-content: center;
   position: relative;
   background-color: transparent;
+  height: 100%;
 }
 
 .dot {

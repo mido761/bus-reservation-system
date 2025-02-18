@@ -1,74 +1,33 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import authen from "../../Auth";
 import axios from "axios";
-import { get } from "mongoose";
 import "./dashboard.css";
 import LoadingScreen from "../loadingScreen/loadingScreen";
+import LoadingComponent from "../loadingComponent/loadingComponent";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-const Dashboard = () => {
+const Dashboard = ({ busDetails, error, userId }) => {
   const navigate = useNavigate();
-  const [busDetails, setBusDetails] = useState([]);
-  const [error, setError] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [userDetails, setUserDetails] = useState(null);
-  const [busAndSeat, setBusAndSeat] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [users, setUsers] = useState([]);
-  const [seats, setSeats] = useState([]);
-  const hasFetched = useRef(false); // Ref to track whether fetch has been performed
+  // const [busesDetails, setBusesDetails] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const hasFetched = useRef(false); // Ref to track whether fetch has been performed
 
-  const fetchUsers = async () => {
-    try {
-      // Get session data
-      const req_user = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
 
-      // Store user ID in userID state from session data
-      setUserId(req_user.data.userId);
-      const userId = req_user.data.userId;
+  // useEffect(() => {
+  //   if (hasFetched.current) return; // Exit if the fetch has already been performed
+  //   hasFetched.current = true; // Mark fetch as performed
 
-      // Get user data
-      const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
-      setUserDetails(res.data);
-
-      const userDetails = res.data;
-      const busIds = userDetails.bookedBuses.buses;
-
-      const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
-        params: { ids: busIds.join(",") }
-      });
-      const buses = response.data;
-      
-
-      setBusDetails((prevBuses) => [...prevBuses, ...buses]);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      setError("Failed to fetch bus details.");
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
-    }
-  };
-
-  useEffect(() => {
-    if (hasFetched.current) return; // Exit if the fetch has already been performed
-    hasFetched.current = true; // Mark fetch as performed
-
-    fetchUsers(); // Fetch user and bus details only once
-  }, []);
+  //   // fetchUsers(); // Fetch user and bus details only once
+  // }, []);
  
 
   const handleBusSelect = (bus) => {
     navigate(`/seat-selection/${bus._id}`); //to get the bus id in the seat selection
   };
 
-  if (isLoading) {
-    return <LoadingScreen/>;
-  }
+  // if (isLoading) {
+  //   return <LoadingComponent/>;
+  // }
 
   if (error) {
     return <p>{error}</p>;

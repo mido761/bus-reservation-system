@@ -18,22 +18,22 @@ const BusSchema = new mongoose.Schema({
         reservedSeats: [ReservedSeatSchema],  
         availableSeats: {type: Number, required: false}
     },
-    schedule: {type: String, required:false},
+    schedule: {type: String, required:true},
     minNoPassengers: {type: Number, required: false},
     price : {type: Number, required: false},
     location: {
-        pickupLocation: {type: String, required: false},
-        arrivalLocation: {type: String, required: false},        
+        pickupLocation: {type: String, required: true},
+        arrivalLocation: {type: String, required: true},        
     },
     time: {
-        departureTime: {type: String, required: false},
-        arrivalTime: {type: String, required: false},        
+        departureTime: {type: String, required: true},
+        arrivalTime: {type: String, required: true},        
     },
     allowance: {
         cancelTimeAllowance: {type: Number, required: false},
         bookingTimeAllowance: {type: Number, required: false},        
     },
-    allowedNumberOfBags: {type: Number}
+    allowedNumberOfBags: {type: Number, required: false}
 });
 
 module.exports = mongoose.model('Bus', BusSchema);
