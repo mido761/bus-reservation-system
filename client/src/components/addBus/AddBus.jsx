@@ -54,6 +54,7 @@ const AddBus = () => {
 
     e.preventDefault();
     try {
+       setAllSeats(15);
       await axios.post(`${backEndUrl}/buses`, {
         totalSeats,
         schedule,
