@@ -20,6 +20,7 @@ nav {
   flex-direction: row;
   gap: 15px;
   justify-content: space-between;
+  z-index: 2000;
 }
 
 .nav-link {
