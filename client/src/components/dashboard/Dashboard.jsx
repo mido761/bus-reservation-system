@@ -37,11 +37,11 @@ const Dashboard = () => {
       const userDetails = res.data;
       const busIds = userDetails.bookedBuses.buses;
 
-      let buses = [];
-      for (let i = 0; i < busIds.length; i++) {
-        const busDetails = await axios.get(`${backEndUrl}/buses/${busIds[i]}`);
-        buses.push(busDetails.data);
-      }
+      const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
+        params: { ids: busIds.join(",") }
+      });
+      const buses = response.data;
+      
 
       setBusDetails((prevBuses) => [...prevBuses, ...buses]);
     } catch (error) {
