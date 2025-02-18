@@ -79,6 +79,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
+  justify-content: center;
   gap: 9px;
 }
 
@@ -86,6 +87,7 @@ body {
   background-color: var(--card-background);
   min-width: 100px;
   height: 40px;
+  padding: 5px;
   color: var(--button-text);
   border-radius: 5px;
   font-size: 0.8rem;

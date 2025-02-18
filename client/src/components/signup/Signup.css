@@ -1,17 +1,22 @@
 /* Styling for the Signup Component */
 .register-page {
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
 }
 
 .register-container {
+  width: 385px;
   max-width: 400px;
-  margin: 50px auto;
+  margin: auto;
   padding: 30px;
   background-color: var(--form-background);
   border-radius: 8px;
-  box-shadow: 0px 4px 12px var(--shadow-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
   color: var(--text-color);
-  font-family: "Arial", sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .register-container h2 {
@@ -112,7 +117,8 @@
 
 .password-container input {
   width: 100%;
-  padding-right: 30px; /* Make space for the eye icon */
+  padding-right: 30px;
+  /* Make space for the eye icon */
 }
 
 .password-toggle {

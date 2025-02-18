@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Auth from "./Auth.jsx";
 
 //from components
@@ -19,7 +19,7 @@ import Footer from "./components/footer/footer.jsx";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter basename="/">
       <Navbar />
 
       <Routes>
@@ -93,8 +93,8 @@ function App() {
           }
         ></Route>
       </Routes>
-      <Footer />
-    </BrowserRouter>
+      {/* <Footer /> */}
+    </HashRouter>
   );
 }
 

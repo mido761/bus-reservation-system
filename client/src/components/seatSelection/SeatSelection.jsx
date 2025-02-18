@@ -84,9 +84,9 @@ const SeatSelection = () => {
     
 
     return () => {
-      channel.unbind_all();
+      // channel.unbind_all();
       channel.unsubscribe();
-      pusher.disconnect();
+      // pusher.disconnect();
     };
   }, [busId]);
 

@@ -6,6 +6,7 @@
   padding: 5vw;
   padding-top: 15vh;
   min-height: 86vh;
+  user-select: none;
 }
 
 /* Main Payment Box */
