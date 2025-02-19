@@ -163,7 +163,7 @@ function Verification({ setVerificationFlag }) {
             ×
           </button>
           <p className="resendNote">
-            Didn't receive the code?{" "}
+            Doesn't receive the code?{" "}
             <button className="resendBtn" onClick={handleResendCode}>
               Resend Code
             </button>
