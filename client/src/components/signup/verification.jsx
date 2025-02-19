@@ -57,7 +57,7 @@ function Verification({ setVerificationFlag }) {
         setAlertFlag(false);
       }, 2000);
       console.error(
-        err.response?.data?.message || "Invalid verification code."
+        err || "Invalid verification code."
       );
     }
   };
@@ -95,6 +95,7 @@ function Verification({ setVerificationFlag }) {
   };
 
   const handleResendCode = async () => {
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("verificationToken");
       const response = await axios.post(
@@ -103,11 +104,26 @@ function Verification({ setVerificationFlag }) {
       );
 
       if (response.status === 200) {
-        setResendMessage("New verification code sent! Check your email.");
         localStorage.setItem("verificationToken", response.data.newToken); // Store new token
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage("New verification code sent! Check your email.");
+          setAlertFlag(true);
+        }, 1000);
+        setTimeout(() => {
+          setAlertFlag(false);
+        }, 2000);
       }
     } catch (err) {
-      console.error(err.response?.data?.message || "Error resending code.");
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage("Error while resending code.");
+        setAlertFlag(true);
+      }, 1000);
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2000);
+      console.error(err || "Error resending code.");
     }
   };
 
@@ -152,7 +168,7 @@ function Verification({ setVerificationFlag }) {
               />
             ))}
           </div>
-          <button className="verifyButton" type="submit" on>
+          <button className="verifyButton" type="submit">
             Verify
           </button>
           <button
@@ -164,13 +180,14 @@ function Verification({ setVerificationFlag }) {
           </button>
           <p className="resendNote">
             Didn't receive the code?{" "}
-            <button className="resendBtn" onClick={handleResendCode}>
+            <button className="resendBtn" type="button" onClick={handleResendCode}>
               Resend Code
             </button>
           </p>
         </form>
-        {isLoading && <Loading />}
       </div>
+      {isLoading && <Loading />}
+
 
       {alertFlag && (
         <Overlay

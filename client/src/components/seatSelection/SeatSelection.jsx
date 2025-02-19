@@ -78,17 +78,21 @@ const SeatSelection = () => {
     channel.bind("seat-canceled", (data) => {
       setBusDetails((prev) => ({
         ...prev,
-        seats: { ...prev.seats, bookedSeats: data.updatedBus.seats.bookedSeats },
+        seats: {
+          ...prev.seats,
+          bookedSeats: data.updatedBus.seats.bookedSeats,
+          reservedSeats: data.updatedBus.seats.reservedSeats
+        }
       }));
     });
     
 
     return () => {
-      // channel.unbind_all();
+      channel.unbind_all();
       channel.unsubscribe();
-      // pusher.disconnect();
+      pusher.disconnect();
     };
-  }, [busId]);
+  }, []);
 
   const handleSeatSelect = async (seat, index) => {
     // setReservedSeats(
