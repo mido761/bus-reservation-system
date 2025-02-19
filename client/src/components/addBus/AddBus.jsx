@@ -15,7 +15,7 @@ const locations = [
 ];
 
 const AddBus = () => {
-  const [totalSeats, setAllSeats] = useState("");
+  const [totalSeats, setAllSeats] = useState(15);
   const [schedule, setSchedule] = useState("");
   const [minNoPassengers, setMinNoPassengers] = useState("");
   const [price, setPrice] = useState("");
@@ -51,22 +51,18 @@ const AddBus = () => {
 
   const handleSubmit = async (e) => {
     setIsLoading(true);
-
+    console.log(totalSeats, schedule, price, pickupLocation, arrivalLocation, arrivalTime, departureTime);
     e.preventDefault();
     try {
        setAllSeats(15);
       await axios.post(`${backEndUrl}/buses`, {
         totalSeats,
         schedule,
-        minNoPassengers,
         price,
         pickupLocation,
         arrivalLocation,
         departureTime,
         arrivalTime,
-        cancelTimeAllowance,
-        bookingTimeAllowance,
-        allowedNumberOfBags,
       });
 
       setTimeout(() => {

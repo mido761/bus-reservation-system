@@ -7,7 +7,7 @@ import Overlay from "../overlayScreen/overlay";
 import LoadingPage from "../loadingPage/loadingPage";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Pusher from "pusher-js"; // Import Pusher
-
+import SeatLegend from "./SeatLegend";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const SeatSelection = () => {
@@ -269,6 +269,7 @@ const SeatSelection = () => {
           </CSSTransition>
         </div>
         <div className="bus-seats">
+          <SeatLegend/>
           <div className="seat-grid">
             {busDetails.seats.bookedSeats.map((seat, index) => {
               const isBooked = seat !== "0";
