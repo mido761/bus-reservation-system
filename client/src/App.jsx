@@ -3,7 +3,7 @@ import React from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Auth from "./Auth.jsx";
 
-//from components
+// Import components
 import Navbar from "./components/navbar/nav.jsx";
 import Signup from "./components/signup/Signup.jsx";
 import Login from "./components/login/login.jsx";
@@ -13,94 +13,106 @@ import Homepage from "./components/homePage/Homepage.jsx";
 import SeatSelection from "./components/seatSelection/SeatSelection.jsx";
 import Payment from "./components/payment/Payment.jsx";
 import PaymentSuccess from "./components/paymentSuccess/PaymentSuccess.jsx";
-import TicketSummary from "./components/ticketSummary/TicketSummary.jsx"; // Import TicketSummary component
+import TicketSummary from "./components/ticketSummary/TicketSummary.jsx"; 
 import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
 
 function App() {
   return (
     <HashRouter basename="/">
-      
       <Routes>
-        <Route path="/register" element={<Signup />}></Route>
-        <Route path="/login" element={<Login />}></Route>
+        <Route path="/register" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected Routes */}
         <Route
           path="/"
           element={
             <Auth>
-               <Navbar />
-            </Auth>
-          }
-        ></Route>
-        <Route
-          path="/"
-          element={
-            <Auth>
+              <Navbar />
               <Homepage />
+              <Footer /> {/* Footer is only shown when logged in */}
             </Auth>
           }
-        ></Route>
+        />
+
         <Route
           path="/seat-selection/:busId"
           element={
             <Auth>
+              <Navbar />
               <SeatSelection />
+              <Footer />
             </Auth>
           }
-        ></Route>
+        />
+
         <Route
           path="/payment/:selectedSeats"
           element={
             <Auth>
+              <Navbar />
               <Payment />
+              <Footer />
             </Auth>
           }
         />
+
         <Route
           path="/payment-success/:selectedSeats"
           element={
             <Auth>
+              <Navbar />
               <PaymentSuccess />
+              <Footer />
             </Auth>
           }
         />
+
         <Route
           path="/ticket-summary/:selectedSeats"
           element={
             <Auth>
+              <Navbar />
               <TicketSummary />
+              <Footer />
             </Auth>
           }
         />
-        {/* <Route path="/authen" element={<authen />}></Route> */}
 
         <Route
           path="/add-bus"
           element={
-            <Auth requireAdmin={true} route="">
+            <Auth requireAdmin={true}>
+              <Navbar />
               <AddBus />
+              <Footer />
             </Auth>
           }
-        ></Route>
+        />
+
         <Route
           path="/bus-list"
           element={
-            <Auth requireAdmin={true} route="">
+            <Auth requireAdmin={true}>
+              <Navbar />
               <BusList />
+              <Footer />
             </Auth>
           }
-        ></Route>
+        />
 
         <Route
           path="/profile"
           element={
             <Auth>
+              <Navbar />
               <Profile />
+              <Footer />
             </Auth>
           }
-        ></Route>
+        />
       </Routes>
-      {/* <Footer /> */}
     </HashRouter>
   );
 }
