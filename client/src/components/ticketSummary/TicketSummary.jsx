@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./Ticketsummary.css";
 import axios from "axios";
 import LoadingPage from "../loadingPage/loadingPage";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const TicketSummary = () => {
@@ -14,8 +15,7 @@ const TicketSummary = () => {
 
   const navigate = useNavigate();
   const { selectedSeats } = useParams();
-  const seats = selectedSeats.split(",");
-  // const seatNumber = parseInt(selectedSeats) + 1;
+  const seats = selectedSeats?.split(",") || [];
 
   useEffect(() => {
     const fetchBusDetails = async () => {
@@ -24,7 +24,7 @@ const TicketSummary = () => {
           withCredentials: true,
         });
         setUserId(req_user.data.userId);
-        // const response = await axios.get(`http://localhost:${port}/seatselection/${busId}`);
+
         const response = await axios.get(
           `${backEndUrl}/seatselection/${req_user.data.busId}`
         );
@@ -40,14 +40,19 @@ const TicketSummary = () => {
     };
 
     const fetchUsers = async () => {
-      const req_user = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
-      setUserId(req_user.data.userId);
-      const userId = req_user.data.userId;
-      const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
-      setUserDetails(res.data);
+      try {
+        const req_user = await axios.get(`${backEndUrl}/auth`, {
+          withCredentials: true,
+        });
+        setUserId(req_user.data.userId);
+
+        const res = await axios.get(`${backEndUrl}/user/profile/${req_user.data.userId}`);
+        setUserDetails(res.data);
+      } catch (err) {
+        console.error("Error fetching user details:", err);
+      }
     };
+
     fetchUsers();
     fetchBusDetails();
   }, []);
@@ -61,59 +66,75 @@ const TicketSummary = () => {
   }
 
   return (
-
     <div className="ticket-summary-page">
-      {/* <h1>Ticket Summary</h1> */}
-    {loading ? (<LoadingPage/>):(      <div className="summary-container">
+      <div className="ticket-summary-header">
+        <h1></h1>
+      </div>
+
+      <div className="summary-container">
+        {/* Passenger Information */}
         <div className="section">
           <h3 className="details-title">Passenger Information</h3>
           <div className="details">
-            <p>
-              <strong>Name</strong> {userDetails.name}
-            </p>
-            <p>
-              <strong>Email</strong> {userDetails.email}
-            </p>
-            <p>
-              <strong>Phone</strong> {userDetails.phoneNumber}
+            <p className="name">
+              <strong>Name:</strong> {userDetails?.name}
             </p>
           </div>
         </div>
 
+        {/* Contact Information */}
+        <div className="section">
+          <h3 className="details-title">Contact Information</h3>
+          <div className="details">
+            <p>
+              <strong>Email:</strong> {userDetails?.email}
+            </p>
+            <p>
+              <strong>Phone:</strong> {userDetails?.phoneNumber}
+            </p>
+          </div>
+        </div>
+
+        {/* Bus Details */}
         <div className="section">
           <h3 className="details-title">Bus Details</h3>
           <div className="details">
             <p>
-              <strong>Date</strong>
-              {busDetails.schedule}
+              <strong>Date:</strong> {busDetails?.schedule}
             </p>
             <p>
-              <strong>Departure Time</strong> {busDetails.time.departureTime}
+              <strong>Departure Time:</strong> {busDetails?.time?.departureTime}
             </p>
             <p>
-              <strong>Pickup</strong> {busDetails.location.pickupLocation}
+              <strong>Pickup:</strong> {busDetails?.location?.pickupLocation}
             </p>
             <p>
-              <strong>Arrival</strong> {busDetails.location.arrivalLocation}
+              <strong>Arrival:</strong> {busDetails?.location?.arrivalLocation}
             </p>
           </div>
         </div>
 
+        {/* Selected Seats */}
         <div className="section">
           <h3 className="details-title">Seats Selected</h3>
           <div className="details">
-            <p>{seats.map((index) => parseInt(index) + 1).join(", ")} </p>
+            <p>{seats.map((index) => parseInt(index) + 1).join(", ")}</p>
           </div>
         </div>
 
+        {/* Total Price */}
         <div className="section">
           <h3 className="details-title">Total Price</h3>
           <div className="details">
-            <p>{busDetails.price * seats.length}</p>
+            <p>{busDetails?.price * seats.length}</p>
           </div>
         </div>
-      </div>)}
 
+        {/* Confirmation Message */}
+        <div className="confirmation-message">
+          Please check your profile to confirm that your seat is booked.
+        </div>
+      </div>
     </div>
   );
 };

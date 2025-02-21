@@ -85,6 +85,13 @@ const SeatSelection = () => {
         }
       }));
     });
+    channel.bind("bus-deleted", (data) => {
+      if (data.busId === busId) {
+        localStorage.removeItem(`selectedSeats_${busId}`);
+        setSelectedSeats([]);
+      }
+    });
+    
     
 
     return () => {
@@ -93,7 +100,13 @@ const SeatSelection = () => {
       pusher.disconnect();
     };
   }, []);
-
+  useEffect(() => {
+    const savedSeats = localStorage.getItem(`selectedSeats_${busId}`);
+    if (savedSeats) {
+      setSelectedSeats(JSON.parse(savedSeats));
+    }
+  }, [busId]);
+  
   const handleSeatSelect = async (seat, index) => {
     // setReservedSeats(
     //   busDetails.seats.reservedSeats
@@ -109,19 +122,27 @@ const SeatSelection = () => {
       .filter((seat) => seat.reservedBy === userId)
       .map((seat) => seat.seatNumber)
       .includes(String(index));
+  
     try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
-      const userId = req_user.data.userId;
-      if (!userId) {
+  
+      if (!req_user.data.userId) {
         alert("Session ended");
         navigate("/login");
         return;
       }
-    
+  
+      // Update selected seats logic here
       setSelectedSeats((prev) => {
         const newSeats = [...prev];
+  
+        if (newSeats.length >= 2 && !newSeats.includes(index)) {
+          alert("You can only select a maximum of 2 seats.");
+          return prev;
+        }
+  
         if (!isBooked && !isCurrentUserSeat) {
           if (newSeats.includes(index)) {
             newSeats.splice(newSeats.indexOf(index), 1);
@@ -134,13 +155,19 @@ const SeatSelection = () => {
           } else {
             newSeats.push(index);
           }
-        } else setConfirmation(true);
+        } else {
+          setConfirmation(true);
+        }
+  
+        localStorage.setItem(`selectedSeats_${busId}`, JSON.stringify(newSeats));
+  
         return newSeats;
       });
-    } catch (err) {
-      console.error("Error selecting seat:", err);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
   };
+    
 
   const handleConfirmSeats = async (type) => {
     setIsLoading(true);
