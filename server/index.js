@@ -37,8 +37,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "http://localhost:5000",
-  "http://192.168.0.130:5000",
-  "http://192.168.0.130:5173",
+  "http://192.168.1.6:5173",
   process.env.BACK_END_URL,
 ];
 app.use(
@@ -264,8 +263,16 @@ app.post("/payment", middleware.isAuthenticated, async (req, res) => {
   });
 // }
 
-app.listen(process.env.PORT || 5000, () => {
-  console.log("sever is running");
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+process.on("SIGINT", () => {
+  console.log("Shutting down server...");
+  server.close(() => {
+    console.log("Server closed.");
+    process.exit(0);
+  });
 });
+
 
 module.exports = app;

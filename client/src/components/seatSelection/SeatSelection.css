@@ -93,10 +93,6 @@
   transform: scale(1.05); /* Slight hover effect */
 }
 
-/* Selected Seat */
-.seat.selected {
-  border: 3px solid red; /* More defined border */
-}
 
 .seat.current-user {
   background-color: green;
@@ -130,6 +126,11 @@
   color: var(--button-text);
   cursor: not-allowed;
   border: 2px solid darkred;
+}
+
+/* Selected Seat */
+.seat.selected {
+  border: 3px solid red; /* More defined border */
 }
 
 /* Buttons */

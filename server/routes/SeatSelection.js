@@ -46,7 +46,6 @@ router.post("/:busId", async (req, res) => {
         $set: Object.fromEntries(
           seats.map((seat) => [`seats.bookedSeats.${seat}`, userId])
         ),
-        $inc: { "seats.availableSeats": -seats.length },
       },
       { new: true }
     );
@@ -71,7 +70,14 @@ router.post("/:busId", async (req, res) => {
     );
 
     // Check if the bus needs to be duplicated
-    if (updatedBus.seats.availableSeats === 0) {
+
+    const availableBusesCount = await Bus.countDocuments({
+      "location.pickupLocation": updatedBus.location.pickupLocation,
+      "time.departureTime": updatedBus.time.departureTime,
+      "seats.availableSeats": { $gt: 0 },
+    });
+    console.log(availableBusesCount);
+    if (availableBusesCount === 0) {
       try {
         const newBus = new Bus({
           seats: {
@@ -101,16 +107,19 @@ router.post("/:busId", async (req, res) => {
         });
 
         await newBus.save();
-        res.status(200).json({ message: "Seat booked successfully" });
+        return res
+          .status(200)
+          .json({ message: "Seats booked successfully and Bus Duplicated." });
       } catch (error) {
         console.error("Error duplicating bus:", error);
+        return res.status(500).json({ message: "Error duplicating bus" }); // Return in case of failure
       }
     }
 
-    res.status(200).json({ message: "Seat booked successfully" });
+    return res.status(200).json({ message: "Seat booked successfully" });
   } catch (error) {
     console.error("Error reserving seat:", error);
-    res
+    return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
@@ -126,13 +135,32 @@ router.post("/reserve/:busId", async (req, res) => {
   }
   const seatStrings = selectedSeats.map(String);
 
+  const allReservedByUser = await Bus.exists({
+    _id: busId,
+    $and: seatStrings.map((seatNumber) => ({
+      "seats.reservedSeats": {
+        $elemMatch: {
+          seatNumber: seatNumber,
+          reservedBy: userId,
+        },
+      },
+    })),
+  });
+
+  if (Boolean(allReservedByUser)) {
+    return res.status(202).json({
+      message: "Proceeding to payment",
+      code: "PROCEED_TO_PAYMENT",
+    });
+  }
+
   try {
     const updatedBus = await Bus.findOneAndUpdate(
       {
         _id: busId,
         "seats.reservedSeats": {
           $not: { $elemMatch: { seatNumber: { $in: seatStrings } } },
-        }, // Atomic check
+        }, 
       },
       {
         $push: {
@@ -161,7 +189,7 @@ router.post("/reserve/:busId", async (req, res) => {
       updatedBus: updatedBus,
     });
 
-    res
+    return res
       .status(200)
       .json({ message: "Seats reserved successfully", updatedBus });
   } catch (error) {
