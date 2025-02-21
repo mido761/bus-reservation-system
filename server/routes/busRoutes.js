@@ -1,7 +1,9 @@
 const express = require("express");
 const Bus = require("../models/busModel");
+const User = require("../models/user");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
+const mongoose = require('mongoose');
 
 // Add new Bus details
 router.post("/", middleware.isAuthoraized, async (req, res) => {
@@ -108,6 +110,11 @@ router.get("/:id", async (req, res) => {
 router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
   try {
     const id = req.params.id;
+    const busDetails = await Bus.findById(id);
+    await User.updateMany(
+      { _id: { $in: busDetails.seats.bookedSeats.filter(mongoose.Types.ObjectId.isValid) } },
+      { $pull: { "bookedBuses.buses": id } }
+    );
     const deletedBus = await Bus.deleteOne({ _id: id });
 
     if (!id) {
