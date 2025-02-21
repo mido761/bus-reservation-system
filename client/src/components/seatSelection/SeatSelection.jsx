@@ -85,6 +85,13 @@ const SeatSelection = () => {
         }
       }));
     });
+    channel.bind("bus-deleted", (data) => {
+      if (data.busId === busId) {
+        localStorage.removeItem(`selectedSeats_${busId}`);
+        setSelectedSeats([]);
+      }
+    });
+    
     
 
     return () => {
@@ -93,7 +100,13 @@ const SeatSelection = () => {
       pusher.disconnect();
     };
   }, []);
-
+  useEffect(() => {
+    const savedSeats = localStorage.getItem(`selectedSeats_${busId}`);
+    if (savedSeats) {
+      setSelectedSeats(JSON.parse(savedSeats));
+    }
+  }, [busId]);
+  
   const handleSeatSelect = async (seat, index) => {
     // setReservedSeats(
     //   busDetails.seats.reservedSeats
@@ -102,26 +115,37 @@ const SeatSelection = () => {
     // );
     const isBooked = seat !== "0";
     const isCurrentUserSeat = seat === userId;
+
     const isReserved = busDetails.seats.reservedSeats
       .map((seat) => seat.seatNumber)
       .includes(String(index));
+
     const isReservedForCurrentUser = busDetails.seats.reservedSeats
       .filter((seat) => seat.reservedBy === userId)
       .map((seat) => seat.seatNumber)
       .includes(String(index));
+
+  
     try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
-      const userId = req_user.data.userId;
-      if (!userId) {
+  
+      if (!req_user.data.userId) {
         alert("Session ended");
         navigate("/login");
         return;
       }
-    
+  
+      // Update selected seats logic here
       setSelectedSeats((prev) => {
         const newSeats = [...prev];
+  
+        if (newSeats.length >= 2 && !newSeats.includes(index)) {
+          alert("You can only select a maximum of 2 seats.");
+          return prev;
+        }
+  
         if (!isBooked && !isCurrentUserSeat) {
           if (newSeats.includes(index)) {
             newSeats.splice(newSeats.indexOf(index), 1);
@@ -134,13 +158,19 @@ const SeatSelection = () => {
           } else {
             newSeats.push(index);
           }
-        } else setConfirmation(true);
+        } else {
+          setConfirmation(true);
+        }
+  
+        localStorage.setItem(`selectedSeats_${busId}`, JSON.stringify(newSeats));
+  
         return newSeats;
       });
-    } catch (err) {
-      console.error("Error selecting seat:", err);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
   };
+    
 
   const handleConfirmSeats = async (type) => {
     setIsLoading(true);
@@ -152,16 +182,18 @@ const SeatSelection = () => {
           { data: { selectedSeats, userId }, withCredentials: true }
         );
 
-        setTimeout(() => {
-          setIsLoading(false);
-          setAlertMessage("Successfully reserved seats");
-          setAlertFlag(true);
-        }, 1000);
+        if (response.status === 200 || response.status === 202) {
+          setTimeout(() => {
+            setIsLoading(false);
+            setAlertMessage(`${response.data.message}`);
+            setAlertFlag(true);
+          }, 1000);
 
-        setTimeout(() => {
-          setAlertFlag(false);
-          navigate(`/payment/${selectedSeats}`);
-        }, 2200);
+          setTimeout(() => {
+            setAlertFlag(false);
+            navigate(`/payment/${selectedSeats}`);
+          }, 2200);          
+        }
       } catch (error) {
         if (error.response && error.response.status === 400) {
           setSelectedSeats([]);
@@ -179,21 +211,6 @@ const SeatSelection = () => {
             );
             setAlertFlag(true);
           }, 1000);
-
-          setTimeout(() => {
-            setAlertFlag(false);
-          }, 2200);
-        } else if (error.response && error.response.status === 302) {
-          setTimeout(() => {
-            setIsLoading(false);
-            setAlertMessage("Successfully reserved seats");
-            setAlertFlag(true);
-          }, 1000);
-
-          setTimeout(() => {
-            setAlertFlag(false);
-            navigate(`/payment/${selectedSeats}`);
-          }, 2500);
         } else {
           console.error("An error occurred:", error);
         }
@@ -222,9 +239,6 @@ const SeatSelection = () => {
         setAlertFlag(true);
       }, 1000);
 
-      setTimeout(() => {
-        setAlertFlag(false);
-      }, 2200);
     }
   };
 
