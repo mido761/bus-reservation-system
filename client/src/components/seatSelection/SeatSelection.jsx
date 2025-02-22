@@ -202,7 +202,7 @@ const SeatSelection = () => {
             setIsLoading(false);
             setAlertMessage(
               <div className="payment-success-container">
-                <h1>Payment Failed</h1>
+                <h1>Reserving Failed</h1>
                 <p>
                   {error.response.data.message}
                 </p>

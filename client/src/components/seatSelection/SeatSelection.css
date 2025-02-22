@@ -130,7 +130,7 @@
 
 /* Selected Seat */
 .seat.selected {
-  border: 3px solid red; /* More defined border */
+  border: 2px solid red; /* More defined border */
 }
 
 /* Buttons */
