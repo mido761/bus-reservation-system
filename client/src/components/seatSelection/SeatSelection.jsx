@@ -204,8 +204,7 @@ const SeatSelection = () => {
               <div className="payment-success-container">
                 <h1>Payment Failed</h1>
                 <p>
-                  The selected seats are already Reserved. <br /> <br />
-                  Please try again with different seats.
+                  {error.response.data.message}
                 </p>
               </div>
             );
@@ -220,6 +219,7 @@ const SeatSelection = () => {
         `${backEndUrl}/seatselection/${busId}`,
         { data: { selectedSeats, userId }, withCredentials: true }
       );
+
       setBusDetails(response.data.updatedBus);
       setSelectedSeats([]);
 

@@ -29,16 +29,16 @@ const Dashboard = ({ busDetails, error, userId }) => {
   //   return <LoadingComponent/>;
   // }
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  // if (error) {
+  //   return <p>{error}</p>;
+  // }
 
   return (
     <>
       <div className="dashboard-container">
         <h1 className="dashboard-title">Dashboard</h1>
         <div className="dashboard-cards">
-          {busDetails.length > 0 ? (
+          {busDetails && busDetails.length > 0 ? (
             busDetails.map(
               (bus, index) =>
                 bus !== null && (

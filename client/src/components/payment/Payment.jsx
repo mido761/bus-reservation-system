@@ -97,18 +97,17 @@ const Payment = () => {
             <div className="payment-success-container">
               <h1>⚠️ Payment Failed</h1>
               <p>
-                The selected seats are already booked. <br /> <br />
-                Please try again with different seats.
+                {error.response.data}
               </p>
             </div>
           );
           setAlertFlag(true);
         }, 1000);
 
-        setTimeout(() => {
-          setAlertFlag(false);
-          navigate(-1);
-        }, 2200);
+        // setTimeout(() => {
+        //   setAlertFlag(false);
+        //   navigate(-1);
+        // }, 2200);
       } else {
         console.error("An error occurred:", error);
       }

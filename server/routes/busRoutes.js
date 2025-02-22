@@ -3,7 +3,7 @@ const Bus = require("../models/busModel");
 const User = require("../models/user");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 // Add new Bus details
 router.post("/", middleware.isAuthoraized, async (req, res) => {
@@ -93,10 +93,14 @@ router.get("/", async (req, res) => {
 // Fetch multiple buses at once
 router.get("/userBuses", async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
-  const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
-  res.json(busDetails);
+  // console.log("IDs: ", ids)
+  // return res.json(ids)
+  if (ids) {
+    const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
+    return res.json(busDetails);
+  }
+  return res.json(busDetails = []);
 });
-
 
 router.get("/:id", async (req, res) => {
   try {
@@ -112,8 +116,14 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
     const id = req.params.id;
     const busDetails = await Bus.findById(id);
     await User.updateMany(
-      { _id: { $in: busDetails.seats.bookedSeats.filter(mongoose.Types.ObjectId.isValid) } },
-      { $pull: { "bookedBuses.buses": id } }
+      {
+        _id: {
+          $in: busDetails.seats.bookedSeats.filter(
+            mongoose.Types.ObjectId.isValid
+          ),
+        },
+      },
+      { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] } }
     );
     const deletedBus = await Bus.deleteOne({ _id: id });
 

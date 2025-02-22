@@ -40,7 +40,7 @@ const UserProfile = () => {
       } catch (err) {
         console.error("Error fetching bus details:", err);
         setError("Failed to fetch bus details.");
-      } 
+      }
     };
 
     // const fetchUsers = async () => {
@@ -65,15 +65,17 @@ const UserProfile = () => {
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
 
-        const userDetails = res.data
+        const userDetails = res.data;
         const busIds = userDetails.bookedBuses.buses;
 
         const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
-          params: { ids: busIds.join(",") },
+          params: { ids: busIds?.length ? busIds.join(",") : [] },
         });
         const buses = response.data;
-        
-        setBusDetails((prevBuses) => (Array.isArray(prevBuses) ? [...prevBuses, ...buses] : [...buses]));
+
+        setBusDetails((prevBuses) =>
+          Array.isArray(prevBuses) ? [...prevBuses, ...buses] : [...buses]
+        );
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Failed to fetch bus details.");
