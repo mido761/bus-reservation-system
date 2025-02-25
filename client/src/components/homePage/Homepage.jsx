@@ -97,7 +97,7 @@ const Homepage = () => {
     );
     setFilteredBuses(filtered);
   };
-  
+
   // selected routes
   const handleRouteSelect = (route) => {
     const [pickup, arrival] = route.split(" to ");
@@ -148,7 +148,6 @@ const Homepage = () => {
     return `${hour12}:${minute} ${period}`;
   };
 
-  
   return (
     <div className="home-page">
       {location.pathname === "/home" && (
@@ -173,18 +172,18 @@ const Homepage = () => {
             value={pickupPoint}
           >
             <option value="">Pickup Point</option>
-            <option value="E-JUST">Borg Al-Arab</option>
-            <option value="Abaseya">Alexandria</option>
-            <option value="Dandy">Cairo</option>
+            <option value="E-JUST">E-JUST</option>
+            <option value="Abaseya">Abaseya</option>
+            <option value="Dandy">Dandy</option>
           </select>
           <select
             onChange={(e) => setArrivalPoint(e.target.value)}
             value={arrivalPoint}
           >
             <option value="">Arrival Point</option>
-            <option value="E-JUST">Cairo</option>
-            <option value="Ramses">Borg Al-Arab</option>
-            <option value="Dandy">Alexandria</option>
+            <option value="E-JUST">E-JUST</option>
+            <option value="Ramses">Ramses</option>
+            <option value="Dandy">Dandy</option>
           </select>
           <input
             type="date"
@@ -231,8 +230,14 @@ const Homepage = () => {
                   {bus.location.pickupLocation} <span>To </span>
                   {bus.location.arrivalLocation}
                 </p>
-                <p>Time: {convertTo12HourFormat(bus.time.departureTime) }</p>
-                <p><span>{(bus.seats.availableSeats === 0) ? "Full": `Available Seats: ${bus.seats.availableSeats}`}</span></p>
+                <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
+                <p>
+                  <span>
+                    {bus.seats.availableSeats === 0
+                      ? "Full"
+                      : `Available Seats: ${bus.seats.availableSeats}`}
+                  </span>
+                </p>
                 <p>Price: {bus.price}</p>
               </div>
             ))
