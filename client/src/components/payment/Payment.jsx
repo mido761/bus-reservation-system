@@ -97,7 +97,7 @@ const Payment = () => {
             <div className="payment-success-container">
               <h1>⚠️ Payment Failed</h1>
               <p>
-                {error.response.data}
+                {(error.response.data.message)}
               </p>
             </div>
           );
