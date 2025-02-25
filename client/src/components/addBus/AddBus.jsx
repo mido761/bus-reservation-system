@@ -44,8 +44,8 @@ const AddBus = () => {
     setBookingTimeAllowance(1);
     setAllowedNumberOfBags(2);
     setSchedule(today); // Keep this empty for manual entry
-    setDepartureTime(convertTo24HourFormat("4:00 PM")); // Keep this empty for manual entry
-    setArrivalTime(convertTo24HourFormat("9:00 PM")); // Keep this empty for manual entry
+    setDepartureTime("16:00"); // Keep this empty for manual entry
+    setArrivalTime("21:00"); // Keep this empty for manual entry
   };
 
   const handleSubmit = async (e) => {
@@ -149,16 +149,16 @@ const AddBus = () => {
           <input
             type="time"
             placeholder="Leaving Time"
-            value={convertTo12HourFormat(departureTime)}
-            onChange={(e) => setDepartureTime(convertTo24HourFormat(e.target.value))}
+            value={(departureTime)}
+            onChange={(e) => setDepartureTime((e.target.value))}
           />
 
           <label>Arrival Time</label>
           <input
             type="time"
             placeholder="Arrival Time"
-            value={convertTo12HourFormat(arrivalTime)}
-            onChange={(e) => setArrivalTime(convertTo24HourFormat(e.target.value))}
+            value={(arrivalTime)}
+            onChange={(e) => setArrivalTime((e.target.value))}
           />
 
           <label>Price</label>
