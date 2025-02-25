@@ -357,7 +357,7 @@ const SeatSelection = () => {
                       : "This seat is reserved temporarily"
                   }
                 >
-                  {/* {index + 1} */}
+                  {index + 1}
                 </div>
               );
             })}

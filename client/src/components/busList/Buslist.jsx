@@ -52,7 +52,8 @@ const BusList = () => {
       // Step 3: Merge user data with counts
       const usersWithCounts = response.data.map((user) => ({
         ...user,
-        count: userCounts[user._id], // Add count of occurrences
+        count: userCounts[user._id],
+          // Add count of occurrences
       }));
 
       setUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
@@ -140,11 +141,12 @@ const BusList = () => {
                     {usersByBus[bus._id].map((user, index) => (
                       <p key={index} className="booked-user">
                         <span className="user-name">{user.name}</span>
-                        <span className="user-phone">({user.phoneNumber})</span>
-                        <span className="user-count">
+                        <span className="user-phone">({user.phoneNumber})</span>&nbsp;
+                        <span className="user-seats">({user.bookedBuses.seats.map((seat) => seat + 1).join(", ")})</span>
+                        {/* <span className="user-count">
                           {" "}
                           &nbsp;x{user.count}
-                        </span>{" "}
+                        </span>{" "} */}
                         {/* Show count */}
                       </p>
                     ))}
