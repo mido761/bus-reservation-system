@@ -6,12 +6,7 @@ import Overlay from "../overlayScreen/overlay";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-const locations = [
-  "Ramses",
-  "Dandy",
-  "E-JUST",
-  "Abaseya"
-];
+const locations = ["Ramses", "Dandy", "E-JUST", "Abaseya"];
 
 const AddBus = () => {
   const [totalSeats, setAllSeats] = useState(15);
@@ -50,10 +45,18 @@ const AddBus = () => {
 
   const handleSubmit = async (e) => {
     setIsLoading(true);
-    console.log(totalSeats, schedule, price, pickupLocation, arrivalLocation, arrivalTime, departureTime);
+    console.log(
+      totalSeats,
+      schedule,
+      price,
+      pickupLocation,
+      arrivalLocation,
+      arrivalTime,
+      departureTime
+    );
     e.preventDefault();
     try {
-       setAllSeats(15);
+      setAllSeats(15);
       await axios.post(`${backEndUrl}/buses`, {
         totalSeats,
         schedule,
@@ -85,34 +88,8 @@ const AddBus = () => {
       }, 2200);
     }
   };
-  const convertTo12HourFormat = (time) => {
-    if (!time) return "";
-    const [hour, minute] = time.split(":");
-    let period = "AM";
-    let hour12 = parseInt(hour, 10);
-  
-    if (hour12 >= 12) {
-      period = "PM";
-      if (hour12 > 12) hour12 -= 12;
-    }
-    if (hour12 === 0) hour12 = 12;
-  
-    return `${hour12}:${minute} ${period}`;
-  };
-  const convertTo24HourFormat = (time) => {
-    const match = time.match(/(\d+):(\d+) (AM|PM)/);
-    if (!match) return "";
-    
-    let [, hour, minute, period] = match;
-    hour = parseInt(hour, 10);
-  
-    if (period === "PM" && hour !== 12) hour += 12;
-    if (period === "AM" && hour === 12) hour = 0;
-  
-    return `${hour.toString().padStart(2, "0")}:${minute}`;
-  };
-  
-  
+
+
   return (
     <div className="add-bus-page">
       <form onSubmit={handleSubmit} className="add-bus">
@@ -145,22 +122,21 @@ const AddBus = () => {
             ))}
           </select>
 
-          <label>Departure Time</label>
+          <label>Departure time</label>
           <input
-            type="text"
-            placeholder="Leaving Time"
-            value={convertTo12HourFormat(departureTime)}
-            onChange={(e) => setDepartureTime(convertTo24HourFormat(e.target.value))}
+            type="time"
+            placeholder="Leaving time"
+            value={departureTime}
+            onChange={(e) => setDepartureTime(e.target.value)}
           />
 
-          <label>Arrival Time</label>
+          <label>Arrival time</label>
           <input
-            type="text"
-            placeholder="Arrival Time"
-            value={convertTo12HourFormat(arrivalTime)}
-            onChange={(e) => setArrivalTime(convertTo24HourFormat(e.target.value))}
+            type="time"
+            placeholder="Arrival time"
+            value={arrivalTime}
+            onChange={(e) => setArrivalTime(e.target.value)}
           />
-
           <label>Price</label>
           <input
             type=""

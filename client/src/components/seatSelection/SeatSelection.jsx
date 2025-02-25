@@ -245,6 +245,33 @@ const SeatSelection = () => {
     }
   };
 
+  const convertTo12HourFormat = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(":");
+    let period = "AM";
+    let hour12 = parseInt(hour, 10);
+
+    if (hour12 >= 12) {
+      period = "PM";
+      if (hour12 > 12) hour12 -= 12;
+    }
+    if (hour12 === 0) hour12 = 12;
+
+    return `${hour12}:${minute} ${period}`;
+  };
+  const convertTo24HourFormat = (time) => {
+    const match = time.match(/(\d+):(\d+) (AM|PM)/);
+    if (!match) return "";
+
+    let [, hour, minute, period] = match;
+    hour = parseInt(hour, 10);
+
+    if (period === "PM" && hour !== 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
+
+    return `${hour.toString().padStart(2, "0")}:${minute}`;
+  };
+
   if (loading) return <LoadingPage />;
   if (error) return <p>{error}</p>;
 
@@ -258,7 +285,7 @@ const SeatSelection = () => {
           <h2>Bus details</h2>
           <div className="bus-data">
             <p>
-              <strong>Time</strong> {busDetails.time.departureTime}
+              <strong>Time</strong> {convertTo12HourFormat(busDetails.time.departureTime)}
             </p>
             <p>
               <strong>Price</strong> {busDetails.price}

@@ -102,6 +102,20 @@ const BusList = () => {
       }, 2200);
     }
   };
+  const convertTo12HourFormat = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(":");
+    let period = "AM";
+    let hour12 = parseInt(hour, 10);
+
+    if (hour12 >= 12) {
+      period = "PM";
+      if (hour12 > 12) hour12 -= 12;
+    }
+    if (hour12 === 0) hour12 = 12;
+
+    return `${hour12}:${minute} ${period}`;
+  };
 
   return (
     <div className="bus-list-page">
@@ -145,7 +159,7 @@ const BusList = () => {
               <p>Price: {bus.price}</p>
               <p>Schedule: {bus.schedule}</p>
               <p>
-                {bus.time.departureTime} <span>to</span> {bus.time.arrivalTime}
+                {convertTo12HourFormat(bus.time.departureTime)}
               </p>
               <p>Allowed number of bags: {bus.allowedNumberOfBags}</p>
               <button onClick={() => handleDel(bus._id)}>Delete Bus</button>

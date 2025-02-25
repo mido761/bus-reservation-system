@@ -32,6 +32,21 @@ const Dashboard = ({ busDetails, error, userId }) => {
   // if (error) {
   //   return <p>{error}</p>;
   // }
+  const convertTo12HourFormat = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(":");
+    let period = "AM";
+    let hour12 = parseInt(hour, 10);
+
+    if (hour12 >= 12) {
+      period = "PM";
+      if (hour12 > 12) hour12 -= 12;
+    }
+    if (hour12 === 0) hour12 = 12;
+
+    return `${hour12}:${minute} ${period}`;
+  };
+
 
   return (
     <>
@@ -53,7 +68,7 @@ const Dashboard = ({ busDetails, error, userId }) => {
                     </p>
                     <p>{bus.schedule}</p>
                     <p>
-                      {bus.time.departureTime} to {bus.time.arrivalTime}
+                      {convertTo12HourFormat(bus.time.departureTime)}
                     </p>
                     <p>
                       {bus.seats.bookedSeats
