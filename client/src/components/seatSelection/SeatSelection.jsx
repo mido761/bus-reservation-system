@@ -300,7 +300,7 @@ const SeatSelection = () => {
               return (
                 <div
                   key={index}
-                  className={`seat ${isSelected ? "selected" : ""} ${
+                  className={`seat ${[1, 2, 8, 11, 15].includes(index + 1) ? "hidden-seat": ""}  ${isSelected ? "selected" : ""} ${
                     isReserved &&
                     !isReservedForCurrentUser &&
                     !isCurrentUserBookedSeat
@@ -327,7 +327,7 @@ const SeatSelection = () => {
                       : "This seat is reserved temporarily"
                   }
                 >
-                  {index + 1}
+                  {/* {index + 1} */}
                 </div>
               );
             })}

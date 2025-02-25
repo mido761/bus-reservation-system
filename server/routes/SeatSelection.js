@@ -114,10 +114,10 @@ router.post("/:busId", async (req, res) => {
         try {
           const newBus = new Bus({
             seats: {
-              totalSeats: updatedBus.seats.totalSeats,
-              availableSeats: updatedBus.seats.totalSeats,
+              totalSeats: 20,
+              availableSeats: 15,
               bookedSeats: Array.from(
-                { length: updatedBus.seats.totalSeats },
+                { length: 20 },
                 () => 0
               ),
             },

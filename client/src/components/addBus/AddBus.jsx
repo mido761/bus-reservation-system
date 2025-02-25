@@ -7,11 +7,10 @@ import Overlay from "../overlayScreen/overlay";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const locations = [
-  "Borg Al-Arab",
-  "Cairo",
-  "Alexandria",
-  "Sharm El-Sheikh",
-  "Aswan",
+  "Ramses",
+  "Dandy",
+  "E-JUST",
+  "Abaseya"
 ];
 
 const AddBus = () => {
@@ -39,8 +38,8 @@ const AddBus = () => {
     setAllSeats(15);
     setMinNoPassengers(11);
     setPrice(110);
-    setPickupLocation("Borg Al-Arab");
-    setArrivalLocation("Cairo");
+    setPickupLocation("E-JUST");
+    setArrivalLocation("Ramses");
     setCancelTimeAllowance(2);
     setBookingTimeAllowance(1);
     setAllowedNumberOfBags(2);

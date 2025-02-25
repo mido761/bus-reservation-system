@@ -64,10 +64,10 @@ const Homepage = () => {
 
   // popular routes list
   const popularRoutes = [
-    { id: 1, route: "Borg Al-Arab to Cairo" },
-    { id: 2, route: "Alexandria to Borg Al-Arab" },
-    { id: 3, route: "Cairo to Alexandria" },
-    { id: 3, route: "Cairo to Borg Al-Arab" },
+    { id: 1, route: "Abaseya to E-JUST" },
+    { id: 2, route: "Dandy to E-JUST" },
+    { id: 3, route: "E-JUST to Ramses" },
+    { id: 3, route: "E-JUST to Dandy" },
   ];
 
   // Handle selected bus
@@ -223,6 +223,7 @@ const Homepage = () => {
                   {bus.location.pickupLocation} <span>To </span>
                   {bus.location.arrivalLocation}
                 </p>
+                <p>Time: {bus.time.departureTime} : {bus.time.arrivalTime}</p>
                 <p><span>{(bus.seats.availableSeats === 0) ? "Full": `Available Seats: ${bus.seats.availableSeats}`}</span></p>
                 <p>Price: {bus.price}</p>
               </div>

@@ -65,7 +65,7 @@
 
 .seat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   width: 250px;
   justify-items: center;
@@ -98,6 +98,11 @@
   background-color: green;
   color: var(--button-text);
   border: 2px solid darkgreen;
+}
+
+.hidden-seat{
+  visibility: hidden;
+  user-select: none;
 }
 
 /* Reserved Seats */

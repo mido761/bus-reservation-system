@@ -50,10 +50,10 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     // console.log('Allowed Number of Bags:', allowedNumberOfBags);
     const newBus = new Bus({
       seats: {
-        totalSeats: 15,
+        totalSeats: 20,
         availableSeats: totalSeats,
         // bookedSeats: new Array(totalSeats).fill(0)
-        bookedSeats: Array.from({ length: 15 }, () => 0),
+        bookedSeats: Array.from({ length: 20 }, () => 0),
       },
       schedule: schedule,
       price: price,
