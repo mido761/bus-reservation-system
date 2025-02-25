@@ -1,9 +1,9 @@
 .seat-legend-container {
     display: flex;
-    gap: 20px;
-    padding: 15px;
-    width: fit-content;
-    background: #f4f4f4;
+    gap: 12px;
+    padding: 5px;
+    width: 1px,16px;
+    /* background: #f4f4f4; */
     border-radius: 25px;
     box-shadow: none;
     justify-content: flex-start;

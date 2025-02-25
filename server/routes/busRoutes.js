@@ -48,6 +48,12 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     // console.log('Cancel Time Allowance:', cancelTimeAllowance);
     // console.log('Booking Time Allowance:', bookingTimeAllowance);
     // console.log('Allowed Number of Bags:', allowedNumberOfBags);
+    function convertTo12HourFormat(time) {
+      const [hours, minutes] = time.split(":");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      const formattedHours = hours % 12 || 12; // Convert 0 to 12
+      return `${formattedHours}:${minutes} ${ampm}`;
+    }
     const newBus = new Bus({
       seats: {
         totalSeats: 20,
@@ -62,7 +68,8 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
         pickupLocation: pickupLocation,
         arrivalLocation: arrivalLocation,
       },
-      time: { departureTime: departureTime, arrivalTime: arrivalTime },
+      time: { departureTime: convertTo12HourFormat(departureTime), 
+        arrivalTime: convertTo12HourFormat(arrivalTime) },
       allowance: {
         cancelTimeAllowance: cancelTimeAllowance,
         bookingTimeAllowance: bookingTimeAllowance,
