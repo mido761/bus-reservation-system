@@ -85,12 +85,12 @@ const SeatSelection = () => {
         }
       }));
     });
-    channel.bind("bus-deleted", (data) => {
-      if (data.busId === busId) {
-        localStorage.removeItem(`selectedSeats_${busId}`);
-        setSelectedSeats([]);
-      }
-    });
+    // channel.bind("bus-deleted", (data) => {
+    //   if (data.busId === busId) {
+    //     localStorage.removeItem(`selectedSeats_${busId}`);
+    //     setSelectedSeats([]);
+    //   }
+    // });
     
     
 
@@ -100,12 +100,13 @@ const SeatSelection = () => {
       pusher.disconnect();
     };
   }, []);
-  useEffect(() => {
-    const savedSeats = localStorage.getItem(`selectedSeats_${busId}`);
-    if (savedSeats) {
-      setSelectedSeats(JSON.parse(savedSeats));
-    }
-  }, [busId]);
+
+  // useEffect(() => {
+  //   const savedSeats = localStorage.getItem(`selectedSeats_${busId}`);
+  //   if (savedSeats) {
+  //     setSelectedSeats(JSON.parse(savedSeats));
+  //   }
+  // }, [busId]);
   
   const handleSeatSelect = async (seat, index) => {
     // setReservedSeats(
@@ -142,7 +143,9 @@ const SeatSelection = () => {
         const newSeats = [...prev];
   
         if (newSeats.length >= 2 && !newSeats.includes(index)) {
-          alert("You can only select a maximum of 2 seats.");
+          // alert("You can only select a maximum of 2 seats.");
+          setAlertMessage("You can only select a maximum of 2 seats.");
+          setAlertFlag(true);
           return prev;
         }
   
@@ -162,7 +165,7 @@ const SeatSelection = () => {
           setConfirmation(true);
         }
   
-        localStorage.setItem(`selectedSeats_${busId}`, JSON.stringify(newSeats));
+        // localStorage.setItem(`selectedSeats_${busId}`, JSON.stringify(newSeats));
   
         return newSeats;
       });
