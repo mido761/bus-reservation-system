@@ -125,17 +125,17 @@ const AddBus = () => {
           <label>Departure time</label>
           <input
             type="time"
-            placeholder="Leaving time"
-            value={departureTime}
-            onChange={(e) => setDepartureTime(e.target.value)}
+            placeholder="Leaving Time"
+            value={(departureTime)}
+            onChange={(e) => setDepartureTime((e.target.value))}
           />
 
           <label>Arrival time</label>
           <input
             type="time"
-            placeholder="Arrival time"
-            value={arrivalTime}
-            onChange={(e) => setArrivalTime(e.target.value)}
+            placeholder="Arrival Time"
+            value={(arrivalTime)}
+            onChange={(e) => setArrivalTime((e.target.value))}
           />
           <label>Price</label>
           <input
