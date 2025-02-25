@@ -106,6 +106,7 @@ router.post("/:busId", async (req, res) => {
 
       const availableBusesCount = await Bus.countDocuments({
         "location.pickupLocation": updatedBus.location.pickupLocation,
+        "location.arrivalLocation": updatedBus.location.arrivalLocation,
         "time.departureTime": updatedBus.time.departureTime,
         "seats.availableSeats": { $gt: 0 },
       });
