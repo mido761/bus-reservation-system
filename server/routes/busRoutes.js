@@ -80,6 +80,29 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
       .json({ message: "Error adding the bus details", error: err.message });
   }
 });
+// Search for a user in the bus list
+router.get("/searchUser", async (req, res) => {
+  try {
+    const { username } = req.query;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    // Find buses where the username is in the bookedUsers list
+    const buses = await Bus.find({
+      "seats.bookedUsers": { $elemMatch: { name: username } },
+    });
+
+    if (buses.length === 0) {
+      return res.status(404).json({ message: "User not found in any bus" });
+    }
+
+    res.status(200).json(buses);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+});
 
 // Get all buses
 router.get("/", async (req, res) => {
