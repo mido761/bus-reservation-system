@@ -6,16 +6,10 @@ import Overlay from "../overlayScreen/overlay";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-const locations = [
-  "Borg Al-Arab",
-  "Cairo",
-  "Alexandria",
-  "Sharm El-Sheikh",
-  "Aswan",
-];
+const locations = ["Ramses", "Dandy", "E-JUST", "Abaseya"];
 
 const AddBus = () => {
-  const [totalSeats, setAllSeats] = useState("");
+  const [totalSeats, setAllSeats] = useState(15);
   const [schedule, setSchedule] = useState("");
   const [minNoPassengers, setMinNoPassengers] = useState("");
   const [price, setPrice] = useState("");
@@ -39,8 +33,8 @@ const AddBus = () => {
     setAllSeats(15);
     setMinNoPassengers(11);
     setPrice(110);
-    setPickupLocation("Borg Al-Arab");
-    setArrivalLocation("Cairo");
+    setPickupLocation("E-JUST");
+    setArrivalLocation("Ramses");
     setCancelTimeAllowance(2);
     setBookingTimeAllowance(1);
     setAllowedNumberOfBags(2);
@@ -51,22 +45,26 @@ const AddBus = () => {
 
   const handleSubmit = async (e) => {
     setIsLoading(true);
-
+    console.log(
+      totalSeats,
+      schedule,
+      price,
+      pickupLocation,
+      arrivalLocation,
+      arrivalTime,
+      departureTime
+    );
     e.preventDefault();
     try {
-       setAllSeats(15);
+      setAllSeats(15);
       await axios.post(`${backEndUrl}/buses`, {
         totalSeats,
         schedule,
-        minNoPassengers,
         price,
         pickupLocation,
         arrivalLocation,
         departureTime,
         arrivalTime,
-        cancelTimeAllowance,
-        bookingTimeAllowance,
-        allowedNumberOfBags,
       });
 
       setTimeout(() => {
@@ -90,6 +88,7 @@ const AddBus = () => {
       }, 2200);
     }
   };
+
 
   return (
     <div className="add-bus-page">
@@ -126,19 +125,18 @@ const AddBus = () => {
           <label>Departure time</label>
           <input
             type="time"
-            placeholder="Leaving time"
-            value={departureTime}
-            onChange={(e) => setDepartureTime(e.target.value)}
+            placeholder="Leaving Time"
+            value={(departureTime)}
+            onChange={(e) => setDepartureTime((e.target.value))}
           />
 
           <label>Arrival time</label>
           <input
             type="time"
-            placeholder="Arrival time"
-            value={arrivalTime}
-            onChange={(e) => setArrivalTime(e.target.value)}
+            placeholder="Arrival Time"
+            value={(arrivalTime)}
+            onChange={(e) => setArrivalTime((e.target.value))}
           />
-
           <label>Price</label>
           <input
             type=""

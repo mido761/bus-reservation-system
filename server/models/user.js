@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: false },
   password: { type: String, required: false },
   bookedBuses: {
-    buses: [{ type: Array, required: false }],
+    buses: [{ type: String, required: false }],
+    seats: [{ type: Number, required: false }]
   },
   role: { type: String, required: false , default: "user"},
 });

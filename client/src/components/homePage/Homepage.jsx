@@ -64,10 +64,10 @@ const Homepage = () => {
 
   // popular routes list
   const popularRoutes = [
-    { id: 1, route: "Borg Al-Arab to Cairo" },
-    { id: 2, route: "Alexandria to Borg Al-Arab" },
-    { id: 3, route: "Cairo to Alexandria" },
-    { id: 3, route: "Cairo to Borg Al-Arab" },
+    { id: 1, route: "Abaseya to E-JUST" },
+    { id: 2, route: "Dandy to E-JUST" },
+    { id: 3, route: "E-JUST to Ramses" },
+    { id: 3, route: "E-JUST to Dandy" },
   ];
 
   // Handle selected bus
@@ -97,7 +97,7 @@ const Homepage = () => {
     );
     setFilteredBuses(filtered);
   };
-  
+
   // selected routes
   const handleRouteSelect = (route) => {
     const [pickup, arrival] = route.split(" to ");
@@ -133,6 +133,20 @@ const Homepage = () => {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+  const convertTo12HourFormat = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(":");
+    let period = "AM";
+    let hour12 = parseInt(hour, 10);
+
+    if (hour12 >= 12) {
+      period = "PM";
+      if (hour12 > 12) hour12 -= 12;
+    }
+    if (hour12 === 0) hour12 = 12;
+
+    return `${hour12}:${minute} ${period}`;
+  };
 
   return (
     <div className="home-page">
@@ -158,25 +172,18 @@ const Homepage = () => {
             value={pickupPoint}
           >
             <option value="">Pickup Point</option>
-            <option value="Borg Al-Arab">Borg Al-Arab</option>
-            <option value="Alexandria">Alexandria</option>
-            <option value="Cairo">Cairo</option>
-            <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
-            <option value="Aswan">Aswan</option>
-            <option value="Luxor">Luxor</option>
+            <option value="E-JUST">E-JUST</option>
+            <option value="Abaseya">Abaseya</option>
+            <option value="Dandy">Dandy</option>
           </select>
           <select
             onChange={(e) => setArrivalPoint(e.target.value)}
             value={arrivalPoint}
           >
             <option value="">Arrival Point</option>
-            <option value="Cairo">Cairo</option>
-            <option value="Borg Al-Arab">Borg Al-Arab</option>
-            <option value="Alexandria">Alexandria</option>
-            <option value="Sharm El-Sheikh">Sharm El-Sheikh</option>
-            <option value="Aswan">Aswan</option>
-            <option value="Luxor">Luxor</option>
-            <option value="Hurghada">Hurghada</option>
+            <option value="E-JUST">E-JUST</option>
+            <option value="Ramses">Ramses</option>
+            <option value="Dandy">Dandy</option>
           </select>
           <input
             type="date"
@@ -223,7 +230,14 @@ const Homepage = () => {
                   {bus.location.pickupLocation} <span>To </span>
                   {bus.location.arrivalLocation}
                 </p>
-                <p><span>{(bus.seats.availableSeats === 0) ? "Full": `Available Seats: ${bus.seats.availableSeats}`}</span></p>
+                <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
+                <p>
+                  <span>
+                    {bus.seats.availableSeats === 0
+                      ? "Full"
+                      : `Available Seats: ${bus.seats.availableSeats}`}
+                  </span>
+                </p>
                 <p>Price: {bus.price}</p>
               </div>
             ))
