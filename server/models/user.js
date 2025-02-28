@@ -5,6 +5,7 @@ const UserSchema = new mongoose.Schema({
   phoneNumber: { type: Number, required: false },
   email: { type: String, required: false },
   password: { type: String, required: false },
+  checkInStatus: { type: Boolean, default: false }, // New field for check-in status
   bookedBuses: {
     buses: [{ type: String, required: false }],
     seats: [{ type: Number, required: false }]
