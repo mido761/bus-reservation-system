@@ -98,4 +98,15 @@ router.delete("/bus/:id", async (req, res) => {
   }
 });
 
+router.put("/check-in/:userId", async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.userId, { checkInStatus: true }, { new: true });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ message: "Check-in successful", user });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 module.exports = router;

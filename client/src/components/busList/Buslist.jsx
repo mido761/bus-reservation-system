@@ -107,6 +107,29 @@ const BusList = () => {
   };
   
 
+  const handleCheckIn = async (userId, busId) => {
+    try {
+      await axios.put(`${backEndUrl}/user/check-in/${userId}`); // Send check-in request
+
+      // Update the state to mark the user as checked in
+      setUsersByBus((prev) => ({
+        ...prev,
+        [busId]: prev[busId].map((user) =>
+          user._id === userId ? { ...user, checkInStatus: true } : user
+        ),
+      }));
+
+      setAlertMessage("User checked in successfully!");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2000);
+    } catch (error) {
+      console.error("Check-in failed", error);
+      setAlertMessage("⚠️ Error during check-in");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2000);
+    }
+  };
+  
   const handleUserSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setUserSearchQuery(query);
@@ -179,9 +202,19 @@ const BusList = () => {
                       <p key={index} className="booked-user">
                         <span className="user-info">
                           <span className="user-name">{user.name.replace(/_/g, ' ')}</span>
-                          <span className="user-count">({user.count})</span>
+                          {/* <span className="user-count">({user.count})</span> */}
                         </span>
                         <span className="user-phone">{user.phoneNumber}</span>
+                        <span className="user-seats">({user.bookedBuses.seats.map((seat) => seat + 1).join(", ")})</span>
+                        <span className="check-in-status">
+                        {user.checkInStatus ? "✅ Checked In" : "❌ Not Checked In"}
+                        </span>
+                        {!user.checkInStatus && (
+                          <button onClick={() => handleCheckIn(user._id, bus._id)}>
+                            Check In
+                          </button>
+                        )}
+
                       </p>
                     ))}
                   </ul>
@@ -203,6 +236,11 @@ const BusList = () => {
       
       {loading && <LoadingScreen />}
       {isLoading && <Overlay message="Loading Buses..." />} 
+       <Overlay
+        alertFlag={alertFlag}
+        alertMessage={alertMessage}
+        setAlertFlag={setAlertFlag}
+      />
     </div>
   );
 };
