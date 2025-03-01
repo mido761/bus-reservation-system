@@ -146,12 +146,12 @@ const BusList = () => {
         await axios.put(`${backEndUrl}/user/check-in/${userId}`); // Send check-in request
   
         // Update the state to mark the user as checked in
-        setUsersByBus((prev) => ({
-          ...prev,
-          [busId]: prev[busId].map((user) =>
-            user._id === userId ? { ...user, checkInStatus: true } : user
-          ),
-        }));
+        // setUsersByBus((prev) => ({
+        //   ...prev,
+        //   [busId]: prev[busId].map((user) =>
+        //     user._id === userId ? { ...user, checkInStatus: true } : user
+        //   ),
+        // }));
   
         setAlertMessage("User checked in successfully!");
         setAlertFlag(true);
@@ -207,6 +207,7 @@ const BusList = () => {
                         </span>
                         <span className="user-phone">{user.phoneNumber}</span>
                         <span className="check-in-status">
+                          {/* {user.checkInStatus} */}
                           {user.checkInStatus ? "✅ Checked In" : "❌ Not Checked In"}
                         </span>
                         {!user.checkInStatus && (
