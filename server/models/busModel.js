@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 const ReservedSeatSchema = new mongoose.Schema({
     seatNumber: { type: String, required: true },
     reservedBy: { type: String, required: true },
-    expiryDate: { 
-      type: Date, 
-      required: true, 
-      default: () => new Date(Date.now() + 10 * 60 * 1000) // Expires in 10 minutes
-    },
+    // expiryDate: { 
+    //   type: Date, 
+    //   required: true, 
+    //   default: () => new Date(Date.now() + 10 * 60 * 1000) // Expires in 10 minutes
+    // },
   });
 
 const BusSchema = new mongoose.Schema({
