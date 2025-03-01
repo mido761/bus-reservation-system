@@ -259,10 +259,25 @@ router.delete("/:busId", async (req, res) => {
       acc[`seats.bookedSeats.${seat}`] = "0";
       return acc;
     }, {});
+
+    const BookedUserIds = bus.seats.bookedSeats
+      .map((seat, index) => ({ seat, index }))
+      .filter(({ seat }) => seat !== "0");
+
+    const updatedBookedSeats = BookedUserIds.map(({ seat, index }) =>
+      selectedSeats.includes(index) ? { seat: "0", index } : { seat, index }
+    );
+
+    const bookedSeatUpdates = {};
+    updatedBookedSeats.forEach(({ seat, index }) => {
+      bookedSeatUpdates[`seats.bookedSeats.${index}`] = seat;
+    });
+
     // const reservedSeatUpdates = selectedSeats.reduce((acc, seat) => {
     //   acc[`seats.reservedSeats.${seat}`] = "0";
     //   return acc;
     // }, {});
+
     if (user.role === "admin") {
       const busData = await Bus.findOne(
         { _id: busId },
@@ -281,34 +296,55 @@ router.delete("/:busId", async (req, res) => {
             .map((seat) => seat.reservedBy)
         ),
       ];
-      
+
+      const updatedBus = await Bus.findByIdAndUpdate(
+        busId,
+        {
+          $set: bookedSeatUpdates,
+          $pull: {
+            "seats.reservedSeats":
+              user.role === "admin"
+                ? { seatNumber: { $in: seatStrings } } // Admin removes any seat
+                : { seatNumber: { $in: seatStrings }, reservedBy: userId }, // User removes only their own
+          },
+          $inc: { "seats.availableSeats": selectedSeats.length },
+        },
+        { new: true }
+      );
+
+      if (updatedBus) {
+        pusher.trigger("bus-channel", "seat-canceled", {
+          updatedBus,
+        });
+      }
+
       console.log(reservedUserIds); // Array of user IDs
 
-      // // Remove the selected seat numbers from each user's bookedBuses.seats
-      // await User.updateMany(
-      //   { _id: { $in: reservedUserIds } },
-      //   { $pull: { "bookedBuses.seats": { $in: selectedSeats } } }
-      // );
+      // Remove the selected seat numbers from each user's bookedBuses.seats
+      await User.updateMany(
+        { _id: { $in: BookedUserIds } },
+        { $pull: { "bookedBuses.seats": { $in: selectedSeats } } }
+      );
 
-      // // Now check if any user has no more booked seats and remove the bus
-      // const usersToRemoveBus = await User.find({
-      //   _id: { $in: reservedUserIds },
-      //   "bookedBuses.seats": { $size: 0 }, // Users with no remaining booked seats
-      // });
+      // Now check if any user has no more booked seats and remove the bus
+      const usersToRemoveBus = await User.find({
+        _id: { $in: BookedUserIds },
+        "bookedBuses.seats": { $size: 0 }, // Users with no remaining booked seats
+      });
 
-      // const usersToRemoveIds = usersToRemoveBus.map((u) => u._id);
+      const usersToRemoveIds = usersToRemoveBus.map((u) => u._id);
 
-      // if (usersToRemoveIds.length > 0) {
-      //   await User.updateMany(
-      //     { _id: { $in: usersToRemoveIds } },
-      //     { $pull: { "bookedBuses.buses": busId } }
-      //   );
-      // }
+      if (usersToRemoveIds.length > 0) {
+        await User.updateMany(
+          { _id: { $in: usersToRemoveIds } },
+          { $pull: { "bookedBuses.buses": busId } }
+        );
+      }
 
       return res.json({
         reservedUserIds,
         message: "Users updated successfully",
-        // updatedBus,
+        updatedBus,
       });
     }
 
