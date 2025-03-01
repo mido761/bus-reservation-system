@@ -66,6 +66,7 @@ app.options("*", (req, res) => {
 app.use(
   session({
     secret: "ARandomStringThatIsHardToGuess12345",
+    secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
     store: MonogoStore.create({ mongoUrl: process.env.MONGO_URI }),
@@ -126,20 +127,6 @@ mongoose
 // app.get("/api/buses", require('./routes/busRoutes'))
 
 app.post("/api/login", async (req, res) => {
-  // const {email,password} = req.body;
-  // userModel.findOne({email:email})
-  // .then(user => {
-  //     if (!user){
-  //         return res.status(404).json("This email does not exist");
-  //     }
-  //     const isPasswordValid = bcrypt.compare(password, user.password);
-  //     if(!isPasswordValid){
-  //         return res.status(401).json("The password is incorrect");
-  //     }
-  //     req.session.userId =user._id;
-  //     res.status(200).json("login successful");
-  // })
-  // .catch (err => res.status(500).json("Internal server error"))
   const { email, password } = req.body;
 
   try {
@@ -154,16 +141,23 @@ app.post("/api/login", async (req, res) => {
       return res.status(401).json("The password is incorrect");
     }
 
-    // Set session ID
-    console.log(req.session);
-    req.session.userId = user._id;
-    req.session.userRole = user.role;
-    console.log(req.session);
-    res.status(200).json("Login successful");
+    // Regenerate session to prevent session fixation
+    req.session.regenerate((err) => {
+      if (err) {
+        return res.status(500).json("Session error");
+      }
+
+      // Set new session values
+      req.session.userId = user._id;
+      req.session.userRole = user.role;
+
+      res.status(200).json("Login successful");
+    });
   } catch (err) {
     res.status(500).json("Internal server error");
   }
 });
+
 
 // app.post('/api/register', async (req , res) => {
 //     // const {email,password} = req.body;

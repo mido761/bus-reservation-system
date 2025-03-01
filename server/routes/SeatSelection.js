@@ -3,7 +3,7 @@ const router = express.Router();
 const Bus = require("../models/busModel");
 const User = require("../models/user");
 const Pusher = require("pusher");
-const middleware = require("../controllers/middleware");
+const innerAuth = require("../controllers/Inner Authorization");
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -12,7 +12,6 @@ const pusher = new Pusher({
   cluster: process.env.PUSHER_CLUSTER,
   useTLS: true,
 });
-
 router.get("/:id", async (req, res) => {
   try {
     const busId = req.params.id;
@@ -36,124 +35,101 @@ router.post("/:busId", async (req, res) => {
 
   try {
     const user = await User.findById(userId);
-    console.log(
-      user.bookedBuses.buses.length,
-      user.bookedBuses.seats.length,
-      user.bookedBuses.buses[0] === busId
-    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
+
+    // Regular users can only book up to 2 seats per bus
     if (
-      user.bookedBuses.buses.length > 0 &&
-      user.bookedBuses.seats.length >= 2 &&
-      user.bookedBuses.buses[0] === busId
+      !isAdmin &&
+      user.bookedBuses.buses.includes(busId) &&
+      user.bookedBuses.seats.length + seats.length > 2
     ) {
+      return res.status(400).json({
+        message: "Only two seats are allowed per user on the same bus!",
+      });
+    }
+
+    // Ensure all selected seats are available
+    const seatQuery = {
+      _id: busId,
+      $and: seats.map((seat) => ({ [`seats.bookedSeats.${seat}`]: "0" })), // Ensure all seats are free
+    };
+
+    const seatUpdate = {
+      $set: Object.fromEntries(
+        seats.map((seat) => [`seats.bookedSeats.${seat}`, userId])
+      ), // Assign user to seats
+    };
+
+    const updatedBus = await Bus.findOneAndUpdate(seatQuery, seatUpdate, {
+      new: true,
+    });
+
+    // If no document was updated, it means some seats were already booked
+    if (!updatedBus) {
       return res
         .status(400)
-        .json("Only two seats are allowed for the same bus!");
-    } else if (
-      user.bookedBuses.seats.length < 2 &&
-      (user.bookedBuses.buses.length === 0 ||
-        user.bookedBuses.buses[0] === busId)
-    ) {
-      const updatedBus = await Bus.findOneAndUpdate(
-        {
-          _id: busId,
-          $and: seats.map((seat) => ({
-            [`seats.bookedSeats.${seat}`]: "0", // Ensure seat is available
-          })),
-        },
-        {
-          $set: Object.fromEntries(
-            seats.map((seat) => [`seats.bookedSeats.${seat}`, userId])
-          ),
-        },
-        { new: true }
-      );
-
-      // If no bus was updated, it means some seats were already booked
-      if (!updatedBus) {
-        return res
-          .status(400)
-          .json({ message: "Some selected seats are already booked", busId });
-      }
-
-      // Notify other users via Pusher
-      pusher.trigger("bus-channel", "seat-booked", {
-        busId,
-        selectedSeats: seats,
-        userId,
-      });
-
-      const updatedUser = await User.findOneAndUpdate(
-        {
-          _id: userId,
-          // $expr: {
-          //   $and: [
-          //     { $eq: [ { $size: "$bookedBuses.buses" }, 1 ] },
-          //     { $lt: [ { $size: "$bookedBuses.seats" }, 3 ] }
-          //   ]
-          // }
-        },
-        {
-          $addToSet: {
-            "bookedBuses.buses": busId,
-            "bookedBuses.seats": { $each: seats },
-          },
-        },
-        { new: true }
-      );
-
-      // Check if the bus needs to be duplicated
-
-      const availableBusesCount = await Bus.countDocuments({
-        "location.pickupLocation": updatedBus.location.pickupLocation,
-        "location.arrivalLocation": updatedBus.location.arrivalLocation,
-        "time.departureTime": updatedBus.time.departureTime,
-        "seats.availableSeats": { $gt: 0 },
-      });
-
-      if (availableBusesCount === 0) {
-        try {
-          const newBus = new Bus({
-            seats: {
-              totalSeats: 20,
-              availableSeats: 15,
-              bookedSeats: Array.from(
-                { length: 20 },
-                () => 0
-              ),
-            },
-            schedule: updatedBus.schedule,
-            price: updatedBus.price,
-            minNoPassengers: updatedBus.minNoPassengers,
-            location: {
-              pickupLocation: updatedBus.location.pickupLocation,
-              arrivalLocation: updatedBus.location.arrivalLocation,
-            },
-            time: {
-              departureTime: updatedBus.time.departureTime,
-              arrivalTime: updatedBus.time.arrivalTime,
-            },
-            allowance: {
-              cancelTimeAllowance: updatedBus.allowance.cancelTimeAllowance,
-              bookingTimeAllowance: updatedBus.allowance.bookingTimeAllowance,
-            },
-            allowedNumberOfBags: updatedBus.allowedNumberOfBags,
-          });
-
-          await newBus.save();
-          return res
-            .status(200)
-            .json({ message: "Seats booked successfully and Bus Duplicated." });
-        } catch (error) {
-          console.error("Error duplicating bus:", error);
-          return res.status(500).json({ message: "Error duplicating bus" }); // Return in case of failure
-        }
-      }
-
-      return res.status(200).json({ message: "Seat booked successfully" });
-    } else if (user.bookedBuses.buses[0] !== busId) {
-      return res.status(400).json("Can't book multiple Buses!");
+        .json({ message: "Some selected seats are already booked" });
     }
+
+    // Notify other users via Pusher
+    pusher.trigger("bus-channel", "seat-booked", {
+      busId,
+      selectedSeats: seats,
+      userId,
+    });
+
+    // Update the user's booking history
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: {
+          "bookedBuses.buses": busId,
+          "bookedBuses.seats": { $each: seats },
+        },
+      },
+      { new: true }
+    );
+
+    // Check if a duplicate bus is needed
+    const availableBusesCount = await Bus.countDocuments({
+      "location.pickupLocation": updatedBus.location.pickupLocation,
+      "location.arrivalLocation": updatedBus.location.arrivalLocation,
+      "time.departureTime": updatedBus.time.departureTime,
+      "seats.availableSeats": { $gt: 0 },
+    });
+
+    if (availableBusesCount === 0) {
+      try {
+        const newBus = new Bus({
+          seats: {
+            totalSeats: 20,
+            availableSeats: 15,
+            bookedSeats: Array(20).fill(0), // Empty seats
+          },
+          schedule: updatedBus.schedule,
+          price: updatedBus.price,
+          minNoPassengers: updatedBus.minNoPassengers,
+          location: updatedBus.location,
+          time: updatedBus.time,
+          allowance: updatedBus.allowance,
+          allowedNumberOfBags: updatedBus.allowedNumberOfBags,
+        });
+
+        await newBus.save();
+        return res
+          .status(200)
+          .json({ message: "Seats booked successfully and bus duplicated." });
+      } catch (error) {
+        console.error("Error duplicating bus:", error);
+        return res.status(500).json({ message: "Error duplicating bus" });
+      }
+    }
+
+    return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
     console.error("Error reserving seat:", error);
     return res
@@ -166,66 +142,66 @@ router.post("/reserve/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { selectedSeats, userId } = req.body.data;
 
-  // Ensure selectedSeats is a valid array and convert to strings
-  if (!selectedSeats || !Array.isArray(selectedSeats)) {
-    return res.status(400).json({ message: "Invalid seat selection data" });
-  }
-  const seatStrings = selectedSeats.map(String);
-
-  const user = await User.findById(userId);
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
-
-  // Count total seats already reserved by the user for this bus
-  const userBookedSeats = user.bookedBuses.buses.includes(busId)
-    ? user.bookedBuses.seats.length
-    : 0;
-
-  console.log(
-    userBookedSeats + seatStrings.length > 2,
-    user.bookedBuses.buses.includes(busId)
-  );
-  // Check if booking exceeds the max seat limit (2 per bus)
-  if (
-    userBookedSeats + seatStrings.length > 2 &&
-    user.bookedBuses.buses.includes(busId)
-  ) {
-    return res.status(400).json({
-      message: "Only two seats are allowed per user for the same bus!",
-    });
-  } else if (!user.bookedBuses.buses.includes(busId) && user.bookedBuses.buses.length > 0) {
-    return res.status(400).json({
-      message: "Can't book in multiple buses!",
-    });
-  }
-
-  const allReservedByUser = await Bus.exists({
-    _id: busId,
-    $and: seatStrings.map((seatNumber) => ({
-      "seats.reservedSeats": {
-        $elemMatch: {
-          seatNumber: seatNumber,
-          reservedBy: userId,
-        },
-      },
-    })),
-  });
-
-  if (Boolean(allReservedByUser)) {
-    return res.status(202).json({
-      message: "Proceeding to payment",
-      code: "PROCEED_TO_PAYMENT",
-    });
-  }
-
   try {
+    // Validate seat selection
+    if (!selectedSeats || !Array.isArray(selectedSeats)) {
+      return res.status(400).json({ message: "Invalid seat selection data" });
+    }
+    const seatStrings = selectedSeats.map(String);
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
+    const userBookedSeats = user.bookedBuses.buses.includes(busId)
+      ? user.bookedBuses.seats.length
+      : 0;
+
+    // If the user is not an admin, enforce seat limits
+    if (!isAdmin) {
+      if (
+        userBookedSeats + seatStrings.length > 2 &&
+        user.bookedBuses.buses.includes(busId)
+      ) {
+        return res.status(400).json({
+          message: "Only two seats allowed per user on the same bus!",
+        });
+      } else if (
+        !user.bookedBuses.buses.includes(busId) &&
+        user.bookedBuses.buses.length > 0
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Can't book seats on multiple buses!" });
+      }
+    }
+
+    // Check if all selected seats are already reserved by the user
+    const allReservedByUser = await Bus.exists({
+      _id: busId,
+      $and: seatStrings.map((seatNumber) => ({
+        "seats.reservedSeats": {
+          $elemMatch: { seatNumber: seatNumber, reservedBy: userId },
+        },
+      })),
+    });
+
+    if (Boolean(allReservedByUser)) {
+      return res
+        .status(202)
+        .json({ message: "Proceeding to payment", code: "PROCEED_TO_PAYMENT" });
+    }
+
+    // Attempt to reserve seats
     const updatedBus = await Bus.findOneAndUpdate(
       {
         _id: busId,
-        "seats.reservedSeats": {
-          $not: { $elemMatch: { seatNumber: { $in: seatStrings } } },
-        },
+        $and: seatStrings.map((seatNumber) => ({
+          "seats.reservedSeats.seatNumber": { $ne: seatNumber }, // Ensure seat is not already reserved
+        })),
       },
       {
         $push: {
@@ -233,7 +209,7 @@ router.post("/reserve/:busId", async (req, res) => {
             $each: seatStrings.map((seatNumber) => ({
               seatNumber,
               reservedBy: userId,
-              expiryDate: new Date(Date.now() + 10 * 60 * 1000),
+              expiryDate: new Date(Date.now() + 10 * 60 * 1000), // 10 min expiry
             })),
           },
         },
@@ -243,23 +219,20 @@ router.post("/reserve/:busId", async (req, res) => {
     );
 
     if (!updatedBus) {
-      return res.status(400).json({
-        message: "Some or all of the selected seats are already reserved",
-      });
+      return res
+        .status(400)
+        .json({ message: "Some or all selected seats are already reserved" });
     }
 
-    // Notify all users in real-time
-    pusher.trigger("bus-channel", "seat-reserved", {
-      busId,
-      updatedBus: updatedBus,
-    });
+    // Notify users in real time
+    pusher.trigger("bus-channel", "seat-reserved", { busId, updatedBus });
 
     return res
       .status(200)
       .json({ message: "Seats reserved successfully", updatedBus });
   } catch (error) {
     console.error("Error reserving seat:", error);
-    res
+    return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
@@ -268,6 +241,8 @@ router.post("/reserve/:busId", async (req, res) => {
 router.delete("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { selectedSeats, userId } = req.body;
+
+  const seatStrings = selectedSeats.map(String);
 
   try {
     const bus = await Bus.findById(busId);
@@ -284,20 +259,68 @@ router.delete("/:busId", async (req, res) => {
       acc[`seats.bookedSeats.${seat}`] = "0";
       return acc;
     }, {});
-    const reservedSeatUpdates = selectedSeats.reduce((acc, seat) => {
-      acc[`seats.reservedSeats.${seat}`] = "0";
-      return acc;
-    }, {});
+    // const reservedSeatUpdates = selectedSeats.reduce((acc, seat) => {
+    //   acc[`seats.reservedSeats.${seat}`] = "0";
+    //   return acc;
+    // }, {});
+    if (user.role === "admin") {
+      const busData = await Bus.findOne(
+        { _id: busId },
+        { "seats.reservedSeats": 1 } // Fetch reservedSeats only
+      );
+
+      if (!busData) {
+        return res.status(404).json({ message: "Bus not found" });
+      }
+
+      // Extract user IDs of affected users
+      const reservedUserIds = [
+        ...new Set(
+          busData.seats.reservedSeats
+            .filter((seat) => seatStrings.includes(seat.seatNumber))
+            .map((seat) => seat.reservedBy)
+        ),
+      ];
+      
+      console.log(reservedUserIds); // Array of user IDs
+
+      // // Remove the selected seat numbers from each user's bookedBuses.seats
+      // await User.updateMany(
+      //   { _id: { $in: reservedUserIds } },
+      //   { $pull: { "bookedBuses.seats": { $in: selectedSeats } } }
+      // );
+
+      // // Now check if any user has no more booked seats and remove the bus
+      // const usersToRemoveBus = await User.find({
+      //   _id: { $in: reservedUserIds },
+      //   "bookedBuses.seats": { $size: 0 }, // Users with no remaining booked seats
+      // });
+
+      // const usersToRemoveIds = usersToRemoveBus.map((u) => u._id);
+
+      // if (usersToRemoveIds.length > 0) {
+      //   await User.updateMany(
+      //     { _id: { $in: usersToRemoveIds } },
+      //     { $pull: { "bookedBuses.buses": busId } }
+      //   );
+      // }
+
+      return res.json({
+        reservedUserIds,
+        message: "Users updated successfully",
+        // updatedBus,
+      });
+    }
 
     const updatedBus = await Bus.findByIdAndUpdate(
       busId,
       {
         $set: seatUpdates,
         $pull: {
-          "seats.reservedSeats": {
-            seatNumber: { $in: selectedSeats },
-            reservedBy: userId,
-          },
+          "seats.reservedSeats":
+            user.role === "admin"
+              ? { seatNumber: { $in: seatStrings } } // Admin removes any seat
+              : { seatNumber: { $in: seatStrings }, reservedBy: userId }, // User removes only their own
         },
         $inc: { "seats.availableSeats": selectedSeats.length },
       },
@@ -308,6 +331,55 @@ router.delete("/:busId", async (req, res) => {
       pusher.trigger("bus-channel", "seat-canceled", {
         updatedBus,
       });
+
+      // if (user.role === "admin") {
+      //   const busData = await Bus.findOne(
+      //     { _id: busId },
+      //     { "seats.reservedSeats": 1 } // Fetch reservedSeats only
+      //   );
+
+      //   if (!busData) {
+      //     return res.status(404).json({ message: "Bus not found" });
+      //   }
+
+      //   // Extract user IDs of affected users
+      //   const reservedUserIds = busData.seats.reservedSeats
+      //     .filter((seat) => seatStrings.includes(seat.seatNumber))
+      //     .map((seat) => seat.reservedBy); // Extract reservedBy (user ID)
+
+      //   // const BookedUserIds = busData.seats.bookedSeats
+      //   //   .filter((index) => seatStrings.includes(String(index)))
+      //   //   .map((seat) => seat !== "0"); // Extract reservedBy (user ID)
+
+      //   console.log(reservedUserIds); // Array of user IDs
+
+      //   // Remove the selected seat numbers from each user's bookedBuses.seats
+      //   await User.updateMany(
+      //     { _id: { $in: reservedUserIds } },
+      //     { $pull: { "bookedBuses.seats": { $in: selectedSeats } } }
+      //   );
+
+      //   // Now check if any user has no more booked seats and remove the bus
+      //   const usersToRemoveBus = await User.find({
+      //     _id: { $in: reservedUserIds },
+      //     "bookedBuses.seats": { $size: 0 }, // Users with no remaining booked seats
+      //   });
+
+      //   const usersToRemoveIds = usersToRemoveBus.map((u) => u._id);
+
+      //   if (usersToRemoveIds.length > 0) {
+      //     await User.updateMany(
+      //       { _id: { $in: usersToRemoveIds } },
+      //       { $pull: { "bookedBuses.buses": busId } }
+      //     );
+      //   }
+
+      //   return res.json({
+      //     reservedUserIds,
+      //     message: "Users updated successfully",
+      //     updatedBus,
+      //   });
+      // }
       // const busSeats = bus.seats.bookedSeats;
       // const userHasBookedSeats = busSeats.some((seat) => seat === userId);
       // Check if the user still has any booked seats on this bus

@@ -8,6 +8,8 @@ import LoadingPage from "../loadingPage/loadingPage";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Pusher from "pusher-js"; // Import Pusher
 import SeatLegend from "./SeatLegend";
+import InlineAuth from "../../InlineAuth";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const SeatSelection = () => {
@@ -24,6 +26,8 @@ const SeatSelection = () => {
   const [alertMessage, setAlertMessage] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const { isAuthenticated, isAuthorized } = InlineAuth();
 
   // Fetch bus details and subscribe to Pusher updates
   useEffect(() => {
@@ -57,10 +61,13 @@ const SeatSelection = () => {
     channel.bind("seat-reserved", (data) => {
       setBusDetails((prev) => ({
         ...prev,
-        seats: { ...prev.seats, reservedSeats: data.updatedBus.seats.reservedSeats },
+        seats: {
+          ...prev.seats,
+          reservedSeats: data.updatedBus.seats.reservedSeats,
+        },
       }));
     });
-    
+
     channel.bind("seat-booked", (data) => {
       if (data.busId === busId) {
         setBusDetails((prev) => ({
@@ -74,15 +81,15 @@ const SeatSelection = () => {
         }));
       }
     });
-    
+
     channel.bind("seat-canceled", (data) => {
       setBusDetails((prev) => ({
         ...prev,
         seats: {
           ...prev.seats,
           bookedSeats: data.updatedBus.seats.bookedSeats,
-          reservedSeats: data.updatedBus.seats.reservedSeats
-        }
+          reservedSeats: data.updatedBus.seats.reservedSeats,
+        },
       }));
     });
     // channel.bind("bus-deleted", (data) => {
@@ -91,8 +98,6 @@ const SeatSelection = () => {
     //     setSelectedSeats([]);
     //   }
     // });
-    
-    
 
     return () => {
       channel.unbind_all();
@@ -107,7 +112,7 @@ const SeatSelection = () => {
   //     setSelectedSeats(JSON.parse(savedSeats));
   //   }
   // }, [busId]);
-  
+
   const handleSeatSelect = async (seat, index) => {
     // setReservedSeats(
     //   busDetails.seats.reservedSeats
@@ -126,29 +131,42 @@ const SeatSelection = () => {
       .map((seat) => seat.seatNumber)
       .includes(String(index));
 
-  
     try {
-      const req_user = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
-  
-      if (!req_user.data.userId) {
-        alert("Session ended");
-        navigate("/login");
-        return;
-      }
-  
+      // const req_user = await axios.get(`${backEndUrl}/auth`, {
+      //   withCredentials: true,
+      // });
+
+      // if (!req_user.data.userId) {
+      //   alert("Session ended");
+      //   navigate("/login");
+      //   return;
+      // }
+      // const { userId, userRole } = req_user.data;
+
       // Update selected seats logic here
       setSelectedSeats((prev) => {
         const newSeats = [...prev];
-  
-        if (newSeats.length >= 2 && !newSeats.includes(index)) {
+        // **Admin Bypass: Can select/cancel any seat**
+        if (isAuthorized) {
+          if (newSeats.includes(index)) {
+            newSeats.splice(newSeats.indexOf(index), 1); // Admin deselects
+          } else {
+            newSeats.push(index); // Admin selects
+          }
+          return newSeats;
+        }
+
+        if (
+          newSeats.length >= 2 &&
+          !newSeats.includes(index) &&
+          userRole !== "admin"
+        ) {
           // alert("You can only select a maximum of 2 seats.");
           setAlertMessage("You can only select a maximum of 2 seats.");
           setAlertFlag(true);
           return prev;
         }
-  
+
         if (!isBooked && !isCurrentUserSeat) {
           if (newSeats.includes(index)) {
             newSeats.splice(newSeats.indexOf(index), 1);
@@ -164,16 +182,15 @@ const SeatSelection = () => {
         } else {
           setConfirmation(true);
         }
-  
+
         // localStorage.setItem(`selectedSeats_${busId}`, JSON.stringify(newSeats));
-  
+
         return newSeats;
       });
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
-    
 
   const handleConfirmSeats = async (type) => {
     setIsLoading(true);
@@ -195,7 +212,7 @@ const SeatSelection = () => {
           setTimeout(() => {
             setAlertFlag(false);
             navigate(`/payment/${selectedSeats}`);
-          }, 2200);          
+          }, 2200);
         }
       } catch (error) {
         if (error.response && error.response.status === 400) {
@@ -206,9 +223,7 @@ const SeatSelection = () => {
             setAlertMessage(
               <div className="payment-success-container">
                 <h1>Reserving Failed</h1>
-                <p>
-                  {error.response.data.message}
-                </p>
+                <p>{error.response.data.message}</p>
               </div>
             );
             setAlertFlag(true);
@@ -241,7 +256,6 @@ const SeatSelection = () => {
         setAlertMessage("Select at least one seat");
         setAlertFlag(true);
       }, 1000);
-
     }
   };
 
@@ -285,7 +299,8 @@ const SeatSelection = () => {
           <h2>Bus details</h2>
           <div className="bus-data">
             <p>
-              <strong>Time</strong> {convertTo12HourFormat(busDetails.time.departureTime)}
+              <strong>Time</strong>{" "}
+              {convertTo12HourFormat(busDetails.time.departureTime)}
             </p>
             <p>
               <strong>Price</strong> {busDetails.price}
@@ -313,7 +328,7 @@ const SeatSelection = () => {
           </CSSTransition>
         </div>
         <div className="bus-seats">
-          <SeatLegend/>
+          <SeatLegend />
           <div className="seat-grid">
             {busDetails.seats.bookedSeats.map((seat, index) => {
               const isBooked = seat !== "0";
@@ -330,7 +345,9 @@ const SeatSelection = () => {
               return (
                 <div
                   key={index}
-                  className={`seat ${[1, 2, 8, 11, 15].includes(index + 1) ? "hidden-seat": ""}  ${isSelected ? "selected" : ""} ${
+                  className={`seat ${
+                    [1, 2, 8, 11, 15].includes(index + 1) ? "hidden-seat" : ""
+                  }  ${isSelected ? "selected" : ""} ${
                     isReserved &&
                     !isReservedForCurrentUser &&
                     !isCurrentUserBookedSeat
@@ -348,7 +365,7 @@ const SeatSelection = () => {
                     isCurrentUserBookedSeat ? "current-user" : ""
                   }`}
                   onClick={() =>
-                    (!isReserved || isReservedForCurrentUser) &&
+                    (!isReserved || isReservedForCurrentUser || isAuthorized) &&
                     handleSeatSelect(seat, index)
                   }
                   title={
@@ -366,7 +383,7 @@ const SeatSelection = () => {
           <div className="btn-container">
             <CSSTransition
               in={
-                selectedSeats.length > 0 &&
+                (selectedSeats.length > 0 &&
                 (selectedSeats.every(
                   (seat) => busDetails.seats.bookedSeats[seat] === userId
                 ) ||
@@ -375,7 +392,7 @@ const SeatSelection = () => {
                       .filter((seat) => seat.reservedBy === userId)
                       .map((seat) => seat.seatNumber)
                       .includes(String(seat))
-                  ))
+                  ))) || isAuthorized
               }
               timeout={300}
               classNames="confirm-btn-transition"
