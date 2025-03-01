@@ -98,4 +98,18 @@ router.delete("/bus/:id", async (req, res) => {
   }
 });
 
+router.put("/check-in/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.checkInStatus = true; // Mark user as checked in
+    await user.save();
+
+    res.json({ message: "User checked in successfully", user });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 module.exports = router;
