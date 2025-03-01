@@ -1,7 +1,9 @@
 const express = require("express");
 const Bus = require("../models/busModel");
+const User = require("../models/user");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
+const mongoose = require("mongoose");
 
 // Add new Bus details
 router.post("/", middleware.isAuthoraized, async (req, res) => {
@@ -46,12 +48,13 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     // console.log('Cancel Time Allowance:', cancelTimeAllowance);
     // console.log('Booking Time Allowance:', bookingTimeAllowance);
     // console.log('Allowed Number of Bags:', allowedNumberOfBags);
+
     const newBus = new Bus({
       seats: {
-        totalSeats: 15,
+        totalSeats: 20,
         availableSeats: totalSeats,
         // bookedSeats: new Array(totalSeats).fill(0)
-        bookedSeats: Array.from({ length: 15 }, () => 0),
+        bookedSeats: Array.from({ length: 20 }, () => 0),
       },
       schedule: schedule,
       price: price,
@@ -60,7 +63,8 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
         pickupLocation: pickupLocation,
         arrivalLocation: arrivalLocation,
       },
-      time: { departureTime: departureTime, arrivalTime: arrivalTime },
+      time: { departureTime: departureTime, 
+        arrivalTime: arrivalTime},
       allowance: {
         cancelTimeAllowance: cancelTimeAllowance,
         bookingTimeAllowance: bookingTimeAllowance,
@@ -69,7 +73,6 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     });
     // console.log(newBus);
     await newBus.save();
-    console.log(newBus);
     res.status(201).json("New Bus Created and saved successfully");
   } catch (err) {
     res
@@ -91,10 +94,14 @@ router.get("/", async (req, res) => {
 // Fetch multiple buses at once
 router.get("/userBuses", async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
-  const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
-  res.json(busDetails);
+  // console.log("IDs: ", ids)
+  // return res.json(ids)
+  if (ids) {
+    const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
+    return res.json(busDetails);
+  }
+  return res.json(busDetails = []);
 });
-
 
 router.get("/:id", async (req, res) => {
   try {
@@ -108,6 +115,17 @@ router.get("/:id", async (req, res) => {
 router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
   try {
     const id = req.params.id;
+    const busDetails = await Bus.findById(id);
+    await User.updateMany(
+      {
+        _id: {
+          $in: busDetails.seats.bookedSeats.filter(
+            mongoose.Types.ObjectId.isValid
+          ),
+        },
+      },
+      { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] } }
+    );
     const deletedBus = await Bus.deleteOne({ _id: id });
 
     if (!id) {

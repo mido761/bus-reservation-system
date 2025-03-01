@@ -32,7 +32,7 @@ function Signup() {
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
   
   const validatePassword = (password) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#])[A-Za-z\d@$!%*?&.#]{8,}$/.test(password);
 
   const passwordErrorMessage =
     "Password must meet the following requirements:\n" +
@@ -40,7 +40,7 @@ function Signup() {
     "- Include at least one uppercase\n" +
     "- Include at least one lowercase letter\n" +
     "- Include at least one number\n" +
-    "- Include at least one special character";
+    "- Include at least one special character (@$!%*?&.#)";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

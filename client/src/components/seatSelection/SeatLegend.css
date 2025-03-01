@@ -1,0 +1,43 @@
+.seat-legend-container {
+    display: flex;
+    gap: 12px;
+    padding: 5px;
+    width: 1px,16px;
+    /* background: #f4f4f4; */
+    border-radius: 25px;
+    box-shadow: none;
+    justify-content: flex-start;
+}
+
+/* Individual legend item */
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Increased gap for better spacing */
+    font-size: 18px; /* Slightly larger text */
+    font-weight: 600;
+    color: #222; /* Darker text for contrast */
+    text-transform: capitalize;
+}
+
+/* Seat color boxes */
+.legend-color {
+    width: 22px; /* Bigger size for better visibility */
+    height: 22px;
+    display: inline-block;
+    border-radius: 3px; /* Slightly more rounded */
+    box-shadow: none; /* Removed shadow for cleaner look */
+}
+
+/* Seat Colors */
+.booked {
+    background: #ff4d4d; /* Red for booked seats */
+}
+
+.reserved {
+    background: #4d79ff; /* Blue for temporarily reserved seats */
+}
+
+.user-seat {
+    background: #33cc33; /* Green for user's seat */
+}
