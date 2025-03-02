@@ -75,12 +75,12 @@ router.post("/:busId", async (req, res) => {
         .json({ message: "Some selected seats are already booked" });
     }
 
-    // Notify other users via Pusher
-    pusher.trigger("bus-channel", "seat-booked", {
-      busId,
-      selectedSeats: seats,
-      userId,
-    });
+      // Notify other users via Pusher
+      pusher.trigger("bus-channel", "seat-booked", {
+        busId,
+        selectedSeats: seats,
+        userId,
+      });
 
     // Update the user's booking history
     await User.findByIdAndUpdate(
@@ -127,7 +127,7 @@ router.post("/:busId", async (req, res) => {
         console.error("Error duplicating bus:", error);
         return res.status(500).json({ message: "Error duplicating bus" });
       }
-    }
+    } 
 
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {

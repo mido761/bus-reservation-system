@@ -122,15 +122,19 @@ const SeatSelection = () => {
     const isBooked = seat !== "0";
     const isCurrentUserSeat = seat === userId;
 
+
     const isReserved = busDetails.seats.reservedSeats
       .map((seat) => seat.seatNumber)
       .includes(String(index));
+
 
     const isReservedForCurrentUser = busDetails.seats.reservedSeats
       .filter((seat) => seat.reservedBy === userId)
       .map((seat) => seat.seatNumber)
       .includes(String(index));
 
+
+  
     try {
       // const req_user = await axios.get(`${backEndUrl}/auth`, {
       //   withCredentials: true,
@@ -188,8 +192,9 @@ const SeatSelection = () => {
       });
     } catch (error) {
       console.error("Error fetching user data:", error);
-    }
+    } 
   };
+    
 
   const handleConfirmSeats = async (type) => {
     setIsLoading(true);
@@ -201,6 +206,12 @@ const SeatSelection = () => {
           { data: { selectedSeats, userId }, withCredentials: true }
         );
 
+        if (response.status === 200 || response.status === 202) {
+          setTimeout(() => {
+            setIsLoading(false);
+            setAlertMessage(`${response.data.message}`);
+            setAlertFlag(true);
+          }, 1000);}
         if (response.status === 200 || response.status === 202) {
           setTimeout(() => {
             setIsLoading(false);
@@ -236,6 +247,7 @@ const SeatSelection = () => {
         `${backEndUrl}/seatselection/${busId}`,
         { data: { selectedSeats, userId }, withCredentials: true }
       );
+
 
       setBusDetails(response.data.updatedBus);
       setSelectedSeats([]);

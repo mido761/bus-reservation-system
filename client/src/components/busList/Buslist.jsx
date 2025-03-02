@@ -15,11 +15,13 @@ const BusList = () => {
   const [loading, setLoading] = useState(false);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [filteredBuses, setFilteredBuses] = useState([]);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
 
-  // Fetch all buses
   const fetchBuses = async () => {
     try {
       const res = await axios.get(`${backEndUrl}/buses`);
+      setFilteredBuses(res.data);
       setBuses(res.data);
     } catch (error) {
       console.error("Error fetching Buses.");
@@ -30,30 +32,30 @@ const BusList = () => {
     }
   };
 
-  // Fetch users for a given bus
   const fetchUsersForBus = async (bus) => {
     setIsLoading(true);
     try {
-      // Step 1: Count occurrences of each user ID
       const userCounts = bus.seats.bookedSeats.reduce((acc, userId) => {
         if (userId && userId !== "0") {
-          // Exclude invalid user IDs
           acc[userId] = (acc[userId] || 0) + 1;
         }
         return acc;
       }, {});
 
-      // Step 2: Fetch unique users
       const uniqueUserIds = Object.keys(userCounts);
+      if (uniqueUserIds.length === 0) {
+        setUsersByBus((prev) => ({ ...prev, [bus._id]: [] }));
+        setIsLoading(false);
+        return;
+      }
       const response = await axios.post(`${backEndUrl}/user/profiles`, {
         userIds: uniqueUserIds,
       });
 
-      // Step 3: Merge user data with counts
       const usersWithCounts = response.data.map((user) => ({
         ...user,
         count: userCounts[user._id],
-          // Add count of occurrences
+        // Add count of occurrences
       }));
 
       setUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
@@ -66,7 +68,6 @@ const BusList = () => {
     }
   };
 
-  // Fetch users when buses are loaded
   useEffect(() => {
     fetchBuses();
   }, []);
@@ -75,34 +76,59 @@ const BusList = () => {
     buses.forEach((bus) => fetchUsersForBus(bus));
   }, [buses]);
 
-  // Handle bus deletion
   const handleDel = async (id) => {
+    const firstConfirmation = window.confirm(
+      "Are you sure you want to delete this bus?"
+    );
+    if (!firstConfirmation) return;
+
+    const secondConfirmation = window.confirm(
+      "This action cannot be undone. Do you want to proceed?"
+    );
+    if (!secondConfirmation) return;
+
     setLoading(true);
     try {
       await axios.delete(`${backEndUrl}/buses/${id}`);
       setBuses(buses.filter((bus) => bus._id !== id));
+      setFilteredBuses((prev) => prev.filter((bus) => bus._id !== id));
 
-      setTimeout(() => {
-        setLoading(false);
-        setAlertMessage("Bus deleted successfully!");
-        setAlertFlag(true);
-      }, 1000);
+      setLoading(false);
+      setAlertMessage("✅ Bus deleted successfully!");
+      setAlertFlag(true);
 
       setTimeout(() => {
         setAlertFlag(false);
       }, 2200);
     } catch (err) {
-      setTimeout(() => {
-        setLoading(false);
-        setAlertMessage("⚠️ Error deleting the bus");
-        setAlertFlag(true);
-      }, 1000);
+      setLoading(false);
+      setAlertMessage("⚠️ Error deleting the bus");
+      setAlertFlag(true);
 
       setTimeout(() => {
         setAlertFlag(false);
       }, 2200);
     }
   };
+
+  const handleUserSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setUserSearchQuery(query);
+
+    if (query.trim() === "") {
+      setFilteredBuses(buses);
+      return;
+    }
+
+    const filtered = buses.filter((bus) =>
+      usersByBus[bus._id]?.some((user) =>
+        user.name.toLowerCase().includes(query)
+      )
+    );
+
+    setFilteredBuses(filtered);
+  };
+
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
     const [hour, minute] = time.split(":");
@@ -118,16 +144,76 @@ const BusList = () => {
     return `${hour12}:${minute} ${period}`;
   };
 
+  // Handle Check-in Function
+  const handleCheckIn = async (userId, busId) => {
+    try {
+      await axios.put(`${backEndUrl}/user/check-in/${userId}`); // Send check-in request
+
+      // Update the state to mark the user as checked in
+      setUsersByBus((prev) => ({
+        ...prev,
+        [busId]: prev[busId].map((user) =>
+          user._id === userId ? { ...user, checkInStatus: true } : user
+        ),
+      }));
+    } catch (error) {
+      console.error("Check-in failed", error);
+      setAlertMessage("⚠️ Error during check-in");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2000);
+    }
+  };
+  
+  // Handle Check-out Function
+  const handleCheckOut = async (userId, busId) => {
+    try {
+      await axios.put(`${backEndUrl}/user/check-out/${userId}`); // Send check-in request
+
+      // Update the state to mark the user as checked in
+      setUsersByBus((prev) => ({
+        ...prev,
+        [busId]: prev[busId].map((user) =>
+          user._id === userId ? { ...user, checkInStatus: false } : user
+        ),
+      }));
+
+    } catch (error) {
+      console.error("Check-in failed", error);
+      setAlertMessage("⚠️ Error during check-in");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2000);
+    }
+  };
+
+
   return (
     <div className="bus-list-page">
+      {alertFlag && (
+        <div className={`alert-message ${alertFlag ? "show" : ""}`}>
+          {alertMessage}
+        </div>
+      )}
       <br />
       <div onClick={fetchBuses} className="show-buses-btn">
         Show Available Buses
       </div>
       <br />
+      <div className="search-container">
+        <div className="search-wrapper">
+          <input
+            type="text"
+            placeholder="Search for reserved user..."
+            value={userSearchQuery}
+            onChange={handleUserSearchChange}
+            className="search-input"
+          />
+          <span className="search-icon">🔍</span>
+        </div>
+      </div>
+      <br />
       <div className="bus-list">
-        {buses.length > 0 ? (
-          buses.map((bus) => (
+        {filteredBuses.length > 0 ? (
+          filteredBuses.map((bus) => (
             <div key={bus._id} className="bus-container">
               <h1>Bus details</h1>
               <p>
@@ -140,14 +226,40 @@ const BusList = () => {
                   <ul>
                     {usersByBus[bus._id].map((user, index) => (
                       <p key={index} className="booked-user">
-                        <span className="user-name">{user.name}</span>
-                        <span className="user-phone">({user.phoneNumber})</span>&nbsp;
-                        <span className="user-seats">({user.bookedBuses.seats.map((seat) => seat + 1).join(", ")})</span>
-                        {/* <span className="user-count">
-                          {" "}
-                          &nbsp;x{user.count}
-                        </span>{" "} */}
-                        {/* Show count */}
+                        <span className="user-info">
+                          <span className="user-name">
+                            {user.name
+                              ? user.name.replace(/_/g, " ")
+                              : "Unknown"}
+                          </span>
+                          <span className="user-seats">
+                            (
+                            {user.bookedBuses.seats
+                              .map((seat) => seat + 1)
+                              .join(", ")}
+                            )
+                          </span>
+                        </span>
+                        <span className="user-phone">{user.phoneNumber}</span>
+                        <span className="check-in-status">
+                          {/* {user.checkInStatus} */}
+                          {user.checkInStatus
+                            ? "✅"
+                            : "❌"}
+                        </span>
+                        {!user.checkInStatus ? (
+                          <button className="check-in-btn"
+                            onClick={() => handleCheckIn(user._id, bus._id)}
+                          >
+                            Check In
+                          </button>
+                        ) : (
+                          <button className="check-out-btn"
+                            onClick={() => handleCheckOut(user._id, bus._id)}
+                          >
+                            Check out
+                          </button>
+                        )}
                       </p>
                     ))}
                   </ul>
@@ -157,13 +269,6 @@ const BusList = () => {
                   <p>No booked seats</p>
                 )}
               </div>
-
-              <p>Price: {bus.price}</p>
-              <p>Schedule: {bus.schedule}</p>
-              <p>
-                {convertTo12HourFormat(bus.time.departureTime)}
-              </p>
-              <p>Allowed number of bags: {bus.allowedNumberOfBags}</p>
               <button onClick={() => handleDel(bus._id)}>Delete Bus</button>
             </div>
           ))
@@ -173,15 +278,10 @@ const BusList = () => {
           <p>No buses found.</p>
         )}
       </div>
-      {loading && <LoadingScreen />}
 
-      <Overlay
-        alertFlag={alertFlag}
-        alertMessage={alertMessage}
-        setAlertFlag={setAlertFlag}
-      />
+      {loading && <LoadingScreen />}
+      {isLoading && <Overlay message="Loading Buses..." />}
     </div>
   );
 };
-
 export default BusList;

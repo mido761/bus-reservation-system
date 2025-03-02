@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaEnvelope, FaPhone } from "react-icons/fa"; // Import icons
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
 import LoadingPage from "../loadingPage/loadingPage";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const UserProfile = () => {
@@ -62,6 +64,9 @@ const UserProfile = () => {
         });
         setUserId(req_user.data.userId);
         const userId = req_user.data.userId;
+        setUserId(userId);
+
+        // Fetch user details
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
 
@@ -79,6 +84,14 @@ const UserProfile = () => {
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Failed to fetch bus details.");
+        if (busIds.length > 0) {
+          const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
+            params: { ids: busIds.join(",") },
+          });
+          setBusDetails(response.data);
+        } else {
+          setError("No booked buses found.");
+        }
       } finally {
         setTimeout(() => {
           setLoading(false);
@@ -105,7 +118,6 @@ const UserProfile = () => {
     return `${hour12}:${minute} ${period}`;
   };
 
-
   if (loading) {
     return <LoadingPage />;
   }
@@ -114,12 +126,20 @@ const UserProfile = () => {
     <div className="profile-container">
       <div className="user-profile">
         <div className="avatar"></div>
-        <h1>{userDetails?.name}</h1>
-        <p>{userDetails?.email}</p>
-        <p>{userDetails?.phoneNumber}</p>
+
+        {/* Name inside a bordered box */}
+        <h1 className="user-name-box">{userDetails?.name}</h1>
+
+        {/* Email & Phone with Icons */}
+        <p className="user-detail">
+          <FaEnvelope className="icon" /> {userDetails?.email}
+        </p>
+        <p className="user-detail">
+          <FaPhone className="icon" /> {userDetails?.phoneNumber}
+        </p>
       </div>
-      <Dashboard error={error} busDetails={busDetails} userId={userId} />{" "}
-      {/* Pass error to Dashboard */}
+
+      <Dashboard error={error} busDetails={busDetails} userId={userId} />
     </div>
   );
 };

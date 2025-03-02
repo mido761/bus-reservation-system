@@ -7,7 +7,7 @@ const ReservedSeatSchema = new mongoose.Schema({
     expiryDate: { 
       type: Date, 
       required: true, 
-      default: () => new Date(Date.now() + 10 * 60 * 1000) // Expires in 10 minutes
+      default: () => new Date(Date.now() + 60 * 1000) // Expires in 10 minutes
     },
   });
 
