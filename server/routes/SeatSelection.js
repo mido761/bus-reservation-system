@@ -260,23 +260,9 @@ router.delete("/:busId", async (req, res) => {
       return acc;
     }, {});
 
-    const BookedUserIds = bus.seats.bookedSeats
-      .map((seat, index) => ({ seat, index }))
-      .filter(({ seat }) => seat !== "0");
-
-    const updatedBookedSeats = BookedUserIds.map(({ seat, index }) =>
-      selectedSeats.includes(index) ? { seat: "0", index } : { seat, index }
-    );
-
-    const bookedSeatUpdates = {};
-    updatedBookedSeats.forEach(({ seat, index }) => {
-      bookedSeatUpdates[`seats.bookedSeats.${index}`] = seat;
-    });
-
-    // const reservedSeatUpdates = selectedSeats.reduce((acc, seat) => {
-    //   acc[`seats.reservedSeats.${seat}`] = "0";
-    //   return acc;
-    // }, {});
+    const BookedUserIds = [
+      ...new Set(selectedSeats.map((i) => bus.seats.bookedSeats[i]).filter((seat) => seat !== '0')),
+    ];
 
     if (user.role === "admin") {
       const busData = await Bus.findOne(
@@ -288,19 +274,10 @@ router.delete("/:busId", async (req, res) => {
         return res.status(404).json({ message: "Bus not found" });
       }
 
-      // Extract user IDs of affected users
-      const reservedUserIds = [
-        ...new Set(
-          busData.seats.reservedSeats
-            .filter((seat) => seatStrings.includes(seat.seatNumber))
-            .map((seat) => seat.reservedBy)
-        ),
-      ];
-
       const updatedBus = await Bus.findByIdAndUpdate(
         busId,
         {
-          $set: bookedSeatUpdates,
+          $set: seatUpdates,
           $pull: {
             "seats.reservedSeats":
               user.role === "admin"
@@ -317,8 +294,6 @@ router.delete("/:busId", async (req, res) => {
           updatedBus,
         });
       }
-
-      console.log(reservedUserIds); // Array of user IDs
 
       // Remove the selected seat numbers from each user's bookedBuses.seats
       await User.updateMany(
@@ -342,7 +317,7 @@ router.delete("/:busId", async (req, res) => {
       }
 
       return res.json({
-        reservedUserIds,
+        // BookedUserIds,
         message: "Users updated successfully",
         updatedBus,
       });
@@ -419,42 +394,66 @@ router.delete("/:busId", async (req, res) => {
       // const busSeats = bus.seats.bookedSeats;
       // const userHasBookedSeats = busSeats.some((seat) => seat === userId);
       // Check if the user still has any booked seats on this bus
-      const busSeats = updatedBus.seats.bookedSeats;
 
-      // Check if any seat is still booked by the user
-      const userHasOtherBookedSeats = busSeats.some(
-        (seat) => seat === userId // Check if the user's ID exists in any booked seat
+      // const busSeats = updatedBus.seats.bookedSeats;
+
+      // // Check if any seat is still booked by the user
+      // const userHasOtherBookedSeats = busSeats.some(
+      //   (seat) => seat === userId // Check if the user's ID exists in any booked seat
+      // );
+
+      // const userHasBookedSeats = user.bookedBuses.seats.length > 0;
+
+      // // If no seats are booked by the user, remove the bus from the user's booked buses
+      // if (!userHasOtherBookedSeats && !userHasBookedSeats) {
+      //   await User.findByIdAndUpdate(userId, {
+      //     $pull: { "bookedBuses.buses": busId },
+      //   });
+      // } else {
+      //   User.findOneAndUpdate(
+      //     { _id: userId },
+      //     { $pull: { "bookedBuses.seats": { $in: selectedSeats } } },
+      //     { new: true } // Returns updated user data
+      //   )
+      //     .then((updatedUser) => {
+      //       if (!updatedUser) {
+      //         throw new Error("User not found");
+      //       }
+      //       const userHasBookedSeats = updatedUser.bookedBuses.seats.length > 0;
+      //       if (!userHasBookedSeats) {
+      //         return User.findOneAndUpdate(
+      //           { _id: userId },
+      //           { $pull: { "bookedBuses.buses": busId } }, // Remove the bus if no seats left
+      //           { new: true }
+      //         );
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error updating user: ", error);
+      //     });
+      // }
+
+      // Remove selected seats from the user's booked seats
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: userId },
+        { $pull: { "bookedBuses.seats": { $in: selectedSeats } } },
+        { new: true }
       );
 
-      const userHasBookedSeats = user.bookedBuses.seats.length > 0;
+      if (!updatedUser) {
+        throw new Error("User not found");
+      }
 
-      // If no seats are booked by the user, remove the bus from the user's booked buses
-      if (!userHasOtherBookedSeats && !userHasBookedSeats) {
+      // Check if the user still has any booked seats either in the bus or in the user's record
+      const busSeats = updatedBus.seats.bookedSeats;
+      const userStillBookedSeats =
+        busSeats.includes(userId) || updatedUser.bookedBuses.seats.length > 0;
+
+      // If no seats remain, remove the bus from the user's booked buses
+      if (!userStillBookedSeats) {
         await User.findByIdAndUpdate(userId, {
           $pull: { "bookedBuses.buses": busId },
         });
-      } else {
-        User.findOneAndUpdate(
-          { _id: userId },
-          { $pull: { "bookedBuses.seats": { $in: selectedSeats } } },
-          { new: true } // Returns updated user data
-        )
-          .then((updatedUser) => {
-            if (!updatedUser) {
-              throw new Error("User not found");
-            }
-            const userHasBookedSeats = updatedUser.bookedBuses.seats.length > 0;
-            if (!userHasBookedSeats) {
-              return User.findOneAndUpdate(
-                { _id: userId },
-                { $pull: { "bookedBuses.buses": busId } }, // Remove the bus if no seats left
-                { new: true }
-              );
-            }
-          })
-          .catch((error) => {
-            console.error("Error updating user: ", error);
-          });
       }
 
       return res

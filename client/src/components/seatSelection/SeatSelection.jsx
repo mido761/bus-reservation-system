@@ -158,8 +158,7 @@ const SeatSelection = () => {
 
         if (
           newSeats.length >= 2 &&
-          !newSeats.includes(index) &&
-          userRole !== "admin"
+          !newSeats.includes(index) 
         ) {
           // alert("You can only select a maximum of 2 seats.");
           setAlertMessage("You can only select a maximum of 2 seats.");
