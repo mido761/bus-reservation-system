@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaEnvelope, FaPhone } from "react-icons/fa"; // Import icons
-import { FaEnvelope, FaPhone } from "react-icons/fa"; // Import icons
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
 import LoadingPage from "../loadingPage/loadingPage";
