@@ -264,20 +264,7 @@ const BusList = () => {
                             Check out
                           </button>
                         )}
-                        <span className="user-info">
-                          <span className="user-name">{user.name.replace(/_/g, ' ')}</span>
-                          {/* <span className="user-count">({user.count})</span> */}
-                        </span>
-                        <span className="user-phone">{user.phoneNumber}</span>
-                        <span className="user-seats">({user.bookedBuses.seats.map((seat) => seat + 1).join(", ")})</span>
-                        <span className="check-in-status">
-                        {user.checkInStatus ? "✅ Checked In" : "❌ Not Checked In"}
-                        </span>
-                        {!user.checkInStatus && (
-                          <button onClick={() => handleCheckIn(user._id, bus._id)}>
-                            Check In
-                          </button>
-                        )}
+                  
 
                       </p>
                     ))}
