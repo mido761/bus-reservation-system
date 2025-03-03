@@ -106,12 +106,6 @@ const BusList = () => {
       setAlertMessage("✅ Bus deleted successfully!");
       setAlertFlag(true);
 
-      setFilteredBuses((prev) => prev.filter((bus) => bus._id !== id));
-  
-      setLoading(false);
-      setAlertMessage("✅ Bus deleted successfully!");
-      setAlertFlag(true);
-  
       setTimeout(() => {
         setAlertFlag(false);
       }, 2200);
@@ -120,10 +114,6 @@ const BusList = () => {
       setAlertMessage("⚠️ Error deleting the bus");
       setAlertFlag(true);
 
-      setLoading(false);
-      setAlertMessage("⚠️ Error deleting the bus");
-      setAlertFlag(true);
-  
       setTimeout(() => {
         setAlertFlag(false);
       }, 2200);
@@ -141,12 +131,12 @@ const BusList = () => {
       await axios.put(`${backEndUrl}/user/check-in/${userId}`); // Send check-in request
 
       // Update the state to mark the user as checked in
-      // setUsersByBus((prev) => ({
-      //   ...prev,
-      //   [busId]: prev[busId].map((user) =>
-      //     user._id === userId ? { ...user, checkInStatus: true } : user
-      //   ),
-      // }));
+      setUsersByBus((prev) => ({
+        ...prev,
+        [busId]: prev[busId].map((user) =>
+          user._id === userId ? { ...user, checkInStatus: true } : user
+        ),
+      }));
 
       setAlertMessage("User checked in successfully!");
       setAlertFlag(true);

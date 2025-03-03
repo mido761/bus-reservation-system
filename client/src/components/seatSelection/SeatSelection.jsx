@@ -216,12 +216,6 @@ const SeatSelection = () => {
             setIsLoading(false);
             setAlertMessage(`${response.data.message}`);
             setAlertFlag(true);
-          }, 1000);}
-        if (response.status === 200 || response.status === 202) {
-          setTimeout(() => {
-            setIsLoading(false);
-            setAlertMessage(`${response.data.message}`);
-            setAlertFlag(true);
           }, 1000);
 
           setTimeout(() => {

@@ -235,7 +235,6 @@ router.post("/reserve/:busId", async (req, res) => {
     pusher.trigger("bus-channel", "seat-reserved", { busId, updatedBus });
 
     return res
-    return res
       .status(200)
       .json({ message: "Seats reserved successfully", updatedBus });
   } catch (error) {
