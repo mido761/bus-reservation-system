@@ -165,17 +165,6 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
       },
       { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] } }
     );
-    const busDetails = await Bus.findById(id);
-    await User.updateMany(
-      {
-        _id: {
-          $in: busDetails.seats.bookedSeats.filter(
-            mongoose.Types.ObjectId.isValid
-          ),
-        },
-      },
-      { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] } }
-    );
     const deletedBus = await Bus.deleteOne({ _id: id });
 
     if (!id) {

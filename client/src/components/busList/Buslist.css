@@ -135,7 +135,6 @@
 }
 
 .bus-container p {
-.bus-container p {
   font-size: 16px;
   color: var(--text-color);
   margin: 5px 0;
@@ -143,9 +142,6 @@
   margin: 5px 0;
 }
 
-.bus-container span {
-  font-weight: bold;
-  color: var(--primary-hover);
 .bus-container span {
   font-weight: bold;
   color: var(--primary-hover);
