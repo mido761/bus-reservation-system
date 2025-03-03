@@ -108,6 +108,7 @@ router.put("/check-in/:userId", async (req, res) => {
 
     res.json({ message: "User checked in successfully", user });
   } catch (error) {
+    console.error(error)
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -122,6 +123,7 @@ router.put("/check-out/:userId", async (req, res) => {
 
     res.json({ message: "User checked in successfully", user });
   } catch (error) {
+    console.error(error)
     res.status(500).json({ error: "Server error" });
   }
 });
