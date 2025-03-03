@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Buslist.css";
 import LoadingPage from "../loadingPage/loadingPage";
@@ -17,6 +18,7 @@ const BusList = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [userSearchQuery, setUserSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const fetchBuses = async () => {
     try {
@@ -104,6 +106,11 @@ const BusList = () => {
         setAlertFlag(false);
       }, 2200);
     }
+  };
+  
+  //navigte with the bus id in the url to enable me to edit the bus
+  const handleEdit = (busId) => {
+    navigate(`/edit-bus/${busId}`);
   };
   
 
@@ -194,6 +201,7 @@ const BusList = () => {
             <div key={bus._id} className="bus-container">
               <h1>Bus details</h1>
               <p>{bus.location.pickupLocation} <span>to</span> {bus.location.arrivalLocation}</p>
+              <button onClick={() => handleEdit(bus._id)}>Edit</button>
               <div className="booked-users">
                 <h3>Seats Booked By:</h3>
                 {usersByBus[bus._id]?.length > 0 ? (

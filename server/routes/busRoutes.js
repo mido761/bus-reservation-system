@@ -10,6 +10,7 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
   try {
     const {
       totalSeats,
+      busNumber,
       schedule,
       minNoPassengers,
       price,
@@ -28,6 +29,7 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     if (
       !schedule ||
       !price ||
+      !busNumber ||
       !pickupLocation ||
       !arrivalLocation ||
       !departureTime ||
@@ -63,12 +65,15 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
         pickupLocation: pickupLocation,
         arrivalLocation: arrivalLocation,
       },
-      time: { departureTime: departureTime, 
-        arrivalTime: arrivalTime},
+      time: {
+        departureTime: departureTime,
+        arrivalTime: arrivalTime
+      },
       allowance: {
         cancelTimeAllowance: cancelTimeAllowance,
         bookingTimeAllowance: bookingTimeAllowance,
       },
+      busNumber: busNumber,
       allowedNumberOfBags: allowedNumberOfBags,
     });
     // console.log(newBus);
@@ -161,6 +166,37 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
   } catch (err) {
     console.error("Error deleting the Item", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Update a bus
+router.put("/edit-bus/:busId", async (req, res) => {
+  const busId = req.params.busId
+  console.log(req.body)
+  try {
+    const updatedBus = await Bus.findByIdAndUpdate(
+      busId,
+      {
+        $set: {
+          "location.pickupLocation": req.body.location?.pickupLocation,
+          "location.arrivalLocation": req.body.location?.arrivalLocation,
+          "time.departureTime": req.body.time?.departureTime,
+          "time.arrivalTime": req.body.time?.arrivalTime,
+          schedule: req.body.schedule,
+          price: req.body.price,
+          busNumber: req.body.busNumber,
+          pickupLocation: req.body.pickupLocation,
+          arrivalLocation: req.body.arrivalLocation,
+          departureTime: req.body.departureTime,
+          arrivalTime: req.body.arrivalTime,
+        },
+      },
+      { new: true }
+    );
+    if (!updatedBus) return res.status(404).json({ message: "Bus not found" });
+    res.json({ message: "Bus updated successfully", bus: updatedBus });
+  } catch (err) {
+    res.status(400).json({ message: "Failed to update bus" });
   }
 });
 

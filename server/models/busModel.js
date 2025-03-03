@@ -33,6 +33,7 @@ const BusSchema = new mongoose.Schema({
         cancelTimeAllowance: {type: Number, required: false},
         bookingTimeAllowance: {type: Number, required: false},        
     },
+    busNumber: {type:Number, required: false, default:"1234"},
     allowedNumberOfBags: {type: Number, required: false}
 });
 
