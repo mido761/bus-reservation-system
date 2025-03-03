@@ -107,6 +107,7 @@ const UserProfile = () => {
     };
 
     fetchUserData();
+    fetchUsers()
   }, []);
 
   const convertTo12HourFormat = (time) => {
