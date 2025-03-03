@@ -12,7 +12,6 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 function ResetPassword() {
   const { token } = useParams();
 
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [alertFlag, setAlertFlag] = useState(false);
@@ -21,7 +20,6 @@ function ResetPassword() {
   const [passwordVisible, setPasswordVisible] = useState(false); // State for password visibility
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false); // State for password visibility
   const [error, setError] = useState("");
-  // const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
 
@@ -60,7 +58,7 @@ function ResetPassword() {
       setError("Passwords do not match!");
       return;
     }
-    // if (password === confirmPassword) {
+
     setIsLoading(true);
     try {
       const response = await axios.post(
@@ -78,11 +76,11 @@ function ResetPassword() {
 
         setTimeout(() => {
           setAlertFlag(false);
-        }, 20200);
+        }, 15200);
 
         setTimeout(() => {
           navigate("/login");
-        }, 20200);
+        }, 5200);
       }
     } catch (error) {
       if (error.status === 404) {
@@ -100,12 +98,7 @@ function ResetPassword() {
         setAlertMessage(error.response.data.message);
         setAlertFlag(true);
       }, 1000);
-
-      // setTimeout(() => {
-      //   setAlertFlag(false);
-      // }, 2200);
     }
-    // }
   };
 
   useEffect(() => {
