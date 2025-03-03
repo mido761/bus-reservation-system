@@ -25,7 +25,30 @@ function ResetPassword() {
 
   const navigate = useNavigate();
 
-  
+  const validatePassword = (password) => {
+    let errors = [];
+
+    if (password.length < 8) errors.push("At least 8 characters long");
+    if (!/[A-Z]/.test(password))
+      errors.push("Include at least one uppercase letter");
+    if (!/[a-z]/.test(password))
+      errors.push("Include at least one lowercase letter");
+    if (!/\d/.test(password)) errors.push("Include at least one number");
+    if (!/[@$!%*?&.#]/.test(password))
+      errors.push("Include at least one special character (@$!%*?&.#)");
+
+    return errors;
+  };
+
+  const passwordValidation = (password) => {
+    const passwordErrors = validatePassword(password);
+
+    if (passwordErrors.length > 0) {
+      setError(passwordErrors.join("\n")); // Show errors with line breaks
+    } else {
+      setError(""); // Clear the error if password is valid
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
