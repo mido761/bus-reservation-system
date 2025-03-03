@@ -28,6 +28,9 @@ const SeatSelection = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { isAuthenticated, isAuthorized } = InlineAuth();
+  const [userGender, setUserGender] = useState(null);
+
+
 
   // Fetch bus details and subscribe to Pusher updates
   useEffect(() => {
@@ -39,6 +42,7 @@ const SeatSelection = () => {
         ]);
         setBusDetails(response.data);
         setUserId(req_user.data.userId);
+        setUserGender(req_user.data.gender); // Fetch gender here
       } catch (err) {
         console.error("Error fetching bus details:", err);
         setError("Failed to fetch bus details.");
@@ -352,6 +356,10 @@ const SeatSelection = () => {
                 .filter((seat) => seat.reservedBy === userId)
                 .map((seat) => seat.seatNumber)
                 .includes(String(index));
+              // Get the gender of the user who booked the seat (if available)
+              
+              const bookedSeat = busDetails.seats.reservedSeats.find(s => s.seatNumber === String(index));
+              const bookedGender = bookedSeat ? bookedSeat.gender : null;
 
               return (
                 <div
@@ -374,7 +382,9 @@ const SeatSelection = () => {
                   } 
                   ${isBooked && !isCurrentUserBookedSeat ? "booked" : ""} ${
                     isCurrentUserBookedSeat ? "current-user" : ""
-                  }`}
+                  }
+                  ${isBooked || isReserved ? (seat.gender === "male" ? "male-seat" : "female-seat") : ""}
+                  `}
                   onClick={() =>
                     (!isReserved || isReservedForCurrentUser || isAuthorized) &&
                     handleSeatSelect(seat, index)

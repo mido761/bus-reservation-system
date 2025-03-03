@@ -93,14 +93,13 @@
   transform: scale(1.05); /* Slight hover effect */
 }
 
-
 .seat.current-user {
   background-color: green;
   color: var(--button-text);
   border: 2px solid darkgreen;
 }
 
-.hidden-seat{
+.hidden-seat {
   visibility: hidden;
   user-select: none;
 }
@@ -112,18 +111,13 @@
   cursor: not-allowed;
   border: 2px solid #001a80;
 }
-.seat.reserved-for-current-user {
-  background-color: #002ab3;
-  color: var(--button-text);
-  cursor: not-allowed;
-}
 
-/* Reserved for Current User */
+/* Temporarily Reserved Seats */
 .seat.reserved-for-current-user {
-  background-color: #002ab3;
-  color: var(--button-text);
-  cursor: pointer;
-  border: 2px solid #001a80;
+  background-color: red; /* Updated color */
+  color: white;
+  cursor: not-allowed;
+  border: 2px solid darkred;
 }
 
 .seat.booked {
@@ -131,6 +125,19 @@
   color: var(--button-text);
   cursor: not-allowed;
   border: 2px solid darkred;
+}
+
+/* Gender-Based Seat Colors */
+.seat.male {
+  background-color: blue;
+  color: white;
+  border: 2px solid darkblue;
+}
+
+.seat.female {
+  background-color: pink;
+  color: black;
+  border: 2px solid #d63384;
 }
 
 /* Selected Seat */
@@ -217,4 +224,3 @@
     flex-direction: row;
   }
 }
-

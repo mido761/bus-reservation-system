@@ -13,7 +13,9 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [userDetails, setUserDetails] = useState([]);
+  const [userDetails, setUserDetails] = useState({});
+  const [editMode, setEditMode] = useState(false);
+  const [gender, setGender] = useState("");
 
   const navigate = useNavigate();
 
@@ -44,6 +46,7 @@ const UserProfile = () => {
         setError("Failed to fetch bus details.");
       }
     };
+    
 
     // const fetchUsers = async () => {
     //   try {
@@ -69,7 +72,7 @@ const UserProfile = () => {
         // Fetch user details
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
-
+        setGender(res.data.gender || ""); // Set gender state
         const userDetails = res.data;
         const busIds = userDetails.bookedBuses.buses;
 
@@ -117,6 +120,17 @@ const UserProfile = () => {
 
     return `${hour12}:${minute} ${period}`;
   };
+  const handleSave = async () => {
+    try {
+      await axios.put(`${backEndUrl}/user/profile/${userId}`, { gender });
+      setUserDetails((prev) => ({ ...prev, gender }));
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error updating gender:", error);
+      setError("Failed to update gender.");
+    }
+  };
+
 
   if (loading) {
     return <LoadingPage />;
@@ -137,11 +151,43 @@ const UserProfile = () => {
         <p className="user-detail">
           <FaPhone className="icon" /> {userDetails?.phoneNumber}
         </p>
-      </div>
 
+        {/* Gender Section */}
+        {!editMode ? (
+          <>
+            <p className="user-detail">
+              <strong>Gender:</strong> {userDetails?.gender || "Not Set"}
+            </p>
+            <button className="edit-button" onClick={() => setEditMode(true)}>
+              Edit Gender
+            </button>
+          </>
+        ) : (
+          <div className="edit-gender">
+            <label>Select Gender:</label>
+            <select
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="gender-select"
+            >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+            <div className="gender-buttons">
+              <button className="save-button" onClick={handleSave}>
+                Save
+              </button>
+              <button className="cancel-button" onClick={() => setEditMode(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
       <Dashboard error={error} busDetails={busDetails} userId={userId} />
     </div>
   );
 };
 
 export default UserProfile;
+

@@ -112,32 +112,22 @@ const BusList = () => {
   };
 
   const handleUserSearchChange = (e) => {
-    let query = e.target.value;
-  
-    // Allow only numbers (digits) and limit to 11 characters
-    if (!/^\d*$/.test(query)) return; // Prevent non-numeric input
-    if (query.length > 11) return; // Restrict to 11 digits
-  
+    const query = e.target.value.toLowerCase();
     setUserSearchQuery(query);
-  
+
     if (query.trim() === "") {
       setFilteredBuses(buses);
       return;
     }
-  
-    // Filter buses where at least one user matches the search query (by name or phone number)
+
     const filtered = buses.filter((bus) =>
       usersByBus[bus._id]?.some((user) =>
-        user.name?.toLowerCase().includes(query) ||
-        user.phoneNumber?.toLowerCase().includes(query)
+        user.name.toLowerCase().includes(query)
       )
     );
-  
+
     setFilteredBuses(filtered);
   };
-  
-  
-  
 
   const convertTo12HourFormat = (time) => {
     if (!time) return "";

@@ -13,12 +13,13 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [gender, setGender] = useState("");
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [verificationFlag, setVerificationFlag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [showPassword, setShowPassword] = useState(false); 
 
   const navigate = useNavigate();
 
@@ -65,6 +66,7 @@ function Signup() {
         phoneNumber,
         email,
         password,
+        gender, // Send gender to backend
       });
 
       if (result.status === 201) {
@@ -98,6 +100,9 @@ function Signup() {
     }
   };
 
+  
+    
+
   return (
     <div className="register-page">
       {!verificationFlag ? (
@@ -119,11 +124,7 @@ function Signup() {
               id="phoneNumber"
               name="phoneNumber"
               value={phoneNumber}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, "");
-                setPhoneNumber(value);
-              }}
-              onInput={(e) => e.target.value = e.target.value.replace(/\D/g, "")}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
               maxLength="11"
               required
             />
@@ -148,10 +149,7 @@ function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <span
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
+              <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
                 {showPassword ? "👁️" : "👁️‍🗨️"}
               </span>
             </div>
@@ -159,9 +157,28 @@ function Signup() {
               <p className="error" style={{ whiteSpace: "pre-line" }}>⚠️ {errors.password}</p>
             )}
 
+            {/* Gender Selection */}
+            <div className="gender-container">
+              <label className="gender-label">Select Gender:</label>
+              <div className="gender-options">
+                <div
+                  className={`gender-option male ${gender === "male" ? "selected" : ""}`}
+                  onClick={() => setGender("male")}
+                >
+                  Male
+                </div>
+                <div
+                  className={`gender-option female ${gender === "female" ? "selected" : ""}`}
+                  onClick={() => setGender("female")}
+                >
+                  Female
+                </div>
+              </div>
+            </div>
+            {errors.gender && <p className="error">⚠️ {errors.gender}</p>}
+
             <button type="submit">Register</button>
           </form>
-
           <Link to="/login">Login</Link>
           {isLoading && <LoadingScreen />}
           {alertFlag && <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />}
@@ -172,5 +189,5 @@ function Signup() {
     </div>
   );
 }
-
 export default Signup;
+    

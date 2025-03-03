@@ -125,5 +125,32 @@ router.put("/check-out/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+// Search users by name or phone number
+router.get("/search", async (req, res) => {
+  try {
+    const { query } = req.query; // User search input
+
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    // Search by name or phone number (case-insensitive)
+    const users = await User.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } }, // Partial and case-insensitive match
+        { phoneNumber: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    if (users.length === 1) {
+      return res.status(200).json(users[0]); // Return single user object
+    }
+
+    res.status(200).json(users); // Return all matching users
+  } catch (error) {
+    res.status(500).json({ message: "Error searching users", error: error.message });
+  }
+});
+
 
 module.exports = router;

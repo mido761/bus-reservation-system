@@ -22,9 +22,12 @@ function generateVerificationCode() {
 }
 
 router.post("/", async (req, res) => {
-  const { name, phoneNumber, email, password } = req.body;
+  const { name, phoneNumber, email, password, gender } = req.body;
 
   try {
+    if (!["male", "female"].includes(gender)) {
+      return res.status(400).json({ message: "Invalid gender. Choose male or female." });
+    }
     const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(400).json({ message: "Email already exists" });
@@ -41,7 +44,7 @@ router.post("/", async (req, res) => {
     // };
 
     const token = jwt.sign(
-      { name, phoneNumber, email, password, verificationCode },
+      { name, phoneNumber, email, password, gender, verificationCode },
       "ARandomStringThatIsHardToGuess12345",
       { expiresIn: "10m" }
     );
@@ -85,6 +88,7 @@ router.post("/verify-email", async (req, res) => {
       phoneNumber: tempUser.phoneNumber,
       email: tempUser.email,
       password: hashedPassword,
+      gender: tempUser.gender,
       verified: true,
     });
 

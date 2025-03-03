@@ -140,3 +140,90 @@
   margin-top: -5px;
   margin-left: 7px;
 }
+/* Gender Selection Container */
+.gender-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Gender Label */
+.gender-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+/* Gender Options */
+.gender-options {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Gender Buttons */
+.gender-option {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid var(--input-border);
+  border-radius: 30px; /* Rounded for a smoother feel */
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Prevents border stacking and enhances selection */
+.gender-option:not(.selected) {
+  border-color: var(--input-border);
+}
+
+/* Hover Effect */
+.gender-option:hover {
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.05);
+}
+
+/* Selected Gender - Male */
+.gender-option.male.selected {
+  background: linear-gradient(135deg, #4a90e2 0%, #357ABD 100%);
+  color: white;
+  border-color: transparent;
+}
+
+/* Selected Gender - Female */
+.gender-option.female.selected {
+  background: linear-gradient(135deg, #ff69b4 0%, #d14786 100%);
+  color: white;
+  border-color: transparent;
+}
+
+/* Remove Selection */
+.gender-option:not(.selected) {
+  background: var(--background-color);
+  color: var(--text-color);
+  border-color: var(--input-border);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .gender-options {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .gender-option {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+}
