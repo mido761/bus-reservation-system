@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./editBus";
+import "./editBus.css";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
 
@@ -21,9 +21,9 @@ const EditBus = () => {
       try {
         const response = await axios.get(`${backEndUrl}/buses/${busId}`);
         setBusData(response.data);
-        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching bus data", error);
+      } finally {
         setIsLoading(false);
       }
     };
@@ -32,98 +32,95 @@ const EditBus = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
-    setBusData((prevData) => {
-      const updatedData = { ...prevData }; // Create a new object to avoid mutation
-  
-      if (name === "pickupLocation" || name === "arrivalLocation") {
-        updatedData.location = { ...prevData.location, [name]: value };
-      } else if (name === "departureTime" || name === "arrivalTime") {
-        updatedData.time = { ...prevData.time, [name]: value };
-      } else {
-        updatedData[name] = value;
-      }
-  
-      return updatedData;
-    });
+    setBusData((prevData) => ({
+      ...prevData,
+      location: {
+        ...prevData.location,
+        [name]: name.includes("Location") ? value : prevData.location[name],
+      },
+      time: {
+        ...prevData.time,
+        [name]: name.includes("Time") ? value : prevData.time[name],
+      },
+      [name]: !name.includes("Location") && !name.includes("Time") ? value : prevData[name],
+    }));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-      // Create busData object dynamically from form values
-      setBusData((prevData) => {
-        const updatedBusData = {
-          location: { ...prevData.location },
-          time: { ...prevData.time },
-          schedule: prevData.schedule,
-          price: prevData.price,
-          busNumber: prevData.busNumber,
-        };
-    
-        console.log("Sending updated bus data:", updatedBusData);
-    
-        axios
-          .put(`${backEndUrl}/buses/edit-bus/${busId}`, updatedBusData)
-          .then(() => {
-            setAlertMessage("Bus updated successfully!");
-            setAlertFlag(true);
-            setTimeout(() => navigate("/bus-list"), 2000);
-          })
-          .catch((error) => {
-            console.error("Error updating bus", error);
-            setAlertMessage("⚠️ Error updating bus");
-            setAlertFlag(true);
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-    
-        return prevData; // Prevents unnecessary re-renders
-      });
-    };
+    if (window.confirm("Are you sure you want to update this bus?")) {
+      setIsLoading(true);
+      try {
+        await axios.put(`${backEndUrl}/buses/edit-bus/${busId}`, busData);
+        setAlertMessage("✅ Bus updated successfully!");
+        setAlertFlag(true);
+        setTimeout(() => navigate("/bus-list"), 2000);
+      } catch (error) {
+        console.error("Error updating bus", error);
+        setAlertMessage("⚠️ Error updating bus");
+        setAlertFlag(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   return (
-    <div className="edit-bus-page">
+    <div className="edit-bus-container">
       {isLoading ? (
         <LoadingScreen />
       ) : busData ? (
         <form onSubmit={handleSubmit} className="edit-bus-form">
-          <h1>Edit Bus Details</h1>
+          <h1>🚌 Edit Bus Details</h1>
 
-          <label>Pickup location</label>
-          <select name="pickupLocation" value={busData.location.pickupLocation} onChange={handleChange}>
-            {locations.map((location) => (
-              <option key={location} value={location}>{location}</option>
-            ))}
-          </select>
+          <div className="form-group">
+            <label>Pickup Location</label>
+            <select name="pickupLocation" value={busData.location.pickupLocation} onChange={handleChange}>
+              {locations.map((loc) => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))}
+            </select>
+          </div>
 
-          <label>Arrival location</label>
-          <select name="arrivalLocation" value={busData.location.arrivalLocation} onChange={handleChange}>
-            {locations.map((location) => (
-              <option key={location} value={location}>{location}</option>
-            ))}
-          </select>
+          <div className="form-group">
+            <label>Arrival Location</label>
+            <select name="arrivalLocation" value={busData.location.arrivalLocation} onChange={handleChange}>
+              {locations.map((loc) => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))}
+            </select>
+          </div>
 
-          <label>Bus Number</label>
-          <input type="text" name="busNumber" value={busData.busNumber} onChange={handleChange} />
+          <div className="form-group">
+            <label>Bus Number</label>
+            <input type="text" name="busNumber" value={busData.busNumber} onChange={handleChange} />
+          </div>
 
-          <label>Departure Time</label>
-          <input type="time" name="departureTime" value={busData.time.departureTime} onChange={handleChange} />
+          <div className="time-group">
+            <div className="form-group">
+              <label>Departure Time</label>
+              <input type="time" name="departureTime" value={busData.time.departureTime} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label>Arrival Time</label>
+              <input type="time" name="arrivalTime" value={busData.time.arrivalTime} onChange={handleChange} />
+            </div>
+          </div>
 
-          <label>Arrival Time</label>
-          <input type="time" name="arrivalTime" value={busData.time.arrivalTime} onChange={handleChange} />
+          <div className="form-group">
+            <label>Price</label>
+            <input type="number" name="price" value={busData.price} onChange={handleChange} min="0" />
+          </div>
 
-          <label>Price</label>
-          <input type="number" name="price" value={busData.price} onChange={handleChange} />
+          <div className="form-group">
+            <label>Schedule</label>
+            <input type="date" name="schedule" value={busData.schedule} onChange={handleChange} />
+          </div>
 
-          <label>Schedule</label>
-          <input type="date" name="schedule" value={busData.schedule} onChange={handleChange} />
-
-          <button type="submit">Update Bus</button>
+          <button type="submit">🚀 Update Bus</button>
         </form>
       ) : (
-        <p>Bus not found.</p>
+        <p>❌ Bus not found.</p>
       )}
 
       <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />

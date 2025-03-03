@@ -1,118 +1,60 @@
-/* General reset for margins and paddings */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Container for the form */
-  .edit-bus {
-    width: 95%;
-    max-width: 400px;
-    margin: 20px auto;
-    padding: 30px;
-    background-color: var(--form-background);
-    border-radius: 8px;
-    box-shadow: 0 5px 15px var(--shadow-color);
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Form header */
-  .edit-bus h1 {
-    text-align: center;
-    color: var(--primary-hover);
-    margin-bottom: 20px;
-  }
-  
-  /* Input fields */
-  .edit-bus input,
-  .edit-bus select {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 0.5rem;
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    font-size: 16px;
-    color: var(--text-color);
-    background-color: var(--background-color);
-    transition: border-color 0.3s, background-color 0.3s;
-  }
-  
-  .edit-bus input::placeholder,
-  .edit-bus select {
-    font-size: 0.8rem;
-    color: #666262;
-  }
-  
-  .edit-bus label {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-color);
-    text-align: left;
-    align-self: flex-start;
-    margin-left: 3px;
-    margin-bottom: 3px;
-  }
-  
-  /* Input and select focus and hover effects */
-  .edit-bus input:focus,
-  .edit-bus select:focus {
-    border-color: var(--primary-hover);
-    background-color: var(--form-background);
-    outline: none;
-  }
-  
-  .edit-bus input:hover,
-  .edit-bus select:hover {
-    background-color: #e9ecef;
-  }
-  
-  /* Button styling */
-  .edit-bus button {
-    width: 100%;
-    height: 40px;
-    background-color: var(--secondary-hover);
-    color: var(--button-text);
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    border: none;
-    border-radius: 6px;
-  }
-  
-  .edit-bus button:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-2px);
-  }
-  
-  .edit-bus button:active {
-    transform: translateY(1px);
-  }
-  
-  /* Responsive design */
-  @media (max-width: 768px) {
-    .edit-bus {
-      padding: 20px;
-      margin: 20px auto;
-    }
-  
-    .edit-bus h1 {
-      font-size: 22px;
-    }
-  
-    .edit-bus input,
-    .edit-bus select {
-      font-size: 14px;
-    }
-  }
-  
-  /* Error messages */
-  .edit-bus .error {
-    color: #da1111;
-    font-size: 14px;
-    margin-top: 10px;
-  }
-  
+.edit-bus-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f9;
+}
+
+.edit-bus-form {
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.edit-bus-form h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.time-group {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-bus-form input,
+.edit-bus-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+}
+
+.edit-bus-form button {
+  width: 100%;
+  padding: 12px;
+  background: var( --primary-color);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.edit-bus-form button:hover {
+  background: var(--primary-color-dark);
+}
