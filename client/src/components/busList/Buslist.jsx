@@ -192,6 +192,28 @@ const BusList = () => {
     return `${hour12}:${minute} ${period}`;
   };
 
+    // Handle Check-out Function
+    const handleCheckOut = async (userId, busId) => {
+      try {
+        await axios.put(`${backEndUrl}/user/check-out/${userId}`); // Send check-in request
+  
+        // Update the state to mark the user as checked in
+        setUsersByBus((prev) => ({
+          ...prev,
+          [busId]: prev[busId].map((user) =>
+            user._id === userId ? { ...user, checkInStatus: false } : user
+          ),
+        }));
+  
+      } catch (error) {
+        console.error("Check-in failed", error);
+        setAlertMessage("⚠️ Error during check-in");
+        setAlertFlag(true);
+        setTimeout(() => setAlertFlag(false), 2000);
+      }
+    };
+  
+
   return (
     <div className="bus-list-page">
        {alertFlag && (
