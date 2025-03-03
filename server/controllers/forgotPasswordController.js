@@ -23,7 +23,7 @@ exports.forgotPassword = async (req, res) => {
     const mailOptions = {
       to: user.email,
       subject: "Reset Password",
-      html: `<p>Click <a href="http://localhost:5173/#/reset-password/${resetToken}">here</a> to reset your password.</p>`,
+      html: `<p>Click <a href="${process.env.BACK_END_URL}/#/reset-password/${resetToken}">here</a> to reset your password.</p>`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -36,8 +36,8 @@ exports.forgotPassword = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   const { token } = req.params;
-  const { newPassword } = req.body;
-
+  const password  = req.body.password;
+  console.log(password)
   try {
     const user = await User.findOne({
       resetToken: token,
@@ -46,13 +46,14 @@ exports.resetPassword = async (req, res) => {
     if (!user)
       return res.status(400).json({ message: "Invalid or expired token" });
 
-    user.password = await bcrypt.hash(newPassword, 10);
+    user.password = await bcrypt.hash(password, 10);
     user.resetToken = undefined;
     user.resetTokenExpires = undefined;
 
     await user.save();
     res.json({ message: "Password reset successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    console.error(error)
+    res.status(500).json({ message: "Server error", error });
   }
 };

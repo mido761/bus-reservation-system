@@ -22,18 +22,16 @@ function ForgotPassword() {
     try {
       const response = await axios.post(
         `${backEndUrl}/api/forgot-password`,
-        { email},
+        { email },
         { withCredentials: true }
       );
-        // const response = {"status": 200}
+      // const response = {"status": 200}
       if (response.status === 200) {
-
         setTimeout(() => {
           setIsLoading(false);
           setAlertMessage("Reset password link sent!");
           setAlertFlag(true);
         }, 1000);
-
       }
     } catch (error) {
       if (error.status === 404) {
@@ -57,7 +55,7 @@ function ForgotPassword() {
     <div className="login-container">
       <div className="login-form">
         <h2>Forgot Password</h2>
-        <p style={{ fontSize: "13px", margin: "auto", marginBottom: "25px", }}>
+        <p style={{ fontSize: "13px", margin: "auto", marginBottom: "25px" }}>
           Please enter your email to reset the password
         </p>
         <form onSubmit={handleSubmit}>
@@ -70,8 +68,9 @@ function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <button type="submit">Send Code</button>
+          <button type="submit">Reset password</button>
         </form>
+        <Link to="/login"><pre>Already registerd? Login</pre></Link>
       </div>
 
       {isLoading && <LoadingScreen />}
