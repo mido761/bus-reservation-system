@@ -164,7 +164,7 @@ function Signup() {
               maxLength="11"
               required
             />
-            {errors.phoneNumber && (
+            {errors.phoneNumber && phoneNumber.length > 0 &&(
               <p className="error"> {errors.phoneNumber}</p>
             )}
 
@@ -176,7 +176,7 @@ function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.email && <p className="error"> {errors.email}</p>}
+            {errors.email && email.length > 0 && <p className="error"> {errors.email}</p>}
 
             <label htmlFor="password">Password</label>
             <div className="password-container">
@@ -191,7 +191,7 @@ function Signup() {
                 {showPassword ? "👁️" : "👁️‍🗨️"}
               </span>
             </div>
-            {errors.password && (
+            {errors.password && password.length > 0 &&(
               <pre className="error" style={{ whiteSpace: "pre-line" }}>
                 {" "}
                 {errors.password}
@@ -200,7 +200,7 @@ function Signup() {
 
             {/* Gender Selection */}
             <div className="gender-container">
-              <label className="gender-label">Select Gender:</label>
+              {/* <label className="gender-label">Select Gender:</label> */}
               <div className="gender-options">
                 <div
                   className={`gender-option male ${gender === "male" ? "selected" : ""}`}
