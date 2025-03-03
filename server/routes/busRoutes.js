@@ -4,7 +4,6 @@ const User = require("../models/user");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
 const mongoose = require("mongoose");
-const mongoose = require("mongoose");
 
 // Add new Bus details
 router.post("/", middleware.isAuthoraized, async (req, res) => {
