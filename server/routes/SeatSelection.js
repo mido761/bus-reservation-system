@@ -55,13 +55,19 @@ router.post("/:busId", async (req, res) => {
     // Ensure all selected seats are available
     const seatQuery = {
       _id: busId,
-      $and: seats.map((seat) => ({ [`seats.bookedSeats.${seat}`]: "0" })), // Ensure all seats are free
+      $and: seats.map((seat) => ({ [`seats.bookedSeats.${seat}`]: 0 })), // Ensure seats are free
     };
 
+    // Merge seat assignment and gender update
     const seatUpdate = {
-      $set: Object.fromEntries(
-        seats.map((seat) => [`seats.bookedSeats.${seat}`, userId])
-      ), // Assign user to seats
+      $set: {
+        ...Object.fromEntries(
+          seats.map((seat) => [`seats.bookedSeats.${seat}`, userId])
+        ),
+        ...Object.fromEntries(
+          seats.map((seat) => [`seats.genders.${seat}`, user.gender])
+        ),
+      },
     };
 
     const updatedBus = await Bus.findOneAndUpdate(seatQuery, seatUpdate, {
@@ -75,18 +81,12 @@ router.post("/:busId", async (req, res) => {
         .json({ message: "Some selected seats are already booked" });
     }
 
-      // Notify other users via Pusher
-      pusher.trigger("bus-channel", "seat-booked", {
-        busId,
-        selectedSeats: seats,
-        userId,
-      });
-      // Notify other users via Pusher
-      pusher.trigger("bus-channel", "seat-booked", {
-        busId,
-        selectedSeats: seats,
-        userId,
-      });
+    // Notify other users via Pusher
+    pusher.trigger("bus-channel", "seat-booked", {
+      busId,
+      selectedSeats: seats,
+      userId,
+    });
 
     // Update the user's booking history
     await User.findByIdAndUpdate(
@@ -133,12 +133,12 @@ router.post("/:busId", async (req, res) => {
         console.error("Error duplicating bus:", error);
         return res.status(500).json({ message: "Error duplicating bus" });
       }
-    } 
+    }
 
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
     console.error("Error reserving seat:", error);
-    return res
+    return res;
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
@@ -268,7 +268,11 @@ router.delete("/:busId", async (req, res) => {
     }, {});
 
     const BookedUserIds = [
-      ...new Set(selectedSeats.map((i) => bus.seats.bookedSeats[i]).filter((seat) => seat !== '0')),
+      ...new Set(
+        selectedSeats
+          .map((i) => bus.seats.bookedSeats[i])
+          .filter((seat) => seat !== "0")
+      ),
     ];
 
     if (user.role === "admin") {

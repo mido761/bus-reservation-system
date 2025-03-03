@@ -15,6 +15,7 @@ const BusSchema = new mongoose.Schema({
     seats: {
         totalSeats: {type: Number, required: true},
         bookedSeats: [{type: String,  required: false}],
+        genders: [{type: String,  required: false}],
         reservedSeats: { type: [ReservedSeatSchema], default: [] },
         availableSeats: {type: Number, required: false}
     },
