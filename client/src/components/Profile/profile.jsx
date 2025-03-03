@@ -76,7 +76,7 @@ const UserProfile = () => {
         // Fetch user details
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
-        setGender(res.data.gender || ""); // Set gender state
+        setGender(res.data.gender || "Male"); // Set gender state
         const userDetails = res.data;
         const busIds = userDetails.bookedBuses.buses;
 
@@ -126,7 +126,7 @@ const UserProfile = () => {
   };
   const handleSave = async () => {
     try {
-      await axios.put(`${backEndUrl}/user/profile/${userId}`, { gender });
+      await axios.put(`${backEndUrl}/user/edit-gender/${userId}`, { gender });
       setUserDetails((prev) => ({ ...prev, gender }));
       setEditMode(false);
     } catch (error) {
