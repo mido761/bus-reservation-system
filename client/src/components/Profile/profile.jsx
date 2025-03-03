@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaEnvelope, FaPhone } from "react-icons/fa"; // Import icons
+import { FaEnvelope, FaPhone } from "react-icons/fa"; // Import icons
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
 import LoadingPage from "../loadingPage/loadingPage";
+
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -20,7 +22,7 @@ const UserProfile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchBusDetails = async () => {
+    const fetchUserData = async () => {
       try {
         const req_user = await axios.get(`${backEndUrl}/auth`, {
           withCredentials: true,
@@ -70,6 +72,9 @@ const UserProfile = () => {
         setUserId(userId);
 
         // Fetch user details
+        setUserId(userId);
+
+        // Fetch user details
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
         setGender(res.data.gender || ""); // Set gender state
@@ -102,8 +107,7 @@ const UserProfile = () => {
       }
     };
 
-    fetchUsers();
-    fetchBusDetails();
+    fetchUserData();
   }, []);
 
   const convertTo12HourFormat = (time) => {

@@ -1,6 +1,11 @@
 /* General page layout */
+/* General page layout */
 .bus-list-page {
   min-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -85,38 +90,55 @@
   width: 100%;
   max-width: 1200px;
   padding: 20px;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
 }
 
+/* Individual bus container */
 /* Individual bus container */
 .bus-container {
   background-color: var(--form-background);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   max-width: 400px;
+  min-width: 300px;
   min-width: 300px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  text-align: center;
 }
 
 .bus-container:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 /* Bus details */
+/* Bus details */
 .bus-container h1 {
   font-size: 22px;
+  font-size: 22px;
   color: var(--text-color);
+  margin-bottom: 10px;
   margin-bottom: 10px;
 }
 
 .bus-container p {
+.bus-container p {
   font-size: 16px;
+  color: var(--text-color);
+  margin: 5px 0;
   color: var(--text-color);
   margin: 5px 0;
 }
@@ -124,17 +146,28 @@
 .bus-container span {
   font-weight: bold;
   color: var(--primary-hover);
+.bus-container span {
+  font-weight: bold;
+  color: var(--primary-hover);
 }
 
+/* Delete Bus button */
 /* Delete Bus button */
 .delete-button {
   background-color: var(--danger-color);
   color: #fff;
   padding: 10px 18px;
   font-size: 16px;
+  background-color: var(--danger-color);
+  color: #fff;
+  padding: 10px 18px;
+  font-size: 16px;
   border: none;
   border-radius: 6px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-top: 12px;
   transition: all 0.3s ease-in-out;
   margin-top: 12px;
 }
@@ -142,10 +175,20 @@
 .delete-button:hover {
   background-color: var(--danger-hover);
   transform: scale(1.05);
+  background-color: var(--danger-hover);
+  transform: scale(1.05);
 }
 
 /* Booked Users Section */
+/* Booked Users Section */
 .booked-users {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--background-light);
+  width: 100%;
+  min-width: 280px;
+  max-width: 380px;
   margin-top: 15px;
   padding: 12px;
   border-radius: 8px;
@@ -160,20 +203,30 @@
   color: var(--text-color);
   margin-bottom: 8px;
   text-align: center;
+  margin-bottom: 8px;
+  text-align: center;
 }
 
 .booked-users ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  margin: 0;
 }
 
+/* Booked user details */
 /* Booked user details */
 .booked-user {
   display: flex;
   justify-content: space-between;
   padding: 8px;
+  padding: 8px;
   border-bottom: 1px solid var(--input-border);
+  font-size: 14px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
   font-size: 14px;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -184,6 +237,11 @@
 .user-name {
   font-weight: bold;
   color: var(--primary-hover);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  display: inline-block;
+  max-width: 150px;
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;

@@ -66,6 +66,7 @@ router.get("/profile/:userId", async (req, res) => {
 router.post("/profiles", async (req, res) => {
   const { userIds } = req.body;
   const users = await User.find({ _id: { $in: userIds } }, "name phoneNumber bookedBuses.seats checkInStatus"); // Fetch all users at once
+  const users = await User.find({ _id: { $in: userIds } }, "name phoneNumber bookedBuses.seats checkInStatus"); // Fetch all users at once
   res.json(users);
 });
 

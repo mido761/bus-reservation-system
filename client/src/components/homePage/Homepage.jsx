@@ -68,6 +68,10 @@ const Homepage = () => {
     { id: 2, route: "Dandy to E-JUST" },
     { id: 3, route: "E-JUST to Ramses" },
     { id: 3, route: "E-JUST to Dandy" },
+    { id: 1, route: "Abaseya to E-JUST" },
+    { id: 2, route: "Dandy to E-JUST" },
+    { id: 3, route: "E-JUST to Ramses" },
+    { id: 3, route: "E-JUST to Dandy" },
   ];
 
   // Handle selected bus
@@ -150,6 +154,20 @@ const Homepage = () => {
 
   return (
     <div className="home-page">
+      {/* {location.pathname === "/home" && (
+        <button className="add-bus-btn" onClick={() => navigate("/add-bus")}>
+          Add a new Bus
+        </button>
+      )}
+      {location.pathname === "/home" && (
+        <button
+          className="add-bus-btn"
+          onClick={() => navigate("/notifications")}
+        >
+          Test
+        </button>
+      )} */}
+
       <div className="search-container">
         {/* Search Bar */}
         <div className="bus-search-bar">
@@ -161,12 +179,18 @@ const Homepage = () => {
             <option value="E-JUST">E-JUST</option>
             <option value="Abaseya">Abaseya</option>
             <option value="Dandy">Dandy</option>
+            <option value="E-JUST">E-JUST</option>
+            <option value="Abaseya">Abaseya</option>
+            <option value="Dandy">Dandy</option>
           </select>
           <select
             onChange={(e) => setArrivalPoint(e.target.value)}
             value={arrivalPoint}
           >
             <option value="">Arrival Point</option>
+            <option value="E-JUST">E-JUST</option>
+            <option value="Ramses">Ramses</option>
+            <option value="Dandy">Dandy</option>
             <option value="E-JUST">E-JUST</option>
             <option value="Ramses">Ramses</option>
             <option value="Dandy">Dandy</option>
@@ -215,6 +239,14 @@ const Homepage = () => {
                 <p>
                   {bus.location.pickupLocation} <span>To </span>
                   {bus.location.arrivalLocation}
+                </p>
+                <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
+                <p>
+                  <span>
+                    {bus.seats.availableSeats === 0
+                      ? "Full"
+                      : `Available Seats: ${bus.seats.availableSeats}`}
+                  </span>
                 </p>
                 <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
                 <p>

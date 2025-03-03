@@ -1,8 +1,10 @@
 const express = require("express");
 const Bus = require("../models/busModel");
 const User = require("../models/user");
+const User = require("../models/user");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
+const mongoose = require("mongoose");
 const mongoose = require("mongoose");
 
 // Add new Bus details
@@ -10,6 +12,7 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
   try {
     const {
       totalSeats,
+      busNumber,
       schedule,
       minNoPassengers,
       price,
@@ -28,6 +31,7 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     if (
       !schedule ||
       !price ||
+      !busNumber ||
       !pickupLocation ||
       !arrivalLocation ||
       !departureTime ||
@@ -52,8 +56,10 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     const newBus = new Bus({
       seats: {
         totalSeats: 20,
+        totalSeats: 20,
         availableSeats: totalSeats,
         // bookedSeats: new Array(totalSeats).fill(0)
+        bookedSeats: Array.from({ length: 20 }, () => 0),
         bookedSeats: Array.from({ length: 20 }, () => 0),
       },
       schedule: schedule,
@@ -63,12 +69,15 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
         pickupLocation: pickupLocation,
         arrivalLocation: arrivalLocation,
       },
-      time: { departureTime: departureTime, 
-        arrivalTime: arrivalTime},
+      time: {
+        departureTime: departureTime,
+        arrivalTime: arrivalTime
+      },
       allowance: {
         cancelTimeAllowance: cancelTimeAllowance,
         bookingTimeAllowance: bookingTimeAllowance,
       },
+      busNumber: busNumber,
       allowedNumberOfBags: allowedNumberOfBags,
     });
     // console.log(newBus);
@@ -78,6 +87,29 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     res
       .status(400)
       .json({ message: "Error adding the bus details", error: err.message });
+  }
+});
+// Search for a user in the bus list
+router.get("/searchUser", async (req, res) => {
+  try {
+    const { username } = req.query;
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    // Find buses where the username is in the bookedUsers list
+    const buses = await Bus.find({
+      "seats.bookedUsers": { $elemMatch: { name: username } },
+    });
+
+    if (buses.length === 0) {
+      return res.status(404).json({ message: "User not found in any bus" });
+    }
+
+    res.status(200).json(buses);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
 
@@ -94,6 +126,13 @@ router.get("/", async (req, res) => {
 // Fetch multiple buses at once
 router.get("/userBuses", async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
+  // console.log("IDs: ", ids)
+  // return res.json(ids)
+  if (ids) {
+    const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
+    return res.json(busDetails);
+  }
+  return res.json(busDetails = []);
   // console.log("IDs: ", ids)
   // return res.json(ids)
   if (ids) {
@@ -126,6 +165,17 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
       },
       { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] } }
     );
+    const busDetails = await Bus.findById(id);
+    await User.updateMany(
+      {
+        _id: {
+          $in: busDetails.seats.bookedSeats.filter(
+            mongoose.Types.ObjectId.isValid
+          ),
+        },
+      },
+      { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] } }
+    );
     const deletedBus = await Bus.deleteOne({ _id: id });
 
     if (!id) {
@@ -138,6 +188,37 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
   } catch (err) {
     console.error("Error deleting the Item", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Update a bus
+router.put("/edit-bus/:busId", async (req, res) => {
+  const busId = req.params.busId
+  console.log(req.body)
+  try {
+    const updatedBus = await Bus.findByIdAndUpdate(
+      busId,
+      {
+        $set: {
+          "location.pickupLocation": req.body.location?.pickupLocation,
+          "location.arrivalLocation": req.body.location?.arrivalLocation,
+          "time.departureTime": req.body.time?.departureTime,
+          "time.arrivalTime": req.body.time?.arrivalTime,
+          schedule: req.body.schedule,
+          price: req.body.price,
+          busNumber: req.body.busNumber,
+          pickupLocation: req.body.pickupLocation,
+          arrivalLocation: req.body.arrivalLocation,
+          departureTime: req.body.departureTime,
+          arrivalTime: req.body.arrivalTime,
+        },
+      },
+      { new: true }
+    );
+    if (!updatedBus) return res.status(404).json({ message: "Bus not found" });
+    res.json({ message: "Bus updated successfully", bus: updatedBus });
+  } catch (err) {
+    res.status(400).json({ message: "Failed to update bus" });
   }
 });
 
