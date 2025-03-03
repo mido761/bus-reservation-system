@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -30,18 +30,34 @@ function Signup() {
   };
 
   const validateEmail = (email) =>
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
-  
-  const validatePassword = (password) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#])[A-Za-z\d@$!%*?&.#]{8,}$/.test(password);
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/.test(email);
 
-  const passwordErrorMessage =
-    "Password must meet the following requirements:\n" +
-    "- At least 8 characters long\n" +
-    "- Include at least one uppercase\n" +
-    "- Include at least one lowercase letter\n" +
-    "- Include at least one number\n" +
-    "- Include at least one special character (@$!%*?&.#)";
+  // const validatePassword = (password) =>
+  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#])[A-Za-z\d@$!%*?&.#]{8,}$/.test(password);
+
+  // const passwordErrorMessage =
+  //   "Password must meet the following requirements:\n" +
+  //   "- At least 8 characters long\n" +
+  //   "- Include at least one uppercase\n" +
+  //   "- Include at least one lowercase letter\n" +
+  //   "- Include at least one number\n" +
+  //   "- Include at least one special character (@$!%*?&.#)";
+
+  const validatePassword = (password) => {
+    let errors = [];
+
+    if (password.length < 8) errors.push("At least 8 characters long");
+    if (!/[A-Z]/.test(password))
+      errors.push("Include at least one uppercase letter");
+    if (!/[a-z]/.test(password))
+      errors.push("Include at least one lowercase letter");
+    if (!/\d/.test(password)) errors.push("Include at least one number");
+    if (!/[@$!%*?&.#]/.test(password))
+      errors.push("Include at least one special character (@$!%*?&.#)");
+
+    return errors;
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,9 +66,13 @@ function Signup() {
 
     // Validate Inputs
     let validationErrors = {};
-    if (!validatePhoneNumber(phoneNumber)) validationErrors.phoneNumber = "Phone number must start with '01' and be exactly 11 digits.";
-    if (!validateEmail(email)) validationErrors.email = "Email must be a valid Gmail address (e.g., example@example.com).";
-    if (!validatePassword(password)) validationErrors.password = passwordErrorMessage;
+    if (!validatePhoneNumber(phoneNumber))
+      validationErrors.phoneNumber = "Please enter a valid phone number.";
+    if (!validateEmail(email))
+      validationErrors.email =
+        "Enter a valid email address (e.g., example@example.com).";
+    if (!validatePassword(password))
+      validationErrors.password = validatePassword(password).join("\n");
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -100,8 +120,18 @@ function Signup() {
     }
   };
 
-  
-    
+  useEffect(() => {
+    let validationErrors = {};
+    if (!validatePhoneNumber(phoneNumber))
+      validationErrors.phoneNumber = "Please enter a valid phone number.";
+    if (!validateEmail(email))
+      validationErrors.email =
+        "Enter a valid email address (e.g., example@example.com).";
+    validationErrors.password = validatePassword(password).join("\n");
+    setErrors(validationErrors);
+  }, [email, password, phoneNumber]);
+
+
 
   return (
     <div className="register-page">
@@ -124,11 +154,19 @@ function Signup() {
               id="phoneNumber"
               name="phoneNumber"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, "");
+                setPhoneNumber(value);
+              }}
+              onInput={(e) =>
+                (e.target.value = e.target.value.replace(/\D/g, ""))
+              }
               maxLength="11"
               required
             />
-            {errors.phoneNumber && <p className="error">⚠️ {errors.phoneNumber}</p>}
+            {errors.phoneNumber && (
+              <p className="error"> {errors.phoneNumber}</p>
+            )}
 
             <label htmlFor="email">Email</label>
             <input
@@ -138,7 +176,7 @@ function Signup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.email && <p className="error">⚠️ {errors.email}</p>}
+            {errors.email && <p className="error"> {errors.email}</p>}
 
             <label htmlFor="password">Password</label>
             <div className="password-container">
@@ -154,7 +192,10 @@ function Signup() {
               </span>
             </div>
             {errors.password && (
-              <p className="error" style={{ whiteSpace: "pre-line" }}>⚠️ {errors.password}</p>
+              <pre className="error" style={{ whiteSpace: "pre-line" }}>
+                {" "}
+                {errors.password}
+              </pre>
             )}
 
             {/* Gender Selection */}
@@ -181,7 +222,13 @@ function Signup() {
           </form>
           <Link to="/login">Login</Link>
           {isLoading && <LoadingScreen />}
-          {alertFlag && <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />}
+          {alertFlag && (
+            <Overlay
+              alertFlag={alertFlag}
+              alertMessage={alertMessage}
+              setAlertFlag={setAlertFlag}
+            />
+          )}
         </div>
       ) : (
         <Verification setVerificationFlag={setVerificationFlag} />

@@ -9,9 +9,15 @@ const UserSchema = new mongoose.Schema({
   gender: { type: String, enum: ["male", "female"], required: true }, // Added gender field
   bookedBuses: {
     buses: [{ type: String, required: false }],
-    seats: [{ type: Number, required: false }]
+    seats: [{ type: Number, required: false }],
   },
   role: { type: String, required: false, default: "user" },
+  resetToken: { type: String, required: false },
+  resetTokenExpires: {
+    type: Date,
+    required: false,
+    default: () => new Date(Date.now() + 10*  60 * 1000),
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);

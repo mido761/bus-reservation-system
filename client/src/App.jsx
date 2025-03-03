@@ -7,6 +7,8 @@ import Auth from "./Auth.jsx";
 import Navbar from "./components/navbar/nav.jsx";
 import Signup from "./components/signup/Signup.jsx";
 import Login from "./components/login/login.jsx";
+import ForgotPassword from "./components/forgotPassword/forgotPassword.jsx";
+import ResetPassword from "./components/reset-password/reset-password.jsx";
 import AddBus from "./components/addBus/AddBus.jsx";
 import BusList from "./components/busList/Buslist.jsx";
 import Homepage from "./components/homePage/Homepage.jsx";
@@ -21,6 +23,8 @@ function App() {
   return (
     <HashRouter basename="/">
       <Routes>
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 

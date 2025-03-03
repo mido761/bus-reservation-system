@@ -5,7 +5,7 @@
   background-color: var(--form-background);
   border-radius: 8px;
   color: var(--text-color);
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -88,7 +88,7 @@
   margin-top: 9px;
   color: var(--text-color);
   text-decoration: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
   transition: color 0.3s ease;
 }
@@ -97,13 +97,19 @@
   color: #555555;
 }
 
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 @media (max-width: 500px) {
   .login-container h2 {
-      font-size: 24px;
+    font-size: 24px;
   }
 
   .login-container input,
   .login-container button {
-      font-size: 14px;
+    font-size: 14px;
   }
 }

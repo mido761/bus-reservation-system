@@ -13,6 +13,7 @@ const SeatSelection = require("./routes/SeatSelection");
 const contactRoutes = require("./routes/contactRoutes");
 const middleware = require("./controllers/middleware");
 const register = require("./routes/register");
+const forgotPassword = require("./routes/forgotPassword")
 const path = require("path");
 // For email vraification
 const nodemailer = require("nodemailer");
@@ -29,9 +30,6 @@ const pusher = new Pusher({
 
 const app = express();
 
-// Middleware for parsing JSON and URL-encoded form data
-app.use(express.json()); // For JSON payloads
-app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -50,6 +48,9 @@ app.use(
 );
 
 
+// Middleware for parsing JSON and URL-encoded form data
+app.use(express.json()); // For JSON payloads
+app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
 
 // // Handle OPTIONS preflight request for CORS
 app.options("*", (req, res) => {
@@ -114,6 +115,7 @@ app.use("/user", middleware.isAuthenticated, userRouter);
 // Email verifaction
 app.use("/api/register", register);
 
+app.use("/api", forgotPassword);
 // Contact routes
 app.use("/contact", middleware.isAuthenticated, contactRoutes);
 

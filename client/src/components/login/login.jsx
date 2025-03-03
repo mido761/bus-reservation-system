@@ -92,15 +92,22 @@ function Login() {
               className="password-toggle"
               onClick={() => setPasswordVisible(!passwordVisible)} // Toggle password visibility
             >
-              {passwordVisible ? <HiEyeOff /> : <HiEye />} {/* Eye icons from react-icons */}
+              {passwordVisible ? <HiEyeOff /> : <HiEye />}{" "}
+              {/* Eye icons from react-icons */}
             </span>
           </div>
 
           <button type="submit">Login</button>
         </form>
-        <Link to="/register" className="back-button">
-          Don't not have an account? Sign up
-        </Link>
+        <div className="actions-container">
+          <Link to="/forgot-password" className="back-button">
+            Forgot Password?
+          </Link>
+
+          <Link to="/register" className="back-button">
+            Doesn't not have an account? Sign up
+          </Link>
+        </div>
       </div>
 
       {isLoading && <LoadingScreen />}
