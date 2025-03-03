@@ -10,6 +10,7 @@ const locations = ["Ramses", "Dandy", "E-JUST", "Abaseya"];
 
 const AddBus = () => {
   const [totalSeats, setAllSeats] = useState(15);
+  const [busNumber, setbusNumber] = useState("");
   const [schedule, setSchedule] = useState("");
   const [minNoPassengers, setMinNoPassengers] = useState("");
   const [price, setPrice] = useState("");
@@ -31,8 +32,11 @@ const AddBus = () => {
   // Function to pre-fill form values
   const handleQuickAdd = () => {
     setAllSeats(15);
+    setbusNumber("1234");
     setMinNoPassengers(11);
     setPrice(110);
+    setPickupLocation("E-JUST");
+    setArrivalLocation("Ramses");
     setPickupLocation("E-JUST");
     setArrivalLocation("Ramses");
     setCancelTimeAllowance(2);
@@ -47,6 +51,7 @@ const AddBus = () => {
     setIsLoading(true);
     console.log(
       totalSeats,
+      busNumber,
       schedule,
       price,
       pickupLocation,
@@ -59,6 +64,7 @@ const AddBus = () => {
       setAllSeats(15);
       await axios.post(`${backEndUrl}/buses`, {
         totalSeats,
+        busNumber,
         schedule,
         price,
         pickupLocation,
@@ -88,6 +94,7 @@ const AddBus = () => {
       }, 2200);
     }
   };
+
 
 
   return (
@@ -121,6 +128,14 @@ const AddBus = () => {
               </option>
             ))}
           </select>
+
+          <label>Bus Number</label>
+            <input
+            type="text"
+            placeholder="Bus Number"
+            value = {busNumber}
+            onChange={(e) => setbusNumber(e.target.value)}
+            ></input>
 
           <label>Departure time</label>
           <input

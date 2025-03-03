@@ -81,6 +81,12 @@ router.post("/:busId", async (req, res) => {
         selectedSeats: seats,
         userId,
       });
+      // Notify other users via Pusher
+      pusher.trigger("bus-channel", "seat-booked", {
+        busId,
+        selectedSeats: seats,
+        userId,
+      });
 
     // Update the user's booking history
     await User.findByIdAndUpdate(
@@ -132,6 +138,7 @@ router.post("/:busId", async (req, res) => {
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
     console.error("Error reserving seat:", error);
+    return res
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
@@ -227,6 +234,7 @@ router.post("/reserve/:busId", async (req, res) => {
     // Notify users in real time
     pusher.trigger("bus-channel", "seat-reserved", { busId, updatedBus });
 
+    return res
     return res
       .status(200)
       .json({ message: "Seats reserved successfully", updatedBus });

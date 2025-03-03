@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Buslist.css";
 import LoadingPage from "../loadingPage/loadingPage";
@@ -17,10 +18,13 @@ const BusList = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [userSearchQuery, setUserSearchQuery] = useState("");
+  const navigate = useNavigate();
+
 
   const fetchBuses = async () => {
     try {
       const res = await axios.get(`${backEndUrl}/buses`);
+      setFilteredBuses(res.data);
       setFilteredBuses(res.data);
       setBuses(res.data);
     } catch (error) {
@@ -43,6 +47,11 @@ const BusList = () => {
       }, {});
 
       const uniqueUserIds = Object.keys(userCounts);
+      if (uniqueUserIds.length === 0) {
+        setUsersByBus((prev) => ({ ...prev, [bus._id]: [] }));
+        setIsLoading(false);
+        return;
+      }
       if (uniqueUserIds.length === 0) {
         setUsersByBus((prev) => ({ ...prev, [bus._id]: [] }));
         setIsLoading(false);
@@ -97,6 +106,12 @@ const BusList = () => {
       setAlertMessage("✅ Bus deleted successfully!");
       setAlertFlag(true);
 
+      setFilteredBuses((prev) => prev.filter((bus) => bus._id !== id));
+  
+      setLoading(false);
+      setAlertMessage("✅ Bus deleted successfully!");
+      setAlertFlag(true);
+  
       setTimeout(() => {
         setAlertFlag(false);
       }, 2200);
@@ -105,12 +120,45 @@ const BusList = () => {
       setAlertMessage("⚠️ Error deleting the bus");
       setAlertFlag(true);
 
+      setLoading(false);
+      setAlertMessage("⚠️ Error deleting the bus");
+      setAlertFlag(true);
+  
       setTimeout(() => {
         setAlertFlag(false);
       }, 2200);
     }
   };
+  
+  //navigte with the bus id in the url to enable me to edit the bus
+  const handleEdit = (busId) => {
+    navigate(`/edit-bus/${busId}`);
+  };
+  
 
+  const handleCheckIn = async (userId, busId) => {
+    try {
+      await axios.put(`${backEndUrl}/user/check-in/${userId}`); // Send check-in request
+
+      // Update the state to mark the user as checked in
+      // setUsersByBus((prev) => ({
+      //   ...prev,
+      //   [busId]: prev[busId].map((user) =>
+      //     user._id === userId ? { ...user, checkInStatus: true } : user
+      //   ),
+      // }));
+
+      setAlertMessage("User checked in successfully!");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2000);
+    } catch (error) {
+      console.error("Check-in failed", error);
+      setAlertMessage("⚠️ Error during check-in");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2000);
+    }
+  };
+  
   const handleUserSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setUserSearchQuery(query);
@@ -119,7 +167,7 @@ const BusList = () => {
       setFilteredBuses(buses);
       return;
     }
-
+    
     const filtered = buses.filter((bus) =>
       usersByBus[bus._id]?.some((user) =>
         user.name.toLowerCase().includes(query)
@@ -128,7 +176,7 @@ const BusList = () => {
 
     setFilteredBuses(filtered);
   };
-
+  
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
     const [hour, minute] = time.split(":");
@@ -144,55 +192,13 @@ const BusList = () => {
     return `${hour12}:${minute} ${period}`;
   };
 
-  // Handle Check-in Function
-  const handleCheckIn = async (userId, busId) => {
-    try {
-      await axios.put(`${backEndUrl}/user/check-in/${userId}`); // Send check-in request
-
-      // Update the state to mark the user as checked in
-      setUsersByBus((prev) => ({
-        ...prev,
-        [busId]: prev[busId].map((user) =>
-          user._id === userId ? { ...user, checkInStatus: true } : user
-        ),
-      }));
-    } catch (error) {
-      console.error("Check-in failed", error);
-      setAlertMessage("⚠️ Error during check-in");
-      setAlertFlag(true);
-      setTimeout(() => setAlertFlag(false), 2000);
-    }
-  };
-  
-  // Handle Check-out Function
-  const handleCheckOut = async (userId, busId) => {
-    try {
-      await axios.put(`${backEndUrl}/user/check-out/${userId}`); // Send check-in request
-
-      // Update the state to mark the user as checked in
-      setUsersByBus((prev) => ({
-        ...prev,
-        [busId]: prev[busId].map((user) =>
-          user._id === userId ? { ...user, checkInStatus: false } : user
-        ),
-      }));
-
-    } catch (error) {
-      console.error("Check-in failed", error);
-      setAlertMessage("⚠️ Error during check-in");
-      setAlertFlag(true);
-      setTimeout(() => setAlertFlag(false), 2000);
-    }
-  };
-
-
   return (
     <div className="bus-list-page">
-      {alertFlag && (
-        <div className={`alert-message ${alertFlag ? "show" : ""}`}>
-          {alertMessage}
-        </div>
-      )}
+       {alertFlag && (
+          <div className={`alert-message ${alertFlag ? "show" : ""}`}>
+            {alertMessage}
+          </div>
+        )}
       <br />
       <div onClick={fetchBuses} className="show-buses-btn">
         Show Available Buses
@@ -216,10 +222,8 @@ const BusList = () => {
           filteredBuses.map((bus) => (
             <div key={bus._id} className="bus-container">
               <h1>Bus details</h1>
-              <p>
-                {bus.location.pickupLocation} <span>to</span>{" "}
-                {bus.location.arrivalLocation}
-              </p>
+              <p>{bus.location.pickupLocation} <span>to</span> {bus.location.arrivalLocation}</p>
+              <button onClick={() => handleEdit(bus._id)}>Edit</button>
               <div className="booked-users">
                 <h3>Seats Booked By:</h3>
                 {usersByBus[bus._id]?.length > 0 ? (
@@ -260,6 +264,8 @@ const BusList = () => {
                             Check out
                           </button>
                         )}
+                  
+
                       </p>
                     ))}
                   </ul>

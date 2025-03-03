@@ -18,6 +18,7 @@ import PaymentSuccess from "./components/paymentSuccess/PaymentSuccess.jsx";
 import TicketSummary from "./components/ticketSummary/TicketSummary.jsx"; 
 import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
+import EditBus from "./components/editBus/editBus.jsx"
 
 function App() {
   return (
@@ -104,6 +105,16 @@ function App() {
               <Footer />
             </Auth>
           }
+        />
+        <Route
+        path= "/edit-bus/:busId"
+        element={    
+            <Auth requireAdmin={true}>
+              <Navbar />
+              <EditBus />
+              <Footer />
+            </Auth>
+        }
         />
 
         <Route

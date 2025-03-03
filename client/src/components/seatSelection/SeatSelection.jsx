@@ -199,6 +199,7 @@ const SeatSelection = () => {
     } 
   };
     
+    
 
   const handleConfirmSeats = async (type) => {
     setIsLoading(true);

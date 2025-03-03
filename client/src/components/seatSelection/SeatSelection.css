@@ -66,6 +66,7 @@
 .seat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   width: 250px;
   justify-items: center;
@@ -76,12 +77,19 @@
 .seat {
   width: 42px; /* Slightly larger */
   height: 42px;
+  width: 42px; /* Slightly larger */
+  height: 42px;
   background-color: var(--form-background);
   text-align: center;
   line-height: 42px;
   border: 2px solid var(--input-border); /* Stronger border */
+  line-height: 42px;
+  border: 2px solid var(--input-border); /* Stronger border */
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s, color 0.3s, transform 0.2s;
+  border-radius: 11px; /* Sharp edges */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Slight pop effect */
   transition: background-color 0.3s, color 0.3s, transform 0.2s;
   border-radius: 11px; /* Sharp edges */
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Slight pop effect */
@@ -121,6 +129,7 @@
 }
 
 .seat.booked {
+  background-color: red;
   background-color: red;
   color: var(--button-text);
   cursor: not-allowed;
@@ -224,3 +233,4 @@
     flex-direction: row;
   }
 }
+
