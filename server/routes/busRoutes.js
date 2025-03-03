@@ -1,7 +1,6 @@
 const express = require("express");
 const Bus = require("../models/busModel");
 const User = require("../models/user");
-const User = require("../models/user");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
 const mongoose = require("mongoose");
