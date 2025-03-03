@@ -154,5 +154,25 @@ router.get("/search", async (req, res) => {
   }
 });
 
+router.put("/edit-gender/:userId", async (req, res) => {
+  try {
+    const { gender } = req.body; // ✅ Extract gender
+    console.log(gender)
+
+    if (!gender) return res.status(400).json({ error: "Gender is required" });
+
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.gender = gender; // ✅ Assign the correct value
+    await user.save();
+
+    res.json({ message: "Gender updated successfully", user });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 module.exports = router;
