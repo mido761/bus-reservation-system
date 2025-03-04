@@ -24,7 +24,7 @@ const BusList = () => {
   const fetchBuses = async () => {
     try {
       const res = await axios.get(`${backEndUrl}/buses`);
-      setFilteredBuses(res.data);
+      setBuses(res.data);
       setFilteredBuses(res.data);
       setBuses(res.data);
     } catch (error) {
@@ -37,6 +37,10 @@ const BusList = () => {
   };
 
   const fetchUsersForBus = async (bus) => {
+    if (!bus.seats || !Array.isArray(bus.seats.bookedSeats)) {
+      console.warn(`Bus ${bus._id} has no booked seats.`);
+      return;
+    }
     setIsLoading(true);
     try {
       const userCounts = bus.seats.bookedSeats.reduce((acc, userId) => {
@@ -84,6 +88,12 @@ const BusList = () => {
   useEffect(() => {
     buses.forEach((bus) => fetchUsersForBus(bus));
   }, [buses]);
+  useEffect(() => {
+    if (userSearchQuery.trim() !== "") {
+      handleUserSearchChange({ target: { value: userSearchQuery } });
+    }
+  }, [usersByBus]); 
+  
 
   const handleDel = async (id) => {
     const firstConfirmation = window.confirm(
@@ -175,14 +185,21 @@ const BusList = () => {
       return;
     }
   
+    // Ensure usersByBus is populated before filtering
+    if (!usersByBus || Object.keys(usersByBus).length === 0) {
+      console.warn("Users data not loaded yet!");
+      return;
+    }
+  
     const filtered = buses.filter((bus) =>
       usersByBus[bus._id]?.some((user) =>
-        user.phoneNumber && user.phoneNumber.toString().includes(query) // Convert to string
+        user.phoneNumber && user.phoneNumber.toString().includes(query)
       )
     );
   
     setFilteredBuses(filtered);
   };
+  
   
   
   
