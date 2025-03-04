@@ -19,7 +19,12 @@
     gap: 8px;
     cursor: pointer;
 }
-
+.bus-number {
+    font-weight: bold;
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
 @media screen and (max-width: 500px){
     .dashboard-cards{
         display: flex;
@@ -28,3 +33,5 @@
     }
     
 }
+
+  

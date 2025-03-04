@@ -233,6 +233,16 @@ const SeatSelection = () => {
         }
       }
     } else if (selectedSeats.length > 0 && type === "cancel") {
+      // Check if user is an admin
+      if (isAuthorized) {
+        const confirmDelete = window.confirm(
+          "Are you sure you want to delete these booked seats?"
+        );
+        if (!confirmDelete) {
+          setIsLoading(false);
+          return;
+        }
+      }
       const response = await axios.delete(
         `${backEndUrl}/seatselection/${busId}`,
         { data: { selectedSeats, userId }, withCredentials: true }
@@ -296,7 +306,7 @@ const SeatSelection = () => {
       </header>
       <div className="bus-card">
         <div className="bus-details">
-          <h2>Bus details</h2>
+        <p className="bus-number"> {busDetails.busNumber}</p>
           <div className="bus-data">
             <p>
               <strong>Time</strong>{" "}
