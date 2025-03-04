@@ -149,21 +149,38 @@ const BusList = () => {
     }
   };
   
-  const handleUserSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setUserSearchQuery(query);
+  // const handleUserSearchChange = (e) => {
+  //   const query = e.target.value.toLowerCase();
+  //   setUserSearchQuery(query);
 
-    if (query.trim() === "") {
+  //   if (query.trim() === "") {
+  //     setFilteredBuses(buses);
+  //     return;
+  //   }
+    
+  //   const filtered = buses.filter((bus) =>
+  //     usersByBus[bus._id]?.some((user) =>
+  //       user.name.toLowerCase().includes(query)
+  //     )
+  //   );
+
+  //   setFilteredBuses(filtered);
+  // };
+  const handleUserSearchChange = (e) => {
+    const query = e.target.value.trim();
+    setUserSearchQuery(query);
+  
+    if (query === "") {
       setFilteredBuses(buses);
       return;
     }
-    
+  
     const filtered = buses.filter((bus) =>
       usersByBus[bus._id]?.some((user) =>
-        user.name.toLowerCase().includes(query)
+        user.phoneNumber.includes(query) // Check if phone number includes query
       )
     );
-
+  
     setFilteredBuses(filtered);
   };
   
@@ -203,109 +220,104 @@ const BusList = () => {
       }
     };
   
-
-  return (
-    <div className="bus-list-page">
-       {alertFlag && (
+    return (
+      <div className="bus-list-page">
+        {alertFlag && (
           <div className={`alert-message ${alertFlag ? "show" : ""}`}>
             {alertMessage}
           </div>
         )}
-      <br />
-      <div onClick={fetchBuses} className="show-buses-btn">
-        Show Available Buses
-      </div>
-      <br />
-      <div className="search-container">
-        <div className="search-wrapper">
-          <input
-            type="text"
-            placeholder="Search for reserved user..."
-            value={userSearchQuery}
-            onChange={handleUserSearchChange}
-            className="search-input"
-          />
-          <span className="search-icon">🔍</span>
+        <br />
+        <div onClick={fetchBuses} className="show-buses-btn">
+          Show Available Buses
         </div>
-      </div>
-      <br />
-      <div className="bus-list">
-        {filteredBuses.length > 0 ? (
-          filteredBuses.map((bus) => (
-            <div key={bus._id} className="bus-container">
-              <p className="bus-number"> {bus.busNumber}</p>
-              <p>{bus.location.pickupLocation} <span>to</span> {bus.location.arrivalLocation}</p>
-              <button onClick={() => handleEdit(bus._id)}>Edit</button>
-              <div className="booked-users">
-                <h3>Seats Booked By:</h3>
-                {usersByBus[bus._id]?.length > 0 ? (
-                  <ul>
-                    {usersByBus[bus._id].map((user, index) => (
-                      <p key={index} className="booked-user">
-                        <span className="user-info">
-                          <span className="user-name">
-                            {user.name
-                              ? user.name.replace(/_/g, " ")
-                              : "Unknown"}
+        <br />
+        <div className="search-container">
+          <div className="input-wrapper">
+            <input
+              type="number"
+              placeholder="Enter user number..."
+              value={userSearchQuery}
+              onChange={handleUserSearchChange}
+            />
+          </div>
+        </div>
+        <div className="bus-list">
+          {filteredBuses.length > 0 ? (
+            filteredBuses.map((bus) => (
+              <div key={bus._id} className="bus-container">
+                <p className="bus-number">{bus.busNumber}</p>
+                <p>
+                  {bus.location.pickupLocation} <span>to</span> {bus.location.arrivalLocation}
+                </p>
+                <button onClick={() => handleEdit(bus._id)}>Edit</button>
+                <div className="booked-users">
+                  <h3>Seats Booked By:</h3>
+                  {usersByBus[bus._id]?.length > 0 ? (
+                    <ul>
+                      {usersByBus[bus._id].map((user, index) => (
+                        <p key={index} className="booked-user">
+                          <span className="user-info">
+                            <span className="user-name">
+                              {user.name ? user.name.replace(/_/g, " ") : "Unknown"}
+                            </span>
+                            <span className="user-seats">
+                              (
+                              {user.bookedBuses.seats
+                                .map((seat) =>
+                                  seat < 7
+                                    ? seat - 1
+                                    : seat > 7 && seat < 10
+                                    ? seat - 2
+                                    : seat > 10 && seat < 14
+                                    ? seat - 3
+                                    : seat - 4
+                                )
+                                .join(", ")}
+                              )
+                            </span>
                           </span>
-                          <span className="user-seats">
-                            (
-                            {user.bookedBuses.seats
-                              .map((seat) => seat < 7
-                              ? seat - 1
-                              : seat > 7 && seat < 10
-                              ? seat - 2
-                              : seat > 10 && seat < 14
-                              ? seat - 3
-                              : seat - 4)
-                              .join(", ")}
-                            )
+                          <span className="user-phone">{user.phoneNumber}</span>
+                          <span className="check-in-status">
+                            {user.checkInStatus ? "✅" : "❌"}
                           </span>
-                        </span>
-                        <span className="user-phone">{user.phoneNumber}</span>
-                        <span className="check-in-status">
-                          {/* {user.checkInStatus} */}
-                          {user.checkInStatus
-                            ? "✅"
-                            : "❌"}
-                        </span>
-                        {!user.checkInStatus ? (
-                          <button className="check-in-btn"
-                            onClick={() => handleCheckIn(user._id, bus._id)}
-                          >
-                            Check In
-                          </button>
-                        ) : (
-                          <button className="check-out-btn"
-                            onClick={() => handleCheckOut(user._id, bus._id)}
-                          >
-                            Check out
-                          </button>
-                        )}
-                  
-
-                      </p>
-                    ))}
-                  </ul>
-                ) : isLoading ? (
-                  <LoadingComponent />
-                ) : (
-                  <p>No booked seats</p>
-                )}
+                          {!user.checkInStatus ? (
+                            <button
+                              className="check-in-btn"
+                              onClick={() => handleCheckIn(user._id, bus._id)}
+                            >
+                              Check In
+                            </button>
+                          ) : (
+                            <button
+                              className="check-out-btn"
+                              onClick={() => handleCheckOut(user._id, bus._id)}
+                            >
+                              Check out
+                            </button>
+                          )}
+                        </p>
+                      ))}
+                    </ul>
+                  ) : isLoading ? (
+                    <LoadingComponent />
+                  ) : (
+                    <p>No booked seats</p>
+                  )}
+                </div>
+                <button onClick={() => handleDel(bus._id)}>Delete Bus</button>
               </div>
-              <button onClick={() => handleDel(bus._id)}>Delete Bus</button>
-            </div>
-          ))
-        ) : isLoading ? (
-          <LoadingPage />
-        ) : (
-          <p>No buses found.</p>
-        )}
+            ))
+          ) : isLoading ? (
+            <LoadingPage />
+          ) : (
+            <p>No buses found.</p>
+          )}
+        </div>
+    
+        {loading && <LoadingScreen />}
+        {isLoading && <Overlay message="Loading Buses..." />}
       </div>
-
-      {loading && <LoadingScreen />}
-      {isLoading && <Overlay message="Loading Buses..." />}
-    </div>
-  );
-};
-export default BusList;
+    ); // Make sure this is inside a function and properly closed. 
+  }
+    export default BusList;
