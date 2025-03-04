@@ -25,8 +25,8 @@ const BusList = () => {
     try {
       const res = await axios.get(`${backEndUrl}/buses`);
       setFilteredBuses(res.data);
-      setFilteredBuses(res.data);
       setBuses(res.data);
+      console.log(filteredBuses)
     } catch (error) {
       console.error("Error fetching Buses.");
     } finally {
@@ -119,12 +119,12 @@ const BusList = () => {
       }, 2200);
     }
   };
-  
+
   //navigte with the bus id in the url to enable me to edit the bus
   const handleEdit = (busId) => {
     navigate(`/edit-bus/${busId}`);
   };
-  
+
 
   const handleCheckIn = async (userId, busId) => {
     try {
@@ -148,7 +148,7 @@ const BusList = () => {
       setTimeout(() => setAlertFlag(false), 2000);
     }
   };
-  
+
   const handleUserSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setUserSearchQuery(query);
@@ -157,7 +157,7 @@ const BusList = () => {
       setFilteredBuses(buses);
       return;
     }
-    
+
     const filtered = buses.filter((bus) =>
       usersByBus[bus._id]?.some((user) =>
         user.name.toLowerCase().includes(query)
@@ -166,7 +166,7 @@ const BusList = () => {
 
     setFilteredBuses(filtered);
   };
-  
+
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
     const [hour, minute] = time.split(":");
@@ -182,35 +182,35 @@ const BusList = () => {
     return `${hour12}:${minute} ${period}`;
   };
 
-    // Handle Check-out Function
-    const handleCheckOut = async (userId, busId) => {
-      try {
-        await axios.put(`${backEndUrl}/user/check-out/${userId}`); // Send check-in request
-  
-        // Update the state to mark the user as checked in
-        setUsersByBus((prev) => ({
-          ...prev,
-          [busId]: prev[busId].map((user) =>
-            user._id === userId ? { ...user, checkInStatus: false } : user
-          ),
-        }));
-  
-      } catch (error) {
-        console.error("Check-in failed", error);
-        setAlertMessage("⚠️ Error during check-in");
-        setAlertFlag(true);
-        setTimeout(() => setAlertFlag(false), 2000);
-      }
-    };
-  
+  // Handle Check-out Function
+  const handleCheckOut = async (userId, busId) => {
+    try {
+      await axios.put(`${backEndUrl}/user/check-out/${userId}`); // Send check-in request
+
+      // Update the state to mark the user as checked in
+      setUsersByBus((prev) => ({
+        ...prev,
+        [busId]: prev[busId].map((user) =>
+          user._id === userId ? { ...user, checkInStatus: false } : user
+        ),
+      }));
+
+    } catch (error) {
+      console.error("Check-in failed", error);
+      setAlertMessage("⚠️ Error during check-in");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2000);
+    }
+  };
+
 
   return (
     <div className="bus-list-page">
-       {alertFlag && (
-          <div className={`alert-message ${alertFlag ? "show" : ""}`}>
-            {alertMessage}
-          </div>
-        )}
+      {alertFlag && (
+        <div className={`alert-message ${alertFlag ? "show" : ""}`}>
+          {alertMessage}
+        </div>
+      )}
       <br />
       <div onClick={fetchBuses} className="show-buses-btn">
         Show Available Buses
@@ -230,6 +230,10 @@ const BusList = () => {
       </div>
       <br />
       <div className="bus-list">
+        <div className="counters" >
+          {filteredBuses.length > 0 && <p className="buses-count" style={{ fontSize: "40px", textAlign: "center" }}> 🚐 {filteredBuses.length}</p>}
+          {filteredBuses.length > 0 && <p className="passengers-count" style={{ fontSize: "40px" }}>🧍🏼{(filteredBuses.length * 15) - filteredBuses.reduce((sum, bus) => sum + (bus.seats.availableSeats || 0), 0)}</p>}
+        </div>
         {filteredBuses.length > 0 ? (
           filteredBuses.map((bus) => (
             <div key={bus._id} className="bus-container">
@@ -252,12 +256,12 @@ const BusList = () => {
                             (
                             {user.bookedBuses.seats
                               .map((seat) => seat < 7
-                              ? seat - 1
-                              : seat > 7 && seat < 10
-                              ? seat - 2
-                              : seat > 10 && seat < 14
-                              ? seat - 3
-                              : seat - 4)
+                                ? seat - 1
+                                : seat > 7 && seat < 10
+                                  ? seat - 2
+                                  : seat > 10 && seat < 14
+                                    ? seat - 3
+                                    : seat - 4)
                               .join(", ")}
                             )
                           </span>
@@ -282,7 +286,7 @@ const BusList = () => {
                             Check out
                           </button>
                         )}
-                  
+
 
                       </p>
                     ))}
