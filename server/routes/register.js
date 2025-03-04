@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
   const { name, phoneNumber, email, password, gender } = req.body;
 
   try {
-    if (!["male", "female"].includes(gender)) {
+    if (!["Male", "Female"].includes(gender)) {
       return res.status(400).json({ message: "Invalid gender. Choose male or female." });
     }
     const userExist = await User.findOne({ email });
@@ -72,10 +72,11 @@ router.post("/verify-email", async (req, res) => {
     const tempUser = jwt.verify(token, "ARandomStringThatIsHardToGuess12345");
     // console.log(String(tempUser.verificationCode));
     const code = tempUser.verificationCode
-
+    console.log(code)
+    console.log(enteredOtp)
 
     // Validate the verification code
-    if (code !== parseInt(enteredOtp)) {
+    if (Number(code) !== Number(parseInt(enteredOtp))) {
       return res.status(400).json({ message: "Invalid verification code." });
     }
 
@@ -118,6 +119,7 @@ router.post("/resend-code", async (req, res) => {
         name: tempUser.name,
         phoneNumber: tempUser.phoneNumber,
         email: tempUser.email,
+        gender: tempUser.gender,
         password: tempUser.password,
         verificationCode: newVerificationCode,
       },

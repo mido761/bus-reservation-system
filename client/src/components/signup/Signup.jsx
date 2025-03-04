@@ -203,14 +203,14 @@ function Signup() {
               {/* <label className="gender-label">Select Gender:</label> */}
               <div className="gender-options">
                 <div
-                  className={`gender-option male ${gender === "male" ? "selected" : ""}`}
-                  onClick={() => setGender("male")}
+                  className={`gender-option Male ${gender === "Male" ? "selected" : ""}`}
+                  onClick={() => setGender("Male")}
                 >
                   Male
                 </div>
                 <div
-                  className={`gender-option female ${gender === "female" ? "selected" : ""}`}
-                  onClick={() => setGender("female")}
+                  className={`gender-option Female ${gender === "Female" ? "selected" : ""}`}
+                  onClick={() => setGender("Female")}
                 >
                   Female
                 </div>
