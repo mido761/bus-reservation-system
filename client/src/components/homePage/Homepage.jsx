@@ -5,7 +5,7 @@ import "./Homepage.css";
 import Footer from "../footer/footer";
 import Navbar from "../navbar/nav";
 import LoadingPage from "../loadingPage/loadingPage";
-
+import LoadingComponent from "../loadingComponent/loadingComponent";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Homepage = () => {
@@ -105,19 +105,29 @@ const Homepage = () => {
     <div className="home-page">
       <div className="search-container">
         <div className="bus-search-bar">
-          <select onChange={(e) => setPickupPoint(e.target.value)} value={pickupPoint}>
+          <select
+            onChange={(e) => setPickupPoint(e.target.value)}
+            value={pickupPoint}
+          >
             <option value="">Pickup Point</option>
             <option value="E-JUST">E-JUST</option>
             <option value="Abaseya">Abaseya</option>
             <option value="Dandy">Dandy</option>
           </select>
-          <select onChange={(e) => setArrivalPoint(e.target.value)} value={arrivalPoint}>
+          <select
+            onChange={(e) => setArrivalPoint(e.target.value)}
+            value={arrivalPoint}
+          >
             <option value="">Arrival Point</option>
             <option value="E-JUST">E-JUST</option>
             <option value="Ramses">Ramses</option>
             <option value="Dandy">Dandy</option>
           </select>
-          <input type="date" onChange={(e) => setDate(e.target.value)} value={date} />
+          <input
+            type="date"
+            onChange={(e) => setDate(e.target.value)}
+            value={date}
+          />
           <button className="search-btn" onClick={handleSearch}>
             Search
           </button>
@@ -127,7 +137,11 @@ const Homepage = () => {
           <h3>Popular Routes</h3>
           <div className="popular-routes-list">
             {popularRoutes.map((route) => (
-              <div key={route.id} className="route-card" onClick={() => handleRouteSelect(route.route)}>
+              <div
+                key={route.id}
+                className="route-card"
+                onClick={() => handleRouteSelect(route.route)}
+              >
                 {route.route}
               </div>
             ))}
@@ -136,29 +150,39 @@ const Homepage = () => {
       </div>
 
       {isLoading ? (
-        <LoadingPage />
+        <LoadingComponent />
       ) : (
         <>
-        
-        <h2>Available Buses</h2>
-        <div className="bus-list">
-          {filteredBuses.length ? (
-            filteredBuses.map((bus) => (
-              <div className="bus-container" key={bus._id} onClick={() => handleBusSelect(bus)}>
-                <p className="bus-number">{bus.busNumber}</p>
-                <p>Schedule: {bus.schedule}</p>
-                <p>
-                  {bus.location.pickupLocation} <span>To</span> {bus.location.arrivalLocation}
-                </p>
-                <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
-                <p>{bus.seats.availableSeats === 0 ? "Full" : `Available Seats: ${bus.seats.availableSeats}`}</p>
-                <p>Price: {bus.price}</p>
-              </div>
-            ))
-          ) : (
-            <p>No buses found matching your criteria.</p>
-          )}
-        </div>
+          <h2>Available Buses</h2>
+          <div className="bus-list">
+            {filteredBuses.length ? (
+              filteredBuses.map((bus, index) => (
+                <div
+                  className={`bus-container ${
+                    filteredBuses.length > 1 && index === 0 ? "top-margin" : ""
+                  }`}
+                  key={bus._id}
+                  onClick={() => handleBusSelect(bus)}
+                >
+                  <p className="bus-number">{bus.busNumber}</p>
+                  <p>Schedule: {bus.schedule}</p>
+                  <p>
+                    {bus.location.pickupLocation} <span>To</span>{" "}
+                    {bus.location.arrivalLocation}
+                  </p>
+                  <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
+                  <p>
+                    {bus.seats.availableSeats === 0
+                      ? "Full"
+                      : `Available Seats: ${bus.seats.availableSeats}`}
+                  </p>
+                  <p>Price: {bus.price}</p>
+                </div>
+              ))
+            ) : (
+              <p>No buses found matching your criteria.</p>
+            )}
+          </div>
         </>
       )}
     </div>

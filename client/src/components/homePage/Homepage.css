@@ -213,7 +213,7 @@ body {
   align-items: center; /* Centers everything horizontally */
   width: 100%;
   gap: 0;
-  height: 270px;
+  height: 240px;
   overflow-y: auto; /* Enables vertical scrolling */
   flex-wrap: nowrap;
   padding-top: 10px; /* Adjust as needed */
@@ -221,7 +221,7 @@ body {
   scroll-padding: 10px;
 }
 
-.home-page .bus-list > *:first-child {
+.top-margin{
   margin-top: 265px; /* Space at the top */
 }
 

@@ -2,6 +2,7 @@
 .loading-component{
   background-color: transparent;
   height: 100%;
+  margin: 100px;
 }
 
 .loading-component > .dots-container {
