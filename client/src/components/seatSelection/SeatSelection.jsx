@@ -316,7 +316,7 @@ const SeatSelection = () => {
       </header>
       <div className="bus-card">
         <div className="bus-details">
-          <h2>Bus details</h2>
+        <p className="bus-number"> {busDetails.busNumber}</p>
           <div className="bus-data">
             <p>
               <strong>Time</strong>{" "}
