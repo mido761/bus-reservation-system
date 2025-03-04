@@ -62,14 +62,15 @@ const Dashboard = ({ busDetails, error, userId }) => {
                     key={index}
                     onClick={() => handleBusSelect(bus)}
                   >
+                    {/* Display Bus Number */}
+                    <p className="bus-number">Bus Number {bus.busNumber}</p>
+  
                     <p>
                       {bus.location.pickupLocation} to{" "}
                       {bus.location.arrivalLocation}
                     </p>
                     <p>{bus.schedule}</p>
-                    <p>
-                      {convertTo12HourFormat(bus.time.departureTime)}
-                    </p>
+                    <p>{convertTo12HourFormat(bus.time.departureTime)}</p>
                     <p>
                       {bus.seats.bookedSeats
                         .map((seat, index) =>
@@ -84,12 +85,10 @@ const Dashboard = ({ busDetails, error, userId }) => {
           ) : (
             <p>No buses found.</p>
           )}
-
-          <br />
         </div>
       </div>
     </>
   );
-};
+}  
 
 export default Dashboard;

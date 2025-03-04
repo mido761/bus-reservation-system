@@ -233,7 +233,7 @@ const BusList = () => {
         {filteredBuses.length > 0 ? (
           filteredBuses.map((bus) => (
             <div key={bus._id} className="bus-container">
-              <h1>Bus details</h1>
+              <p className="bus-number"> {bus.busNumber}</p>
               <p>{bus.location.pickupLocation} <span>to</span> {bus.location.arrivalLocation}</p>
               <button onClick={() => handleEdit(bus._id)}>Edit</button>
               <div className="booked-users">

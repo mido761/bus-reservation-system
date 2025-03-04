@@ -214,40 +214,46 @@ const Homepage = () => {
       </div>
 
       {/* Available Buses */}
-      <h2>Avaialble buses</h2>
       {isLoading ? (
         <LoadingPage />
       ) : (
         <div className="bus-list">
-          {filteredBuses.length ? (
-            filteredBuses.map((bus) => (
-              <div
-                className="bus-container"
-                key={bus.id}
-                onClick={() => handleBusSelect(bus)}
-              >
-                <p>Schedule: {bus.schedule}</p>
-                <p>
-                  {bus.location.pickupLocation} <span>To </span>
-                  {bus.location.arrivalLocation}
-                </p>
-                <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
-                <p>
-                  <span>
-                    {bus.seats.availableSeats === 0
-                      ? "Full"
-                      : `Available Seats: ${bus.seats.availableSeats}`}
-                  </span>
-                </p>
-                <p>Price: {bus.price}</p>
-              </div>
-            ))
+          <h2>Available Buses</h2>
+          <br />
+          {isLoading ? (
+            <LoadingPage />
           ) : (
-            <p>No buses found matching your criteria.</p>
+            filteredBuses.length ? (
+              filteredBuses.map((bus) => (
+                <div
+                  className="bus-container"
+                  key={bus.id}
+                  onClick={() => handleBusSelect(bus)}
+                  >
+                  <div className="bus-card">  
+                  <p className="bus-number">{bus.busNumber}</p>
+                  </div>
+                  <p>Schedule: {bus.schedule}</p>
+                  <p>
+                    {bus.location.pickupLocation} <span>To</span> {bus.location.arrivalLocation}
+                  </p>
+                  <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
+                  <p>
+                    <span>
+                      {bus.seats.availableSeats === 0
+                        ? "Full"
+                        : `Available Seats: ${bus.seats.availableSeats}`}
+                    </span>
+                  </p>
+                  <p>Price: {bus.price}</p>
+                </div>
+              ))
+            ) : (
+              <p>No buses found matching your criteria.</p>
+            )
           )}
         </div>
       )}
-
       {/* contact form */}
       <div className="contact-us-bar" onClick={toggleContactForm}>
         <h3>Contact Us</h3>

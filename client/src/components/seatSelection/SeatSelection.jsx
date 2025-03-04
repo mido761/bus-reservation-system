@@ -242,6 +242,16 @@ const SeatSelection = () => {
         }
       }
     } else if (selectedSeats.length > 0 && type === "cancel") {
+      // Check if user is an admin
+      if (isAuthorized) {
+        const confirmDelete = window.confirm(
+          "Are you sure you want to delete these booked seats?"
+        );
+        if (!confirmDelete) {
+          setIsLoading(false);
+          return;
+        }
+      }
       const response = await axios.delete(
         `${backEndUrl}/seatselection/${busId}`,
         { data: { selectedSeats, userId }, withCredentials: true }

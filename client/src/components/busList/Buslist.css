@@ -99,23 +99,31 @@
 /* Individual bus container */
 /* Individual bus container */
 .bus-container {
-  background-color: var(--form-background);
-  padding: 20px;
+  padding: 15px;
+  margin: 10px 0;
+  background: #fff;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  max-width: 400px;
-  min-width: 300px;
-  min-width: 300px;
-  width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  text-align: center;
+  gap: 10px;
 }
+/* Bus Number Styling */
+.bus-number {
+  font-size: 20px; /* Slightly larger text */
+  font-weight: bold;
+  color: #d32f2f; /* Red color for emphasis */
+  background: #ffe6e6; /* Light red background */
+  padding: 6px 12px; /* Adjusted padding */
+  border: 1px solid #d32f2f; /* Decreased border width */
+  display: inline-block;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+}
+
+
 
 .bus-container:hover {
   transform: translateY(-5px);
@@ -136,11 +144,11 @@
 
 .bus-container p {
   font-size: 16px;
-  color: var(--text-color);
-  margin: 5px 0;
-  color: var(--text-color);
+  font-weight: 500;
+  color: #444;
   margin: 5px 0;
 }
+
 
 .bus-container span {
   font-weight: bold;

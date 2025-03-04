@@ -8,6 +8,15 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
 }
+.bus-card {
+  max-width: 100%;
+  width: 30%;
+  margin: 10px;
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
 .home-page {
   display: flex;
@@ -192,4 +201,50 @@ body {
   .popular-routes-list {
     flex-direction: row;
   }
+}
+
+.bus-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers everything horizontally */
+  width: 100%;
+}
+
+.bus-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px; /* Prevents it from getting too wide */
+  margin-bottom: 15px; /* Adds spacing between each bus */
+}
+
+
+
+
+.bus-number {
+  background-color: var(--card-background); /* Change background color */
+  color: var(--primary-color); /* Adjust text color */
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px 15px;
+  border-radius: 8px; /* Adjusted border */
+  display: inline-block;
+  margin-bottom: 10px;
+  width: fit-content;
+  border: 2px solid var(--primary-color); /* Adjusted border */
+}
+
+
+.bus-container p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin: 5px 0;
+  width: 100%;
 }
