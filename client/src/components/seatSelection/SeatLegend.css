@@ -1,43 +1,77 @@
+/* Seat legend container */
 .seat-legend-container {
     display: flex;
-    gap: 12px;
-    padding: 5px;
-    width: 1px,16px;
-    /* background: #f4f4f4; */
-    border-radius: 25px;
-    box-shadow: none;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: #f8f9fa; /* Light background for a cleaner look */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     justify-content: flex-start;
+    align-items: center;
 }
 
 /* Individual legend item */
 .legend-item {
     display: flex;
     align-items: center;
-    gap: 10px; /* Increased gap for better spacing */
-    font-size: 18px; /* Slightly larger text */
+    width: 50px;
+    gap: 10px;
+    font-size: 16px;
     font-weight: 600;
-    color: #222; /* Darker text for contrast */
-    text-transform: capitalize;
+    color: #333;
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Special styling for gender legend items (boys and girls side by side) */
+.gender-legend {
+    display: flex;
+    flex-direction: row;  /* Boys and girls side by side */
+    gap: 16px;
 }
 
 /* Seat color boxes */
 .legend-color {
-    width: 22px; /* Bigger size for better visibility */
-    height: 22px;
+    width: 24px;
+    height: 24px;
     display: inline-block;
-    border-radius: 3px; /* Slightly more rounded */
-    box-shadow: none; /* Removed shadow for cleaner look */
+    border-radius: 5px;
+    border: 2px solid #ddd;
+    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Seat Colors */
-.booked {
-    background: #ff4d4d; /* Red for booked seats */
-}
-
 .reserved {
     background: #4d79ff; /* Blue for temporarily reserved seats */
+    border-color: #2c5bd2;
 }
 
 .user-seat {
     background: #33cc33; /* Green for user's seat */
+    border-color: #249b24;
+}
+
+.girl {
+    background: #ff66b2; /* Pink for girls' seats */
+    border-color: #e94e96;
+}
+
+.boy {
+    background: #3399ff; /* Blue for boys' seats */
+    border-color: #1e6bd1;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .seat-legend-container {
+        /* flex-direction: column; */
+        align-items: flex-start;
+    }
+    .gender-legend {
+        flex-direction: column;  /* Stack boys and girls vertically on small screens */
+        gap: 8px;
+    }
 }
