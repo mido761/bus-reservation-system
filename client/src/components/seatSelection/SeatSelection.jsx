@@ -388,7 +388,7 @@ const SeatSelection = () => {
                   ${isBooked && !isCurrentUserBookedSeat ? "booked" : ""} ${
                     isCurrentUserBookedSeat ? "current-user" : ""
                   }
-                  ${isBooked || isReserved ? seat.gender === "male" ? "male-seat" : seat.gender === "female" ? "female-seat": "" : "" }
+                  ${isBooked || isReserved ? seat.gender === "male" ? "male-seat" : "female-seat": "" }
                   `}
                   onClick={() =>
                     (!isReserved || isReservedForCurrentUser || isAuthorized) &&

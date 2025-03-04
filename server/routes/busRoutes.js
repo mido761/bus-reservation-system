@@ -54,11 +54,10 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
     const newBus = new Bus({
       seats: {
         totalSeats: 20,
-        totalSeats: 20,
         availableSeats: totalSeats,
         // bookedSeats: new Array(totalSeats).fill(0)
         bookedSeats: Array.from({ length: 20 }, () => 0),
-        bookedSeats: Array.from({ length: 20 }, () => 0),
+        genders: Array.from({ length: 20 }, () => 0),
       },
       schedule: schedule,
       price: price,
@@ -124,15 +123,7 @@ router.get("/", async (req, res) => {
 // Fetch multiple buses at once
 router.get("/userBuses", async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
-  // console.log("IDs: ", ids)
-  // return res.json(ids)
-  if (ids) {
-    const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
-    return res.json(busDetails);
-  }
-  return res.json(busDetails = []);
-  // console.log("IDs: ", ids)
-  // return res.json(ids)
+
   if (ids) {
     const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
     return res.json(busDetails);
