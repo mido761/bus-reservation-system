@@ -18,6 +18,8 @@ const BusList = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState("userName"); // Default to search by user name
+
   const navigate = useNavigate();
 
 
@@ -177,7 +179,22 @@ const BusList = () => {
   //   setFilteredBuses(filtered);
   // };
   const handleUserSearchChange = (e) => {
-    const query = e.target.value.trim();
+    let query = e.target.value.trim();
+  
+    // Validation based on search type
+    if (searchType === "busNumber" || searchType === "userNumber") {
+      if (!/^\d*$/.test(query)) {
+        console.warn("Only numbers are allowed for Bus Number and Phone Number.");
+        return;
+      }
+    } else if (searchType === "userName") {
+      if (!/^[a-zA-Z\s]*$/.test(query)) {
+        console.warn("Only letters are allowed for User Name.");
+        return;
+      }
+    }
+  
+    query = query.toLowerCase();
     setUserSearchQuery(query);
   
     if (query === "") {
@@ -185,24 +202,41 @@ const BusList = () => {
       return;
     }
   
-    // Ensure usersByBus is populated before filtering
-    if (!usersByBus || Object.keys(usersByBus).length === 0) {
-      console.warn("Users data not loaded yet!");
-      return;
+    if (searchType === "busNumber") {
+      console.log("Filtering by bus number:", query);
+      setFilteredBuses(
+        buses.filter((bus) =>
+          String(bus.busNumber).toLowerCase().includes(query)
+        )
+      );
+    } else if (searchType === "userName") {
+      if (!usersByBus || Object.keys(usersByBus).length === 0) {
+        console.warn("Users data not loaded yet!");
+        return;
+      }
+      setFilteredBuses(
+        buses.filter((bus) =>
+          usersByBus[bus._id]?.some((user) =>
+            user.name.toLowerCase().includes(query)
+          )
+        )
+      );
+    } else if (searchType === "userNumber") {
+      if (!usersByBus || Object.keys(usersByBus).length === 0) {
+        console.warn("Users data not loaded yet!");
+        return;
+      }
+      setFilteredBuses(
+        buses.filter((bus) =>
+          usersByBus[bus._id]?.some((user) =>
+            user.phoneNumber && user.phoneNumber.toString().includes(query)
+          )
+        )
+      );
     }
-  
-    const filtered = buses.filter((bus) =>
-      usersByBus[bus._id]?.some((user) =>
-        user.phoneNumber && user.phoneNumber.toString().includes(query)
-      )
-    );
-  
-    setFilteredBuses(filtered);
   };
   
-  
-  
-  
+    
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
     const [hour, minute] = time.split(":");
@@ -252,10 +286,15 @@ const BusList = () => {
         </div>
         <br />
         <div className="search-container">
+          <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+            <option value="userName">Filter by User Name</option>
+            <option value="userNumber">Filter by User Number</option>
+            <option value="busNumber">Filter by Bus Number</option>
+          </select>
           <div className="input-wrapper">
             <input
-              type="number"
-              placeholder="Enter user number..."
+              type="text"
+              placeholder={`Enter ${searchType === "busNumber" ? "bus number" : "user details"}...`}
               value={userSearchQuery}
               onChange={handleUserSearchChange}
             />
@@ -337,6 +376,6 @@ const BusList = () => {
         {loading && <LoadingScreen />}
         {isLoading && <Overlay message="Loading Buses..." />}
       </div>
-    ); // Make sure this is inside a function and properly closed. 
+    ); 
   }
-    export default BusList;
+  export default BusList; 
