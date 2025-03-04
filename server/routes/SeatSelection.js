@@ -85,6 +85,7 @@ router.post("/:busId", async (req, res) => {
     pusher.trigger("bus-channel", "seat-booked", {
       busId,
       selectedSeats: seats,
+      genders: updatedBus.seats.genders,
       userId,
     });
 
@@ -138,7 +139,6 @@ router.post("/:busId", async (req, res) => {
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
     console.error("Error reserving seat:", error);
-    return res;
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
@@ -263,7 +263,8 @@ router.delete("/:busId", async (req, res) => {
     }
 
     const seatUpdates = selectedSeats.reduce((acc, seat) => {
-      acc[`seats.bookedSeats.${seat}`] = "0";
+      acc[`seats.bookedSeats.${seat}`] = "0"; // Unbook the seat
+      acc[`seats.genders.${seat}`] = "0"; // Reset gender to "0"
       return acc;
     }, {});
 

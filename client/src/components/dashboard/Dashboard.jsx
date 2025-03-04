@@ -74,7 +74,13 @@ const Dashboard = ({ busDetails, error, userId }) => {
                     <p>
                       {bus.seats.bookedSeats
                         .map((seat, index) =>
-                          seat === userId ? index + 1 : null
+                          seat === userId ? index < 7
+                        ? index - 1
+                        : index > 7 && index < 10
+                        ? index - 2
+                        : index > 10 && index < 14
+                        ? index - 3
+                        : index - 4 : null
                         )
                         .filter((index) => index !== null)
                         .join(", ")}

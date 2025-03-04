@@ -30,8 +30,6 @@ const SeatSelection = () => {
   const { isAuthenticated, isAuthorized } = InlineAuth();
   const [userGender, setUserGender] = useState(null);
 
-
-
   // Fetch bus details and subscribe to Pusher updates
   useEffect(() => {
     const fetchBusDetails = async () => {
@@ -78,6 +76,7 @@ const SeatSelection = () => {
           ...prev,
           seats: {
             ...prev.seats,
+            genders: data.genders,
             bookedSeats: prev.seats.bookedSeats.map((seat, index) =>
               data.selectedSeats.includes(index) ? data.userId : seat
             ),
@@ -93,6 +92,7 @@ const SeatSelection = () => {
           ...prev.seats,
           bookedSeats: data.updatedBus.seats.bookedSeats,
           reservedSeats: data.updatedBus.seats.reservedSeats,
+          genders: data.updatedBus.seats.genders,
         },
       }));
     });
@@ -126,19 +126,15 @@ const SeatSelection = () => {
     const isBooked = seat !== "0";
     const isCurrentUserSeat = seat === userId;
 
-
     const isReserved = busDetails.seats.reservedSeats
       .map((seat) => seat.seatNumber)
       .includes(String(index));
-
 
     const isReservedForCurrentUser = busDetails.seats.reservedSeats
       .filter((seat) => seat.reservedBy === userId)
       .map((seat) => seat.seatNumber)
       .includes(String(index));
 
-
-  
     try {
       // const req_user = await axios.get(`${backEndUrl}/auth`, {
       //   withCredentials: true,
@@ -164,10 +160,7 @@ const SeatSelection = () => {
           return newSeats;
         }
 
-        if (
-          newSeats.length >= 2 &&
-          !newSeats.includes(index) 
-        ) {
+        if (newSeats.length >= 2 && !newSeats.includes(index)) {
           // alert("You can only select a maximum of 2 seats.");
           setAlertMessage("You can only select a maximum of 2 seats.");
           setAlertFlag(true);
@@ -196,10 +189,8 @@ const SeatSelection = () => {
       });
     } catch (error) {
       console.error("Error fetching user data:", error);
-    } 
+    }
   };
-    
-    
 
   const handleConfirmSeats = async (type) => {
     setIsLoading(true);
@@ -256,7 +247,6 @@ const SeatSelection = () => {
         `${backEndUrl}/seatselection/${busId}`,
         { data: { selectedSeats, userId }, withCredentials: true }
       );
-
 
       setBusDetails(response.data.updatedBus);
       setSelectedSeats([]);
@@ -351,56 +341,66 @@ const SeatSelection = () => {
           <SeatLegend />
           <div className="seat-grid">
             {busDetails.seats.bookedSeats.map((seat, index) => {
-              const isBooked = seat !== "0";
-              const isCurrentUserBookedSeat = seat === userId;
-              const isSelected = selectedSeats.includes(index);
+              const isBooked = seat !== "0"; // Seat is booked if not "0"
+              const isCurrentUserBookedSeat = seat === userId; // Current user booked this seat
+              const isSelected = selectedSeats.includes(index); // Seat is selected
               const isReserved = busDetails.seats.reservedSeats
-                .map((seat) => seat.seatNumber)
-                .includes(String(index));
-              const isReservedForCurrentUser = busDetails.seats.reservedSeats
-                .filter((seat) => seat.reservedBy === userId)
-                .map((seat) => seat.seatNumber)
-                .includes(String(index));
+                .map((s) => s.seatNumber)
+                .includes(String(index)); // Seat is reserved
+              const isReservedForCurrentUser =
+                busDetails.seats.reservedSeats.some(
+                  (s) =>
+                    s.seatNumber === String(index) && s.reservedBy === userId
+                ); // Reserved by current user
+
               // Get the gender of the user who booked the seat (if available)
-              
-              const bookedSeat = busDetails.seats.reservedSeats.find(s => s.seatNumber === String(index));
-              const bookedGender = bookedSeat ? bookedSeat.gender : null;
+              const bookedGender = busDetails.seats.genders
+                ? busDetails.seats.genders[index]
+                : null;
+
+              // Determine class name based on seat state
+              const seatClass = `
+    seat 
+    ${[1, 2, 8, 11, 15].includes(index + 1) ? "hidden-seat" : ""} 
+    ${isSelected ? "selected" : ""} 
+    ${isReservedForCurrentUser ? "reserved-for-user" : ""}
+    ${isReserved && !isReservedForCurrentUser ? "reserved" : ""}
+    ${isBooked && isCurrentUserBookedSeat ? "current-user" : ""}
+    ${
+      isBooked && !isCurrentUserBookedSeat && bookedGender === "Male"
+        ? "male-seat"
+        : ""
+    }
+    ${
+      isBooked && !isCurrentUserBookedSeat && bookedGender === "Female"
+        ? "female-seat"
+        : ""
+    }
+  `.trim();
 
               return (
                 <div
                   key={index}
-                  className={`seat ${
-                    [1, 2, 8, 11, 15].includes(index + 1) ? "hidden-seat" : ""
-                  }  ${isSelected ? "selected" : ""} ${
-                    isReserved &&
-                    !isReservedForCurrentUser &&
-                    !isCurrentUserBookedSeat
-                      ? "reserved"
-                      : ""
-                  } 
-                  ${
-                    isReservedForCurrentUser &&
-                    isReserved &&
-                    !isCurrentUserBookedSeat
-                      ? "reserved"
-                      : ""
-                  } 
-                  ${isBooked && !isCurrentUserBookedSeat ? "booked" : ""} ${
-                    isCurrentUserBookedSeat ? "current-user" : ""
-                  }
-                  ${isBooked || isReserved ? seat.gender === "male" ? "male-seat" : "female-seat": "" }
-                  `}
+                  className={seatClass}
                   onClick={() =>
                     (!isReserved || isReservedForCurrentUser || isAuthorized) &&
                     handleSeatSelect(seat, index)
                   }
                   title={
                     isBooked && !isCurrentUserBookedSeat
-                      ? "This seat is booked"
-                      : "This seat is reserved temporarily"
+                      ? `This seat is booked (${bookedGender || "Unknown"})`
+                      : isReserved
+                      ? "This seat is reserved temporarily"
+                      : ""
                   }
                 >
-                  {index + 1}
+                  {index < 7
+                    ? index - 1
+                    : index > 7 && index < 10
+                    ? index - 2
+                    : index > 10 && index < 14
+                    ? index - 3
+                    : index - 4}
                 </div>
               );
             })}
@@ -410,15 +410,16 @@ const SeatSelection = () => {
             <CSSTransition
               in={
                 (selectedSeats.length > 0 &&
-                (selectedSeats.every(
-                  (seat) => busDetails.seats.bookedSeats[seat] === userId
-                ) ||
-                  selectedSeats.every((seat) =>
-                    busDetails.seats.reservedSeats
-                      .filter((seat) => seat.reservedBy === userId)
-                      .map((seat) => seat.seatNumber)
-                      .includes(String(seat))
-                  ))) || isAuthorized
+                  (selectedSeats.every(
+                    (seat) => busDetails.seats.bookedSeats[seat] === userId
+                  ) ||
+                    selectedSeats.every((seat) =>
+                      busDetails.seats.reservedSeats
+                        .filter((seat) => seat.reservedBy === userId)
+                        .map((seat) => seat.seatNumber)
+                        .includes(String(seat))
+                    ))) ||
+                isAuthorized
               }
               timeout={300}
               classNames="confirm-btn-transition"
