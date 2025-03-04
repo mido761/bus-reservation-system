@@ -118,7 +118,13 @@ const TicketSummary = () => {
         <div className="section">
           <h3 className="details-title">Seats Selected</h3>
           <div className="details">
-            <p>{seats.map((index) => parseInt(index) + 1).join(", ")}</p>
+            <p>{seats.map((index) => index < 7
+                    ? index - 1
+                    : index > 7 && index < 10
+                    ? index - 2
+                    : index > 10 && index < 14
+                    ? index - 3
+                    : index - 4).join(", ")}</p>
           </div>
         </div>
 
