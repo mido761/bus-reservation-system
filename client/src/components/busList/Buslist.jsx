@@ -177,12 +177,13 @@ const BusList = () => {
   
     const filtered = buses.filter((bus) =>
       usersByBus[bus._id]?.some((user) =>
-        user.phoneNumber.includes(query) // Check if phone number includes query
+        user.phoneNumber && user.phoneNumber.includes(query) // Ensure phoneNumber exists
       )
     );
   
     setFilteredBuses(filtered);
   };
+  
   
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
