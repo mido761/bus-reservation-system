@@ -95,63 +95,72 @@ const AddBus = () => {
     }
   };
 
-
-
   return (
     <div className="add-bus-page">
       <form onSubmit={handleSubmit} className="add-bus">
         <h1>Add a new Bus</h1>
 
         <div>
-          <label>Pickup location</label>
-          <select
-            value={pickupLocation}
-            onChange={(e) => setPickupLocation(e.target.value)}
-          >
-            <option value="">Select Pickup Location</option>
-            {locations.map((location) => (
-              <option key={location} value={location}>
-                {location}
-              </option>
-            ))}
-          </select>
-
-          <label>Arrival location</label>
-          <select
-            value={arrivalLocation}
-            onChange={(e) => setArrivalLocation(e.target.value)}
-          >
-            <option value="">Select Arrival Location</option>
-            {locations.map((location) => (
-              <option key={location} value={location}>
-                {location}
-              </option>
-            ))}
-          </select>
+          <div className="location">
+            <div className="location-section">
+              <label>Pickup location</label>
+              <select
+                value={pickupLocation}
+                onChange={(e) => setPickupLocation(e.target.value)}
+              >
+                <option value="">Pickup Location</option>
+                {locations.map((location) => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="location-section">
+              <label>Arrival location</label>
+              <select
+                value={arrivalLocation}
+                onChange={(e) => setArrivalLocation(e.target.value)}
+              >
+                <option value="">Arrival Location</option>
+                {locations.map((location) => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           <label>Bus Number</label>
-            <input
+          <input
             type="text"
             placeholder="Bus Number"
-            value = {busNumber}
+            value={busNumber}
             onChange={(e) => setbusNumber(e.target.value)}
-            ></input>
+          ></input>
+          <div className="time">
+            <div className="time-section">
+              <label>Departure time</label>
+              <input
+                type="time"
+                placeholder="Leaving Time"
+                value={departureTime}
+                onChange={(e) => setDepartureTime(e.target.value)}
+              />
+            </div>
 
-          <label>Departure time</label>
-          <input
-            type="time"
-            placeholder="Leaving Time"
-            value={(departureTime)}
-            onChange={(e) => setDepartureTime((e.target.value))}
-          />
+            <div className="time-section">
+              <label>Arrival time</label>
+              <input
+                type="time"
+                placeholder="Arrival Time"
+                value={arrivalTime}
+                onChange={(e) => setArrivalTime(e.target.value)}
+              />
+            </div>
+          </div>
 
-          <label>Arrival time</label>
-          <input
-            type="time"
-            placeholder="Arrival Time"
-            value={(arrivalTime)}
-            onChange={(e) => setArrivalTime((e.target.value))}
-          />
           <label>Price</label>
           <input
             type=""

@@ -289,34 +289,31 @@ const BusList = () => {
     }
   };
 
-  
   const handleCheckStatus = async (userId, busId, userStatus) => {
-      if (userStatus){
-        const checkInConfirmation = window.confirm(
-          "Mark user as NOT checked-in?"
-        );
-        if (!checkInConfirmation) return;  
-        return handleCheckOut(userId, busId)
-      }else {
-        const checkOutConfirmation = window.confirm(
-          "Mark user as checked-in?"
-        );
-        if (!checkOutConfirmation) return;  
-        return handleCheckIn(userId, busId)
-      }
+    if (userStatus) {
+      const checkInConfirmation = window.confirm(
+        "Mark user as NOT checked-in?"
+      );
+      if (!checkInConfirmation) return;
+      return handleCheckOut(userId, busId);
+    } else {
+      const checkOutConfirmation = window.confirm("Mark user as checked-in?");
+      if (!checkOutConfirmation) return;
+      return handleCheckIn(userId, busId);
+    }
   };
 
-  
   return (
     <div className="bus-list-page">
       <div className="top-section">
-        
         <div className="search-container">
-        <select
+          <select
             value={searchType}
             onChange={(e) => setSearchType(e.target.value)}
           >
-            <option value="Filter by" selected={true}>Filter by</option>
+            <option value="Filter by" selected={true}>
+              Filter by
+            </option>
             <option value="userName">User Name</option>
             <option value="userNumber">User Number</option>
             <option value="busNumber">Bus Number</option>
@@ -330,11 +327,8 @@ const BusList = () => {
               value={userSearchQuery}
               onChange={handleUserSearchChange}
             />
-            
           </div>
-      
         </div>
-  
       </div>
 
       <div className="bus-list">
@@ -343,16 +337,26 @@ const BusList = () => {
             <div key={bus._id} className="bus-container">
               <p className="bus-number">{bus.busNumber}</p>
               <p>
-                {bus.location.pickupLocation} <span>to</span>{" "}
+                {bus.location.pickupLocation} <span style={{color: "var(--text-color)"}}>To</span>{" "}
                 {bus.location.arrivalLocation}
               </p>
-              <button onClick={() => handleEdit(bus._id)}>Edit</button>
               <div className="booked-users">
-                <h3>Seats Booked By:</h3>
                 {usersByBus[bus._id]?.length > 0 ? (
                   <ul>
                     {usersByBus[bus._id].map((user, index) => (
-                      <p key={index} className={`booked-user ${user.checkInStatus ? "green" : "red"}`} onClick={() => handleCheckStatus(user._id, bus._id, user.checkInStatus)}>
+                      <p
+                        key={index}
+                        className={`booked-user ${
+                          user.checkInStatus ? "green" : "red"
+                        }`}
+                        onClick={() =>
+                          handleCheckStatus(
+                            user._id,
+                            bus._id,
+                            user.checkInStatus
+                          )
+                        }
+                      >
                         <span className="user-info">
                           <span className="user-name">
                             {user.name
@@ -385,7 +389,11 @@ const BusList = () => {
                   <p>No booked seats</p>
                 )}
               </div>
-              <button onClick={() => handleDel(bus._id)}>Delete Bus</button>
+              <div className="actions-container">
+              <button className="del-btn" onClick={() => handleDel(bus._id)}> <img src="delete.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
+              <button className="edit-btn" onClick={() => handleEdit(bus._id)}> <img src="editing.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
+            
+              </div>
             </div>
           ))
         ) : isLoading ? (

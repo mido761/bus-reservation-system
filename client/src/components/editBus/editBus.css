@@ -32,6 +32,11 @@
   gap: 10px;
 }
 
+.location-group {
+  display: flex;
+  gap: 10px;
+}
+
 .edit-bus-form input,
 .edit-bus-form select {
   width: 100%;
