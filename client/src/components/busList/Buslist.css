@@ -337,3 +337,97 @@
   background-color: #f92f60;
 }
 
+/* Search Container */
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+/* Search Input */
+.search-container input {
+  width: 250px;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid var(--primary-hover); 
+  border-radius: 8px;
+  outline: none;
+  transition: 0.3s ease-in-out;
+}
+
+/* On Focus */
+.search-container input:focus {
+  border-color: var(--primary-hover); 
+  box-shadow: 0px 0px 8px var(--primary-hover)(183, 144, 28, 0.5);
+}
+
+/* Search Input Placeholder */
+.search-container input::placeholder {
+  color: #888;
+  font-size: 14px;
+}
+
+/* Search Container */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;  /* Reduced gap */
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 500px;  /* Reduced width */
+  margin: 10px auto;
+}
+
+/* Select Dropdown */
+.search-container select {
+  width: 200px;  
+  padding: 8px 10px; /* Adjusted padding */
+  border-radius: 6px;
+  border: 2px solid var(--secondary-hover);
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.search-container select:hover {
+  border-color:var(--secondary-hover);
+}
+
+.search-container select:focus {
+  border-color:var(--secondary-hover);
+  box-shadow: 0 0 5px var(--secondary-hover);
+}
+
+/* Input Wrapper */
+.input-wrapper {
+  flex-grow: 1;
+  position: relative;
+}
+
+/* Search Input */
+.search-container input {
+  width: 200px;  /* Reduced width */
+  padding: 8px 12px;  /* Adjusted padding */
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.search-container input:focus {
+  border-color: var(--secondary-hover);
+  box-shadow: 0 0 5px var(--secondary-hover);
+}
+
+/* Placeholder Styling */
+.search-container input::placeholder {
+  color: #888;
+  font-size: 13px;
+}
