@@ -49,6 +49,9 @@ const Homepage = () => {
   ];
 
   const handleBusSelect = async (bus) => {
+    await axios.get(`${backEndUrl}/auth/${bus._id}`, {
+      withCredentials: true,
+    });
     navigate(`/seat-selection/${bus._id}`);
   };
 

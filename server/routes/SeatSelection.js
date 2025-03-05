@@ -35,10 +35,14 @@ router.post("/:busId", async (req, res) => {
 
   try {
     const user = await User.findById(userId);
+    const bus = await Bus.findById(busId);
     if (!user) {
       return res.status(404).json({ message: "User not found!" });
     }
-
+    
+    if (!bus) {
+      return res.status(404).json({ message: "Bus not found!" });
+    }
     const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
 
     // Regular users can only book up to 2 seats per bus

@@ -65,7 +65,7 @@ const Payment = () => {
       const userId = req_user.data.userId;
       const busId = req_user.data.busId;
 
-      const response = await axios.post(
+      await axios.post(
         `${backEndUrl}/seatselection/${busId}`,
         { selectedSeats, userId },
         { withCredentials: true }
@@ -110,6 +110,18 @@ const Payment = () => {
         // }, 2200);
       } else {
         console.error("An error occurred:", error);
+         setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage(
+            <div className="payment-success-container">
+              <h1>⚠️ Payment Failed</h1>
+              <p>
+              An error occurred while booking, please try again.
+              </p>
+            </div>
+          );
+          setAlertFlag(true);
+        }, 1000);
       }
     }
   };
