@@ -212,7 +212,7 @@
 }
 
 /* Selected Gender - Male */
-.gender-option.male.selected {
+.gender-option.Male.selected {
   background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
   color: white;
   border-color: transparent;
