@@ -42,7 +42,10 @@ const EditBus = () => {
         ...prevData.time,
         [name]: name.includes("Time") ? value : prevData.time[name],
       },
-      [name]: !name.includes("Location") && !name.includes("Time") ? value : prevData[name],
+      [name]:
+        !name.includes("Location") && !name.includes("Time")
+          ? value
+          : prevData[name],
     }));
   };
 
@@ -73,48 +76,88 @@ const EditBus = () => {
         <form onSubmit={handleSubmit} className="edit-bus-form">
           <h1>🚌 Edit Bus Details</h1>
 
-          <div className="form-group">
-            <label>Pickup Location</label>
-            <select name="pickupLocation" value={busData.location.pickupLocation} onChange={handleChange}>
-              {locations.map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
-              ))}
-            </select>
-          </div>
+          <div className="location-group">
+            <div className="form-group">
+              <label>Pickup Location</label>
+              <select
+                name="pickupLocation"
+                value={busData.location.pickupLocation}
+                onChange={handleChange}
+              >
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <div className="form-group">
-            <label>Arrival Location</label>
-            <select name="arrivalLocation" value={busData.location.arrivalLocation} onChange={handleChange}>
-              {locations.map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
-              ))}
-            </select>
+            <div className="form-group">
+              <label>Arrival Location</label>
+              <select
+                name="arrivalLocation"
+                value={busData.location.arrivalLocation}
+                onChange={handleChange}
+              >
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="form-group">
             <label>Bus Number</label>
-            <input type="text" name="busNumber" value={busData.busNumber} onChange={handleChange} />
+            <input
+              type="text"
+              name="busNumber"
+              value={busData.busNumber}
+              onChange={handleChange}
+            />
           </div>
 
           <div className="time-group">
             <div className="form-group">
               <label>Departure Time</label>
-              <input type="time" name="departureTime" value={busData.time.departureTime} onChange={handleChange} />
+              <input
+                type="time"
+                name="departureTime"
+                value={busData.time.departureTime}
+                onChange={handleChange}
+              />
             </div>
             <div className="form-group">
               <label>Arrival Time</label>
-              <input type="time" name="arrivalTime" value={busData.time.arrivalTime} onChange={handleChange} />
+              <input
+                type="time"
+                name="arrivalTime"
+                value={busData.time.arrivalTime}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
           <div className="form-group">
             <label>Price</label>
-            <input type="number" name="price" value={busData.price} onChange={handleChange} min="0" />
+            <input
+              type="number"
+              name="price"
+              value={busData.price}
+              onChange={handleChange}
+              min="0"
+            />
           </div>
 
           <div className="form-group">
             <label>Schedule</label>
-            <input type="date" name="schedule" value={busData.schedule} onChange={handleChange} />
+            <input
+              type="date"
+              name="schedule"
+              value={busData.schedule}
+              onChange={handleChange}
+            />
           </div>
 
           <button type="submit">🚀 Update Bus</button>
@@ -123,7 +166,11 @@ const EditBus = () => {
         <p>❌ Bus not found.</p>
       )}
 
-      <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
+      <Overlay
+        alertFlag={alertFlag}
+        alertMessage={alertMessage}
+        setAlertFlag={setAlertFlag}
+      />
     </div>
   );
 };

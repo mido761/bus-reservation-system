@@ -152,7 +152,7 @@ function Verification({ setVerificationFlag }) {
         <form className="otp-Form" onSubmit={handleVerify} >
           <span className="mainHeading">Enter OTP</span>
           <p className="otpSubheading">
-            We have sent a verification code to your mobile number
+            We have sent a verification code to your email
           </p>
           <div className="inputContainer">
             {otp.map((digit, index) => (

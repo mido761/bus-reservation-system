@@ -1,5 +1,3 @@
-
-
 /* General styling */
 body {
   font-family: Arial, sans-serif;
@@ -24,20 +22,22 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 86vh;
+  /* min-height: 86vh; */
   flex-grow: 1;
   user-select: none;
 }
 
 /* Search container */
-.search-container {
+.home-page .search-container {
   display: flex;
+  flex-direction: row;
+  width: 80%;
   padding: 10px;
-  gap: 30px;
+  gap: 10px;
 }
 
 /* Search bar styling */
-.bus-search-bar {
+.home-page .bus-search-bar {
   display: flex;
   gap: 10px;
   margin: 20px 0;
@@ -51,6 +51,7 @@ body {
   padding: 10px;
   border: 1px solid var(--input-border);
   border-radius: 4px;
+  width: 150px;
 }
 
 .bus-search-bar button {
@@ -93,7 +94,7 @@ body {
 
 .route-card {
   background-color: var(--card-background);
-  min-width: 100px;
+  width:100%;
   height: 40px;
   padding: 5px;
   color: var(--button-text);
@@ -188,7 +189,7 @@ body {
 }
 
 @media screen and (min-width: 540px) {
-  .search-container {
+  .home-page .search-container {
     flex-direction: column;
     gap: 0;
   }
@@ -200,43 +201,64 @@ body {
   .popular-routes-list {
     flex-direction: row;
   }
+  
 }
 
-.bus-list {
+
+.home-page .bus-list {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center; /* Centers everything horizontally */
   width: 100%;
+  gap: 0;
+  height: 240px;
+  overflow-y: auto; /* Enables vertical scrolling */
+  flex-wrap: nowrap;
+  padding-top: 10px; /* Adjust as needed */
+  padding-bottom: 10px; /* Adjust as needed */
+  scroll-padding: 10px;
 }
 
-.bus-container {
+.top-margin{
+  margin-top: 265px; /* Space at the top */
+}
+
+.home-page .bus-list > *:last-child {
+  margin-bottom: 10px; /* Space at the bottom */
+}
+
+.home-page .bus-list h2{
+  margin: 0;
+}
+
+
+.home-page .bus-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   background: white;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 8px;
-  width: 90%;
+  gap: 0;
+  width: 70%;
   max-width: 400px; /* Prevents it from getting too wide */
-  margin-bottom: 15px; /* Adds spacing between each bus */
 }
 
-
-
-
-.bus-number {
-  background-color: var(--card-background); /* Change background color */
-  color: var(--primary-color); /* Adjust text color */
-  font-size: 1.2rem;
+.home-page .bus-number {
+  width: 100px;
+  font-size: 15px; /* Slightly larger text */
   font-weight: bold;
-  text-align: center;
-  padding: 8px 15px;
-  border-radius: 8px; /* Adjusted border */
+  color: var(--text-color); /* Red color for emphasis */
+  background-color: #ffffff; /* Light red background */
+  padding: 4px 12px; /* Adjusted padding */
+  border: 1px solid #2f97d3; /* Decreased border width */
+  border-top: 9px solid #2f97d3; /* Decreased border width */
+  border-radius: 5px;
   display: inline-block;
-  margin-bottom: 10px;
-  width: fit-content;
-  border: 2px solid var(--primary-color); /* Adjusted border */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.40);
+  text-transform: uppercase;
 }
 
 

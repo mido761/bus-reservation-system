@@ -55,7 +55,7 @@ function ForgotPassword() {
     <div className="login-container">
       <div className="login-form">
         <h2>Forgot Password</h2>
-        <p style={{ fontSize: "13px", margin: "auto", marginBottom: "25px" }}>
+        <p style={{ fontSize: "10px", margin: "auto", marginBottom: "25px" }}>
           Please enter your email to reset the password
         </p>
         <form onSubmit={handleSubmit}>
@@ -70,6 +70,7 @@ function ForgotPassword() {
 
           <button type="submit">Reset password</button>
         </form>
+        <br />
         <Link to="/login"><pre>Already registerd? Login</pre></Link>
       </div>
 

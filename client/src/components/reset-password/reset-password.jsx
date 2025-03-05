@@ -33,7 +33,7 @@ function ResetPassword() {
       errors.push("Include at least one lowercase letter");
     if (!/\d/.test(password)) errors.push("Include at least one number");
     if (!/[@$!%*?&.#]/.test(password))
-      errors.push("Include at least one special character (@$!%*?&.#)");
+      errors.push("Include at least one special character \n(@$!%*?&.#)");
 
     return errors;
   };
@@ -157,14 +157,17 @@ function ResetPassword() {
               {/* Eye icons from react-icons */}
             </span>
           </div>
-          {error && password.length > 0 && (
+          <div className="error">
+       {error && password.length > 0 && (
             <pre style={{ color: "red" }}>{error}</pre>
-          )}
+          )}            
+          </div>
+   
 
           <button type="submit">Save password</button>
         </form>
-        <Link to="/login">
-          <pre>Login</pre>
+        <Link to="/login" style={{fontSize:"14px"}}>
+          Login
         </Link>
       </div>
 

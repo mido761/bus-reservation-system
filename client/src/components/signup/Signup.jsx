@@ -53,7 +53,7 @@ function Signup() {
       errors.push("Include at least one lowercase letter");
     if (!/\d/.test(password)) errors.push("Include at least one number");
     if (!/[@$!%*?&.#]/.test(password))
-      errors.push("Include at least one special character (@$!%*?&.#)");
+      errors.push("Include at least one special character \n(@$!%*?&.#)");
 
     return errors;
   };
@@ -219,8 +219,9 @@ function Signup() {
             {errors.gender && <p className="error">⚠️ {errors.gender}</p>}
 
             <button type="submit">Register</button>
-          </form>
           <Link to="/login">Login</Link>
+
+          </form>
           {isLoading && <LoadingScreen />}
           {alertFlag && (
             <Overlay

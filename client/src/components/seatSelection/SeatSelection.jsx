@@ -102,7 +102,6 @@ const SeatSelection = () => {
     //     setSelectedSeats([]);
     //   }
     // });
-
     return () => {
       channel.unbind_all();
       channel.unsubscribe();
@@ -194,6 +193,8 @@ const SeatSelection = () => {
 
   const handleConfirmSeats = async (type) => {
     setIsLoading(true);
+    console.log(busDetails.busNumber)
+
 
     if (selectedSeats.length > 0 && type === "book") {
       try {
@@ -302,11 +303,11 @@ const SeatSelection = () => {
   return (
     <div className="seat-selection-page">
       <header className="header">
-        <h1>Seat Selection</h1>
+          <p className="bus-number"> {busDetails.busNumber}</p>
+        <h1></h1>
       </header>
       <div className="bus-card">
         <div className="bus-details">
-        <p className="bus-number"> {busDetails.busNumber}</p>
           <div className="bus-data">
             <p>
               <strong>Time</strong>{" "}

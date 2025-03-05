@@ -24,7 +24,6 @@ const BusList = () => {
 
   const navigate = useNavigate();
 
-
   const fetchBuses = async () => {
     try {
       const res = await axios.get(`${backEndUrl}/buses`);
@@ -42,6 +41,10 @@ const BusList = () => {
   };
 
   const fetchUsersForBus = async (bus) => {
+    if (!bus.seats || !Array.isArray(bus.seats.bookedSeats)) {
+      console.warn(`Bus ${bus._id} has no booked seats.`);
+      return;
+    }
     setIsLoading(true);
     try {
       const userCounts = bus.seats.bookedSeats.reduce((acc, userId) => {
@@ -91,6 +94,11 @@ const BusList = () => {
   useEffect(() => {
     buses.forEach((bus) => fetchUsersForBus(bus));
   }, [buses]);
+  useEffect(() => {
+    if (userSearchQuery.trim() !== "") {
+      handleUserSearchChange({ target: { value: userSearchQuery } });
+    }
+  }, [usersByBus]);
 
   const handleDel = async (id) => {
     const firstConfirmation = window.confirm(
@@ -127,6 +135,7 @@ const BusList = () => {
     }
   };
 
+
   //navigte with the bus id in the url to enable me to edit the bus
   const handleEdit = (busId) => {
     navigate(`/edit-bus/${busId}`);
@@ -134,6 +143,7 @@ const BusList = () => {
 
 
   const handleCheckIn = async (userId, busId) => {
+    setLoading(true);
     try {
       await axios.put(`${backEndUrl}/user/check-in/${userId}`); // Send check-in request
 
@@ -145,13 +155,19 @@ const BusList = () => {
         ),
       }));
 
-      setAlertMessage("User checked in successfully!");
-      setAlertFlag(true);
+      setTimeout(() => {
+        setLoading(false);
+        setAlertMessage("Checked in successfully!");
+        setAlertFlag(true);
+      }, 1200);
       setTimeout(() => setAlertFlag(false), 2000);
     } catch (error) {
       console.error("Check-in failed", error);
-      setAlertMessage("⚠️ Error during check-in");
-      setAlertFlag(true);
+      setTimeout(() => {
+        setLoading(false);
+        setAlertMessage("⚠️ Error during check-in");
+        setAlertFlag(true);
+      }, 1200);
       setTimeout(() => setAlertFlag(false), 2000);
     }
   };
@@ -218,6 +234,7 @@ const BusList = () => {
   };
   
 
+
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
     const [hour, minute] = time.split(":");
@@ -235,6 +252,7 @@ const BusList = () => {
 
   // Handle Check-out Function
   const handleCheckOut = async (userId, busId) => {
+    setLoading(true);
     try {
       await axios.put(`${backEndUrl}/user/check-out/${userId}`); // Send check-in request
 
@@ -246,43 +264,65 @@ const BusList = () => {
         ),
       }));
 
+      setTimeout(() => {
+        setLoading(false);
+        setAlertMessage("Checked out successfully!");
+        setAlertFlag(true);
+      }, 1200);
+      setTimeout(() => setAlertFlag(false), 2000);
     } catch (error) {
       console.error("Check-in failed", error);
-      setAlertMessage("⚠️ Error during check-in");
-      setAlertFlag(true);
+      setTimeout(() => {
+        setLoading(false);
+        setAlertMessage("⚠️ Error during check-in");
+        setAlertFlag(true);
+      }, 1200);
       setTimeout(() => setAlertFlag(false), 2000);
     }
   };
 
+  const handleCheckStatus = async (userId, busId, userStatus) => {
+    if (userStatus) {
+      const checkInConfirmation = window.confirm(
+        "Mark user as NOT checked-in?"
+      );
+      if (!checkInConfirmation) return;
+      return handleCheckOut(userId, busId);
+    } else {
+      const checkOutConfirmation = window.confirm("Mark user as checked-in?");
+      if (!checkOutConfirmation) return;
+      return handleCheckIn(userId, busId);
+    }
+  };
 
   return (
     <div className="bus-list-page">
-      {alertFlag && (
-        <div className={`alert-message ${alertFlag ? "show" : ""}`}>
-          {alertMessage}
-        </div>
-      )}
-      <br />
-      <div onClick={fetchBuses} className="show-buses-btn">
-        Show Available Buses
-        </div>
-        <br />
+      <div className="top-section">
         <div className="search-container">
-          <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
-            <option value="userName">Filter by User Name</option>
-            <option value="userNumber">Filter by User Number</option>
-            <option value="busNumber">Filter by Bus Number</option>
+          <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+          >
+            <option value="Filter by" selected={true}>
+              Filter by
+            </option>
+            <option value="userName">User Name</option>
+            <option value="userNumber">User Number</option>
+            <option value="busNumber">Bus Number</option>
           </select>
           <div className="input-wrapper">
             <input
               type="text"
-              placeholder={`Enter ${searchType === "busNumber" ? "bus number" : "user details"}...`}
+              placeholder={`Enter ${
+                searchType === "busNumber" ? "bus number" : "user details"
+              }...`}
               value={userSearchQuery}
               onChange={handleUserSearchChange}
             />
           </div>
         </div>
-      <br />
+      </div>
+
       <div className="bus-list">
         <div className="counters" >
           {filteredBuses.length > 0 && <p className="buses-count" style={{ fontSize: "40px", textAlign: "center" }}> 🚐 {filteredBuses.length}</p>}
@@ -291,15 +331,28 @@ const BusList = () => {
         {filteredBuses.length > 0 ? (
           filteredBuses.map((bus) => (
             <div key={bus._id} className="bus-container">
-              <p className="bus-number"> {bus.busNumber}</p>
-              <p>{bus.location.pickupLocation} <span>to</span> {bus.location.arrivalLocation}</p>
-              <button onClick={() => handleEdit(bus._id)}>Edit</button>
+              <p className="bus-number">{bus.busNumber}</p>
+              <p>
+                {bus.location.pickupLocation} <span style={{color: "var(--text-color)"}}>To</span>{" "}
+                {bus.location.arrivalLocation}
+              </p>
               <div className="booked-users">
-                <h3>Seats Booked By:</h3>
                 {usersByBus[bus._id]?.length > 0 ? (
                   <ul>
                     {usersByBus[bus._id].map((user, index) => (
-                      <p key={index} className="booked-user">
+                      <p
+                        key={index}
+                        className={`booked-user ${
+                          user.checkInStatus ? "green" : "red"
+                        }`}
+                        onClick={() =>
+                          handleCheckStatus(
+                            user._id,
+                            bus._id,
+                            user.checkInStatus
+                          )
+                        }
+                      >
                         <span className="user-info">
                           <span className="user-name">
                             {user.name
@@ -309,6 +362,15 @@ const BusList = () => {
                           <span className="user-seats">
                             (
                             {user.bookedBuses.seats
+                              .map((seat) =>
+                                seat < 7
+                                  ? seat - 1
+                                  : seat > 7 && seat < 10
+                                  ? seat - 2
+                                  : seat > 10 && seat < 14
+                                  ? seat - 3
+                                  : seat - 4
+                              )
                               .map((seat) => seat < 7
                                 ? seat - 1
                                 : seat > 7 && seat < 10
@@ -321,27 +383,6 @@ const BusList = () => {
                           </span>
                         </span>
                         <span className="user-phone">{user.phoneNumber}</span>
-                        <span className="check-in-status">
-                          {/* {user.checkInStatus} */}
-                          {user.checkInStatus
-                            ? "✅"
-                            : "❌"}
-                        </span>
-                        {!user.checkInStatus ? (
-                          <button className="check-in-btn"
-                            onClick={() => handleCheckIn(user._id, bus._id)}
-                          >
-                            Check In
-                          </button>
-                        ) : (
-                          <button className="check-out-btn"
-                            onClick={() => handleCheckOut(user._id, bus._id)}
-                          >
-                            Check out
-                          </button>
-                        )}
-
-
                       </p>
                     ))}
                   </ul>
@@ -351,7 +392,11 @@ const BusList = () => {
                   <p>No booked seats</p>
                 )}
               </div>
-              <button onClick={() => handleDel(bus._id)}>Delete Bus</button>
+              <div className="actions-container">
+              <button className="del-btn" onClick={() => handleDel(bus._id)}> <img src="delete.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
+              <button className="edit-btn" onClick={() => handleEdit(bus._id)}> <img src="editing.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
+            
+              </div>
             </div>
           ))
         ) : isLoading ? (
@@ -362,7 +407,13 @@ const BusList = () => {
       </div>
 
       {loading && <LoadingScreen />}
-      {isLoading && <Overlay message="Loading Buses..." />}
+      {alertFlag && (
+        <Overlay
+          alertFlag={alertFlag}
+          alertMessage={alertMessage}
+          setAlertFlag={setAlertFlag}
+        />
+      )}
     </div>
   );
 };

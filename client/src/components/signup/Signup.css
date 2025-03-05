@@ -1,6 +1,7 @@
 /* Styling for the Signup Component */
 .register-page {
-  height: 100vh;
+  /* height: 100vh; */
+  /* margin: auto; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -8,7 +9,8 @@
 }
 
 .register-container {
-  width: 385px;
+  /* width: 295px;
+  height: 300px;
   max-width: 400px;
   margin: auto;
   padding: 30px;
@@ -16,13 +18,24 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px var(--shadow-color);
   color: var(--text-color);
-  font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif; */
+  width: 310px;
+  /* height: 350px; */
+  background-color: var(--form-background);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px 30px;
+  gap: 20px;
+  position: relative;
+  box-shadow: 0px 0px 20px var(--shadow-color);
+  border-radius: 8px;
 }
 
 .register-container h2 {
   text-align: center;
   color: var(--primary-hover);
-  margin-bottom: 20px;
   font-size: 24px;
   font-weight: bold;
 }
@@ -30,7 +43,7 @@
 .register-container form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
 }
 
 .register-container label {
@@ -41,6 +54,8 @@
 
 .register-container input {
   padding: 12px;
+  width: 250px;
+  height: 40px;
   font-size: 14px;
   border: 1px solid var(--input-border);
   border-radius: 6px;
@@ -56,12 +71,13 @@
 }
 
 .register-container button {
+  margin-top: 5px;
   padding: 12px;
-  font-size: 16px;
+  font-size: 12px;
   background-color: var(--secondary-hover);
   color: var(--button-text);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s ease, transform 0.2s ease;
@@ -80,7 +96,6 @@
 .register-container a {
   text-align: center;
   display: block;
-  margin-top: 15px;
   color: var(--primary-hover);
   text-decoration: none;
   font-size: 14px;
@@ -161,6 +176,7 @@
 .gender-options {
   display: flex;
   gap: 12px;
+  margin-top: 5px;
   justify-content: center;
   width: 100%;
 }
@@ -168,11 +184,12 @@
 /* Gender Buttons */
 .gender-option {
   flex: 1;
-  padding: 12px 20px;
+  height: 30px;
+  padding: 5px 15px;
   font-size: 14px;
   font-weight: bold;
   text-align: center;
-  border: 2px solid var(--input-border);
+  border: 1px solid var(--input-border);
   border-radius: 30px; /* Rounded for a smoother feel */
   background-color: var(--background-color);
   color: var(--text-color);
@@ -195,8 +212,8 @@
 }
 
 /* Selected Gender - Male */
-.gender-option.Male.selected {
-  background: linear-gradient(135deg, #4a90e2 0%, #357ABD 100%);
+.gender-option.male.selected {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
   color: white;
   border-color: transparent;
 }
@@ -223,7 +240,7 @@
   }
 
   .gender-option {
-    padding: 10px 15px;
+    padding: 5px 15px;
     font-size: 13px;
   }
 }

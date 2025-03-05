@@ -9,8 +9,8 @@
 .add-bus {
   width: 95%;
   max-width: 400px;
-  margin: 0px auto;
-  padding: 30px;
+  padding: 20px;
+  height: 100%;
   background-color: var(--form-background);
   border-radius: 8px;
   box-shadow: 0 5px 15px var(--shadow-color);
@@ -23,7 +23,7 @@
 .add-bus h1 {
   text-align: center;
   color: var(--primary-hover);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 /* Input fields */
@@ -119,7 +119,7 @@
 @media (max-width: 768px) {
   .add-bus {
     padding: 20px;
-    margin: 20px auto;
+    margin: 30px auto;
   }
 
   .add-bus h2 {
@@ -151,4 +151,31 @@
   color: #da1111;
   font-size: 14px;
   margin-top: 10px;
+}
+
+.time{
+  display: flex;
+  gap: 20px;
+}
+
+.time-section{
+  width: 100%;
+}
+
+.time-section input, .time-section select{
+  width: 100%;
+  padding: 10px;
+}
+
+.location{
+  display: flex;
+  gap: 20px;
+}
+
+.location-section{
+  width: 100%;
+}
+.location-section input, .location-section select{
+  width: 100%;
+  padding: 10px;
 }
