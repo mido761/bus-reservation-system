@@ -171,42 +171,49 @@ const BusList = () => {
   
     if (query === "") {
       setFilteredBuses(buses);
+      setUsersByBus(usersByBus); // Reset users to original
       return;
     }
   
+    let filteredBusList = [];
+    let filteredUsersByBus = {};
+  
     if (searchType === "busNumber") {
-      console.log("Filtering by bus number:", query);
-      setFilteredBuses(
-        buses.filter((bus) =>
-          String(bus.busNumber).toLowerCase().includes(query)
-        )
+      // Filter buses based on bus number
+      filteredBusList = buses.filter((bus) =>
+        String(bus.busNumber).toLowerCase().includes(query)
       );
     } else if (searchType === "userName") {
-      if (!usersByBus || Object.keys(usersByBus).length === 0) {
-        console.warn("Users data not loaded yet!");
-        return;
-      }
-      setFilteredBuses(
-        buses.filter((bus) =>
-          usersByBus[bus._id]?.some((user) =>
-            user.name.toLowerCase().includes(query)
-          )
-        )
-      );
+      // Filter users inside each bus
+      buses.forEach((bus) => {
+        const matchingUsers = usersByBus[bus._id]?.filter((user) =>
+          user.name.toLowerCase().includes(query)
+        );
+  
+        if (matchingUsers && matchingUsers.length > 0) {
+          filteredBusList.push(bus); // Keep the bus if it has matching users
+          filteredUsersByBus[bus._id] = matchingUsers; // Only store matching users
+        }
+      });
     } else if (searchType === "userNumber") {
-      if (!usersByBus || Object.keys(usersByBus).length === 0) {
-        console.warn("Users data not loaded yet!");
-        return;
-      }
-      setFilteredBuses(
-        buses.filter((bus) =>
-          usersByBus[bus._id]?.some((user) =>
-            user.phoneNumber && user.phoneNumber.toString().includes(query)
-          )
-        )
-      );
+      // Filter users inside each bus based on phone number
+      buses.forEach((bus) => {
+        const matchingUsers = usersByBus[bus._id]?.filter((user) =>
+          user.phoneNumber && user.phoneNumber.toString().includes(query)
+        );
+  
+        if (matchingUsers && matchingUsers.length > 0) {
+          filteredBusList.push(bus); // Keep the bus if it has matching users
+          filteredUsersByBus[bus._id] = matchingUsers; // Only store matching users
+        }
+      });
     }
+  
+    setFilteredBuses(filteredBusList);
+    setUsersByBus(filteredUsersByBus);
   };
+  
+  
 
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
