@@ -94,11 +94,11 @@ const BusList = () => {
   useEffect(() => {
     buses.forEach((bus) => fetchUsersForBus(bus));
   }, [buses]);
-  useEffect(() => {
-    if (userSearchQuery.trim() !== "") {
-      handleUserSearchChange({ target: { value: userSearchQuery } });
-    }
-  }, [usersByBus]);
+  // useEffect(() => {
+  // //   if (userSearchQuery.trim() !== "") {
+  // //     handleUserSearchChange({ target: { value: userSearchQuery } });
+  // //   }
+  // // }, [usersByBus]);
 
   const handleDel = async (id) => {
     const firstConfirmation = window.confirm(
@@ -173,65 +173,73 @@ const BusList = () => {
   };
 
   const handleUserSearchChange = (e) => {
-    let query = e.target.value; // Don't trim to allow spaces in the middle
+    let query = e.target.value;
     setUserSearchQuery(query); // Always update state
-  
+
     // 🔹 Reset search when input is empty
-    if (query === "") {
-      setFilteredBuses(originalBuses); // Reset buses to full list
-      setUsersByBus(originalUsersByBus); // Reset users to full list
-      return;
+    if (query.trim() === "") {
+        setFilteredBuses(originalBuses); // Reset buses to full list
+        setUsersByBus(originalUsersByBus); // Reset users to full list
+        return;
     }
-    
-    query = query.toLowerCase();
-  
-    let filteredBusList = [];
-    let filteredUsersByBus = {};
-  
+
     // 🔹 Validation for input type
     if (searchType === "busNumber" || searchType === "userNumber") {
-      if (!/^\d*$/.test(query)) {
-        console.warn("Only numbers are allowed for Bus Number and Phone Number.");
-        return;
-      }
+        if (!/^\d+$/.test(query)) {
+            return; // Stops further execution if invalid
+        }
     } else if (searchType === "userName") {
-      if (!/^[a-zA-Z\s]*$/.test(query)) {
-        console.warn("Only letters and spaces are allowed for User Name.");
-        return;
-      }
+        if (!/^[a-zA-Z\s]+$/.test(query)) {
+            return; // Stops further execution if invalid
+        }
     }
-  
+
+    query = query.toLowerCase();
+    let filteredBusList = [];
+    let filteredUsersByBus = {};
+
     if (searchType === "busNumber") {
-      filteredBusList = originalBuses.filter((bus) =>
-        String(bus.busNumber).toLowerCase().includes(query)
-      );
+        filteredBusList = originalBuses.filter((bus) =>
+            String(bus.busNumber).toLowerCase().includes(query)
+        );
+
+        // Fetch users inside the filtered buses
+        filteredBusList.forEach((bus) => {
+            if (originalUsersByBus[bus._id]) {
+                filteredUsersByBus[bus._id] = originalUsersByBus[bus._id];
+            }
+        });
+
     } else if (searchType === "userName") {
-      originalBuses.forEach((bus) => {
-        const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
-          user.name.toLowerCase().includes(query)
-        );
-  
-        if (matchingUsers && matchingUsers.length > 0) {
-          filteredBusList.push(bus);
-          filteredUsersByBus[bus._id] = matchingUsers;
-        }
-      });
+        originalBuses.forEach((bus) => {
+            const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
+                user.name.toLowerCase().includes(query)
+            );
+
+            if (matchingUsers?.length) {
+                filteredBusList.push(bus);
+                filteredUsersByBus[bus._id] = matchingUsers;
+            }
+        });
+
     } else if (searchType === "userNumber") {
-      originalBuses.forEach((bus) => {
-        const matchingUsers = usersByBus[bus._id]?.filter((user) =>
-          user.phoneNumber && user.phoneNumber.toString().includes(query)
-        );
-  
-        if (matchingUsers && matchingUsers.length > 0) {
-          filteredBusList.push(bus);
-          filteredUsersByBus[bus._id] = matchingUsers;
-        }
-      });
+        originalBuses.forEach((bus) => {
+            const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
+                user.phoneNumber?.toString().includes(query)
+            );
+
+            if (matchingUsers?.length) {
+                filteredBusList.push(bus);
+                filteredUsersByBus[bus._id] = matchingUsers;
+            }
+        });
     }
-  
+
     setFilteredBuses(filteredBusList);
     setUsersByBus(filteredUsersByBus);
-  };
+};
+
+
   
 
 
