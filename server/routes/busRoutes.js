@@ -152,7 +152,7 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
           ),
         },
       },
-      { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] } }
+      { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] ,checkInStatus: false} }
     );
     const deletedBus = await Bus.deleteOne({ _id: id });
 
