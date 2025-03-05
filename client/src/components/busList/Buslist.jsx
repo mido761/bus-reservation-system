@@ -289,6 +289,24 @@ const BusList = () => {
     }
   };
 
+  
+  const handleCheckStatus = async (userId, busId, userStatus) => {
+      if (userStatus){
+        const checkInConfirmation = window.confirm(
+          "Mark user as NOT checked-in?"
+        );
+        if (!checkInConfirmation) return;  
+        return handleCheckOut(userId, busId)
+      }else {
+        const checkOutConfirmation = window.confirm(
+          "Mark user as checked-in?"
+        );
+        if (!checkOutConfirmation) return;  
+        return handleCheckIn(userId, busId)
+      }
+  };
+
+  
   return (
     <div className="bus-list-page">
       <div className="top-section">
@@ -334,7 +352,7 @@ const BusList = () => {
                 {usersByBus[bus._id]?.length > 0 ? (
                   <ul>
                     {usersByBus[bus._id].map((user, index) => (
-                      <p key={index} className="booked-user">
+                      <p key={index} className={`booked-user ${user.checkInStatus ? "green" : "red"}`} onClick={() => handleCheckStatus(user._id, bus._id, user.checkInStatus)}>
                         <span className="user-info">
                           <span className="user-name">
                             {user.name
@@ -358,24 +376,6 @@ const BusList = () => {
                           </span>
                         </span>
                         <span className="user-phone">{user.phoneNumber}</span>
-                        <span className="check-in-status">
-                          {user.checkInStatus ? "✅" : "❌"}
-                        </span>
-                        {!user.checkInStatus ? (
-                          <button
-                            className="check-in-btn"
-                            onClick={() => handleCheckIn(user._id, bus._id)}
-                          >
-                            Check In
-                          </button>
-                        ) : (
-                          <button
-                            className="check-out-btn"
-                            onClick={() => handleCheckOut(user._id, bus._id)}
-                          >
-                            Check out
-                          </button>
-                        )}
                       </p>
                     ))}
                   </ul>

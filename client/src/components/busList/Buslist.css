@@ -159,7 +159,7 @@
 
 .bus-container span {
   font-weight: bold;
-  color: var(--primary-hover);
+  color: var(--background-color);
 }
 
 /* Delete Bus button */
@@ -247,7 +247,7 @@
 
 .user-name {
   font-weight: bold;
-  color: var(--primary-hover);
+  color: var(--button-text);
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
@@ -320,27 +320,6 @@
   color: white;
 }
 
-.check-in-btn {
-  width: 45px;
-  height: 40px;
-  padding: 3px 3px;
-  background-color: #00d26a;
-}
-
-.check-in-btn:hover {
-  background-color: #00d26a;
-}
-
-.check-out-btn {
-  width: 45px;
-  height: 40px;
-  background-color: #f92f60;
-  padding: 3px 3px;
-}
-
-.check-out-btn:hover {
-  background-color: #f92f60;
-}
 
 /* Search Container */
 .search-container {
@@ -444,4 +423,15 @@ input {
 .search-container input::placeholder {
   color: #888;
   font-size: 13px;
+}
+
+.green{
+  background-color: #00d26a;
+  border-radius: 10px;
+}
+
+
+.red{
+  background-color: #f92f60;
+  border-radius: 10px;
 }
