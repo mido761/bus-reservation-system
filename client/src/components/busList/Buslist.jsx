@@ -368,7 +368,7 @@ const BusList = () => {
                               : "Unknown"}
                           </span>
                           <span className="user-seats">
-                            (
+                          (
                             {user.bookedBuses.seats
                               .map((seat) =>
                                 seat < 7
@@ -379,13 +379,7 @@ const BusList = () => {
                                   ? seat - 3
                                   : seat - 4
                               )
-                              .map((seat) => seat < 7
-                                ? seat - 1
-                                : seat > 7 && seat < 10
-                                  ? seat - 2
-                                  : seat > 10 && seat < 14
-                                    ? seat - 3
-                                    : seat - 4)
+                              
                               .join(", ")}
                             )
                           </span>
