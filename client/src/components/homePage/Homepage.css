@@ -211,21 +211,21 @@ body {
   flex-direction: column;
   align-items: center; /* Centers everything horizontally */
   width: 100%;
-  gap: 0;
+  gap: 10;
   height: 240px;
-  overflow-y: auto; /* Enables vertical scrolling */
-  flex-wrap: nowrap;
+  overflow-y: scroll; /* Enables vertical scrolling */
+  /* flex-wrap: nowrap; */
   padding-top: 10px; /* Adjust as needed */
   padding-bottom: 10px; /* Adjust as needed */
   scroll-padding: 10px;
 }
 
 .top-margin{
-  margin-top: 265px; /* Space at the top */
+  margin-left: 30px; /* Space at the top */
 }
 
 .home-page .bus-list > *:last-child {
-  margin-bottom: 10px; /* Space at the bottom */
+  margin-right: 30px; /* Space at the bottom */
 }
 
 .home-page .bus-list h2{
