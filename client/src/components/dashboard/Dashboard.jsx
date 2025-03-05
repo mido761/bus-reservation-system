@@ -63,7 +63,7 @@ const Dashboard = ({ busDetails, error, userId }) => {
                     onClick={() => handleBusSelect(bus)}
                   >
                     {/* Display Bus Number */}
-                    <p className="bus-number">Bus Number {bus.busNumber}</p>
+                    <p className="bus-number">{bus.busNumber}</p>
   
                     <p>
                       {bus.location.pickupLocation} to{" "}

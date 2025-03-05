@@ -19,11 +19,20 @@
     gap: 8px;
     cursor: pointer;
 }
-.bus-number {
+.dashboard-container .bus-number {
+    width: 100px;
+    font-size: 15px; /* Slightly larger text */
     font-weight: bold;
-    color: white;
-    font-size: 1.1rem;
-    margin-bottom: 5px;
+    color: var(--text-color); /* Red color for emphasis */
+    background-color: #ffffff; /* Light red background */
+    padding: 4px 12px; /* Adjusted padding */
+    border: 1px solid #2f97d3; /* Decreased border width */
+    border-top: 9px solid #2f97d3; /* Decreased border width */
+    border-radius: 5px;
+    display: inline-block;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.40);
+    text-transform: uppercase;
+    text-align: center;
 }
 @media screen and (max-width: 500px){
     .dashboard-cards{
