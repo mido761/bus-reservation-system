@@ -19,6 +19,9 @@ const BusList = () => {
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("userName");
+  const [originalBuses, setOriginalBuses] = useState([]);
+  const [originalUsersByBus, setOriginalUsersByBus] = useState({});
+
   const navigate = useNavigate();
 
 
@@ -27,6 +30,7 @@ const BusList = () => {
       const res = await axios.get(`${backEndUrl}/buses`);
       setFilteredBuses(res.data);
       setBuses(res.data);
+      setOriginalBuses(res.data);
       console.log(filteredBuses)
     } catch (error) {
       console.error("Error fetching Buses.");
@@ -50,6 +54,7 @@ const BusList = () => {
       const uniqueUserIds = Object.keys(userCounts);
       if (uniqueUserIds.length === 0) {
         setUsersByBus((prev) => ({ ...prev, [bus._id]: [] }));
+        setOriginalUsersByBus((prev) => ({ ...prev, [bus._id]: [] }));
         setIsLoading(false);
         return;
       }
@@ -69,6 +74,7 @@ const BusList = () => {
       }));
 
       setUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
+      setOriginalUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
     } catch (error) {
       console.error("Error fetching User Details.", error);
     } finally {
@@ -151,9 +157,22 @@ const BusList = () => {
   };
 
   const handleUserSearchChange = (e) => {
-    let query = e.target.value.trim();
+    let query = e.target.value; // Don't trim to allow spaces in the middle
+    setUserSearchQuery(query); // Always update state
   
-    // Validation based on search type
+    // 🔹 Reset search when input is empty
+    if (query === "") {
+      setFilteredBuses(originalBuses); // Reset buses to full list
+      setUsersByBus(originalUsersByBus); // Reset users to full list
+      return;
+    }
+    
+    query = query.toLowerCase();
+  
+    let filteredBusList = [];
+    let filteredUsersByBus = {};
+  
+    // 🔹 Validation for input type
     if (searchType === "busNumber" || searchType === "userNumber") {
       if (!/^\d*$/.test(query)) {
         console.warn("Only numbers are allowed for Bus Number and Phone Number.");
@@ -161,50 +180,35 @@ const BusList = () => {
       }
     } else if (searchType === "userName") {
       if (!/^[a-zA-Z\s]*$/.test(query)) {
-        console.warn("Only letters are allowed for User Name.");
+        console.warn("Only letters and spaces are allowed for User Name.");
         return;
       }
     }
   
-    query = query.toLowerCase();
-    setUserSearchQuery(query);
-  
-    if (query === "") {
-      setFilteredBuses(buses);
-      setUsersByBus(usersByBus); // Reset users to original
-      return;
-    }
-  
-    let filteredBusList = [];
-    let filteredUsersByBus = {};
-  
     if (searchType === "busNumber") {
-      // Filter buses based on bus number
-      filteredBusList = buses.filter((bus) =>
+      filteredBusList = originalBuses.filter((bus) =>
         String(bus.busNumber).toLowerCase().includes(query)
       );
     } else if (searchType === "userName") {
-      // Filter users inside each bus
-      buses.forEach((bus) => {
-        const matchingUsers = usersByBus[bus._id]?.filter((user) =>
+      originalBuses.forEach((bus) => {
+        const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
           user.name.toLowerCase().includes(query)
         );
   
         if (matchingUsers && matchingUsers.length > 0) {
-          filteredBusList.push(bus); // Keep the bus if it has matching users
-          filteredUsersByBus[bus._id] = matchingUsers; // Only store matching users
+          filteredBusList.push(bus);
+          filteredUsersByBus[bus._id] = matchingUsers;
         }
       });
     } else if (searchType === "userNumber") {
-      // Filter users inside each bus based on phone number
-      buses.forEach((bus) => {
+      originalBuses.forEach((bus) => {
         const matchingUsers = usersByBus[bus._id]?.filter((user) =>
           user.phoneNumber && user.phoneNumber.toString().includes(query)
         );
   
         if (matchingUsers && matchingUsers.length > 0) {
-          filteredBusList.push(bus); // Keep the bus if it has matching users
-          filteredUsersByBus[bus._id] = matchingUsers; // Only store matching users
+          filteredBusList.push(bus);
+          filteredUsersByBus[bus._id] = matchingUsers;
         }
       });
     }
@@ -212,7 +216,6 @@ const BusList = () => {
     setFilteredBuses(filteredBusList);
     setUsersByBus(filteredUsersByBus);
   };
-  
   
 
   const convertTo12HourFormat = (time) => {
