@@ -1,5 +1,3 @@
-
-
 /* General styling */
 body {
   font-family: Arial, sans-serif;
@@ -24,20 +22,22 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 86vh;
+  /* min-height: 86vh; */
   flex-grow: 1;
   user-select: none;
 }
 
 /* Search container */
-.search-container {
+.home-page .search-container {
   display: flex;
+  flex-direction: row;
+  width: 80%;
   padding: 10px;
-  gap: 30px;
+  gap: 10px;
 }
 
 /* Search bar styling */
-.bus-search-bar {
+.home-page .bus-search-bar {
   display: flex;
   gap: 10px;
   margin: 20px 0;
@@ -51,6 +51,7 @@ body {
   padding: 10px;
   border: 1px solid var(--input-border);
   border-radius: 4px;
+  width: 150px;
 }
 
 .bus-search-bar button {
@@ -94,7 +95,7 @@ body {
 
 .route-card {
   background-color: var(--card-background);
-  min-width: 100px;
+  width:100%;
   height: 40px;
   padding: 5px;
   color: var(--button-text);
@@ -189,7 +190,7 @@ body {
 }
 
 @media screen and (min-width: 540px) {
-  .search-container {
+  .home-page .search-container {
     flex-direction: column;
     gap: 0;
   }
@@ -201,16 +202,39 @@ body {
   .popular-routes-list {
     flex-direction: row;
   }
+  
 }
 
-.bus-list {
+
+.home-page .bus-list {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center; /* Centers everything horizontally */
   width: 100%;
+  gap: 0;
+  height: 270px;
+  overflow-y: auto; /* Enables vertical scrolling */
+  flex-wrap: nowrap;
+  padding-top: 10px; /* Adjust as needed */
+  padding-bottom: 10px; /* Adjust as needed */
+  scroll-padding: 10px;
 }
 
-.bus-container {
+.home-page .bus-list > *:first-child {
+  margin-top: 265px; /* Space at the top */
+}
+
+.home-page .bus-list > *:last-child {
+  margin-bottom: 10px; /* Space at the bottom */
+}
+
+.home-page .bus-list h2{
+  margin: 0;
+}
+
+
+.home-page .bus-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -218,13 +242,10 @@ body {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 90%;
+  gap: 0;
+  width: 70%;
   max-width: 400px; /* Prevents it from getting too wide */
-  margin-bottom: 15px; /* Adds spacing between each bus */
 }
-
-
-
 
 .bus-number {
   background-color: var(--card-background); /* Change background color */
