@@ -70,8 +70,12 @@ const TicketSummary = () => {
       <div className="ticket-summary-header">
         <h1></h1>
       </div>
-
+      
       <div className="summary-container">
+        {/* Confirmation Message */}
+        <div className="confirmation-message">
+          Please check your profile to confirm that your seat is booked.
+        </div>
         {/* Passenger Information */}
         <div className="section">
           <h3 className="details-title">Passenger Information</h3>
@@ -136,10 +140,7 @@ const TicketSummary = () => {
           </div>
         </div>
 
-        {/* Confirmation Message */}
-        <div className="confirmation-message">
-          Please check your profile to confirm that your seat is booked.
-        </div>
+        
       </div>
     </div>
   );

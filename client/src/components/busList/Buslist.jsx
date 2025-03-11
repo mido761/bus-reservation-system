@@ -6,6 +6,7 @@ import LoadingPage from "../loadingPage/loadingPage";
 import LoadingComponent from "../loadingComponent/loadingComponent";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
+import e from "cors";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -21,6 +22,9 @@ const BusList = () => {
   const [searchType, setSearchType] = useState("userName");
   const [originalBuses, setOriginalBuses] = useState([]);
   const [originalUsersByBus, setOriginalUsersByBus] = useState({});
+  const [selectedDepartureTime, setSelectedDepartureTime] = useState(null);
+  const [selectedArrivalLocation, setSelectedArrivalLocation] = useState("");
+  const [arrivalLocations, setArrivalLocations] = useState([]);
 
   const navigate = useNavigate();
 
@@ -90,9 +94,22 @@ const BusList = () => {
   useEffect(() => {
     fetchBuses();
   }, []);
-
   useEffect(() => {
-    buses.forEach((bus) => fetchUsersForBus(bus));
+    if (!selectedDepartureTime && !selectedArrivalLocation) {
+      setFilteredBuses(originalBuses);
+    } else {
+      const filtered = originalBuses.filter((bus) => 
+        (!selectedDepartureTime || bus.time.departureTime === selectedDepartureTime) &&
+        (!selectedArrivalLocation || bus.location.arrivalLocation === selectedArrivalLocation)
+      );
+      setFilteredBuses(filtered);
+    }
+  }, [selectedDepartureTime, selectedArrivalLocation, originalBuses]); // Update filter when departure time or arrival location changes
+  
+  useEffect(() => {
+    if (buses.length > 0) {
+      buses.forEach((bus) => fetchUsersForBus(bus));
+    }
   }, [buses]);
   // useEffect(() => {
   // //   if (userSearchQuery.trim() !== "") {
@@ -199,8 +216,11 @@ const BusList = () => {
     let filteredUsersByBus = {};
 
     if (searchType === "busNumber") {
-        filteredBusList = originalBuses.filter((bus) =>
-            String(bus.busNumber).toLowerCase().includes(query)
+        filteredBusList = originalBuses.filter(
+            (bus) =>
+                String(bus.busNumber).toLowerCase().includes(query) &&
+                (selectedDepartureTime ? bus.time.departureTime === selectedDepartureTime : true) &&
+                (selectedArrivalLocation ? bus.location.arrivalLocation === selectedArrivalLocation : true)
         );
 
         // Fetch users inside the filtered buses
@@ -212,6 +232,9 @@ const BusList = () => {
 
     } else if (searchType === "userName") {
         originalBuses.forEach((bus) => {
+            if ((selectedDepartureTime && bus.time.departureTime !== selectedDepartureTime) || 
+                (selectedArrivalLocation && bus.location.arrivalLocation !== selectedArrivalLocation)) return;
+
             const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
                 user.name.toLowerCase().includes(query)
             );
@@ -224,6 +247,9 @@ const BusList = () => {
 
     } else if (searchType === "userNumber") {
         originalBuses.forEach((bus) => {
+            if ((selectedDepartureTime && bus.time.departureTime !== selectedDepartureTime) || 
+                (selectedArrivalLocation && bus.location.arrivalLocation !== selectedArrivalLocation)) return;
+
             const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
                 user.phoneNumber?.toString().includes(query)
             );
@@ -238,11 +264,6 @@ const BusList = () => {
     setFilteredBuses(filteredBusList);
     setUsersByBus(filteredUsersByBus);
 };
-
-
-  
-
-
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
     const [hour, minute] = time.split(":");
@@ -305,118 +326,132 @@ const BusList = () => {
 
   return (
     <div className="bus-list-page">
+      {/* 🔹 Top Section with Filters */}
       <div className="top-section">
         <div className="search-container">
-          <select
-            value={searchType}
-            onChange={(e) => setSearchType(e.target.value)}
-          >
-            <option value="Filter by" selected={true}>
-              Filter by
-            </option>
+          
+          {/* 🔹 Search Type Dropdown */}
+          <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+            <option value="Filter by" selected={true}>Filter by</option>
             <option value="userName">User Name</option>
             <option value="userNumber">User Number</option>
             <option value="busNumber">Bus Number</option>
           </select>
+
+          {/* 🔹 Search Input */}
           <div className="input-wrapper">
             <input
               type="text"
-              placeholder={`Enter ${
-                searchType === "busNumber" ? "bus number" : "user details"
-              }...`}
+              placeholder={`Enter ${searchType === "busNumber" ? "bus number" : "user details"}...`}
               value={userSearchQuery}
               onChange={handleUserSearchChange}
             />
           </div>
+
+          {/* 🔹 Departure Time Filter */}
+          <select value={selectedDepartureTime} onChange={(e) => setSelectedDepartureTime(e.target.value)}>
+            <option value="">All Departure Times</option>
+            {[...new Set(originalBuses.map((bus) => bus.time.departureTime))].map((time) => (
+              <option key={time} value={time}>{convertTo12HourFormat(time)}</option>
+            ))}
+          </select>
+
+          {/* 🔹 Arrival Location Filter */}
+          <select value={selectedArrivalLocation} onChange={(e) => setSelectedArrivalLocation(e.target.value)}>
+            <option value="">All Arrival Locations</option>
+            {[...new Set(originalBuses.map((bus) => bus.location.arrivalLocation))].map((location) => (
+              <option key={location} value={location}>{location}</option>
+            ))}
+          </select>
         </div>
       </div>
 
+      {/* 🔹 Bus List */}
       <div className="bus-list">
-        <div className="counters" >
-          {filteredBuses.length > 0 && <p className="buses-count" style={{ fontSize: "40px", textAlign: "center" }}> 🚐 {filteredBuses.length}</p>}
-          {filteredBuses.length > 0 && <p className="passengers-count" style={{ fontSize: "40px" }}>🧍🏼{(filteredBuses.length * 15) - filteredBuses.reduce((sum, bus) => sum + (bus.seats.availableSeats || 0), 0)}</p>}
+        
+        {/* 🔹 Bus Count & Passenger Count */}
+        <div className="counters">
+          {filteredBuses.length > 0 && (
+            <p className="buses-count" style={{ fontSize: "40px", textAlign: "center" }}>
+              🚐 {filteredBuses.length}
+            </p>
+          )}
+          {filteredBuses.length > 0 && (
+            <p className="passengers-count" style={{ fontSize: "40px" }}>
+              🧍🏼 {filteredBuses.reduce((sum, bus) => sum + (15 - bus.seats.availableSeats), 0)}
+            </p>
+          )}
         </div>
-        {filteredBuses.length > 0 ? (
-          filteredBuses.map((bus) => (
-            <div key={bus._id} className="bus-container">
-              <p className="bus-number">{bus.busNumber}</p>
-              <p>
-                {bus.location.pickupLocation} <span style={{color: "var(--text-color)"}}>To</span>{" "}
-                {bus.location.arrivalLocation}
-              </p>
-              <div className="booked-users">
-                {usersByBus[bus._id]?.length > 0 ? (
-                  <ul>
-                    {usersByBus[bus._id].map((user, index) => (
-                      <p
-                        key={index}
-                        className={`booked-user ${
-                          user.checkInStatus ? "green" : "red"
-                        }`}
-                        onClick={() =>
-                          handleCheckStatus(
-                            user._id,
-                            bus._id,
-                            user.checkInStatus
-                          )
-                        }
-                      >
-                        <span className="user-info">
-                          <span className="user-name">
-                            {user.name
-                              ? user.name.replace(/_/g, " ")
-                              : "Unknown"}
-                          </span>
-                          <span className="user-seats">
-                          (
-                            {user.bookedBuses.seats
-                              .map((seat) =>
-                                seat < 7
-                                  ? seat - 1
-                                  : seat > 7 && seat < 10
-                                  ? seat - 2
-                                  : seat > 10 && seat < 14
-                                  ? seat - 3
-                                  : seat - 4
-                              )
-                              
-                              .join(", ")}
-                            )
-                          </span>
-                        </span>
-                        <span className="user-phone">{user.phoneNumber}</span>
-                      </p>
-                    ))}
-                  </ul>
-                ) : isLoading ? (
-                  <LoadingComponent />
-                ) : (
-                  <p>No booked seats</p>
-                )}
-              </div>
-              <div className="actions-container">
-              <button className="del-btn" onClick={() => handleDel(bus._id)}> <img src="delete.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
-              <button className="edit-btn" onClick={() => handleEdit(bus._id)}> <img src="editing.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
+
+        {/* 🔹 Display Filtered Buses */}
+        {filteredBuses.map((bus) => (
+          <div key={bus._id} className="bus-container">
             
-              </div>
+            {/* 🔹 Bus Info */}
+            <p className="bus-number">{bus.busNumber}</p>
+            <p>
+              {bus.location.pickupLocation} 
+              <span style={{ color: "var(--text-color)" }}> To </span> 
+              {bus.location.arrivalLocation}
+            </p>
+            <p className="departure-time">🕒 Departure: {convertTo12HourFormat(bus.time.departureTime)}</p>
+
+            {/* 🔹 Booked Users List */}
+            <div className="booked-users">
+              {usersByBus[bus._id]?.length > 0 ? (
+                <ul>
+                  {usersByBus[bus._id].map((user, index) => (
+                    <p
+                      key={index}
+                      className={`booked-user ${user.checkInStatus ? "green" : "red"}`}
+                      onClick={() => handleCheckStatus(user._id, bus._id, user.checkInStatus)}
+                    >
+                      <span className="user-info">
+                        <span className="user-name">
+                          {user.name ? user.name.replace(/_/g, " ") : "Unknown"}
+                        </span>
+                        <span className="user-seats">
+                          ({user.bookedBuses.seats
+                            .map((seat) =>
+                              seat < 7 ? seat - 1 :
+                              seat > 7 && seat < 10 ? seat - 2 :
+                              seat > 10 && seat < 14 ? seat - 3 :
+                              seat - 4
+                            )
+                            .join(", ")}
+                          )
+                        </span>
+                      </span>
+                      <span className="user-phone">{user.phoneNumber}</span>
+                    </p>
+                  ))}
+                </ul>
+              ) : isLoading ? (
+                <LoadingComponent />
+              ) : (
+                <p>No booked seats</p>
+              )}
             </div>
-          ))
-        ) : isLoading ? (
-          <LoadingPage />
-        ) : (
-          <p>No buses found.</p>
+
+            {/* 🔹 Action Buttons */}
+            <div className="actions-container">
+              <button className="del-btn" onClick={() => handleDel(bus._id)}>
+                <img src="delete.png" alt="Delete" style={{ width: "24px", height: "24px" }} />
+              </button>
+              <button className="edit-btn" onClick={() => handleEdit(bus._id)}>
+                <img src="editing.png" alt="Edit" style={{ width: "24px", height: "24px" }} />
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* 🔹 Loading & Alerts */}
+        {loading && <LoadingScreen />}
+        {alertFlag && (
+          <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
         )}
       </div>
-
-      {loading && <LoadingScreen />}
-      {alertFlag && (
-        <Overlay
-          alertFlag={alertFlag}
-          alertMessage={alertMessage}
-          setAlertFlag={setAlertFlag}
-        />
-      )}
     </div>
-  );
-};
+);
+}
 export default BusList;
