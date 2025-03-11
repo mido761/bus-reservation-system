@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     buses: [{ type: String, required: false }],
     seats: [{ type: Number, required: false }],
   },
+  bookedTime: [{type: Date, required:false}],
   role: { type: String, required: false, default: "user" },
   resetToken: { type: String, required: false },
   resetTokenExpires: {

@@ -39,7 +39,7 @@ router.post("/:busId", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found!" });
     }
-    
+
     if (!bus) {
       return res.status(404).json({ message: "Bus not found!" });
     }
@@ -101,6 +101,9 @@ router.post("/:busId", async (req, res) => {
           "bookedBuses.buses": busId,
           "bookedBuses.seats": { $each: seats },
         },
+        $push: {
+          bookedTime: { $each: seats.map(() => new Date()) } // Assign current time for each seat
+        }
       },
       { new: true }
     );
@@ -254,6 +257,8 @@ router.delete("/:busId", async (req, res) => {
   const { selectedSeats, userId } = req.body;
 
   const seatStrings = selectedSeats.map(String);
+  console.log("Test cancel")
+
 
   try {
     const bus = await Bus.findById(busId);
@@ -310,11 +315,39 @@ router.delete("/:busId", async (req, res) => {
           updatedBus,
         });
       }
+      const seatIndexes = selectedSeats
+        .map(seat => user.bookedBuses.seats.indexOf(seat))
+        .filter(index => index !== -1);
 
-      // Remove the selected seat numbers from each user's bookedBuses.seats
       await User.updateMany(
         { _id: { $in: BookedUserIds } },
-        { $pull: { "bookedBuses.seats": { $in: selectedSeats } } }
+        {
+          $pull: { "bookedBuses.seats": { $in: selectedSeats } }
+        }
+      );
+
+      // Step 1: Unset specific indexes in bookedTime
+      const unsetFields = seatIndexes.reduce((acc, index) => {
+        acc[`bookedTime.${index}`] = 1;
+        return acc;
+      }, {});
+
+      await User.updateMany(
+        { _id: { $in: BookedUserIds } },
+        { $unset: unsetFields }
+      );
+
+      // Step 2: Remove null values from bookedTime
+      await User.updateMany(
+        { _id: { $in: BookedUserIds } },
+        { $pull: { bookedTime: null } }
+      );
+
+
+
+      await User.updateOne(
+        { _id: userId },
+        { $pull: { bookedTime: null } }
       );
 
       // Now check if any user has no more booked seats and remove the bus
@@ -322,6 +355,31 @@ router.delete("/:busId", async (req, res) => {
         _id: { $in: BookedUserIds },
         "bookedBuses.seats": { $size: 0 }, // Users with no remaining booked seats
       });
+
+      // // Step 1: Fetch users who booked the selected seats
+      // const bookedUsers = await User.find({ _id: { $in: BookedUserIds } });
+
+      // // Step 2: Map selected seats to their indexes and extract booked times
+      // const userUpdates = bookedUsers.map(user => {
+      //   // Get the indexes of the selected seats in bookedBuses.seats
+      //   const seatIndexes = selectedSeats
+      //     .map(seat => user.bookedBuses.seats.indexOf(seat)) // Get indexes
+      //     .filter(index => index !== -1); // Remove invalid indexes
+
+      //   // Get the corresponding bookedTime values
+      //   const bookedTimesToRemove = seatIndexes.map(index => user.bookedTime[index]);
+
+      //   return { userId: user._id, bookedTimesToRemove };
+      // });
+
+      // // Step 3: Update each user to remove the correct bookedTime values
+      // await Promise.all(userUpdates.map(({ userId, bookedTimesToRemove }) =>
+      //   User.updateOne(
+      //     { _id: userId },
+      //     { $pullAll: { bookedTime: bookedTimesToRemove } }
+      //   )
+      // ));
+
 
       const usersToRemoveIds = usersToRemoveBus.map((u) => u._id);
 

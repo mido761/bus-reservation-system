@@ -329,15 +329,14 @@ const BusList = () => {
       {/* 🔹 Top Section with Filters */}
       <div className="top-section">
         <div className="search-container">
-          
           {/* 🔹 Search Type Dropdown */}
           <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
-            <option value="Filter by" selected={true}>Filter by</option>
+            <option value="Filter by">Filter by</option>
             <option value="userName">User Name</option>
             <option value="userNumber">User Number</option>
             <option value="busNumber">Bus Number</option>
           </select>
-
+  
           {/* 🔹 Search Input */}
           <div className="input-wrapper">
             <input
@@ -347,7 +346,7 @@ const BusList = () => {
               onChange={handleUserSearchChange}
             />
           </div>
-
+  
           {/* 🔹 Departure Time Filter */}
           <select value={selectedDepartureTime} onChange={(e) => setSelectedDepartureTime(e.target.value)}>
             <option value="">All Departure Times</option>
@@ -355,7 +354,7 @@ const BusList = () => {
               <option key={time} value={time}>{convertTo12HourFormat(time)}</option>
             ))}
           </select>
-
+  
           {/* 🔹 Arrival Location Filter */}
           <select value={selectedArrivalLocation} onChange={(e) => setSelectedArrivalLocation(e.target.value)}>
             <option value="">All Arrival Locations</option>
@@ -365,37 +364,25 @@ const BusList = () => {
           </select>
         </div>
       </div>
-
+  
       {/* 🔹 Bus List */}
       <div className="bus-list">
-        
         {/* 🔹 Bus Count & Passenger Count */}
-        <div className="counters">
-          {filteredBuses.length > 0 && (
-            <p className="buses-count" style={{ fontSize: "40px", textAlign: "center" }}>
-              🚐 {filteredBuses.length}
-            </p>
-          )}
-          {filteredBuses.length > 0 && (
-            <p className="passengers-count" style={{ fontSize: "40px" }}>
-              🧍🏼 {filteredBuses.reduce((sum, bus) => sum + (15 - bus.seats.availableSeats), 0)}
-            </p>
-          )}
-        </div>
-
+        {filteredBuses.length > 0 && (
+          <div className="counters">
+            <p className="buses-count" style={{ fontSize: "40px", textAlign: "center" }}>🚐 {filteredBuses.length}</p>
+            <p className="passengers-count" style={{ fontSize: "40px" }}>🧍🏼 {filteredBuses.reduce((sum, bus) => sum + (15 - bus.seats.availableSeats), 0)}</p>
+          </div>
+        )}
+  
         {/* 🔹 Display Filtered Buses */}
         {filteredBuses.map((bus) => (
           <div key={bus._id} className="bus-container">
-            
             {/* 🔹 Bus Info */}
             <p className="bus-number">{bus.busNumber}</p>
-            <p>
-              {bus.location.pickupLocation} 
-              <span style={{ color: "var(--text-color)" }}> To </span> 
-              {bus.location.arrivalLocation}
-            </p>
+            <p>{bus.location.pickupLocation} <span style={{ color: "var(--text-color)" }}>To</span> {bus.location.arrivalLocation}</p>
             <p className="departure-time">🕒 Departure: {convertTo12HourFormat(bus.time.departureTime)}</p>
-
+  
             {/* 🔹 Booked Users List */}
             <div className="booked-users">
               {usersByBus[bus._id]?.length > 0 ? (
@@ -407,22 +394,22 @@ const BusList = () => {
                       onClick={() => handleCheckStatus(user._id, bus._id, user.checkInStatus)}
                     >
                       <span className="user-info">
-                        <span className="user-name">
-                          {user.name ? user.name.replace(/_/g, " ") : "Unknown"}
-                        </span>
+                        <span className="user-name">{user.name ? user.name.replace(/_/g, " ") : "Unknown"}</span>
                         <span className="user-seats">
-                          ({user.bookedBuses.seats
-                            .map((seat) =>
-                              seat < 7 ? seat - 1 :
-                              seat > 7 && seat < 10 ? seat - 2 :
-                              seat > 10 && seat < 14 ? seat - 3 :
-                              seat - 4
-                            )
-                            .join(", ")}
-                          )
+                          ({user.bookedBuses.seats.map(seat => seat - Math.floor(seat / 7) - 1).join(", ")})
                         </span>
                       </span>
                       <span className="user-phone">{user.phoneNumber}</span>
+                      <span className="user-time">
+                        {(() => {
+                          if (!user.bookedTime || user.bookedTime.length === 0) return "No bookings";
+                          const mostRecentTime = new Date(Math.max(...user.bookedTime.map(time => new Date(time).getTime())));
+                          const diffMinutes = Math.floor((Date.now() - mostRecentTime) / (1000 * 60));
+                          const hours = Math.floor(diffMinutes / 60);
+                          const minutes = diffMinutes % 60;
+                          return hours > 0 ? `${hours} h ${minutes} m ago` : `${minutes} m ago`;
+                        })()}
+                      </span>
                     </p>
                   ))}
                 </ul>
@@ -432,7 +419,7 @@ const BusList = () => {
                 <p>No booked seats</p>
               )}
             </div>
-
+  
             {/* 🔹 Action Buttons */}
             <div className="actions-container">
               <button className="del-btn" onClick={() => handleDel(bus._id)}>
@@ -444,14 +431,13 @@ const BusList = () => {
             </div>
           </div>
         ))}
-
-        {/* 🔹 Loading & Alerts */}
-        {loading && <LoadingScreen />}
-        {alertFlag && (
-          <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
-        )}
       </div>
+  
+      {/* 🔹 Loading & Alerts */}
+      {alertFlag && (
+        <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
+      )}
     </div>
-);
-}
+  );
+}  
 export default BusList;
