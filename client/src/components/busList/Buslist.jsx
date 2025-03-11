@@ -34,7 +34,7 @@ const BusList = () => {
       setFilteredBuses(res.data);
       setBuses(res.data);
       setOriginalBuses(res.data);
-      console.log(filteredBuses)
+      console.log(filteredBuses);
     } catch (error) {
       console.error("Error fetching Buses.");
     } finally {
@@ -81,7 +81,10 @@ const BusList = () => {
       }));
 
       setUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
-      setOriginalUsersByBus((prev) => ({ ...prev, [bus._id]: usersWithCounts }));
+      setOriginalUsersByBus((prev) => ({
+        ...prev,
+        [bus._id]: usersWithCounts,
+      }));
     } catch (error) {
       console.error("Error fetching User Details.", error);
     } finally {
@@ -98,14 +101,17 @@ const BusList = () => {
     if (!selectedDepartureTime && !selectedArrivalLocation) {
       setFilteredBuses(originalBuses);
     } else {
-      const filtered = originalBuses.filter((bus) => 
-        (!selectedDepartureTime || bus.time.departureTime === selectedDepartureTime) &&
-        (!selectedArrivalLocation || bus.location.arrivalLocation === selectedArrivalLocation)
+      const filtered = originalBuses.filter(
+        (bus) =>
+          (!selectedDepartureTime ||
+            bus.time.departureTime === selectedDepartureTime) &&
+          (!selectedArrivalLocation ||
+            bus.location.arrivalLocation === selectedArrivalLocation)
       );
       setFilteredBuses(filtered);
     }
   }, [selectedDepartureTime, selectedArrivalLocation, originalBuses]); // Update filter when departure time or arrival location changes
-  
+
   useEffect(() => {
     if (buses.length > 0) {
       buses.forEach((bus) => fetchUsersForBus(bus));
@@ -152,12 +158,10 @@ const BusList = () => {
     }
   };
 
-
   //navigte with the bus id in the url to enable me to edit the bus
   const handleEdit = (busId) => {
     navigate(`/edit-bus/${busId}`);
   };
-
 
   const handleCheckIn = async (userId, busId) => {
     setLoading(true);
@@ -195,20 +199,20 @@ const BusList = () => {
 
     // 🔹 Reset search when input is empty
     if (query.trim() === "") {
-        setFilteredBuses(originalBuses); // Reset buses to full list
-        setUsersByBus(originalUsersByBus); // Reset users to full list
-        return;
+      setFilteredBuses(originalBuses); // Reset buses to full list
+      setUsersByBus(originalUsersByBus); // Reset users to full list
+      return;
     }
 
     // 🔹 Validation for input type
     if (searchType === "busNumber" || searchType === "userNumber") {
-        if (!/^\d+$/.test(query)) {
-            return; // Stops further execution if invalid
-        }
+      if (!/^\d+$/.test(query)) {
+        return; // Stops further execution if invalid
+      }
     } else if (searchType === "userName") {
-        if (!/^[a-zA-Z\s]+$/.test(query)) {
-            return; // Stops further execution if invalid
-        }
+      if (!/^[a-zA-Z\s]+$/.test(query)) {
+        return; // Stops further execution if invalid
+      }
     }
 
     query = query.toLowerCase();
@@ -216,54 +220,66 @@ const BusList = () => {
     let filteredUsersByBus = {};
 
     if (searchType === "busNumber") {
-        filteredBusList = originalBuses.filter(
-            (bus) =>
-                String(bus.busNumber).toLowerCase().includes(query) &&
-                (selectedDepartureTime ? bus.time.departureTime === selectedDepartureTime : true) &&
-                (selectedArrivalLocation ? bus.location.arrivalLocation === selectedArrivalLocation : true)
+      filteredBusList = originalBuses.filter(
+        (bus) =>
+          String(bus.busNumber).toLowerCase().includes(query) &&
+          (selectedDepartureTime
+            ? bus.time.departureTime === selectedDepartureTime
+            : true) &&
+          (selectedArrivalLocation
+            ? bus.location.arrivalLocation === selectedArrivalLocation
+            : true)
+      );
+
+      // Fetch users inside the filtered buses
+      filteredBusList.forEach((bus) => {
+        if (originalUsersByBus[bus._id]) {
+          filteredUsersByBus[bus._id] = originalUsersByBus[bus._id];
+        }
+      });
+    } else if (searchType === "userName") {
+      originalBuses.forEach((bus) => {
+        if (
+          (selectedDepartureTime &&
+            bus.time.departureTime !== selectedDepartureTime) ||
+          (selectedArrivalLocation &&
+            bus.location.arrivalLocation !== selectedArrivalLocation)
+        )
+          return;
+
+        const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
+          user.name.toLowerCase().includes(query)
         );
 
-        // Fetch users inside the filtered buses
-        filteredBusList.forEach((bus) => {
-            if (originalUsersByBus[bus._id]) {
-                filteredUsersByBus[bus._id] = originalUsersByBus[bus._id];
-            }
-        });
-
-    } else if (searchType === "userName") {
-        originalBuses.forEach((bus) => {
-            if ((selectedDepartureTime && bus.time.departureTime !== selectedDepartureTime) || 
-                (selectedArrivalLocation && bus.location.arrivalLocation !== selectedArrivalLocation)) return;
-
-            const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
-                user.name.toLowerCase().includes(query)
-            );
-
-            if (matchingUsers?.length) {
-                filteredBusList.push(bus);
-                filteredUsersByBus[bus._id] = matchingUsers;
-            }
-        });
-
+        if (matchingUsers?.length) {
+          filteredBusList.push(bus);
+          filteredUsersByBus[bus._id] = matchingUsers;
+        }
+      });
     } else if (searchType === "userNumber") {
-        originalBuses.forEach((bus) => {
-            if ((selectedDepartureTime && bus.time.departureTime !== selectedDepartureTime) || 
-                (selectedArrivalLocation && bus.location.arrivalLocation !== selectedArrivalLocation)) return;
+      originalBuses.forEach((bus) => {
+        if (
+          (selectedDepartureTime &&
+            bus.time.departureTime !== selectedDepartureTime) ||
+          (selectedArrivalLocation &&
+            bus.location.arrivalLocation !== selectedArrivalLocation)
+        )
+          return;
 
-            const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
-                user.phoneNumber?.toString().includes(query)
-            );
+        const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
+          user.phoneNumber?.toString().includes(query)
+        );
 
-            if (matchingUsers?.length) {
-                filteredBusList.push(bus);
-                filteredUsersByBus[bus._id] = matchingUsers;
-            }
-        });
+        if (matchingUsers?.length) {
+          filteredBusList.push(bus);
+          filteredUsersByBus[bus._id] = matchingUsers;
+        }
+      });
     }
 
     setFilteredBuses(filteredBusList);
     setUsersByBus(filteredUsersByBus);
-};
+  };
   const convertTo12HourFormat = (time) => {
     if (!time) return "";
     const [hour, minute] = time.split(":");
@@ -330,59 +346,97 @@ const BusList = () => {
       <div className="top-section">
         <div className="search-container">
           {/* 🔹 Search Type Dropdown */}
-          <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+          <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+          >
             <option value="Filter by">Filter by</option>
             <option value="userName">User Name</option>
             <option value="userNumber">User Number</option>
             <option value="busNumber">Bus Number</option>
           </select>
-  
+
           {/* 🔹 Search Input */}
           <div className="input-wrapper">
             <input
               type="text"
-              placeholder={`Enter ${searchType === "busNumber" ? "bus number" : "user details"}...`}
+              placeholder={`Enter ${
+                searchType === "busNumber" ? "bus number" : "user details"
+              }...`}
               value={userSearchQuery}
               onChange={handleUserSearchChange}
             />
           </div>
-  
+
           {/* 🔹 Departure Time Filter */}
-          <select value={selectedDepartureTime} onChange={(e) => setSelectedDepartureTime(e.target.value)}>
+          <select
+            value={selectedDepartureTime}
+            onChange={(e) => setSelectedDepartureTime(e.target.value)}
+          >
             <option value="">All Departure Times</option>
-            {[...new Set(originalBuses.map((bus) => bus.time.departureTime))].map((time) => (
-              <option key={time} value={time}>{convertTo12HourFormat(time)}</option>
+            {[
+              ...new Set(originalBuses.map((bus) => bus.time.departureTime)),
+            ].map((time) => (
+              <option key={time} value={time}>
+                {convertTo12HourFormat(time)}
+              </option>
             ))}
           </select>
-  
+
           {/* 🔹 Arrival Location Filter */}
-          <select value={selectedArrivalLocation} onChange={(e) => setSelectedArrivalLocation(e.target.value)}>
+          <select
+            value={selectedArrivalLocation}
+            onChange={(e) => setSelectedArrivalLocation(e.target.value)}
+          >
             <option value="">All Arrival Locations</option>
-            {[...new Set(originalBuses.map((bus) => bus.location.arrivalLocation))].map((location) => (
-              <option key={location} value={location}>{location}</option>
+            {[
+              ...new Set(
+                originalBuses.map((bus) => bus.location.arrivalLocation)
+              ),
+            ].map((location) => (
+              <option key={location} value={location}>
+                {location}
+              </option>
             ))}
           </select>
         </div>
       </div>
-  
+
       {/* 🔹 Bus List */}
       <div className="bus-list">
         {/* 🔹 Bus Count & Passenger Count */}
         {filteredBuses.length > 0 && (
           <div className="counters">
-            <p className="buses-count" style={{ fontSize: "40px", textAlign: "center" }}>🚐 {filteredBuses.length}</p>
-            <p className="passengers-count" style={{ fontSize: "40px" }}>🧍🏼 {filteredBuses.reduce((sum, bus) => sum + (15 - bus.seats.availableSeats), 0)}</p>
+            <p
+              className="buses-count"
+              style={{ fontSize: "40px", textAlign: "center" }}
+            >
+              🚐 {filteredBuses.length}
+            </p>
+            <p className="passengers-count" style={{ fontSize: "40px" }}>
+              🧍🏼{" "}
+              {filteredBuses.reduce(
+                (sum, bus) => sum + (15 - bus.seats.availableSeats),
+                0
+              )}
+            </p>
           </div>
         )}
-  
+
         {/* 🔹 Display Filtered Buses */}
         {filteredBuses.map((bus) => (
           <div key={bus._id} className="bus-container">
             {/* 🔹 Bus Info */}
             <p className="bus-number">{bus.busNumber}</p>
-            <p>{bus.location.pickupLocation} <span style={{ color: "var(--text-color)" }}>To</span> {bus.location.arrivalLocation}</p>
-            <p className="departure-time">🕒 Departure: {convertTo12HourFormat(bus.time.departureTime)}</p>
-  
+            <p>
+              {bus.location.pickupLocation}{" "}
+              <span style={{ color: "var(--text-color)" }}>To</span>{" "}
+              {bus.location.arrivalLocation}
+            </p>
+            <p className="departure-time">
+              🕒 Departure: {convertTo12HourFormat(bus.time.departureTime)}
+            </p>
+
             {/* 🔹 Booked Users List */}
             <div className="booked-users">
               {usersByBus[bus._id]?.length > 0 ? (
@@ -390,24 +444,51 @@ const BusList = () => {
                   {usersByBus[bus._id].map((user, index) => (
                     <p
                       key={index}
-                      className={`booked-user ${user.checkInStatus ? "green" : "red"}`}
-                      onClick={() => handleCheckStatus(user._id, bus._id, user.checkInStatus)}
+                      className={`booked-user ${
+                        user.checkInStatus ? "green" : "red"
+                      }`}
+                      onClick={() =>
+                        handleCheckStatus(user._id, bus._id, user.checkInStatus)
+                      }
                     >
                       <span className="user-info">
-                        <span className="user-name">{user.name ? user.name.replace(/_/g, " ") : "Unknown"}</span>
+                        <span className="user-name">
+                          {user.name ? user.name.replace(/_/g, " ") : "Unknown"}
+                        </span>
                         <span className="user-seats">
-                          ({user.bookedBuses.seats.map(seat => seat - Math.floor(seat / 7) - 1).join(", ")})
+                          {user.bookedBuses.seats
+                            .map((index) =>
+                              index < 7
+                                ? index - 1
+                                : index > 7 && index < 10
+                                ? index - 2
+                                : index > 10 && index < 14
+                                ? index - 3
+                                : index - 4
+                            )
+                            .join(", ")}
                         </span>
                       </span>
                       <span className="user-phone">{user.phoneNumber}</span>
                       <span className="user-time">
                         {(() => {
-                          if (!user.bookedTime || user.bookedTime.length === 0) return "No bookings";
-                          const mostRecentTime = new Date(Math.max(...user.bookedTime.map(time => new Date(time).getTime())));
-                          const diffMinutes = Math.floor((Date.now() - mostRecentTime) / (1000 * 60));
+                          if (!user.bookedTime || user.bookedTime.length === 0)
+                            return "No bookings";
+                          const mostRecentTime = new Date(
+                            Math.max(
+                              ...user.bookedTime.map((time) =>
+                                new Date(time).getTime()
+                              )
+                            )
+                          );
+                          const diffMinutes = Math.floor(
+                            (Date.now() - mostRecentTime) / (1000 * 60)
+                          );
                           const hours = Math.floor(diffMinutes / 60);
                           const minutes = diffMinutes % 60;
-                          return hours > 0 ? `${hours} h ${minutes} m ago` : `${minutes} m ago`;
+                          return hours > 0
+                            ? `${hours} h ${minutes} m ago`
+                            : `${minutes} m ago`;
                         })()}
                       </span>
                     </p>
@@ -419,27 +500,37 @@ const BusList = () => {
                 <p>No booked seats</p>
               )}
             </div>
-  
+
             {/* 🔹 Action Buttons */}
             <div className="actions-container">
               <button className="del-btn" onClick={() => handleDel(bus._id)}>
-                <img src="delete.png" alt="Delete" style={{ width: "24px", height: "24px" }} />
+                <img
+                  src="delete.png"
+                  alt="Delete"
+                  style={{ width: "24px", height: "24px" }}
+                />
               </button>
               <button className="edit-btn" onClick={() => handleEdit(bus._id)}>
-                <img src="editing.png" alt="Edit" style={{ width: "24px", height: "24px" }} />
+                <img
+                  src="editing.png"
+                  alt="Edit"
+                  style={{ width: "24px", height: "24px" }}
+                />
               </button>
             </div>
           </div>
         ))}
       </div>
-  
+
       {/* 🔹 Loading & Alerts */}
       {alertFlag && (
-        <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
+        <Overlay
+          alertFlag={alertFlag}
+          alertMessage={alertMessage}
+          setAlertFlag={setAlertFlag}
+        />
       )}
     </div>
-
-    
   );
-}  
+};
 export default BusList;
