@@ -178,20 +178,20 @@ const BusList = () => {
 
     // 🔹 Reset search when input is empty
     if (query.trim() === "") {
-        setFilteredBuses(originalBuses); // Reset buses to full list
-        setUsersByBus(originalUsersByBus); // Reset users to full list
-        return;
+      setFilteredBuses(originalBuses); // Reset buses to full list
+      setUsersByBus(originalUsersByBus); // Reset users to full list
+      return;
     }
 
     // 🔹 Validation for input type
     if (searchType === "busNumber" || searchType === "userNumber") {
-        if (!/^\d+$/.test(query)) {
-            return; // Stops further execution if invalid
-        }
+      if (!/^\d+$/.test(query)) {
+        return; // Stops further execution if invalid
+      }
     } else if (searchType === "userName") {
-        if (!/^[a-zA-Z\s]+$/.test(query)) {
-            return; // Stops further execution if invalid
-        }
+      if (!/^[a-zA-Z\s]+$/.test(query)) {
+        return; // Stops further execution if invalid
+      }
     }
 
     query = query.toLowerCase();
@@ -199,48 +199,48 @@ const BusList = () => {
     let filteredUsersByBus = {};
 
     if (searchType === "busNumber") {
-        filteredBusList = originalBuses.filter((bus) =>
-            String(bus.busNumber).toLowerCase().includes(query)
-        );
+      filteredBusList = originalBuses.filter((bus) =>
+        String(bus.busNumber).toLowerCase().includes(query)
+      );
 
-        // Fetch users inside the filtered buses
-        filteredBusList.forEach((bus) => {
-            if (originalUsersByBus[bus._id]) {
-                filteredUsersByBus[bus._id] = originalUsersByBus[bus._id];
-            }
-        });
+      // Fetch users inside the filtered buses
+      filteredBusList.forEach((bus) => {
+        if (originalUsersByBus[bus._id]) {
+          filteredUsersByBus[bus._id] = originalUsersByBus[bus._id];
+        }
+      });
 
     } else if (searchType === "userName") {
-        originalBuses.forEach((bus) => {
-            const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
-                user.name.toLowerCase().includes(query)
-            );
+      originalBuses.forEach((bus) => {
+        const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
+          user.name.toLowerCase().includes(query)
+        );
 
-            if (matchingUsers?.length) {
-                filteredBusList.push(bus);
-                filteredUsersByBus[bus._id] = matchingUsers;
-            }
-        });
+        if (matchingUsers?.length) {
+          filteredBusList.push(bus);
+          filteredUsersByBus[bus._id] = matchingUsers;
+        }
+      });
 
     } else if (searchType === "userNumber") {
-        originalBuses.forEach((bus) => {
-            const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
-                user.phoneNumber?.toString().includes(query)
-            );
+      originalBuses.forEach((bus) => {
+        const matchingUsers = originalUsersByBus[bus._id]?.filter((user) =>
+          user.phoneNumber?.toString().includes(query)
+        );
 
-            if (matchingUsers?.length) {
-                filteredBusList.push(bus);
-                filteredUsersByBus[bus._id] = matchingUsers;
-            }
-        });
+        if (matchingUsers?.length) {
+          filteredBusList.push(bus);
+          filteredUsersByBus[bus._id] = matchingUsers;
+        }
+      });
     }
 
     setFilteredBuses(filteredBusList);
     setUsersByBus(filteredUsersByBus);
-};
+  };
 
 
-  
+
 
 
   const convertTo12HourFormat = (time) => {
@@ -303,6 +303,10 @@ const BusList = () => {
     }
   };
 
+  // useEffect(() => {
+
+  // }, [usersByBus])
+
   return (
     <div className="bus-list-page">
       <div className="top-section">
@@ -321,9 +325,8 @@ const BusList = () => {
           <div className="input-wrapper">
             <input
               type="text"
-              placeholder={`Enter ${
-                searchType === "busNumber" ? "bus number" : "user details"
-              }...`}
+              placeholder={`Enter ${searchType === "busNumber" ? "bus number" : "user details"
+                }...`}
               value={userSearchQuery}
               onChange={handleUserSearchChange}
             />
@@ -341,8 +344,11 @@ const BusList = () => {
             <div key={bus._id} className="bus-container">
               <p className="bus-number">{bus.busNumber}</p>
               <p>
-                {bus.location.pickupLocation} <span style={{color: "var(--text-color)"}}>To</span>{" "}
+                {bus.location.pickupLocation} <span style={{ color: "var(--text-color)" }}>To</span>{" "}
                 {bus.location.arrivalLocation}
+              </p>
+              <p>
+                {convertTo12HourFormat(bus.time.departureTime)}
               </p>
               <div className="booked-users">
                 {usersByBus[bus._id]?.length > 0 ? (
@@ -350,9 +356,8 @@ const BusList = () => {
                     {usersByBus[bus._id].map((user, index) => (
                       <p
                         key={index}
-                        className={`booked-user ${
-                          user.checkInStatus ? "green" : "red"
-                        }`}
+                        className={`booked-user ${user.checkInStatus ? "green" : "red"
+                          }`}
                         onClick={() =>
                           handleCheckStatus(
                             user._id,
@@ -368,23 +373,43 @@ const BusList = () => {
                               : "Unknown"}
                           </span>
                           <span className="user-seats">
-                          (
+                            (
+                              {/* {user.bookedTime} */}
                             {user.bookedBuses.seats
                               .map((seat) =>
                                 seat < 7
                                   ? seat - 1
                                   : seat > 7 && seat < 10
-                                  ? seat - 2
-                                  : seat > 10 && seat < 14
-                                  ? seat - 3
-                                  : seat - 4
+                                    ? seat - 2
+                                    : seat > 10 && seat < 14
+                                      ? seat - 3
+                                      : seat - 4
                               )
-                              
+
                               .join(", ")}
                             )
                           </span>
                         </span>
                         <span className="user-phone">{user.phoneNumber}</span>
+                        <span className="user-time">
+                          {(() => {
+                            if (!user.bookedTime || user.bookedTime.length === 0) return "No bookings";
+
+                            // Convert dates and find the most recent one
+                            const mostRecentTime = new Date(Math.max(...user.bookedTime.map(time => new Date(time).getTime())));
+
+                            // Calculate time difference
+                            const diffMinutes = Math.floor((Date.now() - mostRecentTime) / (1000 * 60));
+                            const hours = Math.floor(diffMinutes / 60);
+                            const minutes = diffMinutes % 60;
+
+                            return hours > 0
+                              ? `${hours} h ${minutes} m ago`
+                              : `${minutes} m ago`;
+                          })()}
+                        </span>
+
+
                       </p>
                     ))}
                   </ul>
@@ -395,9 +420,9 @@ const BusList = () => {
                 )}
               </div>
               <div className="actions-container">
-              <button className="del-btn" onClick={() => handleDel(bus._id)}> <img src="delete.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
-              <button className="edit-btn" onClick={() => handleEdit(bus._id)}> <img src="editing.png" alt="" style={{width: "24px", height: "24px"}}/> </button>
-            
+                <button className="del-btn" onClick={() => handleDel(bus._id)}> <img src="delete.png" alt="" style={{ width: "24px", height: "24px" }} /> </button>
+                <button className="edit-btn" onClick={() => handleEdit(bus._id)}> <img src="editing.png" alt="" style={{ width: "24px", height: "24px" }} /> </button>
+
               </div>
             </div>
           ))

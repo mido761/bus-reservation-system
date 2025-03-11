@@ -133,7 +133,7 @@ const Payment = () => {
       }`}
     >
       <div className="payment-box-container">
-        <h1>Complete Your Payment</h1>
+        <h1>Confirm Your Booking</h1>
         <form className="payment-form" onSubmit={handlePaymentSubmit}>
           <div className="payment-method">
             {/* <label>
@@ -213,7 +213,7 @@ const Payment = () => {
           )} */}
 
           <button type="submit" className="cta-button">
-            Pay Now
+            Book Now
           </button>
         </form>
         {isLoading && <LoadingScreen />}

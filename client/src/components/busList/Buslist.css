@@ -247,6 +247,7 @@
   overflow-wrap: break-word;
   white-space: normal;
   max-width: 100%;
+  gap: 6px;
   cursor: pointer;
 }
 
