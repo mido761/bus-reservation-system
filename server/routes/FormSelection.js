@@ -110,6 +110,18 @@ router.delete("/:busId", async (req, res) => {
     // Get the bus ID from the seat
     // const busId = seat.bus;
 
+    const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
+    const isUserSeat = seat.bookedBy.toString() === userId;
+
+    // Regular users can only cancel their own seats 
+    if (
+      !isAdmin && !isUserSeat 
+    ) {
+      return res.status(400).json({
+        message: "You can only cancel your seats!", isAdmin, isUserSeat
+      });
+    }
+
     // Remove the seat ID from the Bus's seats array
     await Bus.findByIdAndUpdate(busId, {
         $pull: {bookedSeats: seatId}
