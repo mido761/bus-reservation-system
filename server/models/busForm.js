@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const BusFormSchema = new mongoose.Schema({
-    // bookedSeats: [{type: String,  required: false}],      
+    bookedSeats: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', required:true}],      
     schedule: {type: String, required:true},
     price : {type: Number, required: false},
     location: {
