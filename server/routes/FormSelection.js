@@ -26,8 +26,8 @@ router.get("/:id", async (req, res) => {
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { userId } = req.body;
-  console.log(userId)
-  console.log(busId)
+//   console.log(userId)
+//   console.log(busId)
 //   const seats = selectedSeats.split(",").map(Number);
 
   try {
@@ -45,8 +45,7 @@ router.post("/:busId", async (req, res) => {
     // Regular users can only book up to 2 seats per bus
     if (
       !isAdmin &&
-      user.bookedBuses.buses.includes(busId) &&
-      user.bookedBuses.seats.length + seats.length > 2
+      user.seats.length > 1
     ) {
       return res.status(400).json({
         message: "Only two seats are allowed per user on the same bus!",
