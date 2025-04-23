@@ -19,7 +19,7 @@ import TicketSummary from "./components/ticketSummary/TicketSummary.jsx";
 import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
 import EditBus from "./components/editBus/editBus.jsx"
-
+import Passengers from './components/Passengers/Passengers';
 function App() {
   return (
     <HashRouter basename="/">
@@ -40,7 +40,8 @@ function App() {
             </Auth>
           }
         />
-
+        
+        <Route path="/passengers" element={<Passengers />} />
         <Route
           path="/seat-selection/:busId"
           element={

@@ -269,3 +269,172 @@ body {
   margin: 5px 0;
   width: 100%;
 }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  width: 300px;
+}
+
+.modal button {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+/* Modal and Popup Window Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Darker overlay for better contrast */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #f9f9f9; /* Light background for the modal */
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+  animation: fadeIn 0.3s ease; /* Smooth fade-in animation */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal h2 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+.modal p {
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-bottom: 20px;
+}
+
+.modal button {
+  background-color: var(--primary-color);
+  color: var(--button-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Destination Selection Styling */
+.home-page .bus-search-bar select,
+.home-page .bus-search-bar input[type="date"] {
+  padding: 12px 16px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px; /* Smooth rounded corners */
+  width: 200px; /* Consistent width for both elements */
+  background-color: var(--input-background);
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500; /* Slightly bolder text */
+  transition: all 0.3s ease; /* Smooth transitions for background, border, and shadow */
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Hover effect */
+.home-page .bus-search-bar select:hover,
+.home-page .bus-search-bar input[type="date"]:hover {
+  border-color: var(--primary-hover); /* Change border color on hover */
+  background-color: var(--input-hover-background); /* Light hover background */
+}
+
+/* Focus effect */
+.home-page .bus-search-bar select:focus,
+.home-page .bus-search-bar input[type="date"]:focus {
+  border-color: var(--primary-color); /* Highlight with primary color */
+  background-color: var(--input-focus-background); /* Slightly darker background on focus */
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3); /* Subtle glowing shadow for focus */
+}
+
+/* Style for select dropdown */
+.home-page .bus-search-bar select option {
+  padding: 10px;
+  background-color: var(--input-background);
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 400;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for select options */
+.home-page .bus-search-bar select option:hover {
+  background-color: var(--primary-hover); /* Light background on hover */
+}
+
+/* Styling for the date input */
+.home-page .bus-search-bar input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 4px; /* Optional: Adding a slight roundness to the date picker icon */
+}
+
+.home-page .bus-search-bar input[type="date"]:focus::-webkit-calendar-picker-indicator {
+  background-color: var(--primary-color); /* Change the calendar picker icon color when focused */
+}
+/* Base styling for the select element */
+.destination-select {
+  padding: 12px 16px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background-color: var(--input-background);
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 500;
+  width: 100%;
+  transition: all 0.3s ease;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling when 'Ramsis' is selected */
+.destination-select.ramsis {
+  background-color: #e0f7fa; /* Light cyan */
+  color: #006064; /* Dark cyan text */
+}
+
+/* Styling when 'Dandy' is selected */
+.destination-select.dandy {
+  background-color: #fff3e0; /* Light orange */
+  color: #e65100; /* Dark orange text */
+}
+
+/* Add more styles for additional destinations as needed */
