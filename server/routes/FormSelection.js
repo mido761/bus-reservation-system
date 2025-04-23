@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-// const Bus = require("../models/busForm");
-const Bus = require("../models/busModel");
+const Bus = require("../models/busForm");
+// const Bus = require("../models/busModel");
 const Seat = require("../models/seat")
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
@@ -65,9 +65,20 @@ router.post("/:busId", async (req, res) => {
         bookedTime:  new Date(),
         bookerGender: user.gender,
     });
+    await newSeat.save();
+
+    await Bus.findByIdAndUpdate(
+        busId,
+        { $push: { bookedSeats: newSeat._id } },
+        { new: true }
+      );
+
     
-        await newSeat.save();
-    
+    await User.findByIdAndUpdate(
+        userId,
+        { $push: { "bookedBuses.seats": newSeat._id,"bookedBuses.buses": busId } },
+        { new: true }
+      );
 
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
