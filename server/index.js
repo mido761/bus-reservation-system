@@ -10,6 +10,7 @@ require("dotenv").config();
 const busRoutes = require("./routes/busRoutes");
 const userRouter = require("./routes/userRoutes");
 const SeatSelection = require("./routes/SeatSelection");
+const Formselection = require("./routes/FormSelection");
 const contactRoutes = require("./routes/contactRoutes");
 const middleware = require("./controllers/middleware");
 const register = require("./routes/register");
@@ -111,6 +112,9 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
 app.use("/buses", middleware.isAuthenticated, busRoutes);
 // app.use('/api', bookingRoutes);
 app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
+
+
+app.use("/formselection", middleware.isAuthenticated,  Formselection);
 app.use("/user", middleware.isAuthenticated, userRouter);
 
 // Email verifaction
