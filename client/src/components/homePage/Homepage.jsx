@@ -14,6 +14,7 @@ const Homepage = () => {
   const [arrivalPoint, setArrivalPoint] = useState("");
   const [date, setDate] = useState("");
   const [buses, setBuses] = useState([]);
+  const [userId, setUserId] = useState("");
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showContactForm, setShowContactForm] = useState(false);
@@ -26,9 +27,13 @@ const Homepage = () => {
 
   const fetchBuses = async () => {
     try {
+      const [req_user, response] = await Promise.all([
+        axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
+      ]);
       const res = await axios.get(`${backEndUrl}/buses`);
       setBuses(res.data);
       setFilteredBuses(res.data);
+      setUserId(req_user.data.userId);
     } catch (error) {
       console.error("Error fetching buses:", error);
     } finally {
@@ -49,10 +54,14 @@ const Homepage = () => {
   ];
 
   const handleBusSelect = async (bus) => {
-    await axios.get(`${backEndUrl}/auth/${bus._id}`, {
-      withCredentials: true,
-    });
-    navigate(`/seat-selection/${bus._id}`);
+    // await axios.get(`${backEndUrl}/auth/${bus._id}`, {
+    //   withCredentials: true,
+    // });
+    console.log(userId)
+    await axios.post(
+      `${backEndUrl}/formselection/${bus._id}`,
+       { userId },
+       {withCredentials: true });
   };
 
   const handleSearch = () => {

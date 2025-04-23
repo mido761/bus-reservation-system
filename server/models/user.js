@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
   gender: { type: String, enum: ["Male", "Female"], required: false, default:"Male" }, // Added gender field
   bookedBuses: {
     buses: [{ type: String, required: false }],
-    seats: [{ type: Number, required: false }],
+    // seats: [{ type: Number, required: false }],
   },
   bookedTime: [{type: Date, required:false}],
   role: { type: String, required: false, default: "user" },
