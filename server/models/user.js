@@ -7,10 +7,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: false },
   checkInStatus: { type: Boolean, default: false }, // New field for check-in status
   gender: { type: String, enum: ["Male", "Female"], required: false, default:"Male" }, // Added gender field
-  bookedBuses: {
-    buses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bus' }],
-    seats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Seat" }],
-  },
+  seats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Seat" }],
   bookedTime: [{type: Date, required:false}],
   role: { type: String, required: false, default: "user" },
   resetToken: { type: String, required: false },

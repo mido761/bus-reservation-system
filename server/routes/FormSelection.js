@@ -76,7 +76,7 @@ router.post("/:busId", async (req, res) => {
     
     await User.findByIdAndUpdate(
         userId,
-        { $push: { "bookedBuses.seats": newSeat._id,"bookedBuses.buses": busId } },
+        { $push: { seats: newSeat._id}},
         { new: true }
       );
 
@@ -109,7 +109,7 @@ router.delete("/:busId", async (req, res) => {
     }
 
     // Get the bus ID from the seat
-    const busId = seat.bus;
+    // const busId = seat.bus;
 
     // Remove the seat ID from the Bus's seats array
     await Bus.findByIdAndUpdate(busId, {
@@ -118,7 +118,7 @@ router.delete("/:busId", async (req, res) => {
 
     // Remove the seat ID from the User's Buses-seats array
     await User.findByIdAndUpdate(userId,{
-        $pull: {"bookedBuses.seats": seatId}
+        $pull: {seats: seatId}
     });
 
     // Delete the seat itself
