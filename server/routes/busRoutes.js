@@ -1,5 +1,6 @@
 const express = require("express");
 const Bus = require("../models/busModel");
+const busForm = require("../models/busForm")
 const User = require("../models/user");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
@@ -86,6 +87,57 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
       .json({ message: "Error adding the bus details", error: err.message });
   }
 });
+
+
+router.post("/formbuses", middleware.isAuthoraized, async (req, res) => {
+  try {
+    const {
+      schedule,
+      price,
+      pickupLocation,
+      arrivalLocation,         
+      departureTime,
+      cancelTimeAllowance,
+      bookingTimeAllowance,
+    } = req.body;
+
+    console.log(req.body);
+
+    // Check if all required fields are provided
+    if (
+      !schedule ||
+      !price ||
+      !pickupLocation ||
+      !arrivalLocation ||
+      !departureTime
+    ) {
+      return res.status(400).json({
+        message: "Missing required fields",
+      });
+    }
+    const newBusForm = new busForm({
+      schedule: schedule,
+      price: price,
+      location: {
+        pickupLocation: pickupLocation,
+        arrivalLocation: arrivalLocation,
+      },
+      departureTime: departureTime,
+      allowance: {
+        cancelTimeAllowance: cancelTimeAllowance,
+        bookingTimeAllowance: bookingTimeAllowance,
+      },
+    });
+    // console.log(newBus);
+    await newBusForm.save();
+    res.status(201).json("New Bus Created and saved successfully");
+  } catch (err) {
+    res
+      .status(400)
+      .json({ message: "Error adding the bus details", error: err.message });
+  }
+});
+
 // // Search for a user in the bus list
 // router.get("/searchUser", async (req, res) => {
 //   try {
@@ -113,7 +165,7 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
 // Get all buses
 router.get("/", async (req, res) => {
   try {
-    const buses = await Bus.find();
+    const buses = await busForm.find();
     res.status(200).json(buses);
   } catch (err) {
     res.status(400).json({ message: "Error fetching busses", error: err });

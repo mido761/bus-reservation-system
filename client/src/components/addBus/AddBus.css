@@ -5,25 +5,62 @@
   box-sizing: border-box;
 }
 
-/* Container for the form */
+/* Container for the page */
+.add-bus-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 10px;
+  background-color: var(--page-background);
+  min-height: 100vh;
+}
+
+/* Form wrapper styles */
 .add-bus {
-  width: 95%;
-  max-width: 400px;
-  padding: 20px;
-  height: 100%;
+  width: 100%;
+  max-width: 500px;
+  padding: 25px;
   background-color: var(--form-background);
-  border-radius: 8px;
-  box-shadow: 0 5px 15px var(--shadow-color);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px var(--shadow-color);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
-/* Form header */
+/* Header */
 .add-bus h1 {
   text-align: center;
   color: var(--primary-hover);
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/* Form toggle button group */
+.form-toggle {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.form-toggle button {
+  padding: 10px 15px;
+  font-size: 14px;
+  background-color: var(--secondary-hover);
+  color: var(--button-text);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-toggle button.active {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.form-toggle button:hover {
+  background-color: var(--primary-hover);
 }
 
 /* Input fields */
@@ -40,54 +77,67 @@
   transition: border-color 0.3s, background-color 0.3s;
 }
 
-.add-bus input::placeholder,
-.add-bus select {
-  font-size: 0.8rem;
-  color: #666262;
+.add-bus input::placeholder {
+  color: #666;
+  font-size: 14px;
 }
 
 .add-bus label {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--text-color);
-  text-align: left;
-  align-self: flex-start;
-  margin-left: 3px;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
+  display: inline-block;
 }
 
-/* Input and select focus and hover effects */
-.add-bus input:focus,
-.add-bus select:focus {
-  border-color: var(--primary-hover);
-  background-color: var(--form-background);
-  outline: none;
+/* Section layouts */
+.input-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.add-bus input:hover,
-.add-bus select:hover {
-  background-color: #e9ecef;
+.input-group > * {
+  flex: 1;
+  min-width: 45%;
 }
 
-.form-navigation {
-  height: 50px;
-  display: grid;
-  grid-template-columns: 20% 80%;
-  width: 85%;
-  margin: auto;
-  gap: 15px;
+.location,
+.time {
+  display: flex;
+  gap: 20px;
 }
 
-/* Button styling */
-.add-bus button {
+.location-section,
+.time-section {
+  flex: 1;
+}
+
+.location-section input,
+.location-section select,
+.time-section input,
+.time-section select {
   width: 100%;
-  height: 100%;
-  background-color: var(--secondary-hover);
-  color: var(--button-text);
+  padding: 10px;
+}
+
+/* Buttons */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.add-bus button {
+  padding: 12px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  background-color: var(--secondary-hover);
+  color: var(--button-text);
 }
 
 .add-bus button:hover {
@@ -101,81 +151,36 @@
 
 #quick-add-btn {
   border-radius: 50%;
-  text-align: center;
   padding: 0;
-  margin: auto;
-  max-width: 50px;
-  font-size: 13px;
+  width: 48px;
+  height: 48px;
+  font-size: 12px;
 }
 
 .add-bus-btn {
-  text-align: center;
-  padding: 0;
-  margin: auto;
-  margin-top: 0;
+  flex-grow: 1;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .add-bus {
-    padding: 20px;
-    margin: 30px auto;
-  }
-
-  .add-bus h2 {
-    font-size: 22px;
-  }
-
-  .add-bus input,
-  .add-bus select {
-    font-size: 14px;
-  }
-}
-
-/* Input fields group (spacing between inputs) */
-.add-bus .input-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-/* To make each label/input group align well */
-.add-bus .input-group input,
-.add-bus .input-group select {
-  flex: 1;
-  min-width: 48%;
-}
-
-/* Error messages */
-.add-bus .error {
-  color: #da1111;
+/* Alert + Overlay */
+.alert {
   font-size: 14px;
+  color: red;
   margin-top: 10px;
 }
 
-.time{
-  display: flex;
-  gap: 20px;
-}
+/* Responsive */
+@media (max-width: 768px) {
+  .add-bus {
+    padding: 20px;
+    margin: 20px auto;
+  }
 
-.time-section{
-  width: 100%;
-}
+  .form-toggle {
+    flex-direction: column;
+    gap: 10px;
+  }
 
-.time-section input, .time-section select{
-  width: 100%;
-  padding: 10px;
-}
-
-.location{
-  display: flex;
-  gap: 20px;
-}
-
-.location-section{
-  width: 100%;
-}
-.location-section input, .location-section select{
-  width: 100%;
-  padding: 10px;
+  .input-group {
+    flex-direction: column;
+  }
 }
