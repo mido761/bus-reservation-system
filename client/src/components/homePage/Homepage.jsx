@@ -203,7 +203,7 @@ const Homepage = () => {
                   onClick={() => handleBusSelect(bus)}
                 >
                   <p>Schedule: {bus.schedule}</p>
-                  <p>Time: {convertTo12HourFormat(bus.time.departureTime)}</p>
+                  <p>Time: {convertTo12HourFormat(bus.departureTime)}</p>
                 </div>
               ))
             ) : (

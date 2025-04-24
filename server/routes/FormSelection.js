@@ -5,6 +5,7 @@ const Bus = require("../models/busForm");
 const Seat = require("../models/seat")
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
+const seat = require("../models/seat");
 
 router.get("/:id", async (req, res) => {
   try {
@@ -52,6 +53,23 @@ router.post("/:busId", async (req, res) => {
       });
     }
 
+    let userOldSeat = busId;
+    let userSeat = userOldSeat;
+    if (user.seats.length>0){
+       userOldSeat = await Seat.findById(user.seats[0]);
+       userSeat = userOldSeat.busId
+    }
+    console.log(userOldSeat)
+    console.log(userSeat)
+    console.log(busId)
+    if (
+      !isAdmin &&
+      userSeat.toString() !== busId
+    ) { 
+      return res.status(400).json({
+        message: "you can't reserve in two buses",
+      });
+    }
     // Ensure all selected seats are available
     // const seatQuery = {
     //   _id: busId,
