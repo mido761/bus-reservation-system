@@ -26,7 +26,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
-  const { userId } = req.body;
+  const { userId,destination } = req.body;
+  console.log(destination)
 //   console.log(userId)
 //   console.log(busId)
 //   const seats = selectedSeats.split(",").map(Number);
@@ -81,6 +82,7 @@ router.post("/:busId", async (req, res) => {
         bookedBy: userId,
         bookedTime:  new Date(),
         bookerGender: user.gender,
+        route: destination,
     });
     await newSeat.save();
 

@@ -143,8 +143,9 @@ const Homepage = () => {
   
   
   const handleBookSeatConfirm = async () => {
-    try {
-      await axios.post(`${backEndUrl}/formselection/${selectedBus._id}`, { userId }, { withCredentials: true });
+    try { 
+      console.log(destination); 
+      await axios.post(`${backEndUrl}/formselection/${selectedBus._id}`, { userId ,destination}, { withCredentials: true });
       setShowBookingConfirm(false);
       alert("Seat booking confirmed!");
     } catch (err) {
