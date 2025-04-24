@@ -88,8 +88,8 @@ const AddBus = () => {
         <h1>Add a new Bus</h1>
 
         <label>Bus Type</label>
-        <div className="bus-type-selection">
-          <label>
+        <div className="bus-type-selection improved-ui">
+          <label className={busType === "seat" ? "selected" : ""}>
             <input
               type="radio"
               value="seat"
@@ -98,7 +98,7 @@ const AddBus = () => {
             />
             Seat-based
           </label>
-          <label>
+          <label className={busType === "form" ? "selected" : ""}>
             <input
               type="radio"
               value="form"
@@ -147,12 +147,17 @@ const AddBus = () => {
           onChange={(e) => setSchedule(e.target.value)}
         />
 
-        <label>Price</label>
-        <input
-          type="number"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
+{busType === "seat" && (
+  <>
+    <label>Price</label>
+    <input
+      type="number"
+      value={price}
+      onChange={(e) => setPrice(e.target.value)}
+    />
+  </>
+)}
+
 
         <label>Departure Time</label>
         <input
@@ -180,12 +185,6 @@ const AddBus = () => {
               type="number"
               value={allowedNumberOfBags}
               onChange={(e) => setAllowedNumberOfBags(e.target.value)}
-            />
-            <label>Bus Number</label>
-            <input
-              type="text"
-              value={busNumber}
-              onChange={(e) => setbusNumber(e.target.value)}
             />
           </>
         ) : null}
