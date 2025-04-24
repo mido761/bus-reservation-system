@@ -28,7 +28,7 @@ const Homepage = () => {
   const [selectedBus, setSelectedBus] = useState(null);
   const [showBookingConfirm, setShowBookingConfirm] = useState(false);
   const [showPassengerList, setShowPassengerList] = useState(false);
-  const [passengers, setPassengers] = useState([]);
+  const [passengerList, setPassengerList] = useState([]);
   const [destination, setDestination] = useState('');
   const [reservedPassengers, setReservedPassengers] = useState([]);
   const [showReservedPassengerList, setShowReservedPassengerList] = useState(false);
@@ -114,8 +114,9 @@ const Homepage = () => {
   };
   const handleSeeReservedPassengers = async () => {
     try {
+      console.log(selectedBus)
       // Fetch the reserved passengers for the selected bus
-      const response = await axios.get(`/api/reservations/${selectedBus._id}`);
+      const response = await axios.get(`/formselection/${selectedBus._id}`);
   
       // Extract passengers from the response
       let data = response.data;

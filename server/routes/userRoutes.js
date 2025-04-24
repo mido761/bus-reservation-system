@@ -63,11 +63,20 @@ router.get("/profile/:userId", async (req, res) => {
   }
 });
 
+
+
 router.post("/profiles", async (req, res) => {
   const { userIds } = req.body;
   const users = await User.find({ _id: { $in: userIds } }, "name phoneNumber bookedBuses.seats checkInStatus bookedTime"); // Fetch all users at once
   res.json(users);
 });
+
+router.post("/profilesNames", async (req, res) => {
+  const { userIds } = req.body;
+  const users = await User.find({ _id: { $in: userIds } }, "name"); // Fetch all users at once
+  res.json(users);
+});
+
 
 // get a specific bus
 router.get("/bus/:id", async (req, res) => {
@@ -127,6 +136,7 @@ router.put("/check-out/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 router.put("/edit-gender/:userId", async (req, res) => {
   try {
     const { gender } = req.body; // ✅ Extract gender

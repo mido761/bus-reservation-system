@@ -91,7 +91,7 @@ router.post("/:busId", async (req, res) => {
 router.delete("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { seatId, userId } = req.body;
-
+  console.log(seatId, userId)
   try {
     const bus = await Bus.findById(busId);
     const user = await User.findById(userId);
