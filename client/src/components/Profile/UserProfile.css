@@ -1,232 +1,108 @@
 .profile-container {
-  width: 100%;
-  min-height: 86vh;  
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  align-items: flex-start;
-  padding: 20px;
-  gap: 30px;
-  background-color: var(--background-color);
-}
-
-/* User Profile Card */
-.user-profile {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 20px;
-  border: 1px solid var(--input-border);
-  border-radius: 10px;
-  max-width: 320px;
-  max-width: 320px;
-  box-shadow: 0 4px 6px var(--shadow-color);
-  background-color: var(--form-background);
-  transition: transform 0.3s ease-in-out;
-}
-/* .user-profile:hover {
-  transform: translateY(-5px);
-} */
-/* User Name Box */
-.user-name-box {
-  border: 2px solid var(--primary-color);
-  padding: 8px 15px;
-  border-radius: 8px;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  background-color: var(--form-background);
-  display: inline-block;
-  margin-bottom: 10px;
-  word-break: break-word; /* Ensures long words break into new lines */
-  max-width: 100%; /* Prevents overflow */
-  text-align: center; /* Keeps it centered */
-}
-
-
-/* User Details (Email, Phone) */
-.user-detail {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1rem;
-  color: var(--text-color);
-}
-
-/* Icons Styling */
-.icon {
-  color: var(--primary-color);
-}
-
-.avatar {
-  width: 120px;
-  height: 120px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-color: var(--secondary-color);
-  margin-bottom: 15px;
-}
-
-/* Seat Count */
-.seat-count {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--primary-hover);
-}
-
-/* User Details (Email & Phone) */
-.user-detail {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--text-color);
-}
-
-.icon {
-  color: var(--primary-hover);
-  font-size: 16px;
-  margin-bottom: 15px;
-}
-
-/* Seat Count */
-.seat-count {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--primary-hover);
-}
-
-/* User Details (Email & Phone) */
-.user-detail {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--text-color);
-}
-
-.icon {
-  color: var(--primary-hover);
-  font-size: 16px;
-}
-
-/* Dashboard */
-.dashboard-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  border: 1px solid var(--input-border);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px var(--shadow-color);
-  width: 100%;
-  background-color: var(--form-background);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .profile-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-  }
-}
-.gender-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 5px;
-}
-
-.save-button,
-.cancel-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  width: 80px;
-  text-align: center;
-  transition: background-color 0.3s ease-in-out;
-}
-
-/* Save Button */
-.save-button {
-  background-color: var(--success-color);
-  color: white;
-}
-
-.save-button:hover {
-  background-color: darkgreen; /* Change this to a color that fits your theme */
-}
-
-/* Cancel Button */
-.cancel-button {
-  background-color: var(--danger-color);
-  color: white;
-}
-
-.cancel-button:hover {
-  background-color: darkred; /* Change this to a color that fits your theme */
-}
-/* Gender Section */
-.edit-gender {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin-top: 15px;
-}
-
-/* Gender Select Dropdown */
-.gender-select {
-  padding: 10px;
-  border: 1px solid var(--input-border);
-  border-radius: 5px;
-  font-size: 1rem;
-  background-color: var(--form-background);
-  color: var(--text-color);
-  width: 100%;
-  max-width: 200px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.3s ease-in-out;
-}
-
-.gender-select:focus {
-  border-color: var(--primary-color);
-  outline: none;
-}
-
-/* Save & Cancel Buttons */
-.gender-buttons {
-  display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-top: 10px;
+  padding: 20px;
+  background-color: #f7f7f7;
+  min-height: 100vh;
 }
 
-/* Save and Cancel Buttons */
-.save-button,
-.cancel-button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
+.user-profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 2rem;
+  color: #333;
   font-weight: bold;
-  background-color: var(--secondary-color);
-  color: white;
-  transition: background-color 0.3s ease-in-out, transform 0.2s;
-  width: 120px;
-  text-align: center;
 }
 
-/* Hover Effects */
-.save-button:hover,
-.cancel-button:hover {
-  background-color: darkslategray;
-  transform: scale(1.05);
+.user-profile-card {
+  background: linear-gradient(135deg, var(--secondary-hover) 0%, #e7f3f9 70%);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 600px;
+  margin: 20px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-detail {
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.user-detail .icon {
+  margin-right: 8px;
+  color: var(--secondary-hover); /* Update icon color to match secondary-hover */
+}
+
+.recent-activity {
+  margin-top: 30px;
+  width: 80%;
+  max-width: 600px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.recent-activity h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.recent-activity ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.recent-activity li {
+  font-size: 1rem;
+  color: #555;
+  margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+  .user-profile-card {
+    width: 90%;
+  }
+
+  .user-name {
+    font-size: 1.5rem;
+  }
+
+  .user-detail {
+    font-size: 0.9rem;
+  }
+
+  .recent-activity h3 {
+    font-size: 1.2rem;
+  }
 }
