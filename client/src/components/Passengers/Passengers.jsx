@@ -16,27 +16,21 @@ const PassengersPage = () => {
 
   const fetchReservedPassengers = async () => {
     try {
-      const authResponse = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
-      const userId = authResponse.data.userId; // user ID from the session
-      setLoggedInUserId(userId);
-
-      const response = await axios.get(`${backEndUrl}/seats/passenger/${busId}`,{userId});
+      const response = await axios.get(`${backEndUrl}/seats/${busId}`);
       const seatBookings = response.data.data;
       setSeatBookings(seatBookings);
 
       // Ids with duplication
-      // const bookedByIds = seatBookings.map((item) => item.bookedBy);
+      const bookedByIds = seatBookings.map((item) => item.bookedBy);
 
       // Ids with NO duplication
-      // const uniqueIds = [...new Set(bookedByIds)];
+      const uniqueIds = [...new Set(bookedByIds)];
 
       // Names response with no duplications
-      // const passengersNamesResponse = await axios.post(
-      //   `${backEndUrl}/user/profilesNames`,
-      //   { userIds: uniqueIds }
-      // );
+      const passengersNamesResponse = await axios.post(
+        `${backEndUrl}/user/profilesNames`,
+        { userIds: uniqueIds }
+      );
 
       // Users Ids and names
       const users = passengersNamesResponse.data;
