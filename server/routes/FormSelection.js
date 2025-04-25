@@ -45,14 +45,14 @@ router.post("/:busId", async (req, res) => {
     const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
 
     // Regular users can only book up to 2 seats per bus
-    if (
-      !isAdmin 
-      // user.seats.length > 1
-    ) {
-      return res.status(400).json({
-        message: "Only two seats are allowed per user on the same bus!",
-      });
-    }
+    // if (
+    //   !isAdmin 
+    //   // user.seats.length > 1
+    // ) {
+    //   return res.status(400).json({
+    //     message: "Only two seats are allowed per user on the same bus!",
+    //   });
+    // }
 
     // let userOldSeat = busId;
     // let userSeat = userOldSeat;
@@ -64,15 +64,15 @@ router.post("/:busId", async (req, res) => {
     // console.log(userSeat)
     // console.log(busId)
 
-    const seatsCount = await Seat.countDocuments({bookedBy: userId})
-    if (
-      !isAdmin &&
-      userSeat.toString() !== busId
-    ) { 
-      return res.status(400).json({
-        message: "you can't reserve in two buses",
-      });
-    }
+    // const seatsCount = await Seat.countDocuments({bookedBy: userId})
+    // if (
+    //   !isAdmin &&
+    //   userSeat.toString() !== busId
+    // ) { 
+    //   return res.status(400).json({
+    //     message: "you can't reserve in two buses",
+    //   });
+    // }
     // Ensure all selected seats are available
     // const seatQuery = {
     //   _id: busId,
