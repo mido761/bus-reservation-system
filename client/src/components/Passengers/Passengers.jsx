@@ -16,7 +16,6 @@ const PassengersPage = () => {
 
   const fetchReservedPassengers = async () => {
     try {
-      const response = await axios.get(`${backEndUrl}/seats/${busId}`);
       const authResponse = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
