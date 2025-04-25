@@ -14,7 +14,7 @@ router.get("/:id", async (req, res) => {
             return res.status(404).json({ message: "Bus not found" });
         }
 
-        const seats = await Seat.find({busId: busId}, {bookedBy:1});
+        const seats = await Seat.find({busId: busId}, {bookedBy:1,route:1,bookedTime:1,checkInStatus:1});
         console.log(seats)
 
         res.status(200).json({ message: "Current seats:", data: seats }); // ✅
