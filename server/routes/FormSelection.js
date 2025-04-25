@@ -44,6 +44,14 @@ router.post("/:busId", async (req, res) => {
     const numberOfSeats = await Seat.countDocuments({ bookedBy: userId }); // count the number of seats for the user
 
     // Regular users can only book up to 2 seats per bus
+    // if (
+    //   !isAdmin 
+    //   // user.seats.length > 1
+    // ) {
+    //   return res.status(400).json({
+    //     message: "Only two seats are allowed per user on the same bus!",
+    //   });
+    // }
     if (!isAdmin && numberOfSeats > 1) {
       return res.status(400).json({
         message: "Only two seats are allowed per user on the same bus!",
