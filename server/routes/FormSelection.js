@@ -62,6 +62,8 @@ router.post("/:busId", async (req, res) => {
     console.log(userOldSeat)
     console.log(userSeat)
     console.log(busId)
+
+    const seatsCount = await Seat.countDocuments({bookedBy: userId})
     if (
       !isAdmin &&
       userSeat.toString() !== busId
@@ -140,20 +142,20 @@ router.delete("/:busId", async (req, res) => {
       });
     }
 
-    // Remove the seat ID from the Bus's seats array
-    await Bus.findByIdAndUpdate(busId, {
-        $pull: {bookedSeats: seatId}
-    });
+    // // Remove the seat ID from the Bus's seats array
+    // await Bus.findByIdAndUpdate(busId, {
+    //     $pull: {bookedSeats: seatId}
+    // });
 
-    // Remove the seat ID from the User's Buses-seats array
-    await User.findByIdAndUpdate(userId,{
-        $pull: {seats: seatId}
-    });
+    // // Remove the seat ID from the User's Buses-seats array
+    // await User.findByIdAndUpdate(userId,{
+    //     $pull: {seats: seatId}
+    // });
 
     // Delete the seat itself
     await Seat.findByIdAndDelete(seatId);
 
-    return res.status(200).json("Seat cancelled successfully.")
+    return res.status(200).json("Seat cancelled successfully.", )
   } catch (error) {
     console.error("Error canceling the seat!", error);
     return res.status(404).json("Error canceling the seat!", error);
