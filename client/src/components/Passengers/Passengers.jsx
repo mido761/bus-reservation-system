@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const PassengersPage = () => {
@@ -13,20 +12,13 @@ const PassengersPage = () => {
   const [passengerId, setPassengerId] = useState("");
   const [seatId, setSeatId] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
-  const [loggedInUserId, setLoggedInUserId] = useState("");
+
 
   const fetchReservedPassengers = async () => {
     try {
-      const authResponse = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
-      const userId = authResponse.data.userId; // user ID from the session
-      setLoggedInUserId(userId);
-
       const response = await axios.get(`${backEndUrl}/seats/${busId}`);
       const seatBookings = response.data.data;
       setSeatBookings(seatBookings);
-
       // Ids with duplication
       const bookedByIds = seatBookings.map((item) => item.bookedBy);
 
@@ -48,11 +40,18 @@ const PassengersPage = () => {
         return acc;
       }, {});
 
-      const result = seatBookings
-        .map((booking) => userMap[booking.bookedBy])
-        .filter((passenger) => passenger._id === userId); // Only show logged-in user's data
-
+      const result = seatBookings.map(
+        (booking) => userMap[booking.bookedBy]
+      );
+      // if (Array.isArray(data)) {
       setPassengers(result);
+
+      // } else if (Array.isArray(data.passengers)) {
+      // setPassengers(data.passengers);
+      // } else {
+      // console.warn("Unexpected response format", data);
+      // setPassengers([]);
+      // }
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
       setPassengers([]);
@@ -65,14 +64,21 @@ const PassengersPage = () => {
     setPassengerName(passengerName);
     setSeatId(seatData._id);
     setPassengerId(passengerId);
+    
   };
 
   const handleSeatCancel = async () => {
     try {
+      const authResponse = await axios.get(`${backEndUrl}/auth`, {
+        withCredentials: true,
+      });
+      const userId = authResponse.data.userId; // user Id from the session
+
       const cancelResponse = await axios.delete(
         `${backEndUrl}/formselection/${busId}`,
-        { data: { seatId: seatId, userId: loggedInUserId } }
+        { data: { seatId: seatId, userId: userId } }
       );
+      console.log("Seat: ", seatBookings.filter(seat => seat._id === seatId))
 
       if (cancelResponse.status === 200) {
         fetchReservedPassengers();
@@ -82,31 +88,28 @@ const PassengersPage = () => {
         setPassengerId("");
       }
     } catch (error) {
+
       console.error("Error cancelling the seat", error);
       setShowCancelOverlay(false);
     }
   };
-
+  // Fetch reserved passengers data when the component mounts
   useEffect(() => {
     if (busId) {
       fetchReservedPassengers();
+      console.log(seatBookings);
     }
   }, [busId]);
-
   const getRouteName = (busId) => {
     if (busId?.startsWith("DANDY")) return "Dandy";
     if (busId?.startsWith("RAMSIS")) return "Ramsis";
     return "Unknown";
   };
-
-  const getRowColor = (index) => {
-    return index < 15 ? "#2ecc71" : "#e74c3c"; // Green for the first 15, Red for the others
-  };
-
+  
   return (
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
-
+  
       {passengers.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
           <table
@@ -128,15 +131,9 @@ const PassengersPage = () => {
             <tbody>
               {passengers.map((passenger, idx) => (
                 <tr key={idx}>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                    {idx + 1}
-                  </td>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                    {passenger.name}
-                  </td>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                    {getRouteName(busId)}
-                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{idx + 1}</td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{passenger.name}</td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{getRouteName(busId)}</td>
                   <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                     <button
                       className="cancel-button"
@@ -163,7 +160,7 @@ const PassengersPage = () => {
       ) : (
         <p className="no-data">No reserved passengers found.</p>
       )}
-
+  
       {/* Cancel Confirmation Modal */}
       {showCancelOverlay && (
         <div className="modal-overlay">
@@ -186,6 +183,5 @@ const PassengersPage = () => {
       )}
     </div>
   );
-};
-
+}
 export default PassengersPage;
