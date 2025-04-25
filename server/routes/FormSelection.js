@@ -46,23 +46,23 @@ router.post("/:busId", async (req, res) => {
 
     // Regular users can only book up to 2 seats per bus
     if (
-      !isAdmin &&
-      user.seats.length > 1
+      !isAdmin 
+      // user.seats.length > 1
     ) {
       return res.status(400).json({
         message: "Only two seats are allowed per user on the same bus!",
       });
     }
 
-    let userOldSeat = busId;
-    let userSeat = userOldSeat;
-    if (user.seats.length>0){
-       userOldSeat = await Seat.findById(user.seats[0]);
-       userSeat = userOldSeat.busId
-    }
-    console.log(userOldSeat)
-    console.log(userSeat)
-    console.log(busId)
+    // let userOldSeat = busId;
+    // let userSeat = userOldSeat;
+    // if (user.seats.length>0){
+    //    userOldSeat = await Seat.findById(user.seats[0]);
+    //    userSeat = userOldSeat.busId
+    // }
+    // console.log(userOldSeat)
+    // console.log(userSeat)
+    // console.log(busId)
 
     const seatsCount = await Seat.countDocuments({bookedBy: userId})
     if (
