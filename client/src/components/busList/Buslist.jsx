@@ -30,7 +30,7 @@ const BusList = () => {
       setPassengers([]); // Optional: Clear passengers on error
     }
   };
-  
+
   // Handle selecting a bus
   const handleBusSelect = (busId) => {
     setSelectedBusId(busId === selectedBusId ? null : busId); // Toggle visibility
@@ -55,11 +55,28 @@ const BusList = () => {
       (passenger.departureTime?.toLowerCase() || "").includes(query)
     );
   });
-  
+
+  // Calculate time difference
+  const calculateTimeDifference = (reservedTime) => {
+    const now = new Date();
+    const reservedDate = new Date(reservedTime);
+
+    // Calculate difference in milliseconds
+    const timeDiff = now - reservedDate;
+
+    // Convert milliseconds to minutes, hours, and days
+    const minutes = Math.floor(timeDiff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    // Return the time difference in a readable format
+    if (days > 0) return `${days} days ago`;
+    if (hours > 0) return `${hours} hours ago`;
+    return `${minutes} minutes ago`;
+  };
 
   const handleCancelBooking = async (busId, passengerId) => {
     try {
-      // Assuming there's an API endpoint for canceling a passenger's booking on a bus
       await axios.post(`${backEndUrl}/buses/cancelBooking`, { busId, passengerId });
       setPassengers((prevList) => prevList.filter((passenger) => passenger._id !== passengerId)); // Remove passenger from the list
     } catch (error) {
@@ -78,25 +95,21 @@ const BusList = () => {
           {busList.map((bus) => (
             <li key={bus._id}>
               <button
-                  
-                  onClick={() => handleBusSelect(bus._id)}
-                  style={{
-                    padding: "10px",
-                    backgroundColor: "#3498db",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer",
-                    width: "100%",
-                    textAlign: "left",
-                    marginBottom: "10px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  {bus.departureTime}
-                </button>
-            
-
-          
+                onClick={() => handleBusSelect(bus._id)}
+                style={{
+                  padding: "10px",
+                  backgroundColor: "#3498db",
+                  color: "#fff",
+                  border: "none",
+                  cursor: "pointer",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                  borderRadius: "5px",
+                }}
+              >
+                {bus.departureTime}
+              </button>
 
               {/* Toggle the display of passengers and search/filter section */}
               {selectedBusId === bus._id && (
@@ -142,6 +155,7 @@ const BusList = () => {
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Phone Number</th>
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Departure Time</th>
+                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>Reserved Time</th> {/* New column */}
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
                             </tr>
                           </thead>
@@ -162,6 +176,10 @@ const BusList = () => {
                                 </td>
                                 <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                                   {passenger.departureTime}
+                                </td>
+                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                  {/* Display calculated reserved time */}
+                                  {calculateTimeDifference(passenger.reservedTime)}
                                 </td>
                                 <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                                   <button

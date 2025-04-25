@@ -99,8 +99,12 @@ const PassengersPage = () => {
   };
 
   const getRowColor = (index) => {
-    const groupIndex = Math.floor(index / 15); // Group by sets of 15
-    return groupIndex % 2 === 0 ? "green" : "red"; // Green every 15 passengers, alternating groups
+    const groupIndex = Math.floor(index / 15);
+    const groupStart = groupIndex * 15;
+    const groupEnd = groupStart + 14;
+    const groupSize = groupEnd - groupStart + 1;
+
+    return groupSize === 15 ? "green" : "red"; // If group has 15 passengers, color it green, otherwise red
   };
 
   return (
@@ -146,7 +150,7 @@ const PassengersPage = () => {
                       {idx + 1}
                     </td>
 
-                    {/* Display name and route only if the current user is the passenger */}
+                    {/* Display name, route, and action only if the current user is the passenger */}
                     {currentUser === passenger._id ? (
                       <>
                         <td
@@ -190,26 +194,34 @@ const PassengersPage = () => {
                         </td>
                       </>
                     ) : (
-                      // Leave the name cell and action cell empty for non-matching users
+                      // Only show the # for other users and hide the name
                       <>
                         <td
                           style={{
                             padding: "10px",
                             border: "1px solid #ccc",
                           }}
-                        ></td>
+                        >
+                          {idx + 1}
+                        </td>
                         <td
                           style={{
                             padding: "10px",
                             border: "1px solid #ccc",
+                            textAlign: "center",
                           }}
-                        ></td>
+                        >
+                          <span></span> {/* Hide the name for other users */}
+                        </td>
                         <td
                           style={{
                             padding: "10px",
                             border: "1px solid #ccc",
+                            textAlign: "center",
                           }}
-                        ></td>
+                        >
+                          <span></span> {/* Hide the action for other users */}
+                        </td>
                       </>
                     )}
                   </tr>
