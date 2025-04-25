@@ -25,6 +25,7 @@ const BusList = () => {
       
       // Defensive check to make sure data is an array
       setPassengers(Array.isArray(response.data.data) ? response.data.data : []);
+      console.log(passengers)
     } catch (error) {
       console.error("Error fetching passengers for bus:", error);
       setPassengers([]); // Optional: Clear passengers on error
@@ -77,7 +78,8 @@ const BusList = () => {
 
   const handleCancelBooking = async (busId, passengerId) => {
     try {
-      await axios.post(`${backEndUrl}/buses/cancelBooking`, { busId, passengerId });
+      // Assuming there's an API endpoint for canceling a passenger's booking on a bus
+      await axios.delete(`${backEndUrl}/formselection/`, { busId, passengerId });
       setPassengers((prevList) => prevList.filter((passenger) => passenger._id !== passengerId)); // Remove passenger from the list
     } catch (error) {
       console.error("Error canceling passenger booking:", error);
@@ -166,16 +168,20 @@ const BusList = () => {
                                   {idx + 1}
                                 </td>
                                 <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {passenger.name}
+                                  {passenger.bookedBy}
                                 </td>
                                 <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                                   {passenger.phoneNumber}
                                 </td>
                                 <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {bus.route}
+                                  {passenger.route}
                                 </td>
                                 <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {passenger.departureTime}
+                                  {passenger.bookedTime}
+                                </td>
+                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                  {/* Display calculated reserved time */}
+                                  {calculateTimeDifference(passenger.reservedTime)}
                                 </td>
                                 <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                                   {/* Display calculated reserved time */}
