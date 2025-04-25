@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Bus = require("../models/busForm");
 // const Bus = require("../models/busModel");
-const Seat = require("../models/seat")
+const Seat = require("../models/seat");
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
 const seat = require("../models/seat");
@@ -23,14 +23,9 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
-  const { userId,destination } = req.body;
-  console.log(destination)
-//   console.log(userId)
-//   console.log(busId)
-//   const seats = selectedSeats.split(",").map(Number);
+  const { userId, destination } = req.body;
 
   try {
     const user = await User.findById(userId);
@@ -44,6 +39,9 @@ router.post("/:busId", async (req, res) => {
     }
     const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
 
+    const numberOfSeats = await Seat.countDocuments({ bookedBy: userId });
+    // console.log(numberOfSeats);
+
     // Regular users can only book up to 2 seats per bus
     // if (
     //   !isAdmin 
@@ -53,6 +51,23 @@ router.post("/:busId", async (req, res) => {
     //     message: "Only two seats are allowed per user on the same bus!",
     //   });
     // }
+    if (!isAdmin && numberOfSeats > 1) {
+      return res.status(400).json({
+        message: "Only two seats are allowed per user on the same bus!",
+      });
+    }
+
+    if (numberOfSeats > 0){
+      const oldBus = await Seat.find({ bookedBy: userId }, {busId: 1});
+      const sameBus = oldBus[0].busId === Object(busId);
+      console.log(oldBus[0].busId === Object(busId));
+      // Regular users can't book in multiple buses
+      if (!isAdmin &&  !sameBus) {
+        return res.status(400).json({
+          message: "Multiple Buses are not allowed!"
+        });
+      }      
+    }
 
     // let userOldSeat = busId;
     // let userSeat = userOldSeat;
@@ -64,11 +79,8 @@ router.post("/:busId", async (req, res) => {
     // console.log(userSeat)
     // console.log(busId)
 
-    // const seatsCount = await Seat.countDocuments({bookedBy: userId})
-    // if (
-    //   !isAdmin &&
-    //   userSeat.toString() !== busId
-    // ) { 
+    // const seatsCount = await Seat.countDocuments({ bookedBy: userId });
+    // if (!isAdmin && userSeat.toString() !== busId) {
     //   return res.status(400).json({
     //     message: "you can't reserve in two buses",
     //   });
@@ -80,26 +92,25 @@ router.post("/:busId", async (req, res) => {
     // };
 
     const newSeat = new Seat({
-        busId: busId,
-        bookedBy: userId,
-        bookedTime:  new Date(),
-        bookerGender: user.gender,
-        route: destination,
+      busId: busId,
+      bookedBy: userId,
+      bookedTime: new Date(),
+      bookerGender: user.gender,
+      route: destination,
     });
     await newSeat.save();
 
-    await Bus.findByIdAndUpdate(
-        busId,
-        { $push: { bookedSeats: newSeat._id } },
-        { new: true }
-      );
+    // await Bus.findByIdAndUpdate(
+    //   busId,
+    //   { $push: { bookedSeats: newSeat._id } },
+    //   { new: true }
+    // );
 
-    
-    await User.findByIdAndUpdate(
-        userId,
-        { $push: { seats: newSeat._id}},
-        { new: true }
-      );
+    // await User.findByIdAndUpdate(
+    //   userId,
+    //   { $push: { seats: newSeat._id } },
+    //   { new: true }
+    // );
 
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
@@ -113,7 +124,7 @@ router.post("/:busId", async (req, res) => {
 router.delete("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { seatId, userId } = req.body;
-  console.log(seatId, userId)
+  console.log(seatId, userId);
   try {
     const bus = await Bus.findById(busId);
     const user = await User.findById(userId);
@@ -135,12 +146,12 @@ router.delete("/:busId", async (req, res) => {
     const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
     const isUserSeat = seat.bookedBy.toString() === userId;
 
-    // Regular users can only cancel their own seats 
-    if (
-      !isAdmin && !isUserSeat 
-    ) {
+    // Regular users can only cancel their own seats
+    if (!isAdmin && !isUserSeat) {
       return res.status(400).json({
-        message: "You can only cancel your seats!", isAdmin, isUserSeat
+        message: "You can only cancel your seats!",
+        isAdmin,
+        isUserSeat,
       });
     }
 
@@ -157,12 +168,11 @@ router.delete("/:busId", async (req, res) => {
     // Delete the seat itself
     await Seat.findByIdAndDelete(seatId);
 
-    return res.status(200).json("Seat cancelled successfully.", )
+    return res.status(200).json("Seat cancelled successfully.");
   } catch (error) {
     console.error("Error canceling the seat!", error);
     return res.status(404).json("Error canceling the seat!", error);
   }
-
 });
 
 module.exports = router;
