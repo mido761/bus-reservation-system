@@ -7,6 +7,7 @@ const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
 const seat = require("../models/seat");
 
+// retrieve bus details
 router.get("/:id", async (req, res) => {
   try {
     const busId = req.params.id;
@@ -23,6 +24,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// book seat endpoint
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { userId, destination } = req.body;
@@ -39,10 +41,17 @@ router.post("/:busId", async (req, res) => {
     }
     const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
 
-    const numberOfSeats = await Seat.countDocuments({ bookedBy: userId });
-    // console.log(numberOfSeats);
+    const numberOfSeats = await Seat.countDocuments({ bookedBy: userId }); // count the number of seats for the user
 
     // Regular users can only book up to 2 seats per bus
+    // if (
+    //   !isAdmin 
+    //   // user.seats.length > 1
+    // ) {
+    //   return res.status(400).json({
+    //     message: "Only two seats are allowed per user on the same bus!",
+    //   });
+    // }
     if (!isAdmin && numberOfSeats > 1) {
       return res.status(400).json({
         message: "Only two seats are allowed per user on the same bus!",
@@ -50,9 +59,9 @@ router.post("/:busId", async (req, res) => {
     }
 
     if (numberOfSeats > 0){
-      const oldBus = await Seat.find({ bookedBy: userId }, {busId: 1});
-      const sameBus = oldBus[0].busId === Object(busId);
-      console.log(oldBus[0].busId === Object(busId));
+      const oldBus = await Seat.find({ bookedBy: userId }, {busId: 1}); // Get the bus of the user's seat
+      const sameBus = oldBus[0].busId.toString() === busId; // ensure same bus
+
       // Regular users can't book in multiple buses
       if (!isAdmin &&  !sameBus) {
         return res.status(400).json({
@@ -61,28 +70,7 @@ router.post("/:busId", async (req, res) => {
       }      
     }
 
-    // let userOldSeat = busId;
-    // let userSeat = userOldSeat;
-    // if (user.seats.length>0){
-    //    userOldSeat = await Seat.findById(user.seats[0]);
-    //    userSeat = userOldSeat.busId
-    // }
-    // console.log(userOldSeat)
-    // console.log(userSeat)
-    // console.log(busId)
-
-    // const seatsCount = await Seat.countDocuments({ bookedBy: userId });
-    // if (!isAdmin && userSeat.toString() !== busId) {
-    //   return res.status(400).json({
-    //     message: "you can't reserve in two buses",
-    //   });
-    // }
-    // Ensure all selected seats are available
-    // const seatQuery = {
-    //   _id: busId,
-    //   $and: seats.map((seat) => ({ [`seats.bookedSeats.${seat}`]: 0 })), // Ensure seats are free
-    // };
-
+    // make the new seat 
     const newSeat = new Seat({
       busId: busId,
       bookedBy: userId,
@@ -91,18 +79,6 @@ router.post("/:busId", async (req, res) => {
       route: destination,
     });
     await newSeat.save();
-
-    // await Bus.findByIdAndUpdate(
-    //   busId,
-    //   { $push: { bookedSeats: newSeat._id } },
-    //   { new: true }
-    // );
-
-    // await User.findByIdAndUpdate(
-    //   userId,
-    //   { $push: { seats: newSeat._id } },
-    //   { new: true }
-    // );
 
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
@@ -113,10 +89,11 @@ router.post("/:busId", async (req, res) => {
   }
 });
 
+// cancel seat endpoint
 router.delete("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { seatId, userId } = req.body;
-  console.log(seatId, userId);
+
   try {
     const bus = await Bus.findById(busId);
     const user = await User.findById(userId);
@@ -133,10 +110,9 @@ router.delete("/:busId", async (req, res) => {
     }
 
     // Get the bus ID from the seat
-    // const busId = seat.bus;
 
     const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
-    const isUserSeat = seat.bookedBy.toString() === userId;
+    const isUserSeat = seat.bookedBy.toString() === userId; // ensure same user
 
     // Regular users can only cancel their own seats
     if (!isAdmin && !isUserSeat) {
@@ -147,17 +123,7 @@ router.delete("/:busId", async (req, res) => {
       });
     }
 
-    // // Remove the seat ID from the Bus's seats array
-    // await Bus.findByIdAndUpdate(busId, {
-    //     $pull: {bookedSeats: seatId}
-    // });
-
-    // // Remove the seat ID from the User's Buses-seats array
-    // await User.findByIdAndUpdate(userId,{
-    //     $pull: {seats: seatId}
-    // });
-
-    // Delete the seat itself
+    // Delete the seat
     await Seat.findByIdAndDelete(seatId);
 
     return res.status(200).json("Seat cancelled successfully.");
