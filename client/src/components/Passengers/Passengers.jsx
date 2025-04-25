@@ -100,53 +100,91 @@ const PassengersPage = () => {
       console.log(seatBookings);
     }
   }, [busId]);
-
+  const getRouteName = (busId) => {
+    if (busId?.startsWith("DANDY")) return "Dandy";
+    if (busId?.startsWith("RAMSIS")) return "Ramsis";
+    return "Unknown";
+  };
+  const getRowColor = (index) => {
+    return index < 15 ? "#2ecc71" : "#e74c3c"; // Green for the first 15, Red for the others
+  };
+  
   return (
     <div className="passengers-page">
-      <h2>Reserved Passengers</h2>
-
+      <h2 className="title">Reserved Passengers</h2>
+  
       {passengers.length > 0 ? (
-        <table>
-          <thead>
-            {/* <tr>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Seats Reserved</th>
-            </tr> */}
-          </thead>
-          <tbody>
-            {passengers.map((passenger, idx) => (
-              <tr key={idx}>
-                <td
-                  onClick={() =>
-                    handleSeatSellection(passenger._id, idx, passenger.name)
-                  }
-                >
-                  {" "}
-                  {idx} {passenger.name}{" "}
-                </td>
+        <div className="table-container" style={{ overflowX: "auto" }}>
+          <table
+            className="passenger-table"
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              minWidth: "600px",
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: "#f5f5f5" }}>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Name</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {passengers.map((passenger, idx) => (
+                <tr key={idx}>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{idx + 1}</td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{passenger.name}</td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{getRouteName(busId)}</td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                    <button
+                      className="cancel-button"
+                      style={{
+                        padding: "6px 12px",
+                        backgroundColor: "#ff4d4f",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() =>
+                        handleSeatSellection(passenger._id, idx, passenger.name)
+                      }
+                    >
+                      Cancel Seat
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <p>No reserved passengers found.</p>
+        <p className="no-data">No reserved passengers found.</p>
       )}
-
+  
       {/* Cancel Confirmation Modal */}
       {showCancelOverlay && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Cancel Booking</h2>
+            <h3>Cancel Booking</h3>
             <p>
-              <strong>Name:</strong> {passengerName}
+              Are you sure you want to cancel the seat for{" "}
+              <strong>{passengerName}</strong>?
             </p>
-            <button onClick={() => handleSeatCancel()}>Cancel</button>
+            <div className="modal-actions">
+              <button className="confirm" onClick={handleSeatCancel}>
+                Yes, Cancel
+              </button>
+              <button className="cancel" onClick={() => setShowCancelOverlay(false)}>
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
-};
-
+}
 export default PassengersPage;
