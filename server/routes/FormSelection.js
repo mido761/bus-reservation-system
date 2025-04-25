@@ -26,7 +26,8 @@ router.get("/:id", async (req, res) => {
 
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
-  const { userId } = req.body;
+  const { userId,destination } = req.body;
+  console.log(destination)
 //   console.log(userId)
 //   console.log(busId)
 //   const seats = selectedSeats.split(",").map(Number);
@@ -62,6 +63,8 @@ router.post("/:busId", async (req, res) => {
     console.log(userOldSeat)
     console.log(userSeat)
     console.log(busId)
+
+    const seatsCount = await Seat.countDocuments({bookedBy: userId})
     if (
       !isAdmin &&
       userSeat.toString() !== busId
@@ -81,6 +84,7 @@ router.post("/:busId", async (req, res) => {
         bookedBy: userId,
         bookedTime:  new Date(),
         bookerGender: user.gender,
+        route: destination,
     });
     await newSeat.save();
 
@@ -140,20 +144,20 @@ router.delete("/:busId", async (req, res) => {
       });
     }
 
-    // Remove the seat ID from the Bus's seats array
-    await Bus.findByIdAndUpdate(busId, {
-        $pull: {bookedSeats: seatId}
-    });
+    // // Remove the seat ID from the Bus's seats array
+    // await Bus.findByIdAndUpdate(busId, {
+    //     $pull: {bookedSeats: seatId}
+    // });
 
-    // Remove the seat ID from the User's Buses-seats array
-    await User.findByIdAndUpdate(userId,{
-        $pull: {seats: seatId}
-    });
+    // // Remove the seat ID from the User's Buses-seats array
+    // await User.findByIdAndUpdate(userId,{
+    //     $pull: {seats: seatId}
+    // });
 
     // Delete the seat itself
     await Seat.findByIdAndDelete(seatId);
 
-    return res.status(200).json("Seat cancelled successfully.")
+    return res.status(200).json("Seat cancelled successfully.", )
   } catch (error) {
     console.error("Error canceling the seat!", error);
     return res.status(404).json("Error canceling the seat!", error);

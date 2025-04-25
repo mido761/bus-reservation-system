@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const SeatSchema = new mongoose.Schema({
     busId: { type: mongoose.Schema.Types.ObjectId, ref: 'Bus' },
+    route:{type: String, required:true},
     bookedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     bookedTime: {type: Date, required:true},
     bookerGender: { type: String, enum: ["Male", "Female"], required: false, default:"Male" }, // Added gender field

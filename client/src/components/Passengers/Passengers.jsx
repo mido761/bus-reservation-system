@@ -13,12 +13,58 @@ const PassengersPage = () => {
   const [seatId, setSeatId] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
 
+
+  const fetchReservedPassengers = async () => {
+    try {
+      const response = await axios.get(`${backEndUrl}/seats/${busId}`);
+      const seatBookings = response.data.data;
+      setSeatBookings(seatBookings);
+      // Ids with duplication
+      const bookedByIds = seatBookings.map((item) => item.bookedBy);
+
+      // Ids with NO duplication
+      const uniqueIds = [...new Set(bookedByIds)];
+
+      // Names response with no duplications
+      const passengersNamesResponse = await axios.post(
+        `${backEndUrl}/user/profilesNames`,
+        { userIds: uniqueIds }
+      );
+
+      // Users Ids and names
+      const users = passengersNamesResponse.data;
+
+      // Create a map for fast lookup by user ID
+      const userMap = users.reduce((acc, user) => {
+        acc[user._id] = user;
+        return acc;
+      }, {});
+
+      const result = seatBookings.map(
+        (booking) => userMap[booking.bookedBy]
+      );
+      // if (Array.isArray(data)) {
+      setPassengers(result);
+
+      // } else if (Array.isArray(data.passengers)) {
+      // setPassengers(data.passengers);
+      // } else {
+      // console.warn("Unexpected response format", data);
+      // setPassengers([]);
+      // }
+    } catch (error) {
+      console.error("Error fetching reserved passengers:", error);
+      setPassengers([]);
+    }
+  };
+
   const handleSeatSellection = (passengerId, index, passengerName) => {
     const seatData = seatBookings[index];
     setShowCancelOverlay(true);
     setPassengerName(passengerName);
     setSeatId(seatData._id);
     setPassengerId(passengerId);
+    
   };
 
   const handleSeatCancel = async () => {
@@ -35,25 +81,14 @@ const PassengersPage = () => {
       console.log("Seat: ", seatBookings.filter(seat => seat._id === seatId))
 
       if (cancelResponse.status === 200) {
-        console.log("cancelled successfully");
+        fetchReservedPassengers();
         setShowCancelOverlay(false);
-        const currentSeat = seatBookings.filter(seat => seat._id === seatId)[0]._id
-
-        const index = seatBookings.indexOf(currentSeat);
-        console.log(index)
-
-        if (index !== -1) {
-          setPassengers(passengers.splice(index, 1));
-          console.log(passengers.filter)
-        }
         setPassengerName("");
         setSeatId("");
         setPassengerId("");
       }
     } catch (error) {
-      const currentSeat = seatBookings.filter(seat => seat._id === seatId)[0]._id
-      console.log("Seat: ", currentSeat)
-      
+
       console.error("Error cancelling the seat", error);
       setShowCancelOverlay(false);
     }
@@ -61,50 +96,6 @@ const PassengersPage = () => {
   // Fetch reserved passengers data when the component mounts
   useEffect(() => {
     if (busId) {
-      const fetchReservedPassengers = async () => {
-        try {
-          const response = await axios.get(`${backEndUrl}/seats/${busId}`);
-          const seatBookings = response.data.data;
-          setSeatBookings(seatBookings);
-          // Ids with duplication
-          const bookedByIds = seatBookings.map((item) => item.bookedBy);
-
-          // Ids with NO duplication
-          const uniqueIds = [...new Set(bookedByIds)];
-
-          // Names response with no duplications
-          const passengersNamesResponse = await axios.post(
-            `${backEndUrl}/user/profilesNames`,
-            { userIds: uniqueIds }
-          );
-
-          // Users Ids and names
-          const users = passengersNamesResponse.data;
-
-          // Create a map for fast lookup by user ID
-          const userMap = users.reduce((acc, user) => {
-            acc[user._id] = user;
-            return acc;
-          }, {});
-
-          const result = seatBookings.map(
-            (booking) => userMap[booking.bookedBy]
-          );
-          // if (Array.isArray(data)) {
-          setPassengers(result);
-
-          // } else if (Array.isArray(data.passengers)) {
-          // setPassengers(data.passengers);
-          // } else {
-          // console.warn("Unexpected response format", data);
-          // setPassengers([]);
-          // }
-        } catch (error) {
-          console.error("Error fetching reserved passengers:", error);
-          setPassengers([]);
-        }
-      };
-
       fetchReservedPassengers();
       console.log(seatBookings);
     }
