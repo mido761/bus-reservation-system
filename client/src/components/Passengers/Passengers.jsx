@@ -12,13 +12,14 @@ const PassengersPage = () => {
   const [passengerId, setPassengerId] = useState("");
   const [seatId, setSeatId] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
-
+  const [currentUser, setCurrentUser] = useState(null);
 
   const fetchReservedPassengers = async () => {
     try {
       const response = await axios.get(`${backEndUrl}/seats/${busId}`);
       const seatBookings = response.data.data;
       setSeatBookings(seatBookings);
+
       // Ids with duplication
       const bookedByIds = seatBookings.map((item) => item.bookedBy);
 
@@ -43,15 +44,13 @@ const PassengersPage = () => {
       const result = seatBookings.map(
         (booking) => userMap[booking.bookedBy]
       );
-      // if (Array.isArray(data)) {
       setPassengers(result);
 
-      // } else if (Array.isArray(data.passengers)) {
-      // setPassengers(data.passengers);
-      // } else {
-      // console.warn("Unexpected response format", data);
-      // setPassengers([]);
-      // }
+      // Fetch the logged-in user data to filter only their own booking
+      const authResponse = await axios.get(`${backEndUrl}/auth`, {
+        withCredentials: true,
+      });
+      setCurrentUser(authResponse.data.userId);
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
       setPassengers([]);
@@ -64,21 +63,14 @@ const PassengersPage = () => {
     setPassengerName(passengerName);
     setSeatId(seatData._id);
     setPassengerId(passengerId);
-    
   };
 
   const handleSeatCancel = async () => {
     try {
-      const authResponse = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
-      const userId = authResponse.data.userId; // user Id from the session
-
       const cancelResponse = await axios.delete(
         `${backEndUrl}/formselection/${busId}`,
-        { data: { seatId: seatId, userId: userId } }
+        { data: { seatId: seatId, userId: currentUser } }
       );
-      console.log("Seat: ", seatBookings.filter(seat => seat._id === seatId))
 
       if (cancelResponse.status === 200) {
         fetchReservedPassengers();
@@ -88,28 +80,33 @@ const PassengersPage = () => {
         setPassengerId("");
       }
     } catch (error) {
-
       console.error("Error cancelling the seat", error);
       setShowCancelOverlay(false);
     }
   };
+
   // Fetch reserved passengers data when the component mounts
   useEffect(() => {
     if (busId) {
       fetchReservedPassengers();
-      console.log(seatBookings);
     }
   }, [busId]);
+
   const getRouteName = (busId) => {
     if (busId?.startsWith("DANDY")) return "Dandy";
     if (busId?.startsWith("RAMSIS")) return "Ramsis";
     return "Unknown";
   };
-  
+
+  const getRowColor = (index) => {
+    const groupIndex = Math.floor(index / 15); // Group by sets of 15
+    return groupIndex % 2 === 0 ? "green" : "red"; // Green every 15 passengers, alternating groups
+  };
+
   return (
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
-  
+
       {passengers.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
           <table
@@ -123,44 +120,108 @@ const PassengersPage = () => {
             <thead>
               <tr style={{ backgroundColor: "#f5f5f5" }}>
                 <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Name</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Name
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Route
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
-              {passengers.map((passenger, idx) => (
-                <tr key={idx}>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{idx + 1}</td>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{passenger.name}</td>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{getRouteName(busId)}</td>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                    <button
-                      className="cancel-button"
+              {passengers.map((passenger, idx) => {
+                const rowColor = getRowColor(idx); // Get the color for the row
+                return (
+                  <tr key={idx} style={{ backgroundColor: rowColor }}>
+                    <td
                       style={{
-                        padding: "6px 12px",
-                        backgroundColor: "#ff4d4f",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
+                        padding: "10px",
+                        border: "1px solid #ccc",
+                        textAlign: "center",
                       }}
-                      onClick={() =>
-                        handleSeatSellection(passenger._id, idx, passenger.name)
-                      }
                     >
-                      Cancel Seat
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                      {idx + 1}
+                    </td>
+
+                    {/* Display name and route only if the current user is the passenger */}
+                    {currentUser === passenger._id ? (
+                      <>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        >
+                          {passenger.name}
+                        </td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        >
+                          {getRouteName(busId)}
+                        </td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        >
+                          <button
+                            className="cancel-button"
+                            style={{
+                              padding: "6px 12px",
+                              backgroundColor: "#ff4d4f",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              handleSeatSellection(passenger._id, idx, passenger.name)
+                            }
+                          >
+                            Cancel Seat
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      // Leave the name cell and action cell empty for non-matching users
+                      <>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        ></td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        ></td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        ></td>
+                      </>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       ) : (
         <p className="no-data">No reserved passengers found.</p>
       )}
-  
+
       {/* Cancel Confirmation Modal */}
       {showCancelOverlay && (
         <div className="modal-overlay">
@@ -183,5 +244,6 @@ const PassengersPage = () => {
       )}
     </div>
   );
-}
+};
+
 export default PassengersPage;

@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Buslist.css";
-import LoadingPage from "../loadingPage/loadingPage";
-import LoadingComponent from "../loadingComponent/loadingComponent";
-import LoadingScreen from "../loadingScreen/loadingScreen";
-import Overlay from "../overlayScreen/overlay";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const BusList = () => {
@@ -25,16 +21,13 @@ const BusList = () => {
     fetchBusList();
   }, []);
 
-  const handleEditBus = (busId) => {
-    navigate(`/admin/edit-bus`, { state: { busId } });
-  };
-
-  const handleDeleteBus = async (busId) => {
+  const handleCancelBooking = async (busId) => {
     try {
-      await axios.delete(`${backEndUrl}/buses/${busId}`);
-      setBusList((prevList) => prevList.filter((bus) => bus._id !== busId)); // Remove bus from the list
+      // Assuming there's an API endpoint for canceling a bus booking
+      await axios.post(`${backEndUrl}/buses/cancel`, { busId });
+      setBusList((prevList) => prevList.filter((bus) => bus._id !== busId)); // Remove bus from the list after cancel
     } catch (error) {
-      console.error("Error deleting bus:", error);
+      console.error("Error canceling bus booking:", error);
     }
   };
 
@@ -50,7 +43,9 @@ const BusList = () => {
               <tr style={{ backgroundColor: "#f5f5f5" }}>
                 <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
                 <th style={{ padding: "10px", border: "1px solid #ccc" }}>User Name</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Phone Number</th>
                 <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Check-in Status</th>
                 <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
               </tr>
             </thead>
@@ -58,25 +53,15 @@ const BusList = () => {
               {busList.map((bus, idx) => (
                 <tr key={bus._id}>
                   <td style={{ padding: "10px", border: "1px solid #ccc" }}>{idx + 1}</td>
-                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{bus.busNumber}</td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{bus.userName}</td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>{bus.phoneNumber}</td>
                   <td style={{ padding: "10px", border: "1px solid #ccc" }}>{bus.route}</td>
                   <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                    {bus.checkInStatus ? "Checked-in" : "Not Checked-in"}
+                  </td>
+                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                     <button
-                      className="edit-button"
-                      style={{
-                        padding: "6px 12px",
-                        backgroundColor: "#3498db",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleEditBus(bus._id)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="delete-button"
+                      className="cancel-button"
                       style={{
                         padding: "6px 12px",
                         backgroundColor: "#e74c3c",
@@ -84,11 +69,10 @@ const BusList = () => {
                         border: "none",
                         borderRadius: "4px",
                         cursor: "pointer",
-                        marginLeft: "8px",
                       }}
-                      onClick={() => handleDeleteBus(bus._id)}
+                      onClick={() => handleCancelBooking(bus._id)}
                     >
-                      Delete
+                      Cancel
                     </button>
                   </td>
                 </tr>
