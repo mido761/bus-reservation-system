@@ -99,13 +99,12 @@ const PassengersPage = () => {
   };
 
   const getRowColor = (index) => {
-    const groupIndex = Math.floor(index / 15);
-    const groupStart = groupIndex * 15;
-    const groupEnd = groupStart + 14;
-    const groupSize = groupEnd - groupStart + 1;
-
-    return groupSize === 15 ? "green" : "red"; // If group has 15 passengers, color it green, otherwise red
+    const fullGroups = Math.floor(passengers.length / 15);
+    const lastGreenIndex = fullGroups * 15 - 1; // e.g., for 52 → 3*15-1 = 44
+  
+    return index <= lastGreenIndex ? "green" : "red";
   };
+  
 
   return (
     <div className="passengers-page">
