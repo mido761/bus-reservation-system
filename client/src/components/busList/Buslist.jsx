@@ -368,7 +368,7 @@ const BusList = () => {
             />
           </div>
 
-          {/* 🔹 Departure Time Filter */}
+          {/* 🔹 Departure Time Filter
           <select
             value={selectedDepartureTime}
             onChange={(e) => setSelectedDepartureTime(e.target.value)}
@@ -381,7 +381,7 @@ const BusList = () => {
                 {convertTo12HourFormat(time)}
               </option>
             ))}
-          </select>
+          </select> */}
 
           {/* 🔹 Arrival Location Filter */}
           <select
@@ -404,7 +404,6 @@ const BusList = () => {
 
       {/* 🔹 Bus List */}
       <div className="bus-list">
-        {/* 🔹 Bus Count & Passenger Count */}
         {filteredBuses.length > 0 && (
           <div className="counters">
             <p
@@ -413,13 +412,13 @@ const BusList = () => {
             >
               🚐 {filteredBuses.length}
             </p>
-            <p className="passengers-count" style={{ fontSize: "40px" }}>
+            {/* <p className="passengers-count" style={{ fontSize: "40px" }}>
               🧍🏼{" "}
               {filteredBuses.reduce(
                 (sum, bus) => sum + (15 - bus.seats.availableSeats),
                 0
               )}
-            </p>
+            </p> */}
           </div>
         )}
 
@@ -433,9 +432,9 @@ const BusList = () => {
               <span style={{ color: "var(--text-color)" }}>To</span>{" "}
               {bus.location.arrivalLocation}
             </p>
-            <p className="departure-time">
+            {/* <p className="departure-time">
               🕒 Departure: {convertTo12HourFormat(bus.time.departureTime)}
-            </p>
+            </p> */}
 
             {/* 🔹 Booked Users List */}
             <div className="booked-users">
