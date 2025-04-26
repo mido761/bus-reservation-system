@@ -275,7 +275,7 @@ const BusList = () => {
                                       border: "1px solid #ccc",
                                     }}
                                   >
-                                    {seat?._id}
+                                    {seat?.route}
                                   </td>
                                   <td
                                     style={{

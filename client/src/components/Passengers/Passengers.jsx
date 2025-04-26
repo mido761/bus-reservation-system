@@ -12,6 +12,7 @@ const PassengersPage = () => {
   const [userSeats, setUserSeats] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [seatId, setSeatId] = useState("");
+  const [seatIndex, setSeatIndex] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +51,10 @@ const PassengersPage = () => {
       });
 
       if (cancelResponse.status === 200) {
-        fetchReservedPassengers();
+        // fetchReservedPassengers();
+        setPassengers((prevList) =>
+          prevList.filter((passenger, idx) => idx !== seatIndex)
+        ); // Remove passenger from the list
         setShowCancelOverlay(false);
         setSeatId("");
       }
@@ -60,8 +64,9 @@ const PassengersPage = () => {
     }
   };
 
-  const handleSeatSelection = (seatIdSelected) => {
+  const handleSeatSelection = (seatIdSelected, index) => {
     setSeatId(seatIdSelected);
+    setSeatIndex(index)
     setShowCancelOverlay(true);
   };
 
@@ -119,7 +124,7 @@ const PassengersPage = () => {
                     {matchedSeat ? (
                       <>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                          {userInfo.name}
+                          {passenger}
                         </td>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                           {matchedSeat[1]}
@@ -135,7 +140,7 @@ const PassengersPage = () => {
                               borderRadius: "4px",
                               cursor: "pointer",
                             }}
-                            onClick={() => handleSeatSelection(passenger)}
+                            onClick={() => handleSeatSelection(passenger, idx)}
                           >
                             Cancel Seat
                           </button>
