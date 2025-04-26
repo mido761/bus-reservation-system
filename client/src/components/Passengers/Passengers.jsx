@@ -1,73 +1,56 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const PassengersPage = () => {
   const location = useLocation();
-  const { busId } = location.state || {}; // Get the busId from the state passed via navigate
+  const { busId } = location.state || {}; // Get the busId from navigate
+
   const [passengers, setPassengers] = useState([]);
-  const [SeatBookings, setSeatBookings] = useState([]);
-  const [UserInfo , setUserInfo] = useState();
-  const [userSeats, setuserSeats] = useState([]);
-  const [passengerName, setPassengerName] = useState([]);
-  const [counter , setcounter] = useState(0);
-  // const [passengerId, setPassengerId] = useState("");
+  const [userSeats, setUserSeats] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
   const [seatId, setSeatId] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchReservedPassengers = async () => {
     try {
-      // Fetch logged-in user data
+      setLoading(true);
+
       const authResponse = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
-      
       const userID = authResponse.data.userId;
-      console.log(userID);
-  
-      // Fetch seats info
+      setCurrentUser(userID);
+
       const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, { userId: userID });
-      const seatBookings = response.data.data.seatsRoute;
-      const userSeat = response.data.data.userSeat;
-  
-      setuserSeats(userSeat);
-      console.log(userSeat); // ✅ log directly
-  
-      setPassengers(seatBookings);
-  
-      // Fetch user profile
-      const passengersNamesResponse = await axios.get(`${backEndUrl}/user/profile/${userID}`);
-      const userinfo = passengersNamesResponse.data;
-      console.log(userinfo);
-  
-      setUserInfo(userinfo); // ✅ save full object
-     
-    // Remove this console.log(UserInfo) because it's too early!
-  
+      setUserSeats(response.data.data.userSeat);
+      setPassengers(response.data.data.seatsRoute);
+
+      const userProfileResponse = await axios.get(`${backEndUrl}/user/profile/${userID}`);
+      setUserInfo(userProfileResponse.data);
+
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
       setPassengers([]);
       setLoading(false);
     }
   };
-  
-  // If you want to see UserInfo after it's set
 
-  const handleSeatCancel = async () => {
+  const handleSeatCancel = async (seatId) => {
     try {
-      const cancelResponse = await axios.delete(
-        `${backEndUrl}/formselection/${busId}`,
-        { data: { seatId: seatId, userId: currentUser } }
-      );
+      const cancelResponse = await axios.delete(`${backEndUrl}/formselection/${busId}`, {
+        data: { seatId: seatId, userId: currentUser },
+      });
 
       if (cancelResponse.status === 200) {
         fetchReservedPassengers();
         setShowCancelOverlay(false);
-        setPassengerName("");
         setSeatId("");
-        setPassengerId("");
       }
     } catch (error) {
       console.error("Error cancelling the seat", error);
@@ -75,12 +58,10 @@ const PassengersPage = () => {
     }
   };
 
-  // Fetch reserved passengers data when the component mounts
-  useEffect(() => {
-    if (busId) {
-      fetchReservedPassengers();
-    }
-  }, [busId]);
+  const handleSeatSellection = (seatIdSelected) => {
+    setSeatId(seatIdSelected);
+    setShowCancelOverlay(true);
+  };
 
   const getRouteName = (busId) => {
     if (busId?.startsWith("DANDY")) return "Dandy";
@@ -90,11 +71,19 @@ const PassengersPage = () => {
 
   const getRowColor = (index) => {
     const fullGroups = Math.floor(passengers.length / 15);
-    const lastGreenIndex = fullGroups * 15 - 1; // e.g., for 52 → 3*15-1 = 44
-  
+    const lastGreenIndex = fullGroups * 15 - 1;
     return index <= lastGreenIndex ? "green" : "red";
   };
-  
+
+  useEffect(() => {
+    if (busId) {
+      fetchReservedPassengers();
+    }
+  }, [busId]);
+
+  if (loading) {
+    return <div>Loading your reservations...</div>;
+  }
 
   return (
     <div className="passengers-page">
@@ -113,58 +102,33 @@ const PassengersPage = () => {
             <thead>
               <tr style={{ backgroundColor: "#f5f5f5" }}>
                 <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
-                  Name
-                </th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
-                  Route
-                </th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
-                  Action
-                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Name</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
               </tr>
             </thead>
             <tbody>
               {passengers.map((passenger, idx) => {
-                const rowColor = getRowColor(idx); // Get the color for the row
+                const rowColor = getRowColor(idx);
+
+                // Check if the current seat belongs to the logged-in user
+                const isUserSeat = userSeats.some(seat => seat[0] === idx);
+
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
-                    <td
-                      style={{
-                        padding: "10px",
-                        border: "1px solid #ccc",
-                        textAlign: "center",
-                      }}
-                    >
+                    <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
                       {idx + 1}
                     </td>
 
-                    {/* Display name, route, and action only if the current user is the passenger */}
-                    {userSeats[counter][0] === idx ? (
-                      
+                    {isUserSeat ? (
                       <>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                          }}
-                        >
-                          {passengerName.name}
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                          {userInfo.name}
                         </td>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                          }}
-                        >
-                          {getRouteName(busId)}
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                          {getRouteName()}
                         </td>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                          }}
-                        >
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                           <button
                             className="cancel-button"
                             style={{
@@ -175,44 +139,22 @@ const PassengersPage = () => {
                               borderRadius: "4px",
                               cursor: "pointer",
                             }}
-                            onClick={() =>
-                              handleSeatSellection(passenger._id, idx, passengerName.name)
-                            }
+                            onClick={() => handleSeatSellection(passenger)}
                           >
                             Cancel Seat
                           </button>
                         </td>
                       </>
                     ) : (
-                      // Only show the # for other users and hide the name
                       <>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                          }}
-                        >
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                           {idx + 1}
-                
                         </td>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                          }}
-                        >
-                          <span></span> {/* Hide the name for other users */}
+                        <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
+                          <span></span>
                         </td>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                          }}
-                        >
-                          
-                          <span></span> {/* Hide the action for other users */}
+                        <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
+                          <span></span>
                         </td>
                       </>
                     )}
@@ -232,8 +174,7 @@ const PassengersPage = () => {
           <div className="modal">
             <h3>Cancel Booking</h3>
             <p>
-              Are you sure you want to cancel the seat for{" "}
-              <strong>{passengerName}</strong>?
+              Are you sure you want to cancel the seat?
             </p>
             <div className="modal-actions">
               <button className="confirm" onClick={handleSeatCancel}>
