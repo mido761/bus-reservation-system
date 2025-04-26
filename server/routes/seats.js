@@ -15,9 +15,31 @@ router.get("/:id", async (req, res) => {
         }
 
         const seats = await Seat.find({busId: busId}, {bookedBy:1,route:1,bookedTime:1,checkInStatus:1});
+        let userList = seats.map(seat => seat.bookedBy);
+        // console.log(userList)
         // console.log(seats)
 
-        res.status(200).json({ message: "Current seats:", data: seats }); // ✅
+        if (!Array.isArray(userList)) {
+            return res.status(400).json({ message: "userList must be an array" });
+          }
+      
+          // 2. Get unique user IDs (avoid duplicate fetch)
+          const uniqueUserIds = [...new Set(userList)];
+      
+          // 3. Fetch users from DB
+          const users = await User.find({ _id: { $in: uniqueUserIds } }, {name:1,phoneNumber:1});
+      
+          // 4. Map user ID to user object
+          const userMap = new Map();
+          users.forEach(user => {
+            userMap.set(user._id.toString(), user);
+          });
+      
+          // 5. Reconstruct list to match original order (with duplicates)
+          const orderedUsers = userList.map(id => userMap.get(id.toString()));
+      
+
+        res.status(200).json({ message: "Current seats:", data: {seats,orderedUsers} }); // ✅
     }catch (err) {
         console.error("Error fetching seats:", err);
         res
@@ -27,39 +49,39 @@ router.get("/:id", async (req, res) => {
 })
 
 
-router.post("/user", async (req, res) => {
-  try {
-    const { userList } = req.body;
-    // console.log(userList)
+// router.post("/user", async (req, res) => {
+//   try {
+//     const { userList } = req.body;
+//     // console.log(userList)
 
-    // 1. Validate input
-    if (!Array.isArray(userList)) {
-      return res.status(400).json({ message: "userList must be an array" });
-    }
+//     // 1. Validate input
+//     if (!Array.isArray(userList)) {
+//       return res.status(400).json({ message: "userList must be an array" });
+//     }
 
-    // 2. Get unique user IDs (avoid duplicate fetch)
-    const uniqueUserIds = [...new Set(userList)];
+//     // 2. Get unique user IDs (avoid duplicate fetch)
+//     const uniqueUserIds = [...new Set(userList)];
 
-    // 3. Fetch users from DB
-    const users = await User.find({ _id: { $in: uniqueUserIds } });
+//     // 3. Fetch users from DB
+//     const users = await User.find({ _id: { $in: uniqueUserIds } });
 
-    // 4. Map user ID to user object
-    const userMap = new Map();
-    users.forEach(user => {
-      userMap.set(user._id.toString(), user);
-    });
+//     // 4. Map user ID to user object
+//     const userMap = new Map();
+//     users.forEach(user => {
+//       userMap.set(user._id.toString(), user);
+//     });
 
-    // 5. Reconstruct list to match original order (with duplicates)
-    const orderedUsers = userList.map(id => userMap.get(id.toString()));
+//     // 5. Reconstruct list to match original order (with duplicates)
+//     const orderedUsers = userList.map(id => userMap.get(id.toString()));
 
-    // 6. Return ordered users
-    res.status(200).json({ message: "Users found", data: orderedUsers });
+//     // 6. Return ordered users
+//     res.status(200).json({ message: "Users found", data: orderedUsers });
 
-  } catch (err) {
-    console.error("Error fetching users:", err);
-    res.status(500).json({ message: "Error fetching users", error: err.message });
-  }
-});
+//   } catch (err) {
+//     console.error("Error fetching users:", err);
+//     res.status(500).json({ message: "Error fetching users", error: err.message });
+//   }
+// });
 
 
 

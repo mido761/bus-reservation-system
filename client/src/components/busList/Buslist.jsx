@@ -24,15 +24,16 @@ const BusList = () => {
     try {
       const response = await axios.get(`${backEndUrl}/seats/${busId}`);
       // Defensive check to make sure data is an array
-      setseatList(Array.isArray(response.data.data) ? response.data.data : []);
+      setseatList(Array.isArray(response.data.data.seats) ? response.data.data.seats : []);
+      setPassengers(Array.isArray(response.data.data.orderedUsers) ? response.data.data.orderedUsers : []);
       console.log(seatList)
 
-      let userlist = seatList.map(seat => seat.bookedBy);
+      // let userlist = seatList.map(seat => seat.bookedBy);
       // console.log(userlist)
-      const response1 = await axios.post(`${backEndUrl}/seats/user`, { userList: userlist});
-      console.log(response1.data)
-      setPassengers(Array.isArray(response1.data.data) ? response1.data.data : []);
-      console.log(passengers)
+      // const response1 = await axios.post(`${backEndUrl}/seats/user`, { userList: userlist});
+      // console.log(response1.data)
+      // setPassengers(Array.isArray(response1.data.data) ? response1.data.data : []);
+      // console.log(passengers)
     } catch (error) {
       console.error("Error fetching passengers for bus:", error);
       setseatList([]); // Optional: Clear passengers on error
