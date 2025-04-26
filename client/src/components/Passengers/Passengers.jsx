@@ -25,11 +25,15 @@ const PassengersPage = () => {
       setCurrentUser(userID);
 
       const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, { userId: userID });
+      console.log("seat", response.data.data.userSeat)
+      console.log("route", response.data.data.seatsRoute)
       setUserSeats(response.data.data.userSeat || []);
       setPassengers(response.data.data.seatsRoute || []);
 
       const userProfileResponse = await axios.get(`${backEndUrl}/user/profile/${userID}`);
       setUserInfo(userProfileResponse.data);
+      console.log("profile", userProfileResponse.data)
+
 
       setLoading(false);
     } catch (error) {
@@ -104,8 +108,8 @@ const PassengersPage = () => {
                 const rowColor = getRowColor(idx);
 
                 // Try to find if the current index belongs to the logged-in user
-                const matchedSeat = userSeats.find(seat => seat[0] === idx);
-
+                const matchedSeat = userSeats.find(seat => seat[0] === idx + 1);
+                console.log(matchedSeat)
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
                     <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
@@ -140,7 +144,6 @@ const PassengersPage = () => {
                     ) : (
                       <>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                          {idx + 1}
                         </td>
                         <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
                           <span></span>
