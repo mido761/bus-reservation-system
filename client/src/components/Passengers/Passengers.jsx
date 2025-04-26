@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
-import "./Passengers.css";
+
 const PassengersPage = () => {
   const location = useLocation();
   const { busId } = location.state || {}; // Get the busId from the state passed via navigate
@@ -16,8 +16,8 @@ const PassengersPage = () => {
 
   const fetchReservedPassengers = async () => {
     try {
-      const response = await axios.get(`${backEndUrl}/seats/${busId}`);
-      const seatBookings = response.data.data;
+      const response = await axios.get(`${backEndUrl}/seats/user/${busId}`);
+      const seatBookings = response.data.data.seats;
       setSeatBookings(seatBookings);
 
       // Ids with duplication
@@ -105,10 +105,11 @@ const PassengersPage = () => {
     return index <= lastGreenIndex ? "green" : "red";
   };
   
+
   return (
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
-  
+
       {passengers.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
           <table
@@ -119,25 +120,38 @@ const PassengersPage = () => {
               minWidth: "600px",
             }}
           >
+            <thead>
+              <tr style={{ backgroundColor: "#f5f5f5" }}>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Name
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Route
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Action
+                </th>
+              </tr>
+            </thead>
             <tbody>
               {passengers.map((passenger, idx) => {
-                const rowColor = getRowColor(idx);
-                const isCurrentUser = currentUser === passenger._id;
-  
+                const rowColor = getRowColor(idx); // Get the color for the row
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
-                    {isCurrentUser ? (
+                    <td
+                      style={{
+                        padding: "10px",
+                        border: "1px solid #ccc",
+                        textAlign: "center",
+                      }}
+                    >
+                      {idx + 1}
+                    </td>
+
+                    {/* Display name, route, and action only if the current user is the passenger */}
+                    {currentUser === passenger._id ? (
                       <>
-                        {/* Full info for the current user */}
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                          }}
-                        >
-                          {idx + 1}
-                        </td>
                         <td
                           style={{
                             padding: "10px",
@@ -179,18 +193,33 @@ const PassengersPage = () => {
                         </td>
                       </>
                     ) : (
+                      // Only show the # for other users and hide the name
                       <>
-                        {/* Only show number centered for other users */}
                         <td
-                          colSpan="4" // Merge all columns
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        >
+                          {idx + 1}
+                        </td>
+                        <td
                           style={{
                             padding: "10px",
                             border: "1px solid #ccc",
                             textAlign: "center",
-                            fontWeight: "bold",
                           }}
                         >
-                          {idx + 1}
+                          <span></span> {/* Hide the name for other users */}
+                        </td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                            textAlign: "center",
+                          }}
+                        >
+                          <span></span> {/* Hide the action for other users */}
                         </td>
                       </>
                     )}
@@ -203,7 +232,7 @@ const PassengersPage = () => {
       ) : (
         <p className="no-data">No reserved passengers found.</p>
       )}
-  
+
       {/* Cancel Confirmation Modal */}
       {showCancelOverlay && (
         <div className="modal-overlay">
@@ -225,6 +254,7 @@ const PassengersPage = () => {
         </div>
       )}
     </div>
-  );  
-}
-export default PassengersPage;  
+  );
+};
+
+export default PassengersPage;
