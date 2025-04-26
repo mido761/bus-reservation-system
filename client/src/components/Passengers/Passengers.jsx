@@ -6,7 +6,7 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const PassengersPage = () => {
   const location = useLocation();
-  const { busId } = location.state || {}; // Get the busId from navigate
+  const { busId } = location.state || {};
 
   const [passengers, setPassengers] = useState([]);
   const [userSeats, setUserSeats] = useState([]);
@@ -20,15 +20,13 @@ const PassengersPage = () => {
     try {
       setLoading(true);
 
-      const authResponse = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
+      const authResponse = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
       const userID = authResponse.data.userId;
       setCurrentUser(userID);
 
       const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, { userId: userID });
-      setUserSeats(response.data.data.userSeat);
-      setPassengers(response.data.data.seatsRoute);
+      setUserSeats(response.data.data.userSeat || []);
+      setPassengers(response.data.data.seatsRoute || []);
 
       const userProfileResponse = await axios.get(`${backEndUrl}/user/profile/${userID}`);
       setUserInfo(userProfileResponse.data);
@@ -41,7 +39,7 @@ const PassengersPage = () => {
     }
   };
 
-  const handleSeatCancel = async (passenger) => {
+  const handleSeatCancel = async () => {
     try {
       const cancelResponse = await axios.delete(`${backEndUrl}/formselection/${busId}`, {
         data: { seatId: seatId, userId: currentUser },
@@ -58,15 +56,9 @@ const PassengersPage = () => {
     }
   };
 
-  const handleSeatSellection = (seatIdSelected) => {
+  const handleSeatSelection = (seatIdSelected) => {
     setSeatId(seatIdSelected);
     setShowCancelOverlay(true);
-  };
-
-  const getRouteName = (busId) => {
-    if (busId?.startsWith("DANDY")) return "Dandy";
-    if (busId?.startsWith("RAMSIS")) return "Ramsis";
-    return "Unknown";
   };
 
   const getRowColor = (index) => {
@@ -111,8 +103,8 @@ const PassengersPage = () => {
               {passengers.map((passenger, idx) => {
                 const rowColor = getRowColor(idx);
 
-                // Check if the current seat belongs to the logged-in user
-                const isUserSeat = userSeats.some(seat => seat[0] === idx);
+                // Try to find if the current index belongs to the logged-in user
+                const matchedSeat = userSeats.find(seat => seat[0] === idx);
 
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
@@ -120,13 +112,13 @@ const PassengersPage = () => {
                       {idx + 1}
                     </td>
 
-                    {isUserSeat ? (
+                    {matchedSeat ? (
                       <>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                           {userInfo.name}
                         </td>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                          {getRouteName()}
+                          {matchedSeat[1]}
                         </td>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                           <button
@@ -139,7 +131,7 @@ const PassengersPage = () => {
                               borderRadius: "4px",
                               cursor: "pointer",
                             }}
-                            onClick={() => handleSeatSellection(passenger)}
+                            onClick={() => handleSeatSelection(passenger)}
                           >
                             Cancel Seat
                           </button>
@@ -173,9 +165,7 @@ const PassengersPage = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h3>Cancel Booking</h3>
-            <p>
-              Are you sure you want to cancel the seat?
-            </p>
+            <p>Are you sure you want to cancel the seat?</p>
             <div className="modal-actions">
               <button className="confirm" onClick={handleSeatCancel}>
                 Yes, Cancel
