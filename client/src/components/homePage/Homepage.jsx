@@ -203,8 +203,12 @@ const Homepage = () => {
                   className={`bus-container ${filteredBuses.length > 1 && index === 0 ? "top-margin" : ""}`}
                   onClick={() => handleBusSelect(bus)}
                 >
+                  <button className="top-right-btn"></button>
+                  <div className="list-body">
                   <p>Schedule: {bus.schedule}</p>
                   <p>Time: {convertTo12HourFormat(bus.departureTime)}</p>
+                  </div>
+                  <button>Book a seat</button>
                 </div>
               ))
             ) : (

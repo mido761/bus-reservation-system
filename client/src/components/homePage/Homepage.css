@@ -449,3 +449,7 @@ body {
 }
 
 /* Add more styles for additional destinations as needed */
+.top-right-btn{
+  position: relative;
+  left: 50%;
+}
