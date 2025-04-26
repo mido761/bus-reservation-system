@@ -1,108 +1,51 @@
 .profile-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
-  background-color: #f7f7f7;
-  min-height: 100vh;
+  align-items: center;
+  margin-top: 2rem;
 }
 
-.user-profile-header {
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 320px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
 }
 
-.profile-picture {
-  width: 100px;
-  height: 100px;
+.avatar {
+  width: 80px;
+  height: 80px;
+  background-color: #e0e0e0;
   border-radius: 50%;
-  margin-bottom: 15px;
-  object-fit: cover;
+  margin-bottom: 1rem;
 }
 
-.user-name {
-  font-size: 2rem;
-  color: #333;
-  font-weight: bold;
-}
-
-.user-profile-card {
-  background: linear-gradient(135deg, var(--secondary-hover) 0%, #e7f3f9 70%);
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 600px;
-  margin: 20px;
+.info {
   text-align: center;
-  word-wrap: break-word;
+  margin-bottom: 1rem;
 }
 
-.user-details {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.user-detail {
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
-  color: #555;
-  margin-bottom: 10px;
-}
-
-.user-detail .icon {
-  margin-right: 8px;
-  color: var(--secondary-hover); /* Update icon color to match secondary-hover */
-}
-
-.recent-activity {
-  margin-top: 30px;
-  width: 80%;
-  max-width: 600px;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.recent-activity h3 {
+.info-1 {
+  display: block;
   font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 10px;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
-.recent-activity ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-.recent-activity li {
+.info-2 {
+  display: block;
   font-size: 1rem;
-  color: #555;
-  margin: 5px 0;
+  color: rgb(128, 128, 128);
 }
 
-@media (max-width: 768px) {
-  .user-profile-card {
-    width: 90%;
-  }
-
-  .user-name {
-    font-size: 1.5rem;
-  }
-
-  .user-detail {
-    font-size: 0.9rem;
-  }
-
-  .recent-activity h3 {
-    font-size: 1.2rem;
-  }
+.content-1, .content-2 {
+  width: 100%;
+  margin-top: 1rem;
+}
+.icon {
+  margin-right: 8px;
 }

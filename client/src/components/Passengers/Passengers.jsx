@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
-import "./Passengers.css";
+
 const PassengersPage = () => {
   const location = useLocation();
   const { busId } = location.state || {}; // Get the busId from the state passed via navigate
@@ -16,8 +16,8 @@ const PassengersPage = () => {
 
   const fetchReservedPassengers = async () => {
     try {
-      const response = await axios.get(`${backEndUrl}/seats/${busId}`);
-      const seatBookings = response.data.data;
+      const response = await axios.get(`${backEndUrl}/seats/user/${busId}`);
+      const seatBookings = response.data.data.seats;
       setSeatBookings(seatBookings);
 
       // Ids with duplication
@@ -105,6 +105,7 @@ const PassengersPage = () => {
     return index <= lastGreenIndex ? "green" : "red";
   };
   
+
   return (
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
@@ -225,6 +226,8 @@ const PassengersPage = () => {
         </div>
       )}
     </div>
-  );  
-}
-export default PassengersPage;  
+  );
+  
+};
+
+export default PassengersPage;

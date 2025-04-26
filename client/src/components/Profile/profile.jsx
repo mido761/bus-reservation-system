@@ -42,23 +42,24 @@ const UserProfile = () => {
     };
 
     const fetchUsers = async () => {
+      let busIds = [];
       try {
         const req_user = await axios.get(`${backEndUrl}/auth`, {
           withCredentials: true,
         });
         setUserId(req_user.data.userId);
         const userId = req_user.data.userId;
-
+    
         const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
         setUserDetails(res.data);
         const userDetails = res.data;
-        const busIds = userDetails.bookedBuses.buses;
-
+        busIds = userDetails.bookedBuses.buses;
+    
         const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
           params: { ids: busIds?.length ? busIds.join(",") : [] },
         });
         const buses = response.data;
-
+    
         setBusDetails((prevBuses) =>
           Array.isArray(prevBuses) ? [...prevBuses, ...buses] : [...buses]
         );
@@ -79,6 +80,7 @@ const UserProfile = () => {
         }, 1500);
       }
     };
+    
 
     fetchUserData();
     fetchUsers();
@@ -90,20 +92,26 @@ const UserProfile = () => {
 
   return (
     <div className="profile-container">
-      <div className="user-profile-card">
-        <h1 className="user-name">{userDetails?.name}</h1>
+      <div className="card">
+        {/* Avatar (you can customize it later) */}
+        <label className="avatar"></label>
 
-        <div className="user-details">
-          <div className="user-detail">
-            <FaEnvelope className="icon" /> {userDetails?.email}
-          </div>
-          <div className="user-detail">
-            <FaPhone className="icon" /> {userDetails?.phoneNumber}
-          </div>
+        {/* User Info */}
+        <label className="info">
+          <span className="info-1">{userDetails?.name}</span>
+          <span className="info-2">{userDetails?.email}</span>
+        </label>
+
+        {/* Contact Info */}
+        <div className="content-1">
+          <FaPhone className="icon" /> {userDetails?.phoneNumber}
+        </div>
+
+        {/* Dashboard Section */}
+        <div className="content-2">
+          <Dashboard error={error} busDetails={busDetails} userId={userId} />
         </div>
       </div>
-
-      <Dashboard error={error} busDetails={busDetails} userId={userId} />
     </div>
   );
 };
