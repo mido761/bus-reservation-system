@@ -7,63 +7,53 @@ const PassengersPage = () => {
   const location = useLocation();
   const { busId } = location.state || {}; // Get the busId from the state passed via navigate
   const [passengers, setPassengers] = useState([]);
-  const [seatBookings, setSeatBookings] = useState([]);
-  const [passengerName, setPassengerName] = useState("");
-  const [passengerId, setPassengerId] = useState("");
+  const [SeatBookings, setSeatBookings] = useState([]);
+  const [UserInfo , setUserInfo] = useState();
+  const [userSeats, setuserSeats] = useState([]);
+  const [passengerName, setPassengerName] = useState([]);
+  const [counter , setcounter] = useState(0);
+  // const [passengerId, setPassengerId] = useState("");
   const [seatId, setSeatId] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
   const fetchReservedPassengers = async () => {
     try {
-      const response = await axios.get(`${backEndUrl}/seats/user/${busId}`);
-      const seatBookings = response.data.data.seats;
-      setSeatBookings(seatBookings);
-
-      // Ids with duplication
-      const bookedByIds = seatBookings.map((item) => item.bookedBy);
-
-      // Ids with NO duplication
-      const uniqueIds = [...new Set(bookedByIds)];
-
-      // Names response with no duplications
-      const passengersNamesResponse = await axios.post(
-        `${backEndUrl}/user/profilesNames`,
-        { userIds: uniqueIds }
-      );
-
-      // Users Ids and names
-      const users = passengersNamesResponse.data;
-
-      // Create a map for fast lookup by user ID
-      const userMap = users.reduce((acc, user) => {
-        acc[user._id] = user;
-        return acc;
-      }, {});
-
-      const result = seatBookings.map(
-        (booking) => userMap[booking.bookedBy]
-      );
-      setPassengers(result);
-
-      // Fetch the logged-in user data to filter only their own booking
+      // Fetch logged-in user data
       const authResponse = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
-      setCurrentUser(authResponse.data.userId);
+      
+      const userID = authResponse.data.userId;
+      console.log(userID);
+  
+      // Fetch seats info
+      const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, { userId: userID });
+      const seatBookings = response.data.data.seatsRoute;
+      const userSeat = response.data.data.userSeat;
+  
+      setuserSeats(userSeat);
+      console.log(userSeat); // ✅ log directly
+  
+      setPassengers(seatBookings);
+  
+      // Fetch user profile
+      const passengersNamesResponse = await axios.get(`${backEndUrl}/user/profile/${userID}`);
+      const userinfo = passengersNamesResponse.data;
+      console.log(userinfo);
+  
+      setUserInfo(userinfo); // ✅ save full object
+     
+    // Remove this console.log(UserInfo) because it's too early!
+  
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
       setPassengers([]);
+      setLoading(false);
     }
   };
-
-  const handleSeatSellection = (passengerId, index, passengerName) => {
-    const seatData = seatBookings[index];
-    setShowCancelOverlay(true);
-    setPassengerName(passengerName);
-    setSeatId(seatData._id);
-    setPassengerId(passengerId);
-  };
+  
+  // If you want to see UserInfo after it's set
 
   const handleSeatCancel = async () => {
     try {
@@ -109,7 +99,7 @@ const PassengersPage = () => {
   return (
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
-  
+
       {passengers.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
           <table
@@ -120,32 +110,46 @@ const PassengersPage = () => {
               minWidth: "600px",
             }}
           >
+            <thead>
+              <tr style={{ backgroundColor: "#f5f5f5" }}>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Name
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Route
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Action
+                </th>
+              </tr>
+            </thead>
             <tbody>
               {passengers.map((passenger, idx) => {
-                const rowColor = getRowColor(idx);
-                const isCurrentUser = currentUser === passenger._id;
-  
+                const rowColor = getRowColor(idx); // Get the color for the row
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
-                    {isCurrentUser ? (
+                    <td
+                      style={{
+                        padding: "10px",
+                        border: "1px solid #ccc",
+                        textAlign: "center",
+                      }}
+                    >
+                      {idx + 1}
+                    </td>
+
+                    {/* Display name, route, and action only if the current user is the passenger */}
+                    {userSeats[counter][0] === idx ? (
+                      
                       <>
-                        {/* Full info for the current user */}
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                          }}
-                        >
-                          {idx + 1}
-                        </td>
                         <td
                           style={{
                             padding: "10px",
                             border: "1px solid #ccc",
                           }}
                         >
-                          {passenger.name}
+                          {passengerName.name}
                         </td>
                         <td
                           style={{
@@ -172,7 +176,7 @@ const PassengersPage = () => {
                               cursor: "pointer",
                             }}
                             onClick={() =>
-                              handleSeatSellection(passenger._id, idx, passenger.name)
+                              handleSeatSellection(passenger._id, idx, passengerName.name)
                             }
                           >
                             Cancel Seat
@@ -180,18 +184,35 @@ const PassengersPage = () => {
                         </td>
                       </>
                     ) : (
+                      // Only show the # for other users and hide the name
                       <>
-                        {/* Only show number centered for other users */}
                         <td
-                          colSpan="4" // Merge all columns
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                          }}
+                        >
+                          {idx + 1}
+                
+                        </td>
+                        <td
                           style={{
                             padding: "10px",
                             border: "1px solid #ccc",
                             textAlign: "center",
-                            fontWeight: "bold",
                           }}
                         >
-                          {idx + 1}
+                          <span></span> {/* Hide the name for other users */}
+                        </td>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                            textAlign: "center",
+                          }}
+                        >
+                          
+                          <span></span> {/* Hide the action for other users */}
                         </td>
                       </>
                     )}
@@ -204,7 +225,7 @@ const PassengersPage = () => {
       ) : (
         <p className="no-data">No reserved passengers found.</p>
       )}
-  
+
       {/* Cancel Confirmation Modal */}
       {showCancelOverlay && (
         <div className="modal-overlay">
@@ -227,7 +248,6 @@ const PassengersPage = () => {
       )}
     </div>
   );
-  
 };
 
 export default PassengersPage;
