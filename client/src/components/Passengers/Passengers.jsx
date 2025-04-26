@@ -41,7 +41,7 @@ const PassengersPage = () => {
     }
   };
 
-  const handleSeatCancel = async (seatId) => {
+  const handleSeatCancel = async (passenger) => {
     try {
       const cancelResponse = await axios.delete(`${backEndUrl}/formselection/${busId}`, {
         data: { seatId: seatId, userId: currentUser },
