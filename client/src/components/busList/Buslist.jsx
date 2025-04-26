@@ -84,11 +84,13 @@ const BusList = () => {
     return `${minutes} minutes ago`;
   };
 
-  const handleCancelBooking = async (busId, passengerId) => {
+  const handleCancelBooking = async (busId, userId,seatId) => {
     try {
+      console.log(userId)
       // Assuming there's an API endpoint for canceling a passenger's booking on a bus
-      await axios.delete(`${backEndUrl}/formselection/`, { busId, passengerId });
-      setPassengers((prevList) => prevList.filter((passenger) => passenger._id !== passengerId)); // Remove passenger from the list
+      await axios.delete(`${backEndUrl}/formselection/${busId}`, 
+       {data: { seatId: seatId, userId:userId }});
+      setPassengers((prevList) => prevList.filter((passenger) => passenger._id !== userId)); // Remove passenger from the list
     } catch (error) {
       console.error("Error canceling passenger booking:", error);
     }
@@ -201,7 +203,7 @@ const BusList = () => {
                                         borderRadius: "4px",
                                         cursor: "pointer",
                                       }}
-                                      onClick={() => handleCancelBooking(bus._id, passenger._id)}
+                                      onClick={() => handleCancelBooking(bus._id, passenger._id, seat._id)}
                                     >
                                       Cancel
                                     </button>
