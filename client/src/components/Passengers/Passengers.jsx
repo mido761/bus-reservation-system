@@ -124,7 +124,7 @@ const PassengersPage = () => {
                     {matchedSeat ? (
                       <>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                          {passenger}
+                          {userInfo.name}
                         </td>
                         <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                           {matchedSeat[1]}
