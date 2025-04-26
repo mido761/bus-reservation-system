@@ -2,26 +2,37 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
+  padding: 3rem 1rem;
+  min-height: 100vh;
+  background: #f6f9fc;
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  width: 320px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
+  animation: fadeIn 0.6s ease-in-out;
 }
 
 .avatar {
-  width: 80px;
-  height: 80px;
-  background-color: #e0e0e0;
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
   border-radius: 50%;
-  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
 }
 
 .info {
@@ -31,21 +42,41 @@
 
 .info-1 {
   display: block;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
 }
 
 .info-2 {
   display: block;
   font-size: 1rem;
-  color: rgb(128, 128, 128);
+  color: #6b7280;
 }
 
-.content-1, .content-2 {
+.content-1 {
   width: 100%;
+  background: #f3f4f6;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
   margin-top: 1rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.content-2 {
+  width: 100%;
+  margin-top: 2rem;
+}
+
 .icon {
   margin-right: 8px;
+  color: #4f46e5;
+}
+
+/* Fade in Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
 }
