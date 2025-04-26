@@ -7,6 +7,7 @@ const BusList = () => {
   const [busList, setBusList] = useState([]);
   const [selectedBusId, setSelectedBusId] = useState(null);
   const [passengers, setPassengers] = useState([]);
+  const [seatList, setseatList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchBusList = async () => {
@@ -22,13 +23,20 @@ const BusList = () => {
   const fetchPassengersForBus = async (busId) => {
     try {
       const response = await axios.get(`${backEndUrl}/seats/${busId}`);
-      
       // Defensive check to make sure data is an array
-      setPassengers(Array.isArray(response.data.data) ? response.data.data : []);
-      console.log(passengers)
+      setseatList(Array.isArray(response.data.data.seats) ? response.data.data.seats : []);
+      setPassengers(Array.isArray(response.data.data.orderedUsers) ? response.data.data.orderedUsers : []);
+      console.log(seatList)
+
+      // let userlist = seatList.map(seat => seat.bookedBy);
+      // console.log(userlist)
+      // const response1 = await axios.post(`${backEndUrl}/seats/user`, { userList: userlist});
+      // console.log(response1.data)
+      // setPassengers(Array.isArray(response1.data.data) ? response1.data.data : []);
+      // console.log(passengers)
     } catch (error) {
       console.error("Error fetching passengers for bus:", error);
-      setPassengers([]); // Optional: Clear passengers on error
+      setseatList([]); // Optional: Clear passengers on error
     }
   };
 
@@ -156,55 +164,51 @@ const BusList = () => {
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>User Name</th>
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Phone Number</th>
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
-                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>Departure Time</th>
+                              {/* <th style={{ padding: "10px", border: "1px solid #ccc" }}>Departure Time</th> */}
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Reserved Time</th> {/* New column */}
                               <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {filteredPassengers.map((passenger, idx) => (
-                              <tr key={passenger._id}>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {idx + 1}
-                                </td>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {passenger.bookedBy}
-                                </td>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {passenger.phoneNumber}
-                                </td>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {passenger.route}
-                                </td>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {passenger.bookedTime}
-                                </td>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {/* Display calculated reserved time */}
-                                  {calculateTimeDifference(passenger.reservedTime)}
-                                </td>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  {/* Display calculated reserved time */}
-                                  {calculateTimeDifference(passenger.reservedTime)}
-                                </td>
-                                <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                  <button
-                                    className="cancel-button"
-                                    style={{
-                                      padding: "6px 12px",
-                                      backgroundColor: "#e74c3c",
-                                      color: "#fff",
-                                      border: "none",
-                                      borderRadius: "4px",
-                                      cursor: "pointer",
-                                    }}
-                                    onClick={() => handleCancelBooking(bus._id, passenger._id)}
-                                  >
-                                    Cancel
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
+                          {filteredPassengers.map((passenger, idx) => {
+                              const seat = seatList[idx]; // get corresponding seat
+
+                              return (
+                                <tr key={passenger._id}>
+                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                    {idx + 1}
+                                  </td>
+                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                    {passenger.name}
+                                  </td>
+                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                    {passenger.phoneNumber}
+                                  </td>
+                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                    {seat?.route}
+                                  </td>
+                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                    {calculateTimeDifference(seat?.bookedTime)}
+                                  </td>
+                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                    <button
+                                      className="cancel-button"
+                                      style={{
+                                        padding: "6px 12px",
+                                        backgroundColor: "#e74c3c",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: "4px",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() => handleCancelBooking(bus._id, passenger._id)}
+                                    >
+                                      Cancel
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>
