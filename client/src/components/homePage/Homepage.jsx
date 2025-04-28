@@ -55,10 +55,8 @@ const Homepage = () => {
   }, []);
 
   const popularRoutes = [
-    { id: 1, route: "Abaseya to E-JUST" },
-    { id: 2, route: "Dandy to E-JUST" },
-    { id: 3, route: "E-JUST to Ramses" },
-    { id: 4, route: "E-JUST to Dandy" },
+    { id: 1, route: "Cairo to   E-JUST" },
+    { id: 3, route: "E-JUST to  Cairo" },
   ];
 
   const handleBusSelect = (bus) => {
@@ -161,14 +159,10 @@ const Homepage = () => {
           <select onChange={(e) => setPickupPoint(e.target.value)} value={pickupPoint}>
             <option value="">Pickup Point</option>
             <option value="E-JUST">E-JUST</option>
-            <option value="Abaseya">Abaseya</option>
-            <option value="Dandy">Dandy</option>
           </select>
           <select onChange={(e) => setArrivalPoint(e.target.value)} value={arrivalPoint}>
             <option value="">Arrival Point</option>
-            <option value="E-JUST">E-JUST</option>
-            <option value="Ramses">Ramses</option>
-            <option value="Dandy">Dandy</option>
+            <option value="E-JUST">Cairo</option>
           </select>
           <input type="date" onChange={(e) => setDate(e.target.value)} value={date} />
           <button className="search-btn" onClick={handleSearch}>Search</button>
@@ -246,36 +240,39 @@ const Homepage = () => {
       )}
 
       {/* Booking Confirmation Modal */}
-      {showBookingConfirm && selectedBus && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Confirm Booking</h3>
-            <div className="destination-selector">
-              <div className="button-group">
-                <button
-                  className={`destination-btn ${destination === 'Dandy' ? 'selected' : ''}`}
-                  onClick={() => setDestination('Dandy')}
-                >
-                  Dandy
-                </button>
-                <button
-                  className={`destination-btn ${destination === 'Ramses' ? 'selected' : ''}`}
-                  onClick={() => setDestination('Ramses')}
-                >
-                  Ramses
-                </button>
-              </div>
-            </div>
-
-            {destination ? (
-              <button onClick={handleBookSeatConfirm}>Confirm</button>
-            ) : (
-              <p style={{ color: "red", marginTop: "10px" }}>Please select a destination</p>
-            )}
-            <button onClick={() => setShowBookingConfirm(false)}>Cancel</button>
-          </div>
+{showBookingConfirm && selectedBus && (
+  <div className="modal-overlay">
+    <div className="modal">
+      <h3>Confirm Booking</h3>
+      <div className="destination-selector">
+        <div className="button-group">
+          <button
+            className={`destination-btn ${destination === 'Dandy' ? 'selected' : ''}`}
+            onClick={() => setDestination('Dandy')}
+          >
+            {destination === 'Dandy' && <span style={{ marginRight: "5px" }}>✅</span>}
+            Dandy
+          </button>
+          <button
+            className={`destination-btn ${destination === 'Ramses' ? 'selected' : ''}`}
+            onClick={() => setDestination('Ramses')}
+          >
+            {destination === 'Ramses' && <span style={{ marginRight: "5px" }}>✅</span>}
+            Ramses
+          </button>
         </div>
+      </div>
+
+      {destination ? (
+        <button onClick={handleBookSeatConfirm}>Confirm</button>
+      ) : (
+        <p style={{ color: "red", marginTop: "10px" }}>Please select a destination</p>
       )}
+      <button onClick={() => setShowBookingConfirm(false)}>Cancel</button>
+    </div>
+  </div>
+)}
+
 
       {/* Reserved Passenger List Modal */}
       {showReservedPassengerList && selectedBus && (

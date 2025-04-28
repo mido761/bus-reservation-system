@@ -55,14 +55,21 @@ const BusList = () => {
     setSearchQuery(e.target.value);
   };
 
-  // Filter passengers based on search query
-  const filteredPassengers = passengers.filter((passenger) => {
+  const filteredPassengers = passengers.filter((passenger, idx) => {
     const query = searchQuery.toLowerCase();
-    return (
-      (passenger.name?.toLowerCase() || "").includes(query) ||
-      (passenger.phoneNumber?.toLowerCase() || "").includes(query) ||
-      (passenger.departureTime?.toLowerCase() || "").includes(query)
-    );
+  
+    // Extract and prepare fields for comparison, making sure they are strings
+    const userName = (passenger.name || "").toLowerCase();
+    const phoneNumber = (String(passenger.phoneNumber) || "").toLowerCase(); // Ensure phoneNumber is treated as a string
+    const route = (seatList[idx]?.route || "").toLowerCase(); // Fetch route from seatList, default to empty string if undefined
+  
+    // Check if any of the fields match the search query
+    const matchesUserName = userName.includes(query);
+    const matchesPhoneNumber = phoneNumber.includes(query);
+    const matchesRoute = route.includes(query);
+  
+    // Return true if any of the conditions are true (OR logic)
+    return matchesUserName || matchesPhoneNumber || matchesRoute;
   });
 
   // Calculate time difference
@@ -93,61 +100,82 @@ const BusList = () => {
       console.error("Error canceling passenger booking:", error);
     }
   };
-
+  const formatTo12Hour = (timeString) => {
+    const date = new Date(timeString);
+    if (isNaN(date)) return timeString; // if invalid date, return original
+  
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+  
+    hours = hours % 12 || 12; // convert 0 (midnight) to 12
+    minutes = minutes.toString().padStart(2, '0'); // ensure 2 digits
+  
+    return `${hours}:${minutes} ${ampm}`;
+  };
+  
   return (
-    <div className="bus-list-page">
-      <h2 className="title">Bus List</h2>
-
-      {/* Bus selection section */}
+    <div className="bus-list-page" style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <h2 className="title" style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}>
+      </h2>
+  
       <div className="bus-selection">
-        <h3>Select a Bus</h3>
-        <ul>
+        <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
+        <ul style={{ listStyle: "none", padding: 0 }}>
           {busList.map((bus) => (
-            <li key={bus._id}>
+            <li key={bus._id} style={{ marginBottom: "20px" }}>
               <button
                 onClick={() => handleBusSelect(bus._id)}
                 style={{
-                  padding: "10px",
-                  backgroundColor: "#3498db",
+                  padding: "12px 20px",
+                  backgroundColor: selectedBusId === bus._id ? "#2ecc71" : "#3498db",
                   color: "#fff",
                   border: "none",
                   cursor: "pointer",
                   width: "100%",
                   textAlign: "left",
-                  marginBottom: "10px",
-                  borderRadius: "5px",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  transition: "background-color 0.3s",
                 }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#2980b9")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = selectedBusId === bus._id ? "#2ecc71" : "#3498db")}
               >
-                {bus.departureTime}
+                {formatTo12Hour(bus.departureTime)} — {bus.busNumber}
               </button>
-
-              {/* Toggle the display of passengers and search/filter section */}
+  
               {selectedBusId === bus._id && (
-                <div className="bus-details-dropdown">
-                  {/* Search bar for filtering passengers */}
-                  <div className="search-bar">
+                <div
+                  className="bus-details-dropdown"
+                  style={{
+                    backgroundColor: "#f9f9f9",
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    marginTop: "10px",
+                    padding: "20px",
+                    animation: "fadeIn 0.5s",
+                  }}
+                >
+                  <div className="search-bar" style={{ marginBottom: "15px" }}>
                     <input
                       type="text"
                       placeholder="Search by username, phone, or departure time"
                       value={searchQuery}
                       onChange={handleSearchChange}
                       style={{
-                        padding: "8px",
+                        padding: "10px",
                         width: "100%",
-                        marginBottom: "10px",
-                        borderRadius: "4px",
+                        borderRadius: "6px",
                         border: "1px solid #ccc",
                       }}
                     />
                   </div>
-
-                  {/* If a bus is selected, show passengers */}
+  
                   <div className="passenger-table">
-                    <h3>
-                      Reserved Passengers for Bus {bus.busNumber} at {bus.departureTime}
+                    <h3 style={{ fontSize: "20px", marginBottom: "15px" }}>
+                      Reserved Passengers for Bus {bus.busNumber} at {formatTo12Hour(bus.departureTime)}
                     </h3>
-
-                    {/* Check if filtered passengers is an array and has data */}
+  
                     {Array.isArray(filteredPassengers) && filteredPassengers.length > 0 ? (
                       <div className="table-container" style={{ overflowX: "auto" }}>
                         <table
@@ -155,52 +183,44 @@ const BusList = () => {
                           style={{
                             width: "100%",
                             borderCollapse: "collapse",
-                            minWidth: "600px",
+                            fontSize: "16px",
+                            minWidth: "700px",
                           }}
                         >
                           <thead>
-                            <tr style={{ backgroundColor: "#f5f5f5" }}>
-                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
-                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>User Name</th>
-                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>Phone Number</th>
-                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
-                              {/* <th style={{ padding: "10px", border: "1px solid #ccc" }}>Departure Time</th> */}
-                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>Reserved Time</th> {/* New column */}
-                              <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
+                            <tr style={{ backgroundColor: "#f0f0f0", textAlign: "left" }}>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>#</th>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>User Name</th>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>Phone Number</th>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>Route</th>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>Reserved Time</th>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #ddd" }}>Action</th>
                             </tr>
                           </thead>
                           <tbody>
-                          {filteredPassengers.map((passenger, idx) => {
-                              const seat = seatList[idx]; // get corresponding seat
-
+                            {filteredPassengers.map((passenger, idx) => {
+                              const seat = seatList[idx];
                               return (
-                                <tr key={passenger._id}>
-                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                    {idx + 1}
-                                  </td>
-                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                    {passenger.name}
-                                  </td>
-                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                    {passenger.phoneNumber}
-                                  </td>
-                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                    {seat?.route}
-                                  </td>
-                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                                    {calculateTimeDifference(seat?.bookedTime)}
-                                  </td>
-                                  <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                                <tr key={passenger._id} style={{ backgroundColor: idx % 2 === 0 ? "#fff" : "#f9f9f9" }}>
+                                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{idx + 1}</td>
+                                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{passenger.name}</td>
+                                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{passenger.phoneNumber}</td>
+                                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{seat?.route}</td>
+                                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{calculateTimeDifference(seat?.bookedTime)}</td>
+                                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
                                     <button
                                       className="cancel-button"
                                       style={{
-                                        padding: "6px 12px",
+                                        padding: "8px 14px",
                                         backgroundColor: "#e74c3c",
                                         color: "#fff",
                                         border: "none",
-                                        borderRadius: "4px",
+                                        borderRadius: "6px",
                                         cursor: "pointer",
+                                        transition: "background-color 0.3s",
                                       }}
+                                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#c0392b")}
+                                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#e74c3c")}
                                       onClick={() => handleCancelBooking(bus._id, passenger._id)}
                                     >
                                       Cancel
@@ -213,7 +233,9 @@ const BusList = () => {
                         </table>
                       </div>
                     ) : (
-                      <p className="no-data">No passengers found matching your search.</p>
+                      <p className="no-data" style={{ marginTop: "20px", color: "#999" }}>
+                        No passengers found matching your search.
+                      </p>
                     )}
                   </div>
                 </div>
@@ -224,6 +246,5 @@ const BusList = () => {
       </div>
     </div>
   );
-};
-
-export default BusList;
+}
+export default BusList;  

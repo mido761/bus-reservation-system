@@ -568,4 +568,125 @@ input {
     padding: 8px;
   }
 }
-/* Responsive Design for Mobile Devices */
+.bus-select-button {
+  padding: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.search-input {
+  padding: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.cancel-button {
+  padding: 6px 12px;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.bus-list-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.passenger-table-content {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.passenger-table-content th,
+.passenger-table-content td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.passenger-table {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.passenger-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.passenger-table th {
+  position: sticky;
+  top: 0;
+  background: #3498db;
+  color: white;
+  z-index: 1;
+}
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+}
+
+.search-bar input {
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.search-bar input::placeholder {
+  color: #aaa;
+}
+
+.bus-details-dropdown {
+  background-color: #fefefe;
+  padding: 20px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+body {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  background-color: #f5f7fa;
+  color: #444;
+}
+
+h2, h3 {
+  font-weight: 600;
+  color: #222;
+}
+.cancel-button:hover {
+  background-color: #c0392b;
+}
