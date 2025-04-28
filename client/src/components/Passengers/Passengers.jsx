@@ -1,83 +1,62 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const PassengersPage = () => {
   const location = useLocation();
-  const { busId } = location.state || {}; // Get the busId from the state passed via navigate
+  const { busId } = location.state || {};
+
   const [passengers, setPassengers] = useState([]);
-  const [seatBookings, setSeatBookings] = useState([]);
-  const [passengerName, setPassengerName] = useState("");
-  const [passengerId, setPassengerId] = useState("");
+  const [userSeats, setUserSeats] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
   const [seatId, setSeatId] = useState("");
+  const [seatIndex, setSeatIndex] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchReservedPassengers = async () => {
     try {
-      const response = await axios.get(`${backEndUrl}/seats/user/${busId}`);
-      const seatBookings = response.data.data.seats;
-      setSeatBookings(seatBookings);
+      setLoading(true);
 
-      // Ids with duplication
-      const bookedByIds = seatBookings.map((item) => item.bookedBy);
+      const authResponse = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
+      const userID = authResponse.data.userId;
+      setCurrentUser(userID);
 
-      // Ids with NO duplication
-      const uniqueIds = [...new Set(bookedByIds)];
+      const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, { userId: userID });
+      console.log("seat", response.data.data.userSeat)
+      console.log("route", response.data.data.seatsRoute)
+      setUserSeats(response.data.data.userSeat || []);
+      setPassengers(response.data.data.seatsRoute || []);
 
-      // Names response with no duplications
-      const passengersNamesResponse = await axios.post(
-        `${backEndUrl}/user/profilesNames`,
-        { userIds: uniqueIds }
-      );
+      const userProfileResponse = await axios.get(`${backEndUrl}/user/profile/${userID}`);
+      setUserInfo(userProfileResponse.data);
+      console.log("profile", userProfileResponse.data)
 
-      // Users Ids and names
-      const users = passengersNamesResponse.data;
 
-      // Create a map for fast lookup by user ID
-      const userMap = users.reduce((acc, user) => {
-        acc[user._id] = user;
-        return acc;
-      }, {});
-
-      const result = seatBookings.map(
-        (booking) => userMap[booking.bookedBy]
-      );
-      setPassengers(result);
-
-      // Fetch the logged-in user data to filter only their own booking
-      const authResponse = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
-      setCurrentUser(authResponse.data.userId);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
       setPassengers([]);
+      setLoading(false);
     }
-  };
-
-  const handleSeatSellection = (passengerId, index, passengerName) => {
-    const seatData = seatBookings[index];
-    setShowCancelOverlay(true);
-    setPassengerName(passengerName);
-    setSeatId(seatData._id);
-    setPassengerId(passengerId);
   };
 
   const handleSeatCancel = async () => {
     try {
-      const cancelResponse = await axios.delete(
-        `${backEndUrl}/formselection/${busId}`,
-        { data: { seatId: seatId, userId: currentUser } }
-      );
+      const cancelResponse = await axios.delete(`${backEndUrl}/formselection/${busId}`, {
+        data: { seatId: seatId, userId: currentUser },
+      });
 
       if (cancelResponse.status === 200) {
-        fetchReservedPassengers();
+        // fetchReservedPassengers();
+        setPassengers((prevList) =>
+          prevList.filter((passenger, idx) => idx !== seatIndex)
+        ); // Remove passenger from the list
         setShowCancelOverlay(false);
-        setPassengerName("");
         setSeatId("");
-        setPassengerId("");
       }
     } catch (error) {
       console.error("Error cancelling the seat", error);
@@ -85,26 +64,27 @@ const PassengersPage = () => {
     }
   };
 
-  // Fetch reserved passengers data when the component mounts
+  const handleSeatSelection = (seatIdSelected, index) => {
+    setSeatId(seatIdSelected);
+    setSeatIndex(index)
+    setShowCancelOverlay(true);
+  };
+
+  const getRowColor = (index) => {
+    const fullGroups = Math.floor(passengers.length / 15);
+    const lastGreenIndex = fullGroups * 15 - 1;
+    return index <= lastGreenIndex ? "green" : "red";
+  };
+
   useEffect(() => {
     if (busId) {
       fetchReservedPassengers();
     }
   }, [busId]);
 
-  const getRouteName = (busId) => {
-    if (busId?.startsWith("DANDY")) return "Dandy";
-    if (busId?.startsWith("RAMSIS")) return "Ramsis";
-    return "Unknown";
-  };
-
-  const getRowColor = (index) => {
-    const fullGroups = Math.floor(passengers.length / 15);
-    const lastGreenIndex = fullGroups * 15 - 1; // e.g., for 52 → 3*15-1 = 44
-  
-    return index <= lastGreenIndex ? "green" : "red";
-  };
-  
+  if (loading) {
+    return <div>Loading your reservations...</div>;
+  }
 
   return (
     <div className="passengers-page">
@@ -120,47 +100,33 @@ const PassengersPage = () => {
               minWidth: "600px",
             }}
           >
+            <thead>
+              <tr style={{ backgroundColor: "#f5f5f5" }}>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Name</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
+              </tr>
+            </thead>
             <tbody>
               {passengers.map((passenger, idx) => {
                 const rowColor = getRowColor(idx);
-                const isCurrentUser = currentUser === passenger._id;
   
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
-                    {isCurrentUser ? (
-                      <>
-                        {/* Full info for the current user */}
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                          }}
-                        >
+                    <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
                           {idx + 1}
                         </td>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                          }}
-                        >
-                          {passenger.name}
+
+                    {matchedSeat ? (
+                      <>
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                          {userInfo.name}
                         </td>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                          }}
-                        >
-                          {getRouteName(busId)}
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                          {matchedSeat[1]}
                         </td>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                          }}
-                        >
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
                           <button
                             className="cancel-button"
                             style={{
@@ -171,9 +137,7 @@ const PassengersPage = () => {
                               borderRadius: "4px",
                               cursor: "pointer",
                             }}
-                            onClick={() =>
-                              handleSeatSellection(passenger._id, idx, passenger.name)
-                            }
+                            onClick={() => handleSeatSelection(passenger, idx)}
                           >
                             Cancel Seat
                           </button>
@@ -181,17 +145,13 @@ const PassengersPage = () => {
                       </>
                     ) : (
                       <>
-                        {/* Only show number centered for other users */}
-                        <td
-                          colSpan="4" // Merge all columns
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          {idx + 1}
+                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                        </td>
+                        <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
+                          <span></span>
+                        </td>
+                        <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
+                          <span></span>
                         </td>
                       </>
                     )}
@@ -210,10 +170,7 @@ const PassengersPage = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h3>Cancel Booking</h3>
-            <p>
-              Are you sure you want to cancel the seat for{" "}
-              <strong>{passengerName}</strong>?
-            </p>
+            <p>Are you sure you want to cancel the seat?</p>
             <div className="modal-actions">
               <button className="confirm" onClick={handleSeatCancel}>
                 Yes, Cancel
@@ -227,7 +184,6 @@ const PassengersPage = () => {
       )}
     </div>
   );
-  
 };
 
 export default PassengersPage;
