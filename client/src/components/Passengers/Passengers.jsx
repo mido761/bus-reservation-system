@@ -89,7 +89,7 @@ const PassengersPage = () => {
   return (
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
-  
+
       {passengers.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
           <table
@@ -111,12 +111,15 @@ const PassengersPage = () => {
             <tbody>
               {passengers.map((passenger, idx) => {
                 const rowColor = getRowColor(idx);
-  
+
+                // Try to find if the current index belongs to the logged-in user
+                const matchedSeat = userSeats.find(seat => seat[0] === idx + 1);
+                console.log(matchedSeat)
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
                     <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
-                          {idx + 1}
-                        </td>
+                      {idx + 1}
+                    </td>
 
                     {matchedSeat ? (
                       <>
@@ -164,7 +167,7 @@ const PassengersPage = () => {
       ) : (
         <p className="no-data">No reserved passengers found.</p>
       )}
-  
+
       {/* Cancel Confirmation Modal */}
       {showCancelOverlay && (
         <div className="modal-overlay">
