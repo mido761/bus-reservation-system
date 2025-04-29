@@ -15,17 +15,17 @@ import Homepage from "./components/homePage/Homepage.jsx";
 import SeatSelection from "./components/seatSelection/SeatSelection.jsx";
 import Payment from "./components/payment/Payment.jsx";
 import PaymentSuccess from "./components/paymentSuccess/PaymentSuccess.jsx";
-import TicketSummary from "./components/ticketSummary/TicketSummary.jsx"; 
+import TicketSummary from "./components/ticketSummary/TicketSummary.jsx";
 import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
-import EditBus from "./components/editBus/editBus.jsx"
-import Passengers from './components/Passengers/Passengers';
+import EditBus from "./components/editBus/editBus.jsx";
+import Passengers from "./components/Passengers/Passengers";
 function App() {
   return (
     <HashRouter basename="/">
       <Routes>
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
 
@@ -40,8 +40,16 @@ function App() {
             </Auth>
           }
         />
-        
-        <Route path="/passengers" element={<Passengers />} />
+
+        <Route
+          path="/passengers"
+          element={
+            <Auth>
+              <Navbar />
+              <Passengers />
+            </Auth>
+          }
+        />
         <Route
           path="/seat-selection/:busId"
           element={
@@ -108,14 +116,14 @@ function App() {
           }
         />
         <Route
-        path= "/edit-bus/:busId"
-        element={    
+          path="/edit-bus/:busId"
+          element={
             <Auth requireAdmin={true}>
               <Navbar />
               <EditBus />
               <Footer />
             </Auth>
-        }
+          }
         />
 
         <Route
@@ -124,7 +132,7 @@ function App() {
             <Auth>
               <Navbar />
               <Profile />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />

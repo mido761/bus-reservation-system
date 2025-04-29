@@ -2,6 +2,9 @@ const express = require("express");
 const User = require("../models/user");
 const router = express.Router();
 const Bus = require("../models/busModel");
+const BusForm = require("../models/busForm");
+// const Bus = require("../models/busModel");
+const Seat = require("../models/seat");
 const middleware = require("../controllers/middleware");
 const { default: mongoose } = require("mongoose");
 const { route } = require("./busRoutes");
@@ -63,11 +66,12 @@ router.get("/profile/:userId", async (req, res) => {
   }
 });
 
-
-
 router.post("/profiles", async (req, res) => {
   const { userIds } = req.body;
-  const users = await User.find({ _id: { $in: userIds } }, "name phoneNumber bookedBuses.seats checkInStatus bookedTime"); // Fetch all users at once
+  const users = await User.find(
+    { _id: { $in: userIds } },
+    "name phoneNumber bookedBuses.seats checkInStatus bookedTime"
+  ); // Fetch all users at once
   res.json(users);
 });
 
@@ -77,8 +81,7 @@ router.post("/profilesNames", async (req, res) => {
   res.json(users);
 });
 
-
-// get a specific bus
+// get a specific bus for seat-based buses
 router.get("/bus/:id", async (req, res) => {
   try {
     const users = await User.find({ _id: req.params.id });
@@ -92,6 +95,32 @@ router.get("/bus/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+// get a specific bus for form-based buses
+router.get("/form-based-bus/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({message: "Not a valid user ID!"})
+    }
+    const userId = new mongoose.Types.ObjectId(req.params.id);
+    const seats = await Seat.find({ bookedBy: userId }, { busId: 1 }); // get all seats for that user
+
+    // make sure the user have seats
+    if (seats.length === 0) {
+      return res.status(404).json({ message: "No seats found for this user." });
+    }
+
+    const uniqueBusesArr = [
+      ...new Set(seats.map((seat) => seat.busId.toString())),
+    ]; // make an array of the user buses
+    const busesObjects = await BusForm.find({_id: {$in: uniqueBusesArr.map(id => new mongoose.Types.ObjectId(id))}}) // get the busDetails for each user
+
+    return res.status(200).json(busesObjects);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 
 router.delete("/bus/:id", async (req, res) => {
   try {
@@ -117,7 +146,7 @@ router.put("/check-in/:userId", async (req, res) => {
 
     res.json({ message: "User checked in successfully", user });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -132,7 +161,7 @@ router.put("/check-out/:userId", async (req, res) => {
 
     res.json({ message: "User checked in successfully", user });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -140,7 +169,7 @@ router.put("/check-out/:userId", async (req, res) => {
 router.put("/edit-gender/:userId", async (req, res) => {
   try {
     const { gender } = req.body; // ✅ Extract gender
-    console.log(gender)
+    console.log(gender);
 
     if (!gender) return res.status(400).json({ error: "Gender is required" });
 
@@ -156,6 +185,5 @@ router.put("/edit-gender/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 module.exports = router;

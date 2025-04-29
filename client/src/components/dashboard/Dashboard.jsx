@@ -8,8 +8,14 @@ import LoadingPage from "../loadingPage/loadingPage";
 const Dashboard = ({ busDetails, error, userId }) => {
   const navigate = useNavigate();
 
+  // only for seat-based buses
+  // const handleBusSelect = (bus) => {
+  //   navigate(`/seat-selection/${bus._id}`);
+  // };
+
+  // For form-based buses
   const handleBusSelect = (bus) => {
-    navigate(`/seat-selection/${bus._id}`);
+    navigate("/passengers", { state: { busId: bus._id, userId } });
   };
 
   const convertTo12HourFormat = (time) => {
@@ -27,22 +33,30 @@ const Dashboard = ({ busDetails, error, userId }) => {
       <h2 className="dashboard-title">Your Reserved Buses</h2>
       <div className="dashboard-grid">
         {busDetails && busDetails.length > 0 ? (
-          busDetails.map((bus, index) => (
-            bus !== null && (
-              <div className="dashboard-card" key={index} onClick={() => handleBusSelect(bus)}>
-                <h3 className="bus-number">{bus.busNumber}</h3>
-                <p>{bus.location.pickupLocation} → {bus.location.arrivalLocation}</p>
-                <p>Date: {bus.schedule}</p>
-                <p>Departure: {convertTo12HourFormat(bus.time.departureTime)}</p>
-                <p>Your Seat(s): {
+          busDetails.map(
+            (bus, index) =>
+              bus !== null && (
+                <div
+                  className="dashboard-card"
+                  key={index}
+                  onClick={() => handleBusSelect(bus)}
+                >
+                  {/* <h3 className="bus-number">{bus.busNumber}</h3> */}
+                  <p>
+                    {bus.location.pickupLocation} →{" "}
+                    {bus.location.arrivalLocation}
+                  </p>
+                  <p>Date: {bus.schedule}</p>
+                  <p>Departure: {convertTo12HourFormat(bus.departureTime)}</p>
+                  {/* <p>Your Seat(s): {
                   bus.seats.bookedSeats
                     .map((seat, index) => seat === userId ? index : null)
                     .filter(index => index !== null)
                     .join(", ") || "None"
-                }</p>
-              </div>
-            )
-          ))
+                }</p> */}
+                </div>
+              )
+          )
         ) : (
           <p className="no-buses">No buses found.</p>
         )}

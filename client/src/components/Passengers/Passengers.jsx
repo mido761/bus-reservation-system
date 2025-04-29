@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import "./Passengers.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -21,20 +22,25 @@ const PassengersPage = () => {
     try {
       setLoading(true);
 
-      const authResponse = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
+      const authResponse = await axios.get(`${backEndUrl}/auth`, {
+        withCredentials: true,
+      });
       const userID = authResponse.data.userId;
       setCurrentUser(userID);
 
-      const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, { userId: userID });
-      console.log("seat", response.data.data.userSeat)
-      console.log("route", response.data.data.seatsRoute)
+      const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, {
+        userId: userID,
+      });
+      console.log("seat", response.data.data.userSeat);
+      console.log("route", response.data.data.seatsRoute);
       setUserSeats(response.data.data.userSeat || []);
       setPassengers(response.data.data.seatsRoute || []);
 
-      const userProfileResponse = await axios.get(`${backEndUrl}/user/profile/${userID}`);
+      const userProfileResponse = await axios.get(
+        `${backEndUrl}/user/profile/${userID}`
+      );
       setUserInfo(userProfileResponse.data);
-      console.log("profile", userProfileResponse.data)
-
+      console.log("profile", userProfileResponse.data);
 
       setLoading(false);
     } catch (error) {
@@ -46,9 +52,12 @@ const PassengersPage = () => {
 
   const handleSeatCancel = async () => {
     try {
-      const cancelResponse = await axios.delete(`${backEndUrl}/formselection/${busId}`, {
-        data: { seatId: seatId, userId: currentUser },
-      });
+      const cancelResponse = await axios.delete(
+        `${backEndUrl}/formselection/${busId}`,
+        {
+          data: { seatId: seatId, userId: currentUser },
+        }
+      );
 
       if (cancelResponse.status === 200) {
         // fetchReservedPassengers();
@@ -66,7 +75,7 @@ const PassengersPage = () => {
 
   const handleSeatSelection = (seatIdSelected, index) => {
     setSeatId(seatIdSelected);
-    setSeatIndex(index)
+    setSeatIndex(index);
     setShowCancelOverlay(true);
   };
 
@@ -92,20 +101,19 @@ const PassengersPage = () => {
 
       {passengers.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
-          <table
-            className="passenger-table"
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              minWidth: "600px",
-            }}
-          >
+          <table className="passenger-table">
             <thead>
               <tr style={{ backgroundColor: "#f5f5f5" }}>
                 <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Name</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Route</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>Action</th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Name
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Route
+                </th>
+                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -113,23 +121,36 @@ const PassengersPage = () => {
                 const rowColor = getRowColor(idx);
 
                 // Try to find if the current index belongs to the logged-in user
-                const matchedSeat = userSeats.find(seat => seat[0] === idx + 1);
-                console.log(matchedSeat)
+                const matchedSeat = userSeats.find(
+                  (seat) => seat[0] === idx + 1
+                );
+                console.log(matchedSeat);
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
-                    <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
-                      {idx + 1}
-                    </td>
-
                     {matchedSeat ? (
                       <>
-                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                        <td
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                            textAlign: "center",
+                          }}
+                        >
+                          {idx + 1}
+                        </td>
+                        <td
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
                           {userInfo.name}
                         </td>
-                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                        <td
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
                           {matchedSeat[1]}
                         </td>
-                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
+                        <td
+                          style={{ padding: "10px", border: "1px solid #ccc" }}
+                        >
                           <button
                             className="cancel-button"
                             style={{
@@ -148,13 +169,15 @@ const PassengersPage = () => {
                       </>
                     ) : (
                       <>
-                        <td style={{ padding: "10px", border: "1px solid #ccc" }}>
-                        </td>
-                        <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
-                          <span></span>
-                        </td>
-                        <td style={{ padding: "10px", border: "1px solid #ccc", textAlign: "center" }}>
-                          <span></span>
+                        <td
+                          colSpan={4}
+                          style={{
+                            padding: "10px",
+                            border: "1px solid #ccc",
+                            textAlign: "center",
+                          }}
+                        >
+                          {idx + 1}
                         </td>
                       </>
                     )}
@@ -178,7 +201,10 @@ const PassengersPage = () => {
               <button className="confirm" onClick={handleSeatCancel}>
                 Yes, Cancel
               </button>
-              <button className="cancel" onClick={() => setShowCancelOverlay(false)}>
+              <button
+                className="cancel"
+                onClick={() => setShowCancelOverlay(false)}
+              >
                 Close
               </button>
             </div>

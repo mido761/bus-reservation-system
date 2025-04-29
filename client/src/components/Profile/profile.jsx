@@ -31,16 +31,18 @@ const UserProfile = () => {
         const userDetails = res.data;
 
         // Fetch user's buses
-        busIds = userDetails.bookedBuses?.buses || [];
+        // busIds = userDetails.bookedBuses?.buses || [];
 
-        if (busIds.length > 0) {
-          const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
-            params: { ids: busIds.join(",") },
-          });
-          setBusDetails(response.data);
-        } else {
-          setError("No booked buses found.");
-        }
+        // if (busIds.length > 0) {
+        //   const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
+        //     params: { ids: busIds.join(",") },
+        //   });
+          const userBusesResponse = await axios.get(`${backEndUrl}/user/form-based-bus/${userId}`);
+          console.log(userBusesResponse)
+          setBusDetails(userBusesResponse.data);
+        // } else {
+        //   setError("No booked buses found.");
+        // }
       } catch (err) {
         console.error("Error fetching user or buses:", err);
         setError("Failed to fetch user details or buses.");
