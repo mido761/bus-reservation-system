@@ -1,79 +1,95 @@
 /* === Dashboard Container === */
 .dashboard-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    border: 2px solid var(--input-border);
-    border-radius: 12px;
-    background-color: var(--form-background);
-    box-shadow: 0 6px 12px var(--shadow-color);
-    width: 100%;
-  }
-  
-  /* === Dashboard Cards === */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid var(--input-border);
+  border-radius: 12px;
+  background-color: var(--form-background);
+  box-shadow: 0 6px 12px var(--shadow-color);
+  width: 100%;
+  gap: 10px;
+}
+
+/* === Dashboard Cards === */
+.dashboard-cards {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  user-select: none;
+  justify-content: center; /* Ensures cards are centered */
+}
+
+/* === Individual Card Style === */
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 2px solid var(--secondary-hover);
+  border-radius: 20px;
+  box-shadow: 0 6px 12px var(--box-shadow);
+  padding: 20px;
+  min-width: 200px; /* Adjusted width for a more balanced card */
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Hover effect for cards */
+.dashboard-card:hover {
+  transform: translateY(-4px);
+}
+
+/* === Bus Number Styling === */
+.dashboard-container .bus-number {
+  width: 100%;
+  font-size: 16px; /* Slightly larger font size for better readability */
+  font-weight: 600;
+  color: var(--text-color);
+  background-color: #ffffff;
+  padding: 6px 14px;
+  border: 1px solid #2f97d3;
+  border-top: 8px solid #2f97d3;
+  border-radius: 5px;
+  display: inline-block;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 10px; /* Added space below bus number */
+}
+
+.dashboard-container h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.dashboard-grid {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  overflow-y: scroll;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  scroll-padding: 10px;
+}
+
+/* === Media Query for Mobile Devices === */
+@media screen and (max-width: 500px) {
   .dashboard-cards {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    user-select: none;
-    justify-content: center; /* Ensures cards are centered */
-  }
-  
-  /* === Individual Card Style === */
-  .dashboard-card {
-    display: flex;
     flex-direction: column;
-    background-color: #ffffff;
-    border: 2px solid var(--secondary-hover);
-    border-radius: 20px;
-    box-shadow: 0 6px 12px var(--box-shadow);
-    padding: 20px;
-    width: 220px; /* Adjusted width for a more balanced card */
     align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: transform 0.3s ease-in-out;
+    gap: 15px;
   }
-  
-  /* Hover effect for cards */
-  .dashboard-card:hover {
-    transform: translateY(-4px);
+
+  .dashboard-card {
+    max-width: 200px; /* Ensures cards are not too wide */
+    padding: 15px; /* Reduces padding for mobile */
   }
-  
-  /* === Bus Number Styling === */
-  .dashboard-container .bus-number {
-    width: 100%;
-    font-size: 16px; /* Slightly larger font size for better readability */
-    font-weight: 600;
-    color: var(--text-color);
-    background-color: #ffffff;
-    padding: 6px 14px;
-    border: 1px solid #2f97d3;
-    border-top: 8px solid #2f97d3;
-    border-radius: 5px;
-    display: inline-block;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    text-transform: uppercase;
-    text-align: center;
-    margin-bottom: 10px; /* Added space below bus number */
-  }
-  
-  /* === Media Query for Mobile Devices === */
-  @media screen and (max-width: 500px) {
-    .dashboard-cards {
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-    }
-  
-    .dashboard-card {
-      width: 90%; /* Adjusts card width on mobile */
-      max-width: 350px; /* Ensures cards are not too wide */
-      padding: 15px; /* Reduces padding for mobile */
-    }
-  }
-  
-  
+}

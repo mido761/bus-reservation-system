@@ -102,16 +102,23 @@ const PassengersPage = () => {
       {passengers.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
           <table className="passenger-table">
+            <colgroup>
+              <col style={{ width: "10%" }} /> {/* First column */}
+              <col style={{ width: "20%" }} /> {/* Second column (auto fill) */}
+              <col style={{ width: "10%" }} /> {/* Third column (auto fill) */}
+              <col style={{ width: "10%" }} /> {/* Last column */}
+            </colgroup>
+
             <thead>
-              <tr style={{ backgroundColor: "#f5f5f5" }}>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>#</th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+              <tr >
+                <th >#</th>
+                <th >
                   Name
                 </th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                <th >
                   Route
                 </th>
-                <th style={{ padding: "10px", border: "1px solid #ccc" }}>
+                <th >
                   Action
                 </th>
               </tr>
@@ -129,56 +136,29 @@ const PassengersPage = () => {
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
                     {matchedSeat ? (
                       <>
-                        <td
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                          }}
-                        >
-                          {idx + 1}
-                        </td>
-                        <td
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          {userInfo.name}
-                        </td>
-                        <td
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
-                          {matchedSeat[1]}
-                        </td>
-                        <td
-                          style={{ padding: "10px", border: "1px solid #ccc" }}
-                        >
+                        <td>{idx + 1}</td>
+                        <td>{userInfo.name}</td>
+                        <td>{matchedSeat[1]}</td>
+                        <td>
                           <button
                             className="cancel-button"
-                            style={{
-                              padding: "6px 12px",
-                              backgroundColor: "#ff4d4f",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                            }}
+                            // style={{
+                            //   padding: "6px 12px",
+                            //   backgroundColor: "#ff4d4f",
+                            //   color: "#fff",
+                            //   border: "none",
+                            //   borderRadius: "4px",
+                            //   cursor: "pointer",
+                            // }}
                             onClick={() => handleSeatSelection(passenger, idx)}
                           >
-                            Cancel Seat
+                            cancel
                           </button>
                         </td>
                       </>
                     ) : (
                       <>
-                        <td
-                          colSpan={4}
-                          style={{
-                            padding: "10px",
-                            border: "1px solid #ccc",
-                            textAlign: "center",
-                          }}
-                        >
-                          {idx + 1}
-                        </td>
+                        <td colSpan={4}>{idx + 1}</td>
                       </>
                     )}
                   </tr>

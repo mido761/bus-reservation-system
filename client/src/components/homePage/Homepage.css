@@ -209,7 +209,7 @@ body {
   flex-direction: column;
   align-items: center; /* Centers everything horizontally */
   width: 100%;
-  gap: 10;
+  gap: 10px;
   height: 240px;
   overflow-y: scroll; /* Enables vertical scrolling */
   /* flex-wrap: nowrap; */
