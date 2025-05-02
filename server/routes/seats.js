@@ -109,7 +109,6 @@ router.post("/user/:id", async (req, res) => {
 
     ////////
 
-    console.log(finalSeatsArr);
     // let userList = seats.map(seat => seat.bookedBy);
     // console.log(userList)
     // console.log(seats)
