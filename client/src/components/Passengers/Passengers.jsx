@@ -10,10 +10,8 @@ const PassengersPage = () => {
   const { busId } = location.state || {};
 
   const [seats, setSeats] = useState([]);
-  const [userSeats, setUserSeats] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [seatId, setSeatId] = useState("");
-  const [seatIndex, setSeatIndex] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,15 +29,12 @@ const PassengersPage = () => {
       const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, {
         userId: userID,
       });
-      // console.log("route", response.data.data.seatsIds);
-      // setUserSeats(response.data.data.userSeat || []);
       setSeats(response.data.data.finalSeatsArr || []);
 
       const userProfileResponse = await axios.get(
         `${backEndUrl}/user/profile/${userID}`
       );
       setUserInfo(userProfileResponse.data);
-
       setLoading(false);
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
@@ -58,7 +53,7 @@ const PassengersPage = () => {
       );
 
       if (cancelResponse.status === 200) {
-        setSeats(seats.filter((seat, idx) => seat.seatId !== seatId)); // Remove passenger from the list
+        setSeats(seats.filter(seat => seat.seatId !== seatId)); // Remove passenger from the list
         setShowCancelOverlay(false);
         setSeatId("");
       }
@@ -70,7 +65,6 @@ const PassengersPage = () => {
 
   const handleSeatSelection = (seatIdSelected, index) => {
     setSeatId(seatIdSelected);
-    setSeatIndex(index);
     setShowCancelOverlay(true);
   };
 
@@ -115,11 +109,6 @@ const PassengersPage = () => {
             <tbody>
               {seats.map((seat, idx) => {
                 const rowColor = getRowColor(idx);
-                // Try to find if the current index belongs to the logged-in user
-                // const matchedSeat = userSeats.find(
-                //   ([index]) => index === idx + 1
-                // );
-                // console.log(seat);
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
                     {seat.currentUser ? (
@@ -130,14 +119,6 @@ const PassengersPage = () => {
                         <td>
                           <button
                             className="cancel-button"
-                            // style={{
-                            //   padding: "6px 12px",
-                            //   backgroundColor: "#ff4d4f",
-                            //   color: "#fff",
-                            //   border: "none",
-                            //   borderRadius: "4px",
-                            //   cursor: "pointer",
-                            // }}
                             onClick={() =>
                               handleSeatSelection(seat.seatId, idx)
                             }
