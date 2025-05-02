@@ -1,10 +1,13 @@
 const express = require("express");
+const mongoose = require("mongoose")
 const router = express.Router();
 const Bus = require("../models/busForm");
 // const Bus = require("../models/busModel");
 const Seat = require("../models/seat")
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
+const { ObjectId } = require('mongodb'); // Import ObjectId from mongodb
+
 
 router.get("/:id", async (req, res) => {
     try {
@@ -52,25 +55,34 @@ router.get("/:id", async (req, res) => {
 router.post("/user/:id", async (req, res) => {
     try {
         const busId = req.params.id;
-        const {userId} = req.body;
+        const {userId} = (req.body);
 
         const bus = await Bus.findById(busId);
         if (!bus){
             return res.status(404).json({ message: "Bus not found" });
         }
 
-        const seats = await Seat.find({busId: busId}, {bookedBy:1,route:1});
+        const seats = await Seat.find({busId: busId}, {_id: 1});
+        const userSeats = await Seat.find({busId: busId, bookedBy: userId}, {_id: 1, route:1});
+        const finalSeatsArr = seats.map(seatId => ({
+            seatId: seatId._id.toString(),
+            currentUser: userSeats.filter(userSeat => userSeat._id.toString() === seatId._id.toString()).length > 0,
+            
+            route: userSeats.find(userSeat => userSeat._id.toString() === seatId._id.toString())?.route || undefined
+        }))
+
+        console.log(finalSeatsArr)
         // let userList = seats.map(seat => seat.bookedBy);
         // console.log(userList)
         // console.log(seats)
-        let userSeat = [];
-        for (let i = 0; i < seats.length ; i++ ){
-            if (seats[i].bookedBy == userId){
-                userSeat.push([i+1,seats[i].route]);
-            }             
-        }
-        seatsRoute = seats.map(seat => seat._id)
-        res.status(200).json({ message: "Current seats:", data: {seatsRoute,userSeat} }); // ✅
+        // let userSeat = [];
+        // for (let i = 0; i < seats.length ; i++ ){
+        //     if (seats[i].bookedBy == userId){
+        //         userSeat.push([i+1,seats[i].route]);
+        //     }             
+        // }
+        // seatsIds = seats.map(seat => seat._id)
+        return res.status(200).json({ message: "Current seats:", data: {finalSeatsArr} }); // ✅
     }catch (err) {
         console.error("Error fetching seats:", err);
         res

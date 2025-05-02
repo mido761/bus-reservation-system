@@ -9,7 +9,7 @@ const PassengersPage = () => {
   const location = useLocation();
   const { busId } = location.state || {};
 
-  const [passengers, setPassengers] = useState([]);
+  const [seats, setSeats] = useState([]);
   const [userSeats, setUserSeats] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [seatId, setSeatId] = useState("");
@@ -31,16 +31,14 @@ const PassengersPage = () => {
       const response = await axios.post(`${backEndUrl}/seats/user/${busId}`, {
         userId: userID,
       });
-      console.log("seat", response.data.data.userSeat);
-      console.log("route", response.data.data.seatsRoute);
-      setUserSeats(response.data.data.userSeat || []);
-      setPassengers(response.data.data.seatsRoute || []);
+      // console.log("route", response.data.data.seatsIds);
+      // setUserSeats(response.data.data.userSeat || []);
+      setSeats(response.data.data.finalSeatsArr || []);
 
       const userProfileResponse = await axios.get(
         `${backEndUrl}/user/profile/${userID}`
       );
       setUserInfo(userProfileResponse.data);
-      console.log("profile", userProfileResponse.data);
 
       setLoading(false);
     } catch (error) {
@@ -60,10 +58,7 @@ const PassengersPage = () => {
       );
 
       if (cancelResponse.status === 200) {
-        // fetchReservedPassengers();
-        setPassengers((prevList) =>
-          prevList.filter((passenger, idx) => idx !== seatIndex)
-        ); // Remove passenger from the list
+        setSeats(seats.filter((seat, idx) => seat.seatId !== seatId)); // Remove passenger from the list
         setShowCancelOverlay(false);
         setSeatId("");
       }
@@ -80,7 +75,7 @@ const PassengersPage = () => {
   };
 
   const getRowColor = (index) => {
-    const fullGroups = Math.floor(passengers.length / 15);
+    const fullGroups = Math.floor(seats.length / 15);
     const lastGreenIndex = fullGroups * 15 - 1;
     return index <= lastGreenIndex ? "green" : "red";
   };
@@ -99,46 +94,39 @@ const PassengersPage = () => {
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
 
-      {passengers.length > 0 ? (
+      {seats.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
           <table className="passenger-table">
             <colgroup>
-              <col style={{ width: "10%" }} /> {/* First column */}
-              <col style={{ width: "20%" }} /> {/* Second column (auto fill) */}
-              <col style={{ width: "10%" }} /> {/* Third column (auto fill) */}
-              <col style={{ width: "10%" }} /> {/* Last column */}
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "10%" }} />
             </colgroup>
 
             <thead>
-              <tr >
-                <th >#</th>
-                <th >
-                  Name
-                </th>
-                <th >
-                  Route
-                </th>
-                <th >
-                  Action
-                </th>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Route</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {passengers.map((passenger, idx) => {
+              {seats.map((seat, idx) => {
                 const rowColor = getRowColor(idx);
-
                 // Try to find if the current index belongs to the logged-in user
-                const matchedSeat = userSeats.find(
-                  (seat) => seat[0] === idx + 1
-                );
-                console.log(matchedSeat);
+                // const matchedSeat = userSeats.find(
+                //   ([index]) => index === idx + 1
+                // );
+                // console.log(seat);
                 return (
                   <tr key={idx} style={{ backgroundColor: rowColor }}>
-                    {matchedSeat ? (
+                    {seat.currentUser ? (
                       <>
                         <td>{idx + 1}</td>
                         <td>{userInfo.name}</td>
-                        <td>{matchedSeat[1]}</td>
+                        <td>{seat.route}</td>
                         <td>
                           <button
                             className="cancel-button"
@@ -150,7 +138,9 @@ const PassengersPage = () => {
                             //   borderRadius: "4px",
                             //   cursor: "pointer",
                             // }}
-                            onClick={() => handleSeatSelection(passenger, idx)}
+                            onClick={() =>
+                              handleSeatSelection(seat.seatId, idx)
+                            }
                           >
                             cancel
                           </button>
@@ -168,7 +158,7 @@ const PassengersPage = () => {
           </table>
         </div>
       ) : (
-        <p className="no-data">No reserved passengers found.</p>
+        <p className="no-data">No reserved passengers found. {seats[0]}</p>
       )}
 
       {/* Cancel Confirmation Modal */}

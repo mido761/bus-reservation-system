@@ -41,6 +41,7 @@ const Homepage = () => {
       ]);
       const res = await axios.get(`${backEndUrl}/buses`);
       setBuses(res.data);
+      setFilteredBuses(res.data)
       setUserId(req_user.data.userId);
     } catch (error) {
       console.error("Error fetching buses:", error);
@@ -120,14 +121,14 @@ const Homepage = () => {
       let data = response.data;
 
       // Safely extract an array from any possible shape
-      if (Array.isArray(data)) {
+      // if (Array.isArray(data)) {
         setPassengerList(data); // case: direct array
-      } else if (Array.isArray(data.passengers)) {
-        setPassengerList(data.passengers); // case: { passengers: [...] }
-      } else {
-        console.error("Unexpected response format");
-        setPassengerList([]); // fallback to empty list
-      }
+      // } else if (Array.isArray(data.passengers)) {
+      //   setPassengerList(data.passengers); // case: { passengers: [...] }
+      // } else {
+      //   console.error("Unexpected response format");
+      //   setPassengerList([]); // fallback to empty list
+      // }
 
       // Navigate to the /passengers page with the busId and userId
       navigate("/passengers", { state: { busId: bus._id, userId } });

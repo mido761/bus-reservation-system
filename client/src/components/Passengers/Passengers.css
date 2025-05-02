@@ -1,10 +1,16 @@
 .passengers-page {
+  min-height: 90vh;
   padding: 0.5rem;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #fdfdfd;
   border-radius: 12px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
   overflow-x: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
 }
 
 .title {
@@ -19,7 +25,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
   border-radius: 10px;
 }
 
