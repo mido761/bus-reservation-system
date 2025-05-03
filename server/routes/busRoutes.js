@@ -185,7 +185,7 @@ router.get("/userBuses", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const response = await Bus.findById(req.params.id);
+    const response = await busForm.findById(req.params.id);
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -228,21 +228,21 @@ router.put("/edit-bus/:busId", async (req, res) => {
   const busId = req.params.busId
   console.log(req.body)
   try {
-    const updatedBus = await Bus.findByIdAndUpdate(
+    const updatedBus = await busForm.findByIdAndUpdate(
       busId,
       {
         $set: {
           "location.pickupLocation": req.body.location?.pickupLocation,
           "location.arrivalLocation": req.body.location?.arrivalLocation,
-          "time.departureTime": req.body.time?.departureTime,
-          "time.arrivalTime": req.body.time?.arrivalTime,
+          departureTime: req.body.time?.departureTime,
+          // "time.arrivalTime": req.body.time?.arrivalTime,
           schedule: req.body.schedule,
           price: req.body.price,
-          busNumber: req.body.busNumber,
+          // busNumber: req.body.busNumber,
           pickupLocation: req.body.pickupLocation,
           arrivalLocation: req.body.arrivalLocation,
           departureTime: req.body.departureTime,
-          arrivalTime: req.body.arrivalTime,
+          // arrivalTime: req.body.arrivalTime,
         },
       },
       { new: true }

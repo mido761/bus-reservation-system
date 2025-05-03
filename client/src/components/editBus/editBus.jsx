@@ -6,7 +6,7 @@ import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
-const locations = ["Ramses", "Dandy", "E-JUST", "Abaseya"];
+const locations = ["Ramses", "Dandy", "E-JUST", "Cairo"];
 
 const EditBus = () => {
   const { busId } = useParams();
@@ -38,12 +38,12 @@ const EditBus = () => {
         ...prevData.location,
         [name]: name.includes("Location") ? value : prevData.location[name],
       },
-      time: {
-        ...prevData.time,
-        [name]: name.includes("Time") ? value : prevData.time[name],
-      },
+      // departureTime: {
+      //   ...prevData.departureTime,
+      //   [name]: name.includes("Time") ? value : prevData.departureTime[name],
+      // },
       [name]:
-        !name.includes("Location") && !name.includes("Time")
+        !name.includes("Location")
           ? value
           : prevData[name],
     }));
@@ -108,7 +108,7 @@ const EditBus = () => {
             </div>
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <label>Bus Number</label>
             <input
               type="text"
@@ -116,7 +116,7 @@ const EditBus = () => {
               value={busData.busNumber}
               onChange={handleChange}
             />
-          </div>
+          </div> */}
 
           <div className="time-group">
             <div className="form-group">
@@ -124,11 +124,11 @@ const EditBus = () => {
               <input
                 type="time"
                 name="departureTime"
-                value={busData.time.departureTime}
+                value={busData.departureTime}
                 onChange={handleChange}
               />
             </div>
-            <div className="form-group">
+            {/* <div className="form-group">
               <label>Arrival Time</label>
               <input
                 type="time"
@@ -136,7 +136,7 @@ const EditBus = () => {
                 value={busData.time.arrivalTime}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
           </div>
 
           <div className="form-group">
