@@ -581,7 +581,7 @@ input {
   color: #333;
 }
 
-.table-container {
+.bus-list-page .table-container {
   overflow: auto;
   padding-left: 250px;
 }
