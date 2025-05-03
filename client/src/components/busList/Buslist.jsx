@@ -32,8 +32,8 @@ const BusList = () => {
           ? response.data.data.orderedUsers
           : []
       );
-      console.log("seatList: ", response.data.data.seats);
-      console.log("usersList: ", response.data.data.orderedUsers);
+      // console.log("seatList: ", response.data.data.seats);
+      // console.log("usersList: ", response.data.data.orderedUsers);
 
       // let userlist = seatList.map(seat => seat.bookedBy);
       // console.log(userlist)
@@ -139,18 +139,17 @@ const BusList = () => {
   return (
     <div
       className="bus-list-page"
-      style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}
+      style={{ padding: "20px", margin: "0 auto" }}
     >
       <h2
         className="title"
         style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}
       ></h2>
-
       <div className="bus-selection">
         <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
           {busList.map((bus) => (
-            <li key={bus._id} >
+            <li key={bus._id}>
               <button
                 className="bus-btn"
                 onClick={() => handleBusSelect(bus._id)}
@@ -164,19 +163,8 @@ const BusList = () => {
               >
                 {formatTo12Hour(bus.departureTime)} — {bus.busNumber}
               </button>
-
               {selectedBusId === bus._id && (
-                <div
-                  className="bus-details-dropdown "
-                  style={{
-                    backgroundColor: "#f9f9f9",
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    marginTop: "10px",
-                    padding: "20px",
-                    animation: "fadeIn 0.5s",
-                  }}
-                >
+                <div className="bus-details-dropdown">
                   <div className="search-bar" style={{ marginBottom: "15px" }}>
                     <input
                       type="text"
@@ -191,34 +179,20 @@ const BusList = () => {
                       }}
                     />
                   </div>
-
                   <div className="passenger-table">
-                    {/* <h3>
-                      Reserved Passengers for Bus {bus.busNumber} at{" "}
-                      {bus.departureTime}
-                    </h3> */}
-
-                    {/* Check if filtered passengers is an array and has data */}
                     {Array.isArray(passengers) && passengers.length > 0 ? (
                       <div
                         className="table-container"
                         style={{ overflowX: "auto" }}
                       >
-                        <table
-                          className="passenger-table"
-                          style={{
-                            width: "100%",
-                            borderCollapse: "collapse",
-                            fontSize: "16px",
-                            minWidth: "700px",
-                          }}
-                        >
+                        <table className="passenger-table">
                           <thead>
                             <tr style={{ backgroundColor: "#f5f5f5" }}>
                               <th
                                 style={{
                                   padding: "10px",
                                   border: "1px solid #ccc",
+                                  borderTopLeftRadius: "10px",
                                 }}
                               >
                                 #
@@ -247,7 +221,6 @@ const BusList = () => {
                               >
                                 Route
                               </th>
-                              {/* <th style={{ padding: "10px", border: "1px solid #ccc" }}>Departure Time</th> */}
                               <th
                                 style={{
                                   padding: "10px",
@@ -256,7 +229,6 @@ const BusList = () => {
                               >
                                 Reserved Time
                               </th>{" "}
-                              {/* New column */}
                               <th
                                 style={{
                                   padding: "10px",
@@ -270,7 +242,6 @@ const BusList = () => {
                           <tbody>
                             {passengers.map((passenger, idx) => {
                               const seat = seatList[idx]; // get corresponding seat
-
                               return (
                                 <tr key={idx}>
                                   <td

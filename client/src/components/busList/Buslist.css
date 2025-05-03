@@ -6,9 +6,10 @@
   flex-direction: column;
   align-items: center;
   background-color: var(--background-color);
-  min-width: 320px;
-  max-width: 1400px;
+  min-width: 30px;
+  max-width: 40px;
 }
+
 
 .top-section {
   width: 93%;
@@ -565,11 +566,13 @@ input {
 }
 
 .bus-list-page .passenger-table {
-  width: 125%;
+  width: 100%;
   border-collapse: collapse;
   font-size: 16px;
+  min-width: 285px;
   max-width: 260px;
   overflow: scroll;
+  margin: auto;
 }
 
 .title {
@@ -579,8 +582,8 @@ input {
 }
 
 .table-container {
-  overflow-x: auto;
-  padding-left: 350px;
+  overflow: auto;
+  padding-left: 250px;
 }
 
 button {
@@ -605,13 +608,13 @@ button:hover {
 }
 
 .bus-details-dropdown {
-  background-color: #fefefe;
-  padding: 20px;
-  margin-top: 10px;
+  background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.5s ease forwards;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  padding: 20px;
+  animation: fadeIn 0.5s;
 }
 
 @keyframes fadeIn {
@@ -651,6 +654,10 @@ h3 {
   font-size: 16px;
   transition: background-color 0.3s;
   margin-bottom: 10px;
+}
+
+.bus-selection {
+  width: 330px;
 }
 
 .bus-selection h3 {
