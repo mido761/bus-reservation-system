@@ -6,7 +6,7 @@ import Overlay from "../overlayScreen/overlay";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-const locations = ["Ramses", "Dandy", "E-JUST", "Abaseya"];
+const locations = ["Cairo", "E-JUST"];
 
 const AddBus = () => {
   const [busType, setBusType] = useState("");
@@ -32,7 +32,7 @@ const AddBus = () => {
     setbusNumber("1234");
     setPrice(110);
     setPickupLocation("E-JUST");
-    setArrivalLocation("Ramses");
+    setArrivalLocation("Cairo");
     setCancelTimeAllowance(2);
     setBookingTimeAllowance(1);
     setAllowedNumberOfBags(2);
@@ -87,7 +87,7 @@ const AddBus = () => {
       <form onSubmit={handleSubmit} className="add-bus">
         <h1>Add a new Bus</h1>
 
-        <label>Bus Type</label>
+        {/* <label>Bus Type</label> */}
         <div className="bus-type-selection improved-ui">
           <label className={busType === "seat" ? "selected" : ""}>
             <input

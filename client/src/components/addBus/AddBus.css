@@ -10,9 +10,9 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 10px;
+  padding: 0px 10px;
   background-color: var(--page-background);
-  min-height: 100vh;
+  min-height: 92vh;
 }
 
 /* Form wrapper styles */
@@ -26,14 +26,13 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 /* Header */
 .add-bus h1 {
   text-align: center;
   color: var(--primary-hover);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 /* Form toggle button group */
@@ -125,7 +124,8 @@
 .form-navigation {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 10px;
+  gap: 10px;
 }
 
 .add-bus button {
@@ -172,7 +172,7 @@
 @media (max-width: 768px) {
   .add-bus {
     padding: 20px;
-    margin: 20px auto;
+    padding-top: 5px;
   }
 
   .form-toggle {
@@ -188,7 +188,7 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .bus-type-selection.improved-ui label {

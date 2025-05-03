@@ -41,7 +41,7 @@ const Homepage = () => {
       ]);
       const res = await axios.get(`${backEndUrl}/buses`);
       setBuses(res.data);
-      setFilteredBuses(res.data)
+      setFilteredBuses(res.data);
       setUserId(req_user.data.userId);
     } catch (error) {
       console.error("Error fetching buses:", error);
@@ -56,8 +56,8 @@ const Homepage = () => {
   }, []);
 
   const popularRoutes = [
-    { id: 1, route: "Cairo to   E-JUST" },
-    { id: 3, route: "E-JUST to  Cairo" },
+    { id: 1, route: "Cairo to E-JUST" },
+    { id: 3, route: "E-JUST to Cairo" },
   ];
 
   const handleBusSelect = (bus) => {
@@ -122,7 +122,7 @@ const Homepage = () => {
 
       // Safely extract an array from any possible shape
       // if (Array.isArray(data)) {
-        setPassengerList(data); // case: direct array
+      setPassengerList(data); // case: direct array
       // } else if (Array.isArray(data.passengers)) {
       //   setPassengerList(data.passengers); // case: { passengers: [...] }
       // } else {
@@ -165,15 +165,15 @@ const Homepage = () => {
           >
             <option value="">Pickup Point</option>
             <option value="E-JUST">E-JUST</option>
+            <option value="Cairo">Cairo</option>
           </select>
           <select
             onChange={(e) => setArrivalPoint(e.target.value)}
             value={arrivalPoint}
           >
             <option value="">Arrival Point</option>
-            <option value="E-JUST">Cairo</option>
-            <option value="Ramses">Ramses</option>
-            <option value="Dandy">Dandy</option>
+            <option value="Cairo">Cairo</option>
+            <option value="E-JUST">E-JUST</option>
           </select>
           <input
             type="date"
@@ -183,20 +183,19 @@ const Homepage = () => {
           <button className="search-btn" onClick={handleSearch}>
             Search
           </button>
-        </div>
-
-        <div className="popular-routes">
-          <h3>Popular Routes</h3>
-          <div className="popular-routes-list">
-            {popularRoutes.map((route) => (
-              <div
-                key={route.id}
-                className="route-card"
-                onClick={() => handleRouteSelect(route.route)}
-              >
-                {route.route}
-              </div>
-            ))}
+          <div className="popular-routes">
+            <h3>Popular Routes</h3>
+            <div className="popular-routes-list">
+              {popularRoutes.map((route) => (
+                <div
+                  key={route.id}
+                  className="route-card"
+                  onClick={() => handleRouteSelect(route.route)}
+                >
+                  {route.route}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
