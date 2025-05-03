@@ -98,14 +98,7 @@ const PassengersPage = () => {
               <col style={{ width: "10%" }} />
             </colgroup>
 
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Route</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+           
             <tbody>
               {seats.map((seat, idx) => {
                 const rowColor = getRowColor(idx);
