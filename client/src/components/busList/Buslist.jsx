@@ -64,17 +64,17 @@ const BusList = () => {
 
   const filteredPassengers = passengers.filter((passenger, idx) => {
     const query = searchQuery.toLowerCase();
-  
+
     // Extract and prepare fields for comparison, making sure they are strings
     const userName = (passenger.name || "").toLowerCase();
     const phoneNumber = (String(passenger.phoneNumber) || "").toLowerCase(); // Ensure phoneNumber is treated as a string
     const route = (seatList[idx]?.route || "").toLowerCase(); // Fetch route from seatList, default to empty string if undefined
-  
+
     // Check if any of the fields match the search query
     const matchesUserName = userName.includes(query);
     const matchesPhoneNumber = phoneNumber.includes(query);
     const matchesRoute = route.includes(query);
-  
+
     // Return true if any of the conditions are true (OR logic)
     return matchesUserName || matchesPhoneNumber || matchesRoute;
   });
@@ -107,7 +107,7 @@ const BusList = () => {
         { data: { seatId: seatId, userId: userId } }
       );
 
-      console.log(seatList[index])
+      console.log(seatList[index]);
       if (cancelResponse.status === 200) {
         setSeatList((prevList) =>
           prevList.filter((seat) => seat._id !== seatId)
@@ -125,50 +125,49 @@ const BusList = () => {
   const formatTo12Hour = (timeString) => {
     const date = new Date(timeString);
     if (isNaN(date)) return timeString; // if invalid date, return original
-  
+
     let hours = date.getHours();
     let minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-  
+    const ampm = hours >= 12 ? "PM" : "AM";
+
     hours = hours % 12 || 12; // convert 0 (midnight) to 12
-    minutes = minutes.toString().padStart(2, '0'); // ensure 2 digits
-  
+    minutes = minutes.toString().padStart(2, "0"); // ensure 2 digits
+
     return `${hours}:${minutes} ${ampm}`;
   };
-  
+
   return (
-    <div className="bus-list-page" style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-      <h2 className="title" style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}>
-      </h2>
-  
+    <div
+      className="bus-list-page"
+      style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}
+    >
+      <h2
+        className="title"
+        style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}
+      ></h2>
+
       <div className="bus-selection">
         <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
         <ul style={{ listStyle: "none", padding: 0 }}>
           {busList.map((bus) => (
-            <li key={bus._id} style={{ marginBottom: "20px" }}>
+            <li key={bus._id} >
               <button
+                className="bus-btn"
                 onClick={() => handleBusSelect(bus._id)}
-                style={{
-                  padding: "12px 20px",
-                  backgroundColor: selectedBusId === bus._id ? "#2ecc71" : "#3498db",
-                  color: "#fff",
-                  border: "none",
-                  cursor: "pointer",
-                  width: "100%",
-                  textAlign: "left",
-                  borderRadius: "8px",
-                  fontSize: "16px",
-                  transition: "background-color 0.3s",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#2980b9")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = selectedBusId === bus._id ? "#2ecc71" : "#3498db")}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#2980b9")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor =
+                    selectedBusId === bus._id ? "#2ecc71" : "#3498db")
+                }
               >
                 {formatTo12Hour(bus.departureTime)} — {bus.busNumber}
               </button>
-  
+
               {selectedBusId === bus._id && (
                 <div
-                  className="bus-details-dropdown"
+                  className="bus-details-dropdown "
                   style={{
                     backgroundColor: "#f9f9f9",
                     border: "1px solid #ddd",
@@ -192,16 +191,15 @@ const BusList = () => {
                       }}
                     />
                   </div>
-  
+
                   <div className="passenger-table">
-                    <h3>
+                    {/* <h3>
                       Reserved Passengers for Bus {bus.busNumber} at{" "}
                       {bus.departureTime}
-                    </h3>
+                    </h3> */}
 
                     {/* Check if filtered passengers is an array and has data */}
-                    {Array.isArray(passengers) &&
-                    passengers.length > 0 ? (
+                    {Array.isArray(passengers) && passengers.length > 0 ? (
                       <div
                         className="table-container"
                         style={{ overflowX: "auto" }}
@@ -364,5 +362,5 @@ const BusList = () => {
       </div>
     </div>
   );
-}
-export default BusList;  
+};
+export default BusList;
