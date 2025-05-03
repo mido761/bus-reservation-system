@@ -381,8 +381,14 @@ body {
 
 .home-page .bus-container button.list-btn{
   background-color: transparent;
-  position: relative;
+  /* position: relative; */
 }
+
+.home-page .bus-container button.list-btn:hover{
+  background-color: transparent;
+  box-shadow: none;
+}
+
 
 .home-page .bus-container button.list-btn img{
   position: absolute;
