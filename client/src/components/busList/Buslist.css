@@ -10,7 +10,6 @@
   max-width: 40px;
 }
 
-
 .top-section {
   width: 93%;
   display: flex;
@@ -571,8 +570,11 @@ input {
   font-size: 16px;
   min-width: 285px;
   max-width: 260px;
-  overflow: scroll;
   margin: auto;
+}
+
+.bus-list-page .actions-container {
+  margin-top: 15px;
 }
 
 .title {
@@ -591,7 +593,7 @@ button {
 }
 
 button:hover {
-  background-color: #2980b9;
+  /* background-color: #2980b9; */
   transform: translateY(-2px);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
@@ -642,18 +644,42 @@ h3 {
   background-color: #c0392b;
 }
 
-.bus-btn{
+.bus-btn {
   padding: 12px 20px;
-  background-color: rgb(52, 152, 219);
+  background-color: var(--primary-color);
   color: rgb(255, 255, 255);
+  font-weight: 700;
   border: none;
   cursor: pointer;
   width: 100%;
-  text-align: left;
+  text-align: center;
   border-radius: 8px;
   font-size: 16px;
   transition: background-color 0.3s;
   margin-bottom: 10px;
+}
+
+/* .bus-btn:hover{
+  background-color: none;
+  color: var(--button-text);
+}
+
+.green-btn{
+  background-color: var(--selected-btn);
+} */
+
+.time-and-schedule {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+  margin-bottom: 10px;
+}
+
+.routeName {
+  color: var(--text-color);
+  font-weight: 800;
 }
 
 .bus-selection {

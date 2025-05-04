@@ -3,7 +3,7 @@
 :root {
   --primary-color: #d4af37;
   --primary-hover: #b8860b;
-  --secondary-color: #b8860b; /* Rich Gold for accents */
+  --secondary-color: #a87c0b; /* Rich Gold for accents */
   --secondary-hover: #d4af37; /* Brighter Gold for emphasis */
   --text-color: #000000; /* Black for strong contrast */
   --background-color: #ffffff; /* Clean white background */
@@ -13,6 +13,7 @@
   --input-border: #b8860b; /* Gold border for elegance */
   --form-background: #ffffff; /* White form background */
   --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle black shadow for depth */
+  --selected-btn: #2ecc71; 
 }
 
 #app{

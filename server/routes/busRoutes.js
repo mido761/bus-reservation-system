@@ -1,7 +1,8 @@
 const express = require("express");
 const Bus = require("../models/busModel");
-const busForm = require("../models/busForm")
+const busForm = require("../models/busForm");
 const User = require("../models/user");
+const Seat = require("../models/seat");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
 const mongoose = require("mongoose");
@@ -69,7 +70,7 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
       },
       time: {
         departureTime: departureTime,
-        arrivalTime: arrivalTime
+        arrivalTime: arrivalTime,
       },
       allowance: {
         cancelTimeAllowance: cancelTimeAllowance,
@@ -88,14 +89,13 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
   }
 });
 
-
 router.post("/formbuses", middleware.isAuthoraized, async (req, res) => {
   try {
     const {
       schedule,
       price,
       pickupLocation,
-      arrivalLocation,         
+      arrivalLocation,
       departureTime,
       cancelTimeAllowance,
       bookingTimeAllowance,
@@ -180,7 +180,7 @@ router.get("/userBuses", async (req, res) => {
     const busDetails = await Bus.find({ _id: { $in: ids.split(",") } });
     return res.json(busDetails);
   }
-  return res.json(busDetails = []);
+  return res.json((busDetails = []));
 });
 
 router.get("/:id", async (req, res) => {
@@ -204,9 +204,14 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
           ),
         },
       },
-      { $set: { "bookedBuses.buses": [], "bookedBuses.seats": [] ,checkInStatus: false },
-        $unset: {bookedTime: ""}
-    }
+      {
+        $set: {
+          "bookedBuses.buses": [],
+          "bookedBuses.seats": [],
+          checkInStatus: false,
+        },
+        $unset: { bookedTime: "" },
+      }
     );
     const deletedBus = await Bus.deleteOne({ _id: id });
 
@@ -223,10 +228,35 @@ router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
   }
 });
 
+router.delete("/busForm/:id", middleware.isAuthoraized, async (req, res) => {
+  try {
+    const busId = req.params.id;
+
+    if(!busId) { return res.status(404).json({ error: "Bus not found" })}
+    
+    const seats = await Seat.deleteMany({busId: busId}) 
+
+    if(!seats){ return res.status(400).json({error: "Error deleting seats!"})}
+
+    const deletedBus = await busForm.deleteOne({ _id: busId });
+
+    if (!busId) {
+      return res.status(404).json({ error: "Bus not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Bus deleted successfully"});
+  } catch (err) {
+    console.error("Error deleting the Item", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // Update a bus
 router.put("/edit-bus/:busId", async (req, res) => {
-  const busId = req.params.busId
-  console.log(req.body)
+  const busId = req.params.busId;
+  console.log(req.body);
   try {
     const updatedBus = await busForm.findByIdAndUpdate(
       busId,
