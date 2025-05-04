@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoadingComponent from "../loadingComponent/loadingComponent";
+import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
 import "./Buslist.css";
 
@@ -14,6 +15,7 @@ const BusList = () => {
   const [seatList, setSeatList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
@@ -107,15 +109,14 @@ const BusList = () => {
   };
 
   const handleCancelBooking = async (busId, userId, seatId, index) => {
+    setIsLoading(true);
     try {
-      console.log(userId);
       // Assuming there's an API endpoint for canceling a passenger's booking on a bus
       const cancelResponse = await axios.delete(
         `${backEndUrl}/formselection/${busId}`,
         { data: { seatId: seatId, userId: userId } }
       );
 
-      console.log(seatList[index]);
       if (cancelResponse.status === 200) {
         setSeatList((prevList) =>
           prevList.filter((seat) => seat._id !== seatId)
@@ -123,11 +124,27 @@ const BusList = () => {
         setPassengers((prevList) =>
           prevList.filter((passenger, idx) => idx !== index)
         ); // Remove passenger from the list
+
+        setIsLoading(false);
+        setSelectedBusId("");
+        setAlertMessage("✅ Seat canceled successfully!");
+        setAlertFlag(true);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+        }, 2200);
       }
       // console.log(passengers.)
       // fetchPassengersForBus(busId)
     } catch (error) {
       console.error("Error canceling passenger booking:", error);
+      setIsLoading(false);
+      setAlertMessage("⚠️ Error canceling the seat!");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     }
   };
 
@@ -162,13 +179,13 @@ const BusList = () => {
     );
     if (!secondConfirmation) return;
 
-    setLoading(true);
+    setIsLoading(true);
     try {
-      await axios.delete(`${backEndUrl}/buses/busForm/${busId}`);
+      // await axios.delete(`${backEndUrl}/buses/busForm/${busId}`);
       setBusList(busList.filter((bus) => bus._id !== busId));
 
-      setLoading(false);
-      setSelectedBusId("")
+      setIsLoading(false);
+      setSelectedBusId("");
       setAlertMessage("✅ Bus deleted successfully!");
       setAlertFlag(true);
 
@@ -176,7 +193,7 @@ const BusList = () => {
         setAlertFlag(false);
       }, 2200);
     } catch (err) {
-      setLoading(false);
+      setIsLoading(false);
       setAlertMessage("⚠️ Error deleting the bus");
       setAlertFlag(true);
 
@@ -197,6 +214,7 @@ const BusList = () => {
       ></h2>
       <div className="bus-selection">
         <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
+
         <ul style={{ listStyle: "none", padding: 0 }}>
           {busList.map((bus) => (
             <li key={bus._id}>
@@ -216,7 +234,6 @@ const BusList = () => {
                 <div className="time-and-schedule">
                   <p>{convertTo12HourFormat(bus.departureTime)}</p>
                   <p>{bus.schedule}</p>
-                  
                 </div>
                 <span className="routeName">
                   {bus.location.pickupLocation}{" "}
@@ -243,7 +260,8 @@ const BusList = () => {
                     />
                   </div>
                   <div className="passenger-table">
-                    {Array.isArray(passengers) && passengers.length > 0 ? (
+                    {Array.isArray(passengers) &&
+                    passengers.length > 0 ? (
                       <div
                         className="table-container"
                         style={{ overflowX: "auto" }}
@@ -382,33 +400,36 @@ const BusList = () => {
                           </tbody>
                         </table>
                       </div>
-                    ) : (
+                    ) :
+                    loading ? (
+                      <LoadingComponent />
+                    ) :(
                       <p className="no-data">
                         No passengers found matching your search.
                       </p>
                     )}
-                    <div className="actions-container">
-                      <button
-                        className="del-btn"
-                        onClick={() => handleDel(bus._id)}
-                      >
-                        <img
-                          src="delete.png"
-                          alt="Delete"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </button>
-                      <button
-                        className="edit-btn"
-                        onClick={() => handleEdit(bus._id)}
-                      >
-                        <img
-                          src="editing.png"
-                          alt="Edit"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                      </button>
-                    </div>
+                  </div>{" "}
+                  <div className="actions-container">
+                    <button
+                      className="del-btn"
+                      onClick={() => handleDel(bus._id)}
+                    >
+                      <img
+                        src="delete.png"
+                        alt="Delete"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </button>
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(bus._id)}
+                    >
+                      <img
+                        src="editing.png"
+                        alt="Edit"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </button>
                   </div>
                 </div>
               )}
@@ -416,6 +437,8 @@ const BusList = () => {
           ))}
         </ul>
       </div>
+      {isLoading && <LoadingScreen />}
+
       {alertFlag && (
         <Overlay
           alertFlag={alertFlag}

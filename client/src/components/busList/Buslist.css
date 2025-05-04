@@ -6,8 +6,7 @@
   flex-direction: column;
   align-items: center;
   background-color: var(--background-color);
-  min-width: 30px;
-  max-width: 40px;
+  box-shadow: 0 6px 20px var(--shadow-color);
 }
 
 .top-section {
@@ -558,19 +557,15 @@ input {
   border-radius: 4px;
   cursor: pointer;
 }
-.bus-list-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-}
 
 .bus-list-page .passenger-table {
-  width: 100%;
   border-collapse: collapse;
   font-size: 16px;
-  min-width: 285px;
-  max-width: 260px;
-  margin: auto;
+  min-width: 250px;
+  max-width: 250px;
+  /* margin: auto; */
+  overflow: hidden;
+  border-radius: 10px;
 }
 
 .bus-list-page .actions-container {
@@ -585,7 +580,8 @@ input {
 
 .bus-list-page .table-container {
   overflow: auto;
-  padding-left: 250px;
+  padding-left: 255px;
+  max-width: 245px;
 }
 
 button {
@@ -683,7 +679,7 @@ h3 {
 }
 
 .bus-selection {
-  width: 330px;
+  width: 290px;
 }
 
 .bus-selection h3 {
