@@ -33,22 +33,23 @@ const Homepage = () => {
   const [reservedPassengers, setReservedPassengers] = useState([]);
   const [showReservedPassengerList, setShowReservedPassengerList] =
     useState(false);
-
-  const fetchBuses = async () => {
-    try {
-      const [req_user, response] = await Promise.all([
-        axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
-      ]);
-      const res = await axios.get(`${backEndUrl}/buses`);
-      setBuses(res.data);
-      setFilteredBuses(res.data)
-      setUserId(req_user.data.userId);
-    } catch (error) {
-      console.error("Error fetching buses:", error);
-    } finally {
-      setTimeout(() => setIsLoading(false), 1500);
-    }
-  };
+    const [bookingLoading, setBookingLoading] = useState(false);
+    const fetchBuses = async () => {
+      try {
+        const [userRes, busesRes] = await Promise.all([
+          axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
+          axios.get(`${backEndUrl}/buses`),
+        ]);
+        setUserId(userRes.data.userId);
+        setBuses(busesRes.data);
+        setFilteredBuses(busesRes.data);
+      } catch (error) {
+        console.error("Error fetching buses:", error);
+      } finally {
+        setTimeout(() => setIsLoading(false), 1500);
+      }
+    };
+    
 
   useEffect(() => {
     setIsLoading(true);
@@ -66,11 +67,6 @@ const Homepage = () => {
   };
 
   const handleSearch = () => {
-    if (!Array.isArray(buses)) {
-      console.error("buses is not an array:", buses);
-      return;
-    }
-
     const filtered = buses.filter(
       (bus) =>
         bus.location.pickupLocation === pickupPoint &&
@@ -79,13 +75,25 @@ const Homepage = () => {
     );
     setFilteredBuses(filtered);
   };
-
+  
+  
   const handleRouteSelect = (route) => {
     const [pickup, arrival] = route.split(" to ");
     setPickupPoint(pickup);
     setArrivalPoint(arrival);
-    setTimeout(handleSearch, 0);
+  
+    // Call handleSearch with params directly to avoid relying on async state
+    const filtered = buses.filter(
+      (bus) =>
+        bus.location.pickupLocation === pickup &&
+        bus.location.arrivalLocation === arrival &&
+        bus.schedule === date
+    );
+    setFilteredBuses(filtered);
   };
+  
+  
+  
 
   const handleContactSubmit = async (e) => {
     e.preventDefault();
@@ -115,8 +123,10 @@ const Homepage = () => {
     try {
       setSelectedBus(bus);
       // Fetch the reserved passengers for the selected bus
-      const response = await axios.get(`/formselection/${bus._id}`);
-
+      const response = await axios.get(`${backEndUrl}/formselection/${bus._id}`, {
+        withCredentials: true,
+      });
+      
       // Extract passengers from the response
       let data = response.data;
 
@@ -139,22 +149,24 @@ const Homepage = () => {
     }
   };
 
+
   const handleBookSeatConfirm = async () => {
     try {
-      console.log(destination);
+      setBookingLoading(true);
       await axios.post(
         `${backEndUrl}/formselection/${selectedBus._id}`,
         { userId, destination },
         { withCredentials: true }
       );
-      setShowBookingConfirm(false);
       alert("Seat booking confirmed!");
+      setShowBookingConfirm(false);
     } catch (err) {
-      console.error("Booking failed:", err);
       alert("Failed to book seat.");
+      console.error("Booking failed:", err);
+    } finally {
+      setBookingLoading(false);
     }
   };
-
   return (
     <div className="home-page">
       <div className="search-container">
@@ -165,15 +177,15 @@ const Homepage = () => {
           >
             <option value="">Pickup Point</option>
             <option value="E-JUST">E-JUST</option>
+            <option value="Cairo">Cairo</option>
           </select>
           <select
             onChange={(e) => setArrivalPoint(e.target.value)}
             value={arrivalPoint}
           >
             <option value="">Arrival Point</option>
-            <option value="E-JUST">Cairo</option>
-            <option value="Ramses">Ramses</option>
-            <option value="Dandy">Dandy</option>
+            <option value="Cairo">Cairo</option>
+            <option value="E-JUST">E-JUST</option>
           </select>
           <input
             type="date"
@@ -184,7 +196,7 @@ const Homepage = () => {
             Search
           </button>
         </div>
-
+  
         <div className="popular-routes">
           <h3>Popular Routes</h3>
           <div className="popular-routes-list">
@@ -200,7 +212,7 @@ const Homepage = () => {
           </div>
         </div>
       </div>
-
+  
       {isLoading ? (
         <LoadingComponent />
       ) : (
@@ -221,13 +233,15 @@ const Homepage = () => {
                       handleSeeReservedPassengers(bus);
                     }}
                   >
-                    <img src="arrow.png" alt="Delete" />
+                    <img src="arrow.png" alt="Details" />
                   </button>
                   <div className="list-body">
-                    <p>{bus.location.arrivalLocation}</p>
-                    <p>{bus.schedule}</p>
-                    <p>Time: {convertTo12HourFormat(bus.departureTime)}</p>
-                  </div>
+  <p><strong>From:</strong> {bus.location.pickupLocation}</p>
+  <p><strong>To:</strong> {bus.location.arrivalLocation}</p>
+  <p><strong>Date:</strong> {bus.schedule}</p>
+  <p><strong>Time:</strong> {convertTo12HourFormat(bus.departureTime)}</p>
+</div>
+
                   <button onClick={() => handleBusSelect(bus)}>
                     Book a seat
                   </button>
@@ -240,6 +254,9 @@ const Homepage = () => {
         </>
       )}
 
+  
+
+
       {/* Option Modal */}
       {showBusOptions && selectedBus && (
         <div className="modal-overlay">
@@ -248,30 +265,30 @@ const Homepage = () => {
               className="cancel-btn"
               onClick={() => setShowBusOptions(false)}
             >
-              <img src="cancel.png" alt="Delete" />
+              <img src="cancel.png" alt="Close" />
             </button>
             <h3>Select destination</h3>
             <div className="destination-selector">
               <div className="button-group">
                 <button
-                  className={`destination-btn ${
-                    destination === "Dandy" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Dandy")}
+                  className={`destination-btn ${destination === "Dandy" ? "selected" : ""}`}
+                  onClick={() =>
+                    setDestination(destination === "Dandy" ? "" : "Dandy")
+                  }
                 >
-                  Dandy
+                  Dandy {destination === "Dandy" && <span className="checkmark">✔️</span>}
                 </button>
                 <button
-                  className={`destination-btn ${
-                    destination === "Ramses" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Ramses")}
+                  className={`destination-btn ${destination === "Ramses" ? "selected" : ""}`}
+                  onClick={() =>
+                    setDestination(destination === "Ramses" ? "" : "Ramses")
+                  }
                 >
-                  Ramses
+                  Ramses {destination === "Ramses" && <span className="checkmark">✔️</span>}
                 </button>
               </div>
             </div>
-
+  
             {destination ? (
               <button onClick={handleBookSeatConfirm}>Confirm</button>
             ) : (
@@ -282,45 +299,7 @@ const Homepage = () => {
           </div>
         </div>
       )}
-
-      {/* Booking Confirmation Modal */}
-      {/* {showBookingConfirm && selectedBus && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Confirm Booking</h3>
-            <div className="destination-selector">
-              <div className="button-group">
-                <button
-                  className={`destination-btn ${
-                    destination === "Dandy" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Dandy")}
-                >
-                  Dandy
-                </button>
-                <button
-                  className={`destination-btn ${
-                    destination === "Ramses" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Ramses")}
-                >
-                  Ramses
-                </button>
-              </div>
-            </div>
-
-            {destination ? (
-              <button onClick={handleBookSeatConfirm}>Confirm</button>
-            ) : (
-              <p style={{ color: "red", marginTop: "10px" }}>
-                Please select a destination
-              </p>
-            )}
-            <button onClick={() => setShowBookingConfirm(false)}>Cancel</button>
-          </div>
-        </div>
-      )} */}
-
+  
       {/* Reserved Passenger List Modal */}
       {showReservedPassengerList && selectedBus && (
         <div className="modal-overlay">
@@ -346,6 +325,5 @@ const Homepage = () => {
       )}
     </div>
   );
-};
-
-export default Homepage;
+}
+export default Homepage;  
