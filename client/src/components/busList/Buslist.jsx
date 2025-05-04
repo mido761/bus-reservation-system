@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoadingComponent from "../loadingComponent/loadingComponent";
 import LoadingScreen from "../loadingScreen/loadingScreen";
+import LoadingPage from "../loadingPage/loadingPage";
 import Overlay from "../overlayScreen/overlay";
 import "./Buslist.css";
 
@@ -15,6 +16,7 @@ const BusList = () => {
   const [seatList, setSeatList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -24,8 +26,10 @@ const BusList = () => {
     try {
       const response = await axios.get(`${backEndUrl}/buses`);
       setBusList(response.data); // Assuming response data contains buses in "data"
+      setPageLoading(false);
     } catch (error) {
       console.error("Error fetching bus list:", error);
+      setPageLoading(false);
     }
   };
 
@@ -181,7 +185,7 @@ const BusList = () => {
 
     setIsLoading(true);
     try {
-      // await axios.delete(`${backEndUrl}/buses/busForm/${busId}`);
+      await axios.delete(`${backEndUrl}/buses/busForm/${busId}`);
       setBusList(busList.filter((bus) => bus._id !== busId));
 
       setIsLoading(false);
@@ -203,6 +207,11 @@ const BusList = () => {
     }
   };
 
+
+  if (pageLoading) {
+    return <LoadingPage />;
+  }
+
   return (
     <div
       className="bus-list-page"
@@ -214,8 +223,7 @@ const BusList = () => {
       ></h2>
       <div className="bus-selection">
         <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
-
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        {busList.length > 0 ? (<ul style={{ listStyle: "none", padding: 0 }}>
           {busList.map((bus) => (
             <li key={bus._id}>
               <button
@@ -435,7 +443,10 @@ const BusList = () => {
               )}
             </li>
           ))}
-        </ul>
+        </ul>): (
+        <p className="no-data">No Buses found. </p>
+      )}
+        
       </div>
       {isLoading && <LoadingScreen />}
 
