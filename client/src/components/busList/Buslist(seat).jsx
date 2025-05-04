@@ -521,7 +521,7 @@ const BusList = () => {
         ))}
       </div>
 
-      {/* 🔹 Loading & Alerts */}
+      {/* 🔹 Alerts */}
       {alertFlag && (
         <Overlay
           alertFlag={alertFlag}

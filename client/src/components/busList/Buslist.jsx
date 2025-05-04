@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import LoadingComponent from "../loadingComponent/loadingComponent";
+import LoadingScreen from "../loadingScreen/loadingScreen";
+import LoadingPage from "../loadingPage/loadingPage";
+import Overlay from "../overlayScreen/overlay";
 import "./Buslist.css";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const BusList = () => {
@@ -9,13 +15,21 @@ const BusList = () => {
   const [passengers, setPassengers] = useState([]);
   const [seatList, setSeatList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alertFlag, setAlertFlag] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const navigate = useNavigate();
 
   const fetchBusList = async () => {
     try {
       const response = await axios.get(`${backEndUrl}/buses`);
       setBusList(response.data); // Assuming response data contains buses in "data"
+      setPageLoading(false);
     } catch (error) {
       console.error("Error fetching bus list:", error);
+      setPageLoading(false);
     }
   };
 
@@ -32,8 +46,8 @@ const BusList = () => {
           ? response.data.data.orderedUsers
           : []
       );
-      console.log("seatList: ", response.data.data.seats);
-      console.log("usersList: ", response.data.data.orderedUsers);
+      // console.log("seatList: ", response.data.data.seats);
+      // console.log("usersList: ", response.data.data.orderedUsers);
 
       // let userlist = seatList.map(seat => seat.bookedBy);
       // console.log(userlist)
@@ -64,17 +78,17 @@ const BusList = () => {
 
   const filteredPassengers = passengers.filter((passenger, idx) => {
     const query = searchQuery.toLowerCase();
-  
+
     // Extract and prepare fields for comparison, making sure they are strings
     const userName = (passenger.name || "").toLowerCase();
     const phoneNumber = (String(passenger.phoneNumber) || "").toLowerCase(); // Ensure phoneNumber is treated as a string
     const route = (seatList[idx]?.route || "").toLowerCase(); // Fetch route from seatList, default to empty string if undefined
-  
+
     // Check if any of the fields match the search query
     const matchesUserName = userName.includes(query);
     const matchesPhoneNumber = phoneNumber.includes(query);
     const matchesRoute = route.includes(query);
-  
+
     // Return true if any of the conditions are true (OR logic)
     return matchesUserName || matchesPhoneNumber || matchesRoute;
   });
@@ -99,15 +113,14 @@ const BusList = () => {
   };
 
   const handleCancelBooking = async (busId, userId, seatId, index) => {
+    setIsLoading(true);
     try {
-      console.log(userId);
       // Assuming there's an API endpoint for canceling a passenger's booking on a bus
       const cancelResponse = await axios.delete(
         `${backEndUrl}/formselection/${busId}`,
         { data: { seatId: seatId, userId: userId } }
       );
 
-      console.log(seatList[index])
       if (cancelResponse.status === 200) {
         setSeatList((prevList) =>
           prevList.filter((seat) => seat._id !== seatId)
@@ -115,69 +128,131 @@ const BusList = () => {
         setPassengers((prevList) =>
           prevList.filter((passenger, idx) => idx !== index)
         ); // Remove passenger from the list
+
+        setIsLoading(false);
+        setSelectedBusId("");
+        setAlertMessage("✅ Seat canceled successfully!");
+        setAlertFlag(true);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+        }, 2200);
       }
       // console.log(passengers.)
       // fetchPassengersForBus(busId)
     } catch (error) {
       console.error("Error canceling passenger booking:", error);
+      setIsLoading(false);
+      setAlertMessage("⚠️ Error canceling the seat!");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     }
   };
-  const formatTo12Hour = (timeString) => {
-    const date = new Date(timeString);
-    if (isNaN(date)) return timeString; // if invalid date, return original
-  
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-  
-    hours = hours % 12 || 12; // convert 0 (midnight) to 12
-    minutes = minutes.toString().padStart(2, '0'); // ensure 2 digits
-  
-    return `${hours}:${minutes} ${ampm}`;
+
+  const convertTo12HourFormat = (time) => {
+    if (!time) return "";
+    const [hour, minute] = time.split(":");
+    let period = "AM";
+    let hour12 = parseInt(hour, 10);
+
+    if (hour12 >= 12) {
+      period = "PM";
+      if (hour12 > 12) hour12 -= 12;
+    }
+    if (hour12 === 0) hour12 = 12;
+
+    return `${hour12}:${minute} ${period}`;
   };
-  
+
+  //navigte with the bus id in the url to enable me to edit the bus
+  const handleEdit = (busId) => {
+    navigate(`/edit-bus/${busId}`);
+  };
+
+  const handleDel = async (busId) => {
+    const firstConfirmation = window.confirm(
+      "Are you sure you want to delete this bus?"
+    );
+    if (!firstConfirmation) return;
+
+    const secondConfirmation = window.confirm(
+      "This action cannot be undone. Do you want to proceed?"
+    );
+    if (!secondConfirmation) return;
+
+    setIsLoading(true);
+    try {
+      await axios.delete(`${backEndUrl}/buses/busForm/${busId}`);
+      setBusList(busList.filter((bus) => bus._id !== busId));
+
+      setIsLoading(false);
+      setSelectedBusId("");
+      setAlertMessage("✅ Bus deleted successfully!");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
+    } catch (err) {
+      setIsLoading(false);
+      setAlertMessage("⚠️ Error deleting the bus");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
+    }
+  };
+
+
+  if (pageLoading) {
+    return <LoadingPage />;
+  }
+
   return (
-    <div className="bus-list-page" style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-      <h2 className="title" style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}>
-      </h2>
-  
+    <div
+      className="bus-list-page"
+      style={{ padding: "20px", margin: "0 auto" }}
+    >
+      <h2
+        className="title"
+        style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}
+      ></h2>
       <div className="bus-selection">
         <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
-        <ul style={{ listStyle: "none", padding: 0 }}>
+        {busList.length > 0 ? (<ul style={{ listStyle: "none", padding: 0 }}>
           {busList.map((bus) => (
-            <li key={bus._id} style={{ marginBottom: "20px" }}>
+            <li key={bus._id}>
               <button
+                className="bus-btn"
                 onClick={() => handleBusSelect(bus._id)}
-                style={{
-                  padding: "12px 20px",
-                  backgroundColor: selectedBusId === bus._id ? "#2ecc71" : "#3498db",
-                  color: "#fff",
-                  border: "none",
-                  cursor: "pointer",
-                  width: "100%",
-                  textAlign: "left",
-                  borderRadius: "8px",
-                  fontSize: "16px",
-                  transition: "background-color 0.3s",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#2980b9")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = selectedBusId === bus._id ? "#2ecc71" : "#3498db")}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#2ecc71")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.backgroundColor =
+                    selectedBusId === bus._id
+                      ? "#2ecc71"
+                      : "var(--primary-color)")
+                }
               >
-                {formatTo12Hour(bus.departureTime)} — {bus.busNumber}
+                <div className="time-and-schedule">
+                  <p>{convertTo12HourFormat(bus.departureTime)}</p>
+                  <p>{bus.schedule}</p>
+                </div>
+                <span className="routeName">
+                  {bus.location.pickupLocation}{" "}
+                </span>{" "}
+                to{" "}
+                <span className="routeName">
+                  {bus.location.arrivalLocation}
+                </span>
               </button>
-  
               {selectedBusId === bus._id && (
-                <div
-                  className="bus-details-dropdown"
-                  style={{
-                    backgroundColor: "#f9f9f9",
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    marginTop: "10px",
-                    padding: "20px",
-                    animation: "fadeIn 0.5s",
-                  }}
-                >
+                <div className="bus-details-dropdown">
                   <div className="search-bar" style={{ marginBottom: "15px" }}>
                     <input
                       type="text"
@@ -192,35 +267,21 @@ const BusList = () => {
                       }}
                     />
                   </div>
-  
                   <div className="passenger-table">
-                    <h3>
-                      Reserved Passengers for Bus {bus.busNumber} at{" "}
-                      {bus.departureTime}
-                    </h3>
-
-                    {/* Check if filtered passengers is an array and has data */}
                     {Array.isArray(passengers) &&
                     passengers.length > 0 ? (
                       <div
                         className="table-container"
                         style={{ overflowX: "auto" }}
                       >
-                        <table
-                          className="passenger-table"
-                          style={{
-                            width: "100%",
-                            borderCollapse: "collapse",
-                            fontSize: "16px",
-                            minWidth: "700px",
-                          }}
-                        >
+                        <table className="passenger-table">
                           <thead>
                             <tr style={{ backgroundColor: "#f5f5f5" }}>
                               <th
                                 style={{
                                   padding: "10px",
                                   border: "1px solid #ccc",
+                                  borderTopLeftRadius: "10px",
                                 }}
                               >
                                 #
@@ -249,7 +310,6 @@ const BusList = () => {
                               >
                                 Route
                               </th>
-                              {/* <th style={{ padding: "10px", border: "1px solid #ccc" }}>Departure Time</th> */}
                               <th
                                 style={{
                                   padding: "10px",
@@ -258,7 +318,6 @@ const BusList = () => {
                               >
                                 Reserved Time
                               </th>{" "}
-                              {/* New column */}
                               <th
                                 style={{
                                   padding: "10px",
@@ -272,7 +331,6 @@ const BusList = () => {
                           <tbody>
                             {passengers.map((passenger, idx) => {
                               const seat = seatList[idx]; // get corresponding seat
-
                               return (
                                 <tr key={idx}>
                                   <td
@@ -350,19 +408,56 @@ const BusList = () => {
                           </tbody>
                         </table>
                       </div>
-                    ) : (
+                    ) :
+                    loading ? (
+                      <LoadingComponent />
+                    ) :(
                       <p className="no-data">
                         No passengers found matching your search.
                       </p>
                     )}
+                  </div>{" "}
+                  <div className="actions-container">
+                    <button
+                      className="del-btn"
+                      onClick={() => handleDel(bus._id)}
+                    >
+                      <img
+                        src="delete.png"
+                        alt="Delete"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </button>
+                    <button
+                      className="edit-btn"
+                      onClick={() => handleEdit(bus._id)}
+                    >
+                      <img
+                        src="editing.png"
+                        alt="Edit"
+                        style={{ width: "24px", height: "24px" }}
+                      />
+                    </button>
                   </div>
                 </div>
               )}
             </li>
           ))}
-        </ul>
+        </ul>): (
+        <p className="no-data">No Buses found. </p>
+      )}
+        
       </div>
+      {isLoading && <LoadingScreen />}
+
+      {alertFlag && (
+        <Overlay
+          alertFlag={alertFlag}
+          alertMessage={alertMessage}
+          setAlertFlag={setAlertFlag}
+        />
+      )}
     </div>
   );
-}
-export default BusList;  
+};
+export default BusList;

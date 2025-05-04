@@ -33,23 +33,22 @@ const Homepage = () => {
   const [reservedPassengers, setReservedPassengers] = useState([]);
   const [showReservedPassengerList, setShowReservedPassengerList] =
     useState(false);
-    const [bookingLoading, setBookingLoading] = useState(false);
-    const fetchBuses = async () => {
-      try {
-        const [userRes, busesRes] = await Promise.all([
-          axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
-          axios.get(`${backEndUrl}/buses`),
-        ]);
-        setUserId(userRes.data.userId);
-        setBuses(busesRes.data);
-        setFilteredBuses(busesRes.data);
-      } catch (error) {
-        console.error("Error fetching buses:", error);
-      } finally {
-        setTimeout(() => setIsLoading(false), 1500);
-      }
-    };
-    
+
+  const fetchBuses = async () => {
+    try {
+      const [req_user, response] = await Promise.all([
+        axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
+      ]);
+      const res = await axios.get(`${backEndUrl}/buses`);
+      setBuses(res.data);
+      setFilteredBuses(res.data);
+      setUserId(req_user.data.userId);
+    } catch (error) {
+      console.error("Error fetching buses:", error);
+    } finally {
+      setTimeout(() => setIsLoading(false), 1500);
+    }
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -57,8 +56,8 @@ const Homepage = () => {
   }, []);
 
   const popularRoutes = [
-    { id: 1, route: "Cairo to   E-JUST" },
-    { id: 3, route: "E-JUST to  Cairo" },
+    { id: 1, route: "Cairo to E-JUST" },
+    { id: 3, route: "E-JUST to Cairo" },
   ];
 
   const handleBusSelect = (bus) => {
@@ -132,7 +131,7 @@ const Homepage = () => {
 
       // Safely extract an array from any possible shape
       // if (Array.isArray(data)) {
-        setPassengerList(data); // case: direct array
+      setPassengerList(data); // case: direct array
       // } else if (Array.isArray(data.passengers)) {
       //   setPassengerList(data.passengers); // case: { passengers: [...] }
       // } else {
@@ -195,20 +194,19 @@ const Homepage = () => {
           <button className="search-btn" onClick={handleSearch}>
             Search
           </button>
-        </div>
-  
-        <div className="popular-routes">
-          <h3>Popular Routes</h3>
-          <div className="popular-routes-list">
-            {popularRoutes.map((route) => (
-              <div
-                key={route.id}
-                className="route-card"
-                onClick={() => handleRouteSelect(route.route)}
-              >
-                {route.route}
-              </div>
-            ))}
+          <div className="popular-routes">
+            <h3>Popular Routes</h3>
+            <div className="popular-routes-list">
+              {popularRoutes.map((route) => (
+                <div
+                  key={route.id}
+                  className="route-card"
+                  onClick={() => handleRouteSelect(route.route)}
+                >
+                  {route.route}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -6,11 +6,10 @@
   flex-direction: column;
   align-items: center;
   background-color: var(--background-color);
-  min-width: 320px;
-  max-width: 1400px;
+  box-shadow: 0 6px 20px var(--shadow-color);
 }
 
-.top-section{
+.top-section {
   width: 93%;
   display: flex;
   flex-direction: column;
@@ -28,7 +27,7 @@
   align-items: center;
   gap: 12px;
 }
-.counters{
+.counters {
   display: flex;
 }
 /* Search Input Styling */
@@ -133,11 +132,9 @@
   border-top: 9px solid #2f97d3; /* Decreased border width */
   border-radius: 5px;
   display: inline-block;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.40);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   text-transform: uppercase;
 }
-
-
 
 .bus-container:hover {
   transform: translateY(-5px);
@@ -162,7 +159,6 @@
   color: #444;
   margin: 5px 0;
 }
-
 
 .bus-list-page .bus-container span {
   font-weight: bold;
@@ -327,7 +323,6 @@
   color: white;
 }
 
-
 /* Search Container */
 .search-container {
   display: flex;
@@ -340,7 +335,7 @@
   width: 250px;
   padding: 10px;
   font-size: 16px;
-  border: 2px solid var(--primary-hover); 
+  border: 2px solid var(--primary-hover);
   border-radius: 8px;
   outline: none;
   transition: 0.3s ease-in-out;
@@ -348,8 +343,8 @@
 
 /* On Focus */
 .search-container input:focus {
-  border-color: var(--primary-hover); 
-  box-shadow: 0px 0px 8px var(--primary-hover)(183, 144, 28, 0.5);
+  border-color: var(--primary-hover);
+  box-shadow: 0px 0px 8px var(--primary-hover) (183, 144, 28, 0.5);
 }
 
 /* Search Input Placeholder */
@@ -371,17 +366,17 @@ input {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;  /* Reduced gap */
+  gap: 8px; /* Reduced gap */
   padding: 10px;
   border-radius: 8px;
   /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-  max-width: 600px;  /* Reduced width */
+  max-width: 600px; /* Reduced width */
   margin: 0;
 }
 
 /* Select Dropdown */
 .search-container select {
-  width: 45%;  
+  width: 45%;
   padding: 5px 0px; /* Adjusted padding */
   border-radius: 6px;
   border: 1px solid var(--secondary-hover);
@@ -396,11 +391,11 @@ input {
 }
 
 .search-container select:hover {
-  border-color:var(--secondary-hover);
+  border-color: var(--secondary-hover);
 }
 
 .search-container select:focus {
-  border-color:var(--secondary-hover);
+  border-color: var(--secondary-hover);
   box-shadow: 0 0 5px var(--secondary-hover);
 }
 
@@ -412,8 +407,8 @@ input {
 
 /* Search Input */
 .search-container input {
-  width: 100%;  /* Reduced width */
-  padding: 8px 12px;  /* Adjusted padding */
+  width: 100%; /* Reduced width */
+  padding: 8px 12px; /* Adjusted padding */
   border: 1px solid var(--secondary-hover);
   border-radius: 6px;
   font-size: 14px;
@@ -432,25 +427,24 @@ input {
   font-size: 13px;
 }
 
-.green{
+.green {
   background-color: #00d26a;
   border-radius: 10px;
 }
 
-
-.red{
+.red {
   background-color: #f92f60;
   border-radius: 10px;
 }
 
-.actions-container{
+.actions-container {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-.actions-container button{
+.actions-container button {
   width: 20px;
   height: 20px;
   background-color: transparent;
@@ -563,10 +557,19 @@ input {
   border-radius: 4px;
   cursor: pointer;
 }
-.bus-list-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
+
+.bus-list-page .passenger-table {
+  border-collapse: collapse;
+  font-size: 16px;
+  min-width: 250px;
+  max-width: 250px;
+  /* margin: auto; */
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.bus-list-page .actions-container {
+  margin-top: 15px;
 }
 
 .title {
@@ -575,19 +578,20 @@ input {
   color: #333;
 }
 
-.table-container {
-  overflow-x: auto;
+.bus-list-page .table-container {
+  overflow: auto;
+  padding-left: 255px;
+  max-width: 245px;
 }
-
 
 button {
   transition: all 0.3s ease;
 }
 
 button:hover {
-  background-color: #2980b9;
+  /* background-color: #2980b9; */
   transform: translateY(-2px);
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .search-bar input {
@@ -602,29 +606,82 @@ button:hover {
 }
 
 .bus-details-dropdown {
-  background-color: #fefefe;
-  padding: 20px;
-  margin-top: 10px;
+  background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
-  animation: fadeIn 0.5s ease forwards;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  padding: 20px;
+  animation: fadeIn 0.5s;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px);}
-  to { opacity: 1; transform: translateY(0);}
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 body {
-  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  font-family: "Roboto", "Helvetica Neue", sans-serif;
   background-color: #f5f7fa;
   color: #444;
 }
 
-h2, h3 {
+h2,
+h3 {
   font-weight: 600;
   color: #222;
 }
 .cancel-button:hover {
   background-color: #c0392b;
+}
+
+.bus-btn {
+  padding: 12px 20px;
+  background-color: var(--primary-color);
+  color: rgb(255, 255, 255);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+}
+
+/* .bus-btn:hover{
+  background-color: none;
+  color: var(--button-text);
+}
+
+.green-btn{
+  background-color: var(--selected-btn);
+} */
+
+.time-and-schedule {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+  margin-bottom: 10px;
+}
+
+.routeName {
+  color: var(--text-color);
+  font-weight: 800;
+}
+
+.bus-selection {
+  width: 290px;
+}
+
+.bus-selection h3 {
+  text-align: center;
 }

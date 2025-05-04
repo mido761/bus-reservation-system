@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import LoadingComponent from "../loadingComponent/loadingComponent";
+import LoadingScreen from "../loadingScreen/loadingScreen";
+import LoadingPage from "../loadingPage/loadingPage";
+import Overlay from "../overlayScreen/overlay";
 import "./Passengers.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -8,18 +12,19 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 const PassengersPage = () => {
   const location = useLocation();
   const { busId } = location.state || {};
-
+  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [alertFlag, setAlertFlag] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
   const [seats, setSeats] = useState([]);
   const [userInfo, setUserInfo] = useState({});
   const [seatId, setSeatId] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const fetchReservedPassengers = async () => {
     try {
-      setLoading(true);
-
       const authResponse = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
       });
@@ -35,15 +40,16 @@ const PassengersPage = () => {
         `${backEndUrl}/user/profile/${userID}`
       );
       setUserInfo(userProfileResponse.data);
-      setLoading(false);
+      setPageLoading(false);
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
       setPassengers([]);
-      setLoading(false);
+      setPageLoading(false);
     }
   };
 
   const handleSeatCancel = async () => {
+    setIsLoading(true);
     try {
       const cancelResponse = await axios.delete(
         `${backEndUrl}/formselection/${busId}`,
@@ -53,13 +59,28 @@ const PassengersPage = () => {
       );
 
       if (cancelResponse.status === 200) {
-        setSeats(seats.filter(seat => seat.seatId !== seatId)); // Remove passenger from the list
+        setSeats(seats.filter((seat) => seat.seatId !== seatId)); // Remove passenger from the list
         setShowCancelOverlay(false);
         setSeatId("");
+
+        setIsLoading(false);
+        setAlertMessage("✅ Seat canceled successfully!");
+        setAlertFlag(true);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+        }, 2200);
       }
     } catch (error) {
       console.error("Error cancelling the seat", error);
       setShowCancelOverlay(false);
+      setIsLoading(false);
+      setAlertMessage("⚠️ Error canceling the seat!");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     }
   };
 
@@ -80,8 +101,8 @@ const PassengersPage = () => {
     }
   }, [busId]);
 
-  if (loading) {
-    return <div>Loading your reservations...</div>;
+  if (pageLoading) {
+    return <LoadingPage />;
   }
 
   return (
@@ -98,7 +119,6 @@ const PassengersPage = () => {
               <col style={{ width: "10%" }} />
             </colgroup>
 
-           
             <tbody>
               {seats.map((seat, idx) => {
                 const rowColor = getRowColor(idx);
@@ -131,6 +151,8 @@ const PassengersPage = () => {
             </tbody>
           </table>
         </div>
+      ) : isLoading ? (
+        <LoadingComponent />
       ) : (
         <p className="no-data">No reserved passengers found. {seats[0]}</p>
       )}
@@ -154,6 +176,14 @@ const PassengersPage = () => {
             </div>
           </div>
         </div>
+      )}
+      {isLoading && <LoadingScreen />}
+      {alertFlag && (
+        <Overlay
+          alertFlag={alertFlag}
+          alertMessage={alertMessage}
+          setAlertFlag={setAlertFlag}
+        />
       )}
     </div>
   );
