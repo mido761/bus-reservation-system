@@ -17,6 +17,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const middleware = require("./controllers/middleware");
 const register = require("./routes/register");
 const forgotPassword = require("./routes/forgotPassword")
+const blackList = require("./routes/blackList");
 const path = require("path");
 // For email vraification
 const nodemailer = require("nodemailer");
@@ -117,6 +118,7 @@ app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
 app.use("/formselection", middleware.isAuthenticated,  FormSelection);
 app.use("/seats", middleware.isAuthenticated,  FormSeats);
 app.use("/user", middleware.isAuthenticated, userRouter);
+app.use("/blacklist", middleware.isAuthoraized, blackList);
 
 // Email verifaction
 app.use("/api/register", register);
