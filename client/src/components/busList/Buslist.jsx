@@ -23,6 +23,7 @@ const BusList = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedPassenger, setSelectedPassenger] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null);
+  const [isBlacklisting, setIsBlacklisting] = useState(false);
   const navigate = useNavigate();
 
   const fetchBusList = async () => {
@@ -143,6 +144,42 @@ const BusList = () => {
       console.error("Error canceling passenger booking:", error);
       setIsLoading(false);
       setAlertMessage("⚠️ Error canceling the seat!");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
+    }
+  };
+
+  const handleBlacklistUser = async (busId, userId) => {
+    // First confirmation for blacklisting
+    const confirmBlacklist = window.confirm(
+      "Are you sure you want to blacklist this user?"
+    );
+    if (!confirmBlacklist) return;
+
+    setIsBlacklisting(true);
+    try {
+      // Call the blacklist API
+      const response = await axios.post(`${backEndUrl}/blacklist/${busId}`, {}, {
+        withCredentials: true
+      });
+
+      if (response.status === 200) {
+        setIsBlacklisting(false);
+        setAlertMessage("✅ User has been blacklisted successfully!");
+        setAlertFlag(true);
+        setShowPopup(false);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+        }, 2200);
+      }
+    } catch (error) {
+      console.error("Error blacklisting user:", error);
+      setIsBlacklisting(false);
+      setAlertMessage("⚠️ Error blacklisting the user!");
       setAlertFlag(true);
 
       setTimeout(() => {
@@ -316,7 +353,7 @@ const BusList = () => {
         )}
       </div>
 
-      {/* Enhanced Popup Modal */}
+      {/* Enhanced Popup Modal with Blacklist Button */}
       {showPopup && selectedPassenger && selectedSeat && (
         <div className="popup-overlay">
           <div className="popup-content">
@@ -341,22 +378,31 @@ const BusList = () => {
                 {calculateTimeDifference(selectedSeat.bookedTime)}
               </div>
             </div>
-            <button
-              className="cancel-booking-btn"
-              onClick={() => {
-                const index = passengers.findIndex(
-                  (p) => p._id === selectedPassenger._id
-                );
-                handleCancelBooking(
-                  selectedBusId,
-                  selectedPassenger._id,
-                  selectedSeat._id,
-                  index
-                );
-              }}
-            >
-              Cancel Booking
-            </button>
+            <div className="popup-buttons-container">
+              <button
+                className="cancel-booking-btn"
+                onClick={() => {
+                  const index = passengers.findIndex(
+                    (p) => p._id === selectedPassenger._id
+                  );
+                  handleCancelBooking(
+                    selectedBusId,
+                    selectedPassenger._id,
+                    selectedSeat._id,
+                    index
+                  );
+                }}
+              >
+                Cancel Booking
+              </button>
+              <button
+                className="blacklist-btn"
+                onClick={() => handleBlacklistUser(selectedBusId, selectedPassenger._id)}
+                disabled={isBlacklisting}
+              >
+                {isBlacklisting ? "Blacklisting..." : "Blacklist User"}
+              </button>
+            </div>
           </div>
         </div>
       )}
