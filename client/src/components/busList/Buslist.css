@@ -1,5 +1,4 @@
 /* General page layout */
-/* General page layout */
 .bus-list-page {
   min-height: 86vh;
   display: flex;
@@ -7,6 +6,8 @@
   align-items: center;
   background-color: var(--background-color);
   box-shadow: 0 6px 20px var(--shadow-color);
+  padding: 20px;
+  margin: 0 auto;
 }
 
 .top-section {
@@ -18,601 +19,87 @@
   gap: 0px;
 }
 
-/* Search Bar Container */
-.search-container {
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+/* Bus selection styling */
+.bus-selection {
+  width: 320px;
 }
-.counters {
-  display: flex;
-}
-/* Search Input Styling */
-.search-input {
-  width: 60%;
-  padding: 12px;
-  font-size: 16px;
-  border: 2px solid var(--primary-hover);
-  border-radius: 8px;
-  outline: none;
-  background-color: var(--form-background);
-  color: var(--text-color);
+
+.bus-selection h3 {
   text-align: center;
-  transition: all 0.3s ease-in-out;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 24px;
 }
 
-.search-input:focus {
-  border-color: var(--secondary-hover);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-}
-/* Search Icon Inside Input */
-.search-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-}
-
-.search-wrapper input {
-  width: 100%;
-  padding: 12px 40px 12px 12px; /* Space for icon */
-  font-size: 16px;
-}
-
-.search-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary-hover);
-  font-size: 18px;
-}
-/* Show Buses button */
-.show-buses-btn {
-  background-color: var(--primary-hover);
-  color: var(--button-text);
-  padding: 18px 0px;
-  height: 50px;
-  width: 60px;
-  font-size: 10px;
-  font-weight: bold;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  text-align: center;
-  user-select: none;
-}
-
-.show-buses-btn:hover {
-  background-color: var(--secondary-hover);
-  transform: scale(1.05);
-}
-
+/* Bus list styling */
 .bus-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-  max-width: 1200px;
-  /* padding: 20px; */
-  gap: 20px;
-  width: 100%;
-  max-width: 1200px;
-  padding: 5px;
-}
-
-/* Individual bus container */
-.bus-container {
-  padding: 15px;
-  margin: 10px 0;
-  background: #fff;
-  border: 2px solid var(--primary-color);
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Bus Number Styling */
-.bus-list-page .bus-number {
-  width: 100px;
-  font-size: 15px; /* Slightly larger text */
-  font-weight: bold;
-  color: var(--text-color); /* Red color for emphasis */
-  background-color: #ffffff; /* Light red background */
-  padding: 4px 12px; /* Adjusted padding */
-  border: 1px solid #2f97d3; /* Decreased border width */
-  border-top: 9px solid #2f97d3; /* Decreased border width */
-  border-radius: 5px;
-  display: inline-block;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  text-transform: uppercase;
-}
-
-.bus-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-}
-
-/* Bus details */
-/* Bus details */
-.bus-container h1 {
-  font-size: 22px;
-  font-size: 22px;
-  color: var(--text-color);
-  margin-bottom: 10px;
-  margin-bottom: 10px;
-}
-
-.bus-container p {
-  font-size: 16px;
-  font-weight: 500;
-  color: #444;
-  margin: 5px 0;
-}
-
-.bus-list-page .bus-container span {
-  font-weight: bold;
-  color: var(--background-color);
-}
-
-/* Delete Bus button */
-/* Delete Bus button */
-.delete-button {
-  background-color: var(--danger-color);
-  color: #fff;
-  padding: 10px 18px;
-  font-size: 16px;
-  background-color: var(--danger-color);
-  color: #fff;
-  padding: 10px 18px;
-  font-size: 16px;
-  border: none;
-  border-radius: 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  margin-top: 12px;
-  transition: all 0.3s ease-in-out;
-  margin-top: 12px;
-}
-
-.delete-button:hover {
-  background-color: var(--danger-hover);
-  transform: scale(1.05);
-  background-color: var(--danger-hover);
-  transform: scale(1.05);
-}
-
-/* Booked Users Section */
-/* Booked Users Section */
-.booked-users {
-  padding: 12px;
-  border-radius: 8px;
-  background-color: var(--background-light);
-  width: 100%;
-  min-width: 280px;
-  max-width: 380px;
-  padding: 0px 18px;
-  border-radius: 8px;
-  background-color: var(--background-light);
-  width: 100%;
-  min-width: 280px;
-  max-width: 380px;
-}
-
-.booked-users h3 {
-  font-size: 18px;
-  color: var(--text-color);
-  margin-bottom: 8px;
-  text-align: center;
-  margin-bottom: 8px;
-  text-align: center;
-}
-
-.booked-users ul {
   list-style: none;
   padding: 0;
-  margin: 0;
-  margin: 0;
+  width: 100%;
 }
 
-/* Booked user details */
-/* Booked user details */
-.booked-user {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px;
-  padding: 8px;
-  border-bottom: 1px solid var(--input-border);
-  font-size: 14px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  max-width: 100%;
-  font-size: 14px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  max-width: 100%;
-  gap: 6px;
-  cursor: pointer;
-}
-
-.user-name {
-  font-weight: bold;
-  color: var(--button-text);
-  word-break: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  display: inline-block;
-  max-width: 150px;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-  display: inline-block;
-  max-width: 150px;
-}
-
-.user-phone {
-  color: var(--text-color);
-  font-style: italic;
-}
-
-.user-count {
-  font-weight: bold;
-  color: var(--secondary-hover);
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .bus-list {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .bus-container {
-    max-width: 90%;
-  }
-  .search-input {
-    width: 40%;
-  }
-}
-.confirm-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  z-index: 1000;
-  width: 300px;
-}
-
-.confirm-modal p {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.confirm-modal button {
-  margin: 5px;
-  padding: 8px 16px;
+/* Bus button styling */
+.bus-btn {
+  padding: 14px 20px;
+  background-color: var(--primary-color);
+  color: rgb(255, 255, 255);
+  font-weight: 700;
   border: none;
   cursor: pointer;
-}
-
-.confirm-btn {
-  background-color: red;
-  color: white;
-}
-
-.cancel-btn {
-  background-color: gray;
-  color: white;
-}
-
-/* Search Container */
-.search-container {
-  display: flex;
-  justify-content: center;
-  margin: 15px 0;
-}
-
-/* Search Input */
-.search-container input {
-  width: 250px;
-  padding: 10px;
-  font-size: 16px;
-  border: 2px solid var(--primary-hover);
-  border-radius: 8px;
-  outline: none;
-  transition: 0.3s ease-in-out;
-}
-
-/* On Focus */
-.search-container input:focus {
-  border-color: var(--primary-hover);
-  box-shadow: 0px 0px 8px var(--primary-hover) (183, 144, 28, 0.5);
-}
-
-/* Search Input Placeholder */
-.search-container input::placeholder {
-  color: #888;
-  font-size: 14px;
-}
-/* .search-emoji {
-  position: absolute;
-  left: 10px;
-  font-size: 18px;
-}
-
-input {
-  padding-right: 35px; /* Space for the emoji */
-
-/* Search Container */
-.search-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px; /* Reduced gap */
-  padding: 10px;
-  border-radius: 8px;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-  max-width: 600px; /* Reduced width */
-  margin: 0;
-}
-
-/* Select Dropdown */
-.search-container select {
-  width: 45%;
-  padding: 5px 0px; /* Adjusted padding */
-  border-radius: 6px;
-  border: 1px solid var(--secondary-hover);
-  background: #ffffff;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  cursor: pointer;
-  outline: none;
+  width: 100%;
   text-align: center;
-  transition: all 0.3s ease-in-out;
-}
-
-.search-container select:hover {
-  border-color: var(--secondary-hover);
-}
-
-.search-container select:focus {
-  border-color: var(--secondary-hover);
-  box-shadow: 0 0 5px var(--secondary-hover);
-}
-
-/* Input Wrapper */
-.input-wrapper {
-  flex-grow: 1;
-  position: relative;
-}
-
-/* Search Input */
-.search-container input {
-  width: 100%; /* Reduced width */
-  padding: 8px 12px; /* Adjusted padding */
-  border: 1px solid var(--secondary-hover);
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.3s ease-in-out;
-}
-
-.search-container input:focus {
-  border-color: var(--secondary-hover);
-  box-shadow: 0 0 5px var(--secondary-hover);
-}
-
-/* Placeholder Styling */
-.search-container input::placeholder {
-  color: #888;
-  font-size: 13px;
-}
-
-.green {
-  background-color: #00d26a;
   border-radius: 10px;
-}
-
-.red {
-  background-color: #f92f60;
-  border-radius: 10px;
-}
-
-.actions-container {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.actions-container button {
-  width: 20px;
-  height: 20px;
-  background-color: transparent;
-  padding: 0;
-}
-.reset-btn {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.reset-btn:hover {
-  background-color: #cc0000;
-}
-/* Search Bar */
-.search-bar {
-  margin-bottom: 20px;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.search-bar input:focus {
-  outline: none;
-  border-color: #3498db;
-}
-
-.cancel-button {
-  padding: 6px 12px;
-  background-color: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.cancel-button:hover {
-  background-color: #c0392b;
-}
-
-.no-data {
-  font-size: 1.2rem;
-  color: #888;
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* Responsive Styling for Smaller Screens */
-@media (max-width: 768px) {
-  .search-bar input {
-    padding: 8px;
-  }
-
-  .passenger-table th,
-  .passenger-table td {
-    font-size: 0.9rem;
-    padding: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .search-bar input {
-    padding: 6px;
-    font-size: 0.9rem;
-  }
-
-  .passenger-table th,
-  .passenger-table td {
-    font-size: 0.8rem;
-    padding: 8px;
-  }
-}
-.bus-select-button {
-  padding: 10px;
-  background-color: #3498db;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-  margin-bottom: 10px;
-  border-radius: 5px;
   font-size: 16px;
-}
-
-.search-input {
-  padding: 8px;
-  width: 100%;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.cancel-button {
-  padding: 6px 12px;
-  background-color: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.bus-list-page .passenger-table {
-  border-collapse: collapse;
-  font-size: 16px;
-  min-width: 250px;
-  max-width: 250px;
-  /* margin: auto; */
-  overflow: hidden;
-  border-radius: 10px;
-}
-
-.bus-list-page .actions-container {
-  margin-top: 15px;
-}
-
-.title {
-  text-align: center;
-  font-size: 2rem;
-  color: #333;
-}
-
-.bus-list-page .table-container {
-  overflow: auto;
-  padding-left: 255px;
-  max-width: 245px;
-}
-
-button {
   transition: all 0.3s ease;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-button:hover {
-  /* background-color: #2980b9; */
+.bus-btn-selected {
+  background-color: #2ecc71;
+}
+
+.bus-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.search-bar input {
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+.time-and-schedule {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+  margin-bottom: 10px;
+  width: 100%;
 }
 
-.search-bar input::placeholder {
-  color: #aaa;
+.time-and-schedule p {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
 }
 
+.routeName {
+  color: var(--text-color);
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* Bus details dropdown styling */
 .bus-details-dropdown {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  background-color: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
   margin-top: 10px;
-  margin-bottom: 15px;
-  padding: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
   animation: fadeIn 0.5s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 @keyframes fadeIn {
@@ -625,63 +112,300 @@ button:hover {
     transform: translateY(0);
   }
 }
-body {
-  font-family: "Roboto", "Helvetica Neue", sans-serif;
-  background-color: #f5f7fa;
-  color: #444;
+
+/* Search bar styling */
+.search-bar {
+  margin-bottom: 20px;
+  width: 100%;
 }
 
-h2,
-h3 {
+.search-bar input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 1px 6px rgba(52, 152, 219, 0.3);
+}
+
+.search-bar input::placeholder {
+  color: #aaa;
+  font-size: 13px;
+}
+
+/* Passenger table styling */
+.passenger-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 250px;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #eaeaea;
+}
+
+.passenger-table th {
+  background-color: #f8f9fa;
   font-weight: 600;
-  color: #222;
-}
-.cancel-button:hover {
-  background-color: #c0392b;
+  color: #444;
+  font-size: 14px;
+  text-align: left;
 }
 
-.bus-btn {
-  padding: 12px 20px;
-  background-color: var(--primary-color);
-  color: rgb(255, 255, 255);
-  font-weight: 700;
+.passenger-table th:first-child {
+  width: 40px;
+  text-align: center;
+}
+
+.passenger-table td, .passenger-table th {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.passenger-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Numbered column styling */
+.passenger-table td:first-child {
+  width: 40px;
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+  font-weight: 600;
+  padding: 8px;
+}
+
+/* Username styling */
+.passenger-table td:nth-child(2) {
+  font-weight: 500;
+  color: #3498db;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.passenger-table td:nth-child(2):hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.table-container {
+  overflow: auto;
+  width: 100%;
+  border-radius: 10px;
+  padding: 0;
+}
+
+/* No data message */
+.no-data {
+  font-size: 15px;
+  color: #888;
+  text-align: center;
+  margin: 30px 0;
+  font-style: italic;
+}
+
+/* Actions container styling */
+.actions-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.action-button {
+  background-color: transparent;
   border: none;
   cursor: pointer;
-  width: 100%;
-  text-align: center;
+  padding: 8px;
   border-radius: 8px;
-  font-size: 16px;
-  transition: background-color 0.3s;
-  margin-bottom: 10px;
+  transition: all 0.2s ease;
 }
 
-/* .bus-btn:hover{
-  background-color: none;
-  color: var(--button-text);
+.action-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
-.green-btn{
-  background-color: var(--selected-btn);
-} */
-
-.time-and-schedule {
+.del-btn, .edit-btn {
   display: flex;
-  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 35px;
-  margin-bottom: 10px;
 }
 
-.routeName {
-  color: var(--text-color);
-  font-weight: 800;
+.action-icon {
+  width: 22px;
+  height: 22px;
 }
 
-.bus-selection {
-  width: 290px;
+/* Enhanced Popup styling */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  animation: fadeInOverlay 0.3s ease;
 }
 
-.bus-selection h3 {
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.popup-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  position: relative;
+  animation: scaleIn 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.popup-content h3 {
+  margin-bottom: 25px;
   text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Close button styling */
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #777;
+  transition: color 0.2s ease;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-button:hover {
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+/* Passenger details grid styling */
+.passenger-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+  text-align: left;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 14px;
+}
+
+/* Cancel booking button */
+.cancel-booking-btn {
+  padding: 12px 20px;
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 14px;
+  width: 100%;
+  max-width: 200px;
+  margin: 10px auto 5px;
+  display: block;
+}
+
+.cancel-booking-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .bus-selection {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .popup-content {
+    width: 90%;
+    padding: 20px;
+  }
+  
+  .passenger-details-grid {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar input {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .passenger-table th,
+  .passenger-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .popup-content {
+    padding: 15px;
+  }
+  
+  .passenger-details-grid {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
 }
