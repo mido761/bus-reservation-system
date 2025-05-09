@@ -6,7 +6,7 @@ const Seat = require("../models/seat");
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
 const seat = require("../models/seat");
-
+const BlackList = require("../models/blackList")
 // retrieve bus details
 router.get("/:id", async (req, res) => {
   try {
@@ -43,20 +43,18 @@ router.post("/:busId", async (req, res) => {
 
     const numberOfSeats = await Seat.countDocuments({ bookedBy: userId }); // count the number of seats for the user
 
-    // Regular users can only book up to 2 seats per bus
-    // if (
-    //   !isAdmin 
-    //   // user.seats.length > 1
-    // ) {
-    //   return res.status(400).json({
-    //     message: "Only two seats are allowed per user on the same bus!",
-    //   });
-    // }
+    const blacklisted = await BlackList.find({userId:userId});
+    if(!isAdmin && blacklisted.length>0){
+     return res.status(400).json({
+        message: "You are Black Listed",
+      }); 
+    };
+
     if (!isAdmin && numberOfSeats > 1) {
       return res.status(400).json({
         message: "Only two seats are allowed per user on the same bus!",
       });
-    }
+    };
 
     if (numberOfSeats > 0){
       const oldBus = await Seat.find({ bookedBy: userId }, {busId: 1}); // Get the bus of the user's seat
