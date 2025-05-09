@@ -10,7 +10,7 @@ const BusFormSchema = new mongoose.Schema({
     },
     departureTime: {type: String, required: true},
     allowance: {
-        cancelTimeAllowance: {type: Number, required: false},
+        cancelTimeAllowance: {type: Number, required: false,  default: 3 * 60 * 60 * 1000,  }, // 3 hour in milliseconds
         bookingTimeAllowance: {type: Number, required: false},        
     }
 });

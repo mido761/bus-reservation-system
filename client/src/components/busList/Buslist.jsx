@@ -119,10 +119,15 @@ const handleSearchChange = (e) => {
   const handleCancelBooking = async (busId, userId, seatId, index) => {
     setIsLoading(true);
     try {
+        const authResponse = await axios.get(`${backEndUrl}/auth`, {
+        withCredentials: true,
+      });
+      const userID = authResponse.data.userId;
+   
       // Assuming there's an API endpoint for canceling a passenger's booking on a bus
       const cancelResponse = await axios.delete(
         `${backEndUrl}/formselection/${busId}`,
-        { data: { seatId: seatId, userId: userId } }
+        { data: { seatId: seatId, userId: userID } }
       );
 
       if (cancelResponse.status === 200) {
