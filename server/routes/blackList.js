@@ -29,12 +29,40 @@ router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
     const AddToBlackList = await blackList.insertMany(usersToBlacklist, { ordered: false }); 
     return res
     .status(200)
+    .json({ message: "Users added to blacklist successfully", blackListedUsers: AddToBlackList });
+} catch (err) {
+  console.error("Error adding users to blacklist", err);
+  res.status(500).json({ error: "Internal server error" });
+}
+})
+
+
+
+router.post("/user/:seatId", middleware.isAuthoraized, async (req, res) => {
+  try{  
+    
+    const seatId = req.params.seatId;
+    
+    if(!seatId) { return res.status(404).json({ error: "Bus not found" })}
+
+    const seat = await Seat.findById(seatId)
+
+    // Step 2: Map to documents for insertion
+    const AddToBlackList = new blackList({
+          userId:seat.bookedBy,
+          seatId: seat._id,
+          reason:"RsrvNotCome" 
+        });
+      await AddToBlackList.save()
+    return res
+    .status(200)
     .json({ message: "User added to blacklist successfully", blackListedUsers: AddToBlackList });
 } catch (err) {
   console.error("Error adding users to blacklist", err);
   res.status(500).json({ error: "Internal server error" });
 }
 })
+
 router.get("/",async (req, res) => {
   try{
     const blacklist = await blackList.find()
