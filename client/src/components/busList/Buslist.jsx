@@ -72,26 +72,30 @@ const BusList = () => {
   }, []);
 
   // Handle search input change
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
 
-  const filteredPassengers = passengers.filter((passenger, idx) => {
-    const query = searchQuery.toLowerCase();
 
-    // Extract and prepare fields for comparison, making sure they are strings
-    const userName = (passenger.name || "").toLowerCase();
-    const phoneNumber = (String(passenger.phoneNumber) || "").toLowerCase(); // Ensure phoneNumber is treated as a string
-    const route = (seatList[idx]?.route || "").toLowerCase(); // Fetch route from seatList, default to empty string if undefined
+const handleSearchChange = (e) => {
+  setSearchQuery(e.target.value);
+};
 
-    // Check if any of the fields match the search query
-    const matchesUserName = userName.includes(query);
-    const matchesPhoneNumber = phoneNumber.includes(query);
-    const matchesRoute = route.includes(query);
+ const filteredPassengers = passengers.filter((passenger, idx) => {
+  const query = searchQuery.toLowerCase().trim();  // Trim the search query to avoid leading/trailing spaces
 
-    // Return true if any of the conditions are true (OR logic)
-    return matchesUserName || matchesPhoneNumber || matchesRoute;
-  });
+  // Extract and prepare fields for comparison
+  const userName = passenger?.name?.toLowerCase() || "";  // Safe check for passenger name
+  const phoneNumber = (String(passenger?.phoneNumber) || "").toLowerCase();  // Safe check for phone number
+  const route = (seatList[idx]?.route?.toLowerCase() || "");  // Safe check for route, default to empty string if undefined
+
+  // Check if any of the fields match the search query
+  const matchesUserName = userName.includes(query);
+  const matchesPhoneNumber = phoneNumber.includes(query);
+  const matchesRoute = route.includes(query);
+
+  // Return true if any of the conditions are true (OR logic)
+  return matchesUserName || matchesPhoneNumber || matchesRoute;
+});
+
+
 
   // Calculate time difference
   const calculateTimeDifference = (reservedTime) => {
@@ -213,17 +217,15 @@ const BusList = () => {
   }
 
   return (
-    <div
-      className="bus-list-page"
-      style={{ padding: "20px", margin: "0 auto" }}
-    >
-      <h2
-        className="title"
-        style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}
-      ></h2>
-      <div className="bus-selection">
-        <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
-        {busList.length > 0 ? (<ul style={{ listStyle: "none", padding: 0 }}>
+  <div className="bus-list-page" style={{ padding: "20px", margin: "0 auto" }}>
+    <h2
+      className="title"
+      style={{ fontSize: "32px", marginBottom: "20px", textAlign: "center" }}
+    ></h2>
+    <div className="bus-selection">
+      <h3 style={{ fontSize: "24px", marginBottom: "15px" }}>Select a Bus</h3>
+      {busList.length > 0 ? (
+        <ul style={{ listStyle: "none", padding: 0 }}>
           {busList.map((bus) => (
             <li key={bus._id}>
               <button
@@ -268,8 +270,7 @@ const BusList = () => {
                     />
                   </div>
                   <div className="passenger-table">
-                    {Array.isArray(passengers) &&
-                    passengers.length > 0 ? (
+                    {Array.isArray(passengers) && passengers.length > 0 ? (
                       <div
                         className="table-container"
                         style={{ overflowX: "auto" }}
@@ -329,94 +330,109 @@ const BusList = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {passengers.map((passenger, idx) => {
-                              const seat = seatList[idx]; // get corresponding seat
-                              return (
-                                <tr key={idx}>
-                                  <td
-                                    style={{
-                                      padding: "10px",
-                                      border: "1px solid #ccc",
-                                    }}
-                                  >
-                                    {idx + 1}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "10px",
-                                      border: "1px solid #ccc",
-                                    }}
-                                  >
-                                    {passenger.name}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "10px",
-                                      border: "1px solid #ccc",
-                                    }}
-                                  >
-                                    {passenger.phoneNumber}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "10px",
-                                      border: "1px solid #ccc",
-                                    }}
-                                  >
-                                    {seat?.route}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "10px",
-                                      border: "1px solid #ccc",
-                                    }}
-                                  >
-                                    {calculateTimeDifference(seat?.bookedTime)}
-                                  </td>
-                                  <td
-                                    style={{
-                                      padding: "10px",
-                                      border: "1px solid #ccc",
-                                    }}
-                                  >
-                                    <button
-                                      className="cancel-button"
+                            {passengers
+                              .filter((passenger, idx) => {
+                                // Convert search query to lowercase
+                                const query = searchQuery.toLowerCase().trim();
+
+                                // Extract data to check against
+                                const userName = passenger?.name?.toLowerCase() || "";
+                                const phoneNumber =
+                                  (String(passenger?.phoneNumber) || "").toLowerCase();
+                                const route = (seatList[idx]?.route?.toLowerCase() || "");
+
+                                // Check if any field matches the search query
+                                return (
+                                  userName.includes(query) ||
+                                  phoneNumber.includes(query) ||
+                                  route.includes(query)
+                                );
+                              })
+                              .map((passenger, idx) => {
+                                const seat = seatList[idx]; // get corresponding seat
+                                return (
+                                  <tr key={idx}>
+                                    <td
                                       style={{
-                                        padding: "8px 14px",
-                                        backgroundColor: "#e74c3c",
-                                        color: "#fff",
-                                        border: "none",
-                                        borderRadius: "6px",
-                                        cursor: "pointer",
-                                        transition: "background-color 0.3s",
+                                        padding: "10px",
+                                        border: "1px solid #ccc",
                                       }}
-                                      onClick={() =>
-                                        handleCancelBooking(
-                                          bus._id,
-                                          passenger._id,
-                                          seat._id,
-                                          idx
-                                        )
-                                      }
                                     >
-                                      Cancel
-                                    </button>
-                                  </td>
-                                </tr>
-                              );
-                            })}
+                                      {idx + 1}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "10px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    >
+                                      {passenger.name}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "10px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    >
+                                      {passenger.phoneNumber}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "10px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    >
+                                      {seat?.route}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "10px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    >
+                                      {calculateTimeDifference(seat?.bookedTime)}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "10px",
+                                        border: "1px solid #ccc",
+                                      }}
+                                    >
+                                      <button
+                                        className="cancel-button"
+                                        style={{
+                                          padding: "8px 14px",
+                                          backgroundColor: "#e74c3c",
+                                          color: "#fff",
+                                          border: "none",
+                                          borderRadius: "6px",
+                                          cursor: "pointer",
+                                          transition: "background-color 0.3s",
+                                        }}
+                                        onClick={() =>
+                                          handleCancelBooking(
+                                            bus._id,
+                                            passenger._id,
+                                            seat._id,
+                                            idx
+                                          )
+                                        }
+                                      >
+                                        Cancel
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                           </tbody>
                         </table>
                       </div>
-                    ) :
-                    loading ? (
+                    ) : loading ? (
                       <LoadingComponent />
-                    ) :(
-                      <p className="no-data">
-                        No passengers found matching your search.
-                      </p>
+                    ) : (
+                      <p className="no-data">No passengers found matching your search.</p>
                     )}
-                  </div>{" "}
+                  </div>
                   <div className="actions-container">
                     <button
                       className="del-btn"
@@ -443,21 +459,21 @@ const BusList = () => {
               )}
             </li>
           ))}
-        </ul>): (
-        <p className="no-data">No Buses found. </p>
-      )}
-        
-      </div>
-      {isLoading && <LoadingScreen />}
-
-      {alertFlag && (
-        <Overlay
-          alertFlag={alertFlag}
-          alertMessage={alertMessage}
-          setAlertFlag={setAlertFlag}
-        />
+        </ul>
+      ) : (
+        <p className="no-data">No Buses found.</p>
       )}
     </div>
-  );
-};
+    {isLoading && <LoadingScreen />}
+
+    {alertFlag && (
+      <Overlay
+        alertFlag={alertFlag}
+        alertMessage={alertMessage}
+        setAlertFlag={setAlertFlag}
+      />
+    )}
+  </div>
+);
+}
 export default BusList;
