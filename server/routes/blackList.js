@@ -14,9 +14,19 @@ router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
     const busId = req.params.busId;
     
     if(!busId) { return res.status(404).json({ error: "Bus not found" })}
-    const blackListedUsers = await Seat.find({ busId: busId,checkInStatus: false },{ bookedBy: 1,busId: 1 });
-    
-    const AddToBlackList = await blackList.insertMany(blackListedUsers.map((user) => ({ userId: user.bookedBy, busId: user.busId }))); 
+
+    const uniqueUsers = await Seat.distinct("bookedBy", {
+      busId: busId,
+      checkInStatus: false
+    });
+
+    // Step 2: Map to documents for insertion
+    const usersToBlacklist = uniqueUsers.map(userId => ({
+      userId,
+      reason: "RsrvNotCome"
+      
+    }));
+    const AddToBlackList = await blackList.insertMany(usersToBlacklist, { ordered: false }); 
     return res
     .status(200)
     .json({ message: "User added to blacklist successfully", blackListedUsers: AddToBlackList });
@@ -24,6 +34,35 @@ router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
   console.error("Error adding users to blacklist", err);
   res.status(500).json({ error: "Internal server error" });
 }
+})
+router.get("/",async (req, res) => {
+  try{
+    const blacklist = await blackList.find()
+    // Step 1: Get all user IDs from blacklist
+    const userIds = blacklist.map(user => user.userId);
+    // Step 2: Find all users whose _id is in the list
+    const usersInfo = await User.find({ _id: { $in: userIds } });
+    // Step 3: Map to desired fields
+    const userNameNum = usersInfo.map(user => ({
+      name: user.name,
+      phoneNumber: user.phoneNumber
+    }));
+       
+    return res.status(200).json({ blacklist,userNameNum});
+} catch (err) {
+  console.error("Error finding users in blacklist", err);
+  res.status(500).json({ error: "Internal server error" });
+}
+})
+
+router.delete("/:id", async (req,res) => {
+  const id = req.params.id;
+  const inblacklist = await blackList.findById(id);
+
+  if (!inblacklist) {
+    return res.status(404).json({ message: "not found in Black list" });
+  }
+  await blackList.findByIdAndDelete(id);
 })
 
 module.exports = router;
