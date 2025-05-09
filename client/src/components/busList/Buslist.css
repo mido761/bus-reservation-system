@@ -120,14 +120,21 @@
 
 .bus-list {
   list-style: none;
-  padding: 0;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 20px;
-  max-width: 1200px;
   padding: 5px;
+}
+
+.bus-list li {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .bus-btn {
@@ -138,8 +145,8 @@
   border: none;
   cursor: pointer;
   width: 100%;
-  min-width: 260px;
-  max-height: 70px;
+  max-width: 290px;
+  max-height: 65px;
   text-align: center;
   border-radius: 10px;
   font-size: 16px;
@@ -149,6 +156,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .bus-btn-selected {
@@ -156,11 +164,11 @@
 }
 
 .bus-btn:hover {
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.show-buses-btn {
+/* .show-buses-btn {
   background-color: var(--primary-hover);
   color: var(--button-text);
   padding: 18px 0px;
@@ -179,7 +187,7 @@
 .show-buses-btn:hover {
   background-color: var(--secondary-hover);
   transform: scale(1.05);
-}
+} */
 
 /* ---------- Bus Container Styling ---------- */
 .bus-container {
@@ -196,11 +204,11 @@
   gap: 10px;
   transition: all 0.3s ease;
 }
-
+/* 
 .bus-container:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-}
+} */
 
 .bus-number {
   width: 100px;
@@ -260,9 +268,13 @@
 /* ---------- Bus Details Dropdown ---------- */
 .bus-details-dropdown {
   background-color: #fff;
-  border: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
   border-radius: 12px;
   margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 15px;
+  gap: 12px;
   margin-bottom: 20px;
   padding: 15px;
   animation: fadeIn 0.5s;
@@ -286,10 +298,8 @@
   width: 100%;
   min-width: 250px;
   max-width: 100%;
-  overflow: hidden;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border: 1px solid #eaeaea;
 }
 
 .bus-list-page .passenger-table th {
@@ -305,7 +315,8 @@
   text-align: center;
 }
 
-.bus-list-page .passenger-table td, .passenger-table th {
+.bus-list-page .passenger-table td,
+.passenger-table th {
   padding: 8px 12px;
   border-bottom: 1px solid #eaeaea;
 }
@@ -408,6 +419,7 @@
 .bus-list-page .actions-container {
   width: 100%;
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   margin-top: 20px;
 }
@@ -425,7 +437,8 @@
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.del-btn, .edit-btn {
+.del-btn,
+.edit-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -626,6 +639,7 @@
 .detail-value {
   color: #333;
   font-size: 14px;
+  text-align: center;
 }
 
 /* ---------- Utility Classes ---------- */
@@ -663,16 +677,16 @@ strong {
     /* width: 100%; */
     max-width: 320px;
   }
-  
+
   .popup-content {
     width: 90%;
     padding: 20px;
   }
-  
+
   .passenger-details-grid {
     gap: 8px;
   }
-  
+
   .bus-list {
     flex-direction: column;
     align-items: center;
@@ -681,11 +695,11 @@ strong {
   .bus-container {
     max-width: 90%;
   }
-  
+
   .search-input {
     width: 40%;
   }
-  
+
   .search-bar input {
     padding: 8px;
   }
@@ -699,26 +713,22 @@ strong {
 
 @media (max-width: 480px) {
   .search-bar input {
+    width: 100%;
     padding: 6px;
     font-size: 0.9rem;
   }
-  
+
   .passenger-table th,
   .passenger-table td {
     padding: 10px;
     font-size: 13px;
   }
-  
+
   .popup-content {
     padding: 15px;
   }
-  
-  .passenger-details-grid {
-    grid-template-columns: 1fr;
-    gap: 5px;
-  }
-}
 
-.search-bar{
-  width: 100%;
+  .passenger-details-grid {
+    gap: 15px;
+  }
 }
