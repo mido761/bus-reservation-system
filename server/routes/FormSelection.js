@@ -123,6 +123,25 @@ router.delete("/:busId", async (req, res) => {
       });
     }
 
+    const now = new Date();
+
+    // Assume `bus.schedule` is in format "YYYY-MM-DD"
+    // Assume `bus.departureTime` is in format "HH:mm" (e.g., "13:45")
+    // Assume `bus.allowance.cancelTimeAllowance` is in milliseconds (e.g., 3600000 for 1 hour)
+
+    // Combine date and time into full Date object
+    const fullDepartureDateTime = new Date(`${bus.schedule}T${bus.departureTime}:00`);
+    
+    // Calculate cutoff time (when cancellation is no longer allowed)
+    const cancelDeadline = new Date(fullDepartureDateTime - bus.allowance.cancelTimeAllowance);
+ 
+    if (!isAdmin && (now > cancelDeadline)) {
+      return res.status(400).json({
+        message: `You can only cancel your seats before the bus by ${bus.allowance.cancelTimeAllowance / (60 * 60 * 1000)} hours!`,
+      });
+    }
+
+    // All checks passed — proceed with cancellation
     // Delete the seat
     await Seat.findByIdAndDelete(seatId);
 
