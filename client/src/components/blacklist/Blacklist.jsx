@@ -36,7 +36,7 @@ const BlacklistPage = () => {
   }, []);
 
   // Map user info by userId for quick lookup
-  const userMap = userInfo.reduce((map, user) => {
+  const userMap = userInfo.filter((map, user) => {
     map[user._id] = user; // Map each user by their userId (_id)
     return map;
   }, {});
@@ -61,7 +61,7 @@ const BlacklistPage = () => {
           </thead>
           <tbody>
             {blacklist.map((entry, index) => {
-              const user = userMap[entry.userId]; // Use userId to map the correct user
+              const user = userMap[index]; // Use userId to map the correct user
               return (
                 <tr key={index}>
                   <td>{index + 1}</td>

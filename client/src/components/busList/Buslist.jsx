@@ -152,7 +152,7 @@ const BusList = () => {
     }
   };
 
-  const handleBlacklistUser = async (busId, userId) => {
+  const handleBlacklistUser = async (seatId, userId) => {
     // First confirmation for blacklisting
     const confirmBlacklist = window.confirm(
       "Are you sure you want to blacklist this user?"
@@ -162,7 +162,7 @@ const BusList = () => {
     setIsBlacklisting(true);
     try {
       // Call the blacklist API
-      const response = await axios.post(`${backEndUrl}/blacklist/${busId}`, {}, {
+      const response = await axios.post(`${backEndUrl}/blacklist/user/${seatId}`, {}, {
         withCredentials: true
       });
 
@@ -397,7 +397,7 @@ const BusList = () => {
               </button>
               <button
                 className="blacklist-btn"
-                onClick={() => handleBlacklistUser(selectedBusId, selectedPassenger._id)}
+                onClick={() => handleBlacklistUser(selectedSeat._id, selectedPassenger._id)}
                 disabled={isBlacklisting}
               >
                 {isBlacklisting ? "Blacklisting..." : "Blacklist User"}

@@ -45,6 +45,10 @@ router.post("/user/:seatId", middleware.isAuthoraized, async (req, res) => {
     if(!seatId) { return res.status(404).json({ error: "Bus not found" })}
 
     const seat = await Seat.findById(seatId)
+    const inblacklist = await blackList.find({userId:seat.bookedBy})
+    if(inblacklist.length > 0){
+       return res.status(400).json({ message: "user is already inblack list" });
+    }
 
     // Step 2: Map to documents for insertion
     const AddToBlackList = new blackList({
@@ -68,7 +72,17 @@ router.get("/",async (req, res) => {
     // Step 1: Get all user IDs from blacklist
     const userIds = blacklist.map(user => user.userId);
     // Step 2: Find all users whose _id is in the list
-    const usersInfo = await User.find({ _id: { $in: userIds } });
+      // Step 1: Get unique user info
+      const uniqueUsers = await User.find({ _id: { $in: userIds } });
+
+      // Step 2: Map by _id for fast lookup
+      const userMap = {};
+      uniqueUsers.forEach(user => {
+        userMap[user._id.toString()] = user;
+      });
+
+      // Step 3: Rebuild list with duplicates preserved
+      const usersInfo = userIds.map(id => userMap[id.toString()]);
     // Step 3: Map to desired fields
     const userNameNum = usersInfo.map(user => ({
       name: user.name,
