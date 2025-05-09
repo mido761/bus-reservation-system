@@ -23,8 +23,7 @@ router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
     // Step 2: Map to documents for insertion
     const usersToBlacklist = uniqueUsers.map(userId => ({
       userId,
-      reason: "RsrvNotCome"
-      
+      reason: "Not checked in",
     }));
     const AddToBlackList = await blackList.insertMany(usersToBlacklist, { ordered: false }); 
     return res
