@@ -138,6 +138,8 @@
   border: none;
   cursor: pointer;
   width: 100%;
+  min-width: 260px;
+  max-height: 70px;
   text-align: center;
   border-radius: 10px;
   font-size: 16px;
@@ -279,7 +281,7 @@
 }
 
 /* ---------- Passenger Table Styling ---------- */
-.passenger-table {
+.bus-list-page .passenger-table {
   border-collapse: collapse;
   width: 100%;
   min-width: 250px;
@@ -290,29 +292,29 @@
   border: 1px solid #eaeaea;
 }
 
-.passenger-table th {
+.bus-list-page .passenger-table th {
   background-color: #f8f9fa;
   font-weight: 600;
   color: #444;
   font-size: 14px;
-  text-align: left;
+  text-align: center;
 }
 
-.passenger-table th:first-child {
+.bus-list-page .passenger-table th:first-child {
   width: 40px;
   text-align: center;
 }
 
-.passenger-table td, .passenger-table th {
+.bus-list-page .passenger-table td, .passenger-table th {
   padding: 8px 12px;
   border-bottom: 1px solid #eaeaea;
 }
 
-.passenger-table tr:last-child td {
+.bus-list-page .passenger-table tr:last-child td {
   border-bottom: none;
 }
 
-.passenger-table td:first-child {
+.bus-list-page .passenger-table td:first-child {
   width: 40px;
   text-align: center;
   font-size: 14px;
@@ -321,24 +323,23 @@
   padding: 8px;
 }
 
-.passenger-table td:nth-child(2) {
+.bus-list-page .passenger-table td:nth-child(2) {
   font-weight: 500;
   color: #3498db;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.passenger-table td:nth-child(2):hover {
+.bus-list-page .passenger-table td:nth-child(2):hover {
   color: #2980b9;
   text-decoration: underline;
 }
 
-.passenger-table td:hover {
+.bus-list-page .passenger-table td:hover {
   background-color: #f1f1f1;
 }
 
-.table-container {
-  overflow: auto;
+.bus-list-page .table-container {
   width: 100%;
   border-radius: 10px;
   padding: 0;
@@ -404,14 +405,14 @@
 }
 
 /* ---------- Actions & Buttons ---------- */
-.actions-container {
+.bus-list-page .actions-container {
   width: 100%;
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
 
-.action-button {
+.bus-list-page .action-button {
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -420,7 +421,7 @@
   transition: all 0.2s ease;
 }
 
-.action-button:hover {
+.bus-list-page .action-button:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
@@ -430,7 +431,7 @@
   justify-content: center;
 }
 
-.action-icon {
+.bus-list-page .action-icon {
   width: 22px;
   height: 22px;
 }
@@ -659,7 +660,7 @@ strong {
 /* ---------- Responsive Styling ---------- */
 @media (max-width: 768px) {
   .bus-selection {
-    width: 100%;
+    /* width: 100%; */
     max-width: 320px;
   }
   
@@ -716,4 +717,8 @@ strong {
     grid-template-columns: 1fr;
     gap: 5px;
   }
+}
+
+.search-bar{
+  width: 100%;
 }

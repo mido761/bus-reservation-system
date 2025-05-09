@@ -85,20 +85,24 @@ const BusList = () => {
     const query = searchQuery.toLowerCase().trim();
     const userName = passenger?.name?.toLowerCase() || "";
     const phoneNumber = (String(passenger?.phoneNumber) || "").toLowerCase();
-    const route = (seatList[idx]?.route?.toLowerCase() || "");
-    
-    return userName.includes(query) || phoneNumber.includes(query) || route.includes(query);
+    const route = seatList[idx]?.route?.toLowerCase() || "";
+
+    return (
+      userName.includes(query) ||
+      phoneNumber.includes(query) ||
+      route.includes(query)
+    );
   });
 
   const calculateTimeDifference = (reservedTime) => {
     const now = new Date();
     const reservedDate = new Date(reservedTime);
-    
+
     const timeDiff = now - reservedDate;
     const minutes = Math.floor(timeDiff / 60000);
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
-    
+
     if (days > 0) return `${days} days ago`;
     if (hours > 0) return `${hours} hours ago`;
     return `${minutes} minutes ago`;
@@ -214,20 +218,24 @@ const BusList = () => {
             {busList.map((bus) => (
               <li key={bus._id}>
                 <button
-                  className={`bus-btn ${selectedBusId === bus._id ? 'bus-btn-selected' : ''}`}
+                  className={`bus-btn ${
+                    selectedBusId === bus._id ? "bus-btn-selected" : ""
+                  }`}
                   onClick={() => handleBusSelect(bus._id)}
                 >
                   <div className="time-and-schedule">
                     <p>{convertTo12HourFormat(bus.departureTime)}</p>
                     <p>{bus.schedule}</p>
                   </div>
-                  <span className="routeName">
-                    {bus.location.pickupLocation}{" "}
-                  </span>{" "}
-                  to{" "}
-                  <span className="routeName">
-                    {bus.location.arrivalLocation}
-                  </span>
+                  <div>
+                    <span className="routeName">
+                      {bus.location.pickupLocation}
+                    </span>
+                    &nbsp;to&nbsp;
+                    <span className="routeName">
+                      {bus.location.arrivalLocation}
+                    </span>
+                  </div>
                 </button>
                 {selectedBusId === bus._id && (
                   <div className="bus-details-dropdown">
@@ -241,7 +249,8 @@ const BusList = () => {
                     </div>
                     {loading ? (
                       <LoadingComponent />
-                    ) : Array.isArray(filteredPassengers) && filteredPassengers.length > 0 ? (
+                    ) : Array.isArray(filteredPassengers) &&
+                      filteredPassengers.length > 0 ? (
                       <div className="table-container">
                         <table className="passenger-table">
                           <thead>
@@ -252,11 +261,16 @@ const BusList = () => {
                           </thead>
                           <tbody>
                             {filteredPassengers.map((passenger, idx) => {
-                              const seat = seatList[passengers.indexOf(passenger)];
+                              const seat =
+                                seatList[passengers.indexOf(passenger)];
                               return (
                                 <tr key={idx}>
                                   <td>{idx + 1}</td>
-                                  <td onClick={() => handlePassengerClick(passenger, seat)}>
+                                  <td
+                                    onClick={() =>
+                                      handlePassengerClick(passenger, seat)
+                                    }
+                                  >
                                     {passenger.name}
                                   </td>
                                 </tr>
@@ -266,7 +280,9 @@ const BusList = () => {
                         </table>
                       </div>
                     ) : (
-                      <p className="no-data">No passengers found matching your search.</p>
+                      <p className="no-data">
+                        No passengers found matching your search.
+                      </p>
                     )}
                     <div className="actions-container">
                       <button
@@ -299,30 +315,38 @@ const BusList = () => {
           <p className="no-data">No Buses found.</p>
         )}
       </div>
-      
+
       {/* Enhanced Popup Modal */}
       {showPopup && selectedPassenger && selectedSeat && (
         <div className="popup-overlay">
           <div className="popup-content">
-            <button className="close-button" onClick={closePopup}>×</button>
+            <button className="close-button" onClick={closePopup}>
+              ×
+            </button>
             <h3>Passenger Details</h3>
             <div className="passenger-details-grid">
               <div className="detail-label">Name:</div>
               <div className="detail-value">{selectedPassenger.name}</div>
-              
+
               <div className="detail-label">Phone Number:</div>
-              <div className="detail-value">{selectedPassenger.phoneNumber}</div>
-              
+              <div className="detail-value">
+                {selectedPassenger.phoneNumber}
+              </div>
+
               <div className="detail-label">Route:</div>
               <div className="detail-value">{selectedSeat.route}</div>
-              
+
               <div className="detail-label">Reserved Time:</div>
-              <div className="detail-value">{calculateTimeDifference(selectedSeat.bookedTime)}</div>
+              <div className="detail-value">
+                {calculateTimeDifference(selectedSeat.bookedTime)}
+              </div>
             </div>
             <button
               className="cancel-booking-btn"
               onClick={() => {
-                const index = passengers.findIndex(p => p._id === selectedPassenger._id);
+                const index = passengers.findIndex(
+                  (p) => p._id === selectedPassenger._id
+                );
                 handleCancelBooking(
                   selectedBusId,
                   selectedPassenger._id,
@@ -336,7 +360,7 @@ const BusList = () => {
           </div>
         </div>
       )}
-      
+
       {isLoading && <LoadingScreen />}
 
       {alertFlag && (
