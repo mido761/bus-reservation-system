@@ -20,6 +20,7 @@ import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
 import EditBus from "./components/editBus/editBus.jsx";
 import Passengers from "./components/Passengers/Passengers";
+import BlacklistPage from "./components/blacklist/Blacklist.jsx"; 
 function App() {
   return (
     <HashRouter basename="/">
@@ -100,6 +101,16 @@ function App() {
             <Auth requireAdmin={true}>
               <Navbar />
               <AddBus />
+              <Footer />
+            </Auth>
+          }
+        />
+        <Route
+          path="/black-list"
+          element={
+            <Auth requireAdmin={true}>
+              <Navbar />
+              <BlacklistPage />
               <Footer />
             </Auth>
           }
