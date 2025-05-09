@@ -26,22 +26,10 @@ const BlacklistPage = () => {
   useEffect(() => {
     fetchBlackList();
   }, []);
+  
 
-  const handleRemoveFromBlackList = async (id) => {
-    try {
-      await axios.get(`${backEndUrl}/auth`, { withCredentials: true }); // Optional: for authorization
-
-      await axios.delete(`${backEndUrl}/blacklist/${id}`);
-
-      // Refresh list after removal
-      fetchBlackList();
-    } catch (error) {
-      console.error("Error removing from blacklist:", error);
-      setError("Failed to remove user from blacklist.");
-    }
-  };
-
-  const userMap = userInfo.reduce((map, user) => {
+  // Map user info by userId for quick lookup
+  const userMap = userInfo.filter((map, user) => {
     map[user._id] = user;
     return map;
   }, {});
@@ -53,11 +41,10 @@ const BlacklistPage = () => {
       <table>
         <thead>
           <tr>
-            <th>User ID</th>
+            <th>#</th>
             <th>Name</th>
             <th>Phone</th>
             <th>Reason</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -65,18 +52,10 @@ const BlacklistPage = () => {
             const user = userMap[index];
             return (
               <tr key={index}>
-                <td>{index}</td>
+                <td>{index+1}</td>
                 <td>{user?.name || "N/A"}</td>
                 <td>{user?.phoneNumber || "N/A"}</td>
                 <td>{entry.reason || "N/A"}</td>
-                <td>
-                  <button
-                    className="remove-button"
-                    onClick={() => handleRemoveFromBlackList(entry._id)}
-                  >
-                    Remove
-                  </button>
-                </td>
               </tr>
             );
           })}

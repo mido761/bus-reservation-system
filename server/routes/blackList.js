@@ -62,7 +62,7 @@ router.delete("/:id", async (req,res) => {
   if (!inblacklist) {
     return res.status(404).json({ message: "not found in Black list" });
   }
-  
+  await blackList.findByIdAndDelete(id);
 })
 
 module.exports = router;
