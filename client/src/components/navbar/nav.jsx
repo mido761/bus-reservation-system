@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Overlay from "../overlayScreen/overlay";
 import axios from "axios";
 import "../navbar/nav.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import InlineAuth from "../../InlineAuth";
 
@@ -10,6 +10,7 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [alertFlag, setAlertFlag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,7 @@ function Navbar() {
   // const [isAuthenticated, setIsAuthenticated] = useState(null);
   // const [isAuthorized, setIsLoading] = useState(null);
 
-  const {isAuthenticated, isAuthorized} = InlineAuth()
+  const { isAuthenticated, isAuthorized } = InlineAuth();
 
   // Function to toggle the menu
   const toggleMenu = () => {
@@ -80,15 +81,17 @@ function Navbar() {
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-
   }, []);
 
   return location.pathname === "/login" ||
     location.pathname === "/register" ? null : (
     <nav ref={navbarRef} className="navbar">
       <h1 className="company-title" onClick={() => navigate("/")}>
-      <img src="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico" href="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico" className="logo"/>
-        
+        <img
+          src="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico"
+          href="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico"
+          className="logo"
+        />
         VIP Travel
       </h1>
       <div
@@ -119,6 +122,12 @@ function Navbar() {
         {!(location.pathname === "/add-bus") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/add-bus")}>
             Add bus
+          </button>
+        )}
+
+        {!(location.pathname === "/black-list") && isAuthorized && (
+          <button className="nav-link" onClick={() => navigate("/black-list")}>
+            Black-list
           </button>
         )}
         <button id="logout-btn" className="nav-link" onClick={handleLogout}>

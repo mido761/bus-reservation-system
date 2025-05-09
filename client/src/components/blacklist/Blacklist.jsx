@@ -46,32 +46,34 @@ const BlacklistPage = () => {
   }
 
   return (
-    <div className="container">
-      <h1>Blacklisted Users</h1>
-      {error && <p className="error">{error}</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Reason</th>
-          </tr>
-        </thead>
-        <tbody>
-          {blacklist.map((entry, index) => {
-            const user = userMap[entry.userId]; // Use userId to map the correct user
-            return (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{user?.name || "N/A"}</td>
-                <td>{user?.phoneNumber || "N/A"}</td>
-                <td>{entry.reason || "N/A"}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="black-list-page">
+      <div className="black-list-container">
+        <h1>Blacklisted Users</h1>
+        {error && <p className="error">{error}</p>}
+        <table className="black-list-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            {blacklist.map((entry, index) => {
+              const user = userMap[entry.userId]; // Use userId to map the correct user
+              return (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{user?.name || "N/A"}</td>
+                  <td>{user?.phoneNumber || "N/A"}</td>
+                  <td>{entry.reason || "N/A"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
