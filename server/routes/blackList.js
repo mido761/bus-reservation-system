@@ -9,11 +9,12 @@ const middleware = require("../controllers/middleware");
 const mongoose = require("mongoose");
 
 router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
-  try{  
-    
+  try {  
     const busId = req.params.busId;
     
-    if(!busId) { return res.status(404).json({ error: "Bus not found" })}
+    if (!busId) { 
+      return res.status(404).json({ error: "Bus not found" });
+    }
 
     const uniqueUsers = await Seat.distinct("bookedBy", {
       busId: busId,
@@ -25,85 +26,120 @@ router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
       userId,
       reason: "Not checked in",
     }));
+    
     const AddToBlackList = await blackList.insertMany(usersToBlacklist, { ordered: false }); 
+    
     return res
-    .status(200)
-    .json({ message: "Users added to blacklist successfully", blackListedUsers: AddToBlackList });
-} catch (err) {
-  console.error("Error adding users to blacklist", err);
-  res.status(500).json({ error: "Internal server error" });
-}
-})
-
-
+      .status(200)
+      .json({ message: "Users added to blacklist successfully", blackListedUsers: AddToBlackList });
+  } catch (err) {
+    console.error("Error adding users to blacklist", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 router.post("/user/:seatId", middleware.isAuthoraized, async (req, res) => {
-  try{  
-    
+  try {  
     const seatId = req.params.seatId;
     
-    if(!seatId) { return res.status(404).json({ error: "Bus not found" })}
+    if (!seatId) { 
+      return res.status(404).json({ error: "Seat not found" });
+    }
 
-    const seat = await Seat.findById(seatId)
-    const inblacklist = await blackList.find({userId:seat.bookedBy})
-    if(inblacklist.length > 0){
-       return res.status(400).json({ message: "user is already inblack list" });
+    const seat = await Seat.findById(seatId);
+    if (!seat) {
+      return res.status(404).json({ error: "Seat not found" });
+    }
+
+    const inblacklist = await blackList.find({ userId: seat.bookedBy });
+    if (inblacklist.length > 0) {
+      return res.status(400).json({ message: "User is already in blacklist" });
     }
 
     // Step 2: Map to documents for insertion
     const AddToBlackList = new blackList({
-          userId:seat.bookedBy,
-          seatId: seat._id,
-          reason:"RsrvNotCome" 
-        });
-      await AddToBlackList.save()
+      userId: seat.bookedBy,
+      seatId: seat._id,
+      reason: "Not checked in", 
+    });
+    
+    await AddToBlackList.save();
+    
     return res
-    .status(200)
-    .json({ message: "User added to blacklist successfully", blackListedUsers: AddToBlackList });
-} catch (err) {
-  console.error("Error adding users to blacklist", err);
-  res.status(500).json({ error: "Internal server error" });
-}
-})
+      .status(200)
+      .json({ message: "User added to blacklist successfully", blackListedUsers: AddToBlackList });
+  } catch (err) {
+    console.error("Error adding users to blacklist", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-router.get("/",async (req, res) => {
-  try{
-    const blacklist = await blackList.find()
+router.get("/", async (req, res) => {
+  try {
+    const blacklist = await blackList.find();
+    
     // Step 1: Get all user IDs from blacklist
     const userIds = blacklist.map(user => user.userId);
+    
     // Step 2: Find all users whose _id is in the list
-      // Step 1: Get unique user info
-      const uniqueUsers = await User.find({ _id: { $in: userIds } });
+    const uniqueUsers = await User.find({ _id: { $in: userIds } });
 
-      // Step 2: Map by _id for fast lookup
-      const userMap = {};
-      uniqueUsers.forEach(user => {
-        userMap[user._id.toString()] = user;
-      });
+    // Map by _id for fast lookup
+    const userMap = {};
+    uniqueUsers.forEach(user => {
+      userMap[user._id.toString()] = user;
+    });
 
-      // Step 3: Rebuild list with duplicates preserved
-      const usersInfo = userIds.map(id => userMap[id.toString()]);
-    // Step 3: Map to desired fields
-    const userNameNum = usersInfo.map(user => ({
-      name: user.name,
-      phoneNumber: user.phoneNumber
-    }));
+    // Rebuild list with user info in correct order
+    const userNameNum = blacklist.map(item => {
+      const user = userMap[item.userId.toString()];
+      return user ? {
+        _id: user._id, // Include _id for mapping in frontend
+        name: user.name,
+        phoneNumber: user.phoneNumber
+      } : {
+        _id: item.userId,
+        name: "Unknown User",
+        phoneNumber: "N/A"
+      };
+    });
        
-    return res.status(200).json({ blacklist,userNameNum});
-} catch (err) {
-  console.error("Error finding users in blacklist", err);
-  res.status(500).json({ error: "Internal server error" });
-}
-})
-
-router.delete("/:id", async (req,res) => {
-  const id = req.params.id;
-  const inblacklist = await blackList.findById(id);
-
-  if (!inblacklist) {
-    return res.status(404).json({ message: "not found in Black list" });
+    return res.status(200).json({ blacklist, userNameNum });
+  } catch (err) {
+    console.error("Error finding users in blacklist", err);
+    res.status(500).json({ error: "Internal server error" });
   }
-  await blackList.findByIdAndDelete(id);
-})
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blacklist ID format" });
+    }
+    
+    const inblacklist = await blackList.findById(id);
+
+    if (!inblacklist) {
+      return res.status(404).json({ error: "User not found in blacklist" });
+    }
+    
+    await blackList.findByIdAndDelete(id);
+    
+    // Include user info in response if needed
+    const user = await User.findById(inblacklist.userId);
+    const userName = user ? user.name : "Unknown User";
+    
+    return res.status(200).json({ 
+      success: true, 
+      message: `User ${userName} has been removed from blacklist successfully`,
+      removedItem: inblacklist
+    });
+  } catch (err) {
+    console.error("Error removing user from blacklist:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 module.exports = router;
