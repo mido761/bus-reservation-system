@@ -24,6 +24,10 @@ const BusList = () => {
   const [selectedPassenger, setSelectedPassenger] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [isBlacklisting, setIsBlacklisting] = useState(false);
+  const [passengersCount, setPassengersCount] = useState({
+    total: 0,
+    byRoute: {}
+  });
   const navigate = useNavigate();
 
   const fetchBusList = async () => {
@@ -41,25 +45,50 @@ const BusList = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${backEndUrl}/seats/${busId}`);
-      setSeatList(
-        Array.isArray(response.data.data.seats) ? response.data.data.seats : []
-      );
-      setPassengers(
-        Array.isArray(response.data.data.orderedUsers)
-          ? response.data.data.orderedUsers
-          : []
-      );
+      const seats = Array.isArray(response.data.data.seats) ? response.data.data.seats : [];
+      const users = Array.isArray(response.data.data.orderedUsers) ? response.data.data.orderedUsers : [];
+      
+      setSeatList(seats);
+      setPassengers(users);
+      
+      // Calculate passenger counts
+      const routeCounts = {};
+      let total = users.length;
+      
+      seats.forEach((seat) => {
+        const route = seat.route || "Unknown";
+        routeCounts[route] = (routeCounts[route] || 0) + 1;
+      });
+      
+      setPassengersCount({
+        total,
+        byRoute: routeCounts
+      });
+      
       setLoading(false);
     } catch (error) {
       console.error("Error fetching passengers for bus:", error);
       setSeatList([]);
+      setPassengers([]);
+      setPassengersCount({
+        total: 0,
+        byRoute: {}
+      });
       setLoading(false);
     }
   };
 
   const handleBusSelect = (busId) => {
     setSelectedBusId(busId === selectedBusId ? null : busId);
-    if (busId !== selectedBusId) fetchPassengersForBus(busId);
+    if (busId !== selectedBusId) {
+      fetchPassengersForBus(busId);
+    } else {
+      // Reset counter if deselecting
+      setPassengersCount({
+        total: 0,
+        byRoute: {}
+      });
+    }
   };
 
   const handlePassengerClick = (passenger, seat) => {
@@ -123,15 +152,28 @@ const BusList = () => {
       );
 
       if (cancelResponse.status === 200) {
-        setSeatList((prevList) =>
-          prevList.filter((seat) => seat._id !== seatId)
-        );
-        setPassengers((prevList) =>
-          prevList.filter((passenger, idx) => idx !== index)
-        );
+        // Update seats and passengers
+        const updatedSeatList = seatList.filter((seat) => seat._id !== seatId);
+        const updatedPassengers = passengers.filter((_, idx) => idx !== index);
+        
+        setSeatList(updatedSeatList);
+        setPassengers(updatedPassengers);
+        
+        // Recalculate passenger counts
+        const routeCounts = {};
+        let total = updatedPassengers.length;
+        
+        updatedSeatList.forEach((seat) => {
+          const route = seat.route || "Unknown";
+          routeCounts[route] = (routeCounts[route] || 0) + 1;
+        });
+        
+        setPassengersCount({
+          total,
+          byRoute: routeCounts
+        });
 
         setIsLoading(false);
-        setSelectedBusId("");
         setAlertMessage("✅ Seat canceled successfully!");
         setAlertFlag(true);
         setShowPopup(false);
@@ -242,182 +284,237 @@ const BusList = () => {
     }
   };
 
+  // Passenger Counter Component
+  const PassengerCounters = ({ counts }) => {
+    if (counts.total === 0) return null;
+    
+    return (
+      <div className="passenger-counters">
+        <div className="counter-card total-counter">
+          <div className="counter-icon">
+            <img src="passengers-icon.png" alt="Total" className="counter-img" />
+          </div>
+          <div className="counter-details">
+            <h4>Total Passengers</h4>
+            <span className="counter-value">{counts.total}</span>
+          </div>
+        </div>
+        
+        <div className="route-counters">
+          {Object.entries(counts.byRoute).map(([route, count]) => (
+            <div className="counter-card route-counter" key={route}>
+              <div className="counter-icon">
+                <img src="route-icon.png" alt="Route" className="counter-img" />
+              </div>
+              <div className="counter-details">
+                <h4>{route}</h4>
+                <span className="counter-value">{count}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (pageLoading) {
     return <LoadingPage />;
   }
 
   return (
-    <div className="bus-list-page">
-      <div className="bus-selection">
-        <h3>Select a Bus</h3>
-        {busList.length > 0 ? (
-          <ul className="bus-list">
-            {busList.map((bus) => (
-              <li key={bus._id}>
-                <button
-                  className={`bus-btn ${
-                    selectedBusId === bus._id ? "bus-btn-selected" : ""
-                  }`}
-                  onClick={() => handleBusSelect(bus._id)}
-                >
-                  <div className="time-and-schedule">
-                    <p>{convertTo12HourFormat(bus.departureTime)}</p>
-                    <p>{bus.schedule}</p>
-                  </div>
-                  <div>
-                    <span className="routeName">
-                      {bus.location.pickupLocation}
-                    </span>
-                    &nbsp;to&nbsp;
-                    <span className="routeName">
-                      {bus.location.arrivalLocation}
-                    </span>
-                  </div>
-                </button>
-                {selectedBusId === bus._id && (
-                  <div className="bus-details-dropdown">
-                    <div className="search-bar">
-                      <input
-                        type="text"
-                        placeholder="Search by username"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                      />
-                    </div>
-                    {loading ? (
-                      <LoadingComponent />
-                    ) : Array.isArray(filteredPassengers) &&
-                      filteredPassengers.length > 0 ? (
-                      <div className="table-container">
-                        <table className="passenger-table">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>User Name</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {filteredPassengers.map((passenger, idx) => {
-                              const seat =
-                                seatList[passengers.indexOf(passenger)];
-                              return (
-                                <tr key={idx}>
-                                  <td>{idx + 1}</td>
-                                  <td
-                                    onClick={() =>
-                                      handlePassengerClick(passenger, seat)
-                                    }
-                                  >
-                                    {passenger.name}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+  <div className="bus-list-page">
+    <div className="bus-selection">
+      <h3>Select a Bus</h3>
+      {busList.length > 0 ? (
+        <ul className="bus-list">
+          {busList.map((bus) => (
+            <li key={bus._id}>
+              <button
+                className={`bus-btn ${
+                  selectedBusId === bus._id ? "bus-btn-selected" : ""
+                }`}
+                onClick={() => handleBusSelect(bus._id)}
+              >
+                <div className="time-and-schedule">
+                  <p>{convertTo12HourFormat(bus.departureTime)}</p>
+                  <p>{bus.schedule}</p>
+                </div>
+                <div>
+                  <span className="routeName">
+                    {bus.location.pickupLocation}
+                  </span>
+                  &nbsp;to&nbsp;
+                  <span className="routeName">
+                    {bus.location.arrivalLocation}
+                  </span>
+                </div>
+              </button>
+              {selectedBusId === bus._id && (
+                <div className="bus-details-dropdown">
+                  {/* Display passenger counters */}
+                  <div className="passenger-counters">
+                    <div className="counter-card total-counter">
+                      <div className="counter-icon" data-icon="total"></div>
+                      <div className="counter-details">
+                        <h4>Total Passengers</h4>
+                        <span className="counter-value">{passengersCount.total}</span>
                       </div>
-                    ) : (
-                      <p className="no-data">
-                        No passengers found matching your search.
-                      </p>
-                    )}
-                    <div className="actions-container">
-                      <button
-                        className="action-button del-btn"
-                        onClick={() => handleDel(bus._id)}
-                      >
-                        <img
-                          className="action-icon"
-                          src="delete.png"
-                          alt="Delete"
-                        />
-                      </button>
-                      <button
-                        className="action-button edit-btn"
-                        onClick={() => handleEdit(bus._id)}
-                      >
-                        <img
-                          className="action-icon"
-                          src="editing.png"
-                          alt="Edit"
-                        />
-                      </button>
+                    </div>
+                    
+                    <div className="route-counters">
+                      {Object.entries(passengersCount.byRoute).map(([route, count]) => (
+                        <div className="counter-card route-counter" key={route}>
+                          <div className="counter-icon" data-icon="route"></div>
+                          <div className="counter-details">
+                            <h4>{route}</h4>
+                            <span className="counter-value">{count}</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="no-data">No Buses found.</p>
-        )}
-      </div>
-
-      {/* Enhanced Popup Modal with Blacklist Button */}
-      {showPopup && selectedPassenger && selectedSeat && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <button className="close-button" onClick={closePopup}>
-              ×
-            </button>
-            <h3>Passenger Details</h3>
-            <div className="passenger-details-grid">
-              <div className="detail-label">Name:</div>
-              <div className="detail-value">{selectedPassenger.name}</div>
-
-              <div className="detail-label">Phone Number:</div>
-              <div className="detail-value">
-                {selectedPassenger.phoneNumber}
-              </div>
-
-              <div className="detail-label">Route:</div>
-              <div className="detail-value">{selectedSeat.route}</div>
-
-              <div className="detail-label">Reserved Time:</div>
-              <div className="detail-value">
-                {calculateTimeDifference(selectedSeat.bookedTime)}
-              </div>
-            </div>
-            <div className="popup-buttons-container">
-              <button
-                className="cancel-booking-btn"
-                onClick={() => {
-                  const index = passengers.findIndex(
-                    (p) => p._id === selectedPassenger._id
-                  );
-                  handleCancelBooking(
-                    selectedBusId,
-                    selectedPassenger._id,
-                    selectedSeat._id,
-                    index
-                  );
-                }}
-              >
-                Cancel Booking
-              </button>
-              <button
-                className="blacklist-btn"
-                onClick={() => handleBlacklistUser(selectedSeat._id, selectedPassenger._id)}
-                disabled={isBlacklisting}
-              >
-                {isBlacklisting ? "Blacklisting..." : "Blacklist User"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isLoading && <LoadingScreen />}
-
-      {alertFlag && (
-        <Overlay
-          alertFlag={alertFlag}
-          alertMessage={alertMessage}
-          setAlertFlag={setAlertFlag}
-        />
+                  
+                  <div className="search-bar">
+                    <input
+                      type="text"
+                      placeholder="Search by name, phone or route"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                    />
+                  </div>
+                  {loading ? (
+                    <LoadingComponent />
+                  ) : Array.isArray(filteredPassengers) &&
+                    filteredPassengers.length > 0 ? (
+                    <div className="table-container">
+                      <table className="passenger-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>User Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredPassengers.map((passenger, idx) => {
+                            const seat =
+                              seatList[passengers.indexOf(passenger)];
+                            return (
+                              <tr key={idx}>
+                                <td>{idx + 1}</td>
+                                <td
+                                  onClick={() =>
+                                    handlePassengerClick(passenger, seat)
+                                  }
+                                >
+                                  {passenger.name}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="no-data">
+                      No passengers found matching your search.
+                    </p>
+                  )}
+                  <div className="actions-container">
+                    <button
+                      className="action-button del-btn"
+                      onClick={() => handleDel(bus._id)}
+                    >
+                      <img
+                        className="action-icon"
+                        src="delete.png"
+                        alt="Delete"
+                      />
+                    </button>
+                    <button
+                      className="action-button edit-btn"
+                      onClick={() => handleEdit(bus._id)}
+                    >
+                      <img
+                        className="action-icon"
+                        src="editing.png"
+                        alt="Edit"
+                      />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="no-data">No Buses found.</p>
       )}
     </div>
-  );
-};
 
+    {/* Enhanced Popup Modal with Blacklist Button */}
+    {showPopup && selectedPassenger && selectedSeat && (
+      <div className="popup-overlay">
+        <div className="popup-content">
+          <button className="close-button" onClick={closePopup}>
+            ×
+          </button>
+          <h3>Passenger Details</h3>
+          <div className="passenger-details-grid">
+            <div className="detail-label">Name:</div>
+            <div className="detail-value">{selectedPassenger.name}</div>
+
+            <div className="detail-label">Phone Number:</div>
+            <div className="detail-value">
+              {selectedPassenger.phoneNumber}
+            </div>
+
+            <div className="detail-label">Route:</div>
+            <div className="detail-value">{selectedSeat.route}</div>
+
+            <div className="detail-label">Reserved Time:</div>
+            <div className="detail-value">
+              {calculateTimeDifference(selectedSeat.bookedTime)}
+            </div>
+          </div>
+          <div className="popup-buttons-container">
+            <button
+              className="cancel-booking-btn"
+              onClick={() => {
+                const index = passengers.findIndex(
+                  (p) => p._id === selectedPassenger._id
+                );
+                handleCancelBooking(
+                  selectedBusId,
+                  selectedPassenger._id,
+                  selectedSeat._id,
+                  index
+                );
+              }}
+            >
+              Cancel Booking
+            </button>
+            <button
+              className="blacklist-btn"
+              onClick={() => handleBlacklistUser(selectedSeat._id, selectedPassenger._id)}
+              disabled={isBlacklisting}
+            >
+              {isBlacklisting ? "Blacklisting..." : "Blacklist User"}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {isLoading && <LoadingScreen />}
+
+    {alertFlag && (
+      <Overlay
+        alertFlag={alertFlag}
+        alertMessage={alertMessage}
+        setAlertFlag={setAlertFlag}
+      />
+    )}
+  </div>
+);
+}
 export default BusList;

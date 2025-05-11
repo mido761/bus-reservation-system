@@ -732,3 +732,153 @@ strong {
     gap: 15px;
   }
 }
+/* ---------- Passenger Counter Styling ---------- */
+.passenger-counters {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.counter-card {
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.counter-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.total-counter {
+  background: linear-gradient(135deg, #2980b9, #3498db);
+  color: white;
+}
+
+.route-counters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.route-counter {
+  border-left: 5px solid #3498db;
+}
+
+.counter-icon {
+  background-color: rgba(255, 255, 255, 0.2);
+  height: 42px;
+  width: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.total-counter .counter-icon {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.counter-img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+.route-counter .counter-img {
+  filter: brightness(0) saturate(100%) invert(45%) sepia(88%) saturate(2000%) hue-rotate(194deg) brightness(98%) contrast(87%);
+}
+
+.counter-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.counter-details h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.route-counter .counter-details h4 {
+  color: #333;
+}
+
+.counter-value {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.route-counter .counter-value {
+  color: #3498db;
+}
+
+/* If no icons available, use data-attribute styling */
+.counter-icon[data-icon="total"]::before {
+  content: "👥";
+  font-size: 18px;
+}
+
+.counter-icon[data-icon="route"]::before {
+  content: "🚌";
+  font-size: 18px;
+}
+
+/* Responsive adjustments */
+@media (min-width: 576px) {
+  .route-counters {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .counter-card {
+    padding: 12px;
+  }
+  
+  .counter-icon {
+    height: 36px;
+    width: 36px;
+  }
+  
+  .counter-img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .counter-details h4 {
+    font-size: 13px;
+  }
+  
+  .counter-value {
+    font-size: 16px;
+  }
+}
