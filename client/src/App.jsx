@@ -30,7 +30,7 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/driver-list/:busId" element={<DriverList />} />
+        <Route path="/driver-list" element={<DriverList />} />
 
         {/* Protected Routes */}
         <Route
