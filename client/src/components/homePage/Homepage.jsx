@@ -6,6 +6,8 @@ import Footer from "../footer/footer";
 import Navbar from "../navbar/nav";
 import LoadingPage from "../loadingPage/loadingPage";
 import LoadingComponent from "../loadingComponent/loadingComponent";
+import LoadingScreen from "../loadingScreen/loadingScreen";
+import Overlay from "../overlayScreen/overlay";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Homepage = () => {
@@ -17,6 +19,7 @@ const Homepage = () => {
   const [userId, setUserId] = useState("");
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -41,7 +44,7 @@ const Homepage = () => {
       ]);
       const res = await axios.get(`${backEndUrl}/buses`);
       setBuses(res.data);
-      setFilteredBuses(res.data);
+      // setFilteredBuses(res.data);
       setUserId(req_user.data.userId);
     } catch (error) {
       console.error("Error fetching buses:", error);
@@ -140,18 +143,31 @@ const Homepage = () => {
   };
 
   const handleBookSeatConfirm = async () => {
+    setLoading(true);
     try {
-      console.log(destination);
       await axios.post(
         `${backEndUrl}/formselection/${selectedBus._id}`,
         { userId, destination },
         { withCredentials: true }
       );
       setShowBookingConfirm(false);
-      alert("Seat booking confirmed!");
+      setShowBusOptions(false);
+      setLoading(false);
+      setAlertMessage("✅ Seat booking confirmed!");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     } catch (err) {
       console.error("Booking failed:", err);
-      alert("Failed to book seat.");
+      setLoading(false);
+      setAlertMessage("Failed to book seat!");
+      setAlertFlag(true);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
     }
   };
 
@@ -244,10 +260,10 @@ const Homepage = () => {
         <div className="modal-overlay">
           <div className="modal">
             <button
-              className="cancel-btn"
+              className="close-button"
               onClick={() => setShowBusOptions(false)}
             >
-              <img src="cancel.png" alt="Delete" />
+              x{/* <img src="cancel.png" alt="Delete" /> */}
             </button>
             <h3>Select destination</h3>
             <div className="destination-selector">
@@ -272,7 +288,9 @@ const Homepage = () => {
             </div>
 
             {destination ? (
-              <button onClick={handleBookSeatConfirm}>Confirm</button>
+              <button className="cofirm-btn" onClick={handleBookSeatConfirm}>
+                Confirm
+              </button>
             ) : (
               <p style={{ color: "red", marginTop: "10px" }}>
                 Please select a destination
@@ -342,6 +360,14 @@ const Homepage = () => {
             </button>
           </div>
         </div>
+      )}
+      {loading && <LoadingScreen />}
+      {alertFlag && (
+        <Overlay
+          alertFlag={alertFlag}
+          alertMessage={alertMessage}
+          setAlertFlag={setAlertFlag}
+        />
       )}
     </div>
   );

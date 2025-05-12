@@ -1,9 +1,16 @@
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 92vh;
+}
+
 .profile-container {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem 1rem;
-  /* min-height: 100vh; */
+  min-height: fit-content;
   background: #f6f9fc;
   max-width: 350px;
 }
@@ -14,7 +21,7 @@
   padding: 1.5rem;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -78,6 +85,12 @@
 
 /* Fade in Animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px);}
-  to { opacity: 1; transform: translateY(0);}
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

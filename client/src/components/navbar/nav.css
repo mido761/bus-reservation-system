@@ -80,7 +80,7 @@ nav {
   .nav-menu {
     position: absolute;
     right: 0;
-    top: 7vh;
+    top: 6vh;
     background-color: var(--primary-color);
     padding: 20px;
     display: none;
