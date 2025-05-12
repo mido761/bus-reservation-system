@@ -158,6 +158,27 @@
   align-items: center;
   justify-content: center;
 }
+.driverlist-btn{
+  padding: 14px 20px;
+  background-color: var(--primary-color);
+  color: rgb(255, 255, 255);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  max-width: 290px;
+  max-height: 65px;
+  text-align: center;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
 .bus-btn-selected {
   background-color: #2ecc71;

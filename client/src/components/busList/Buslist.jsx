@@ -90,6 +90,11 @@ const BusList = () => {
       });
     }
   };
+  const handledriverList = (busId) => {
+    navigate(`/driver-list/${busId}`);
+   
+  };
+
 
   const handlePassengerClick = (passenger, seat) => {
     setSelectedPassenger(passenger);
@@ -330,11 +335,15 @@ const BusList = () => {
           {busList.map((bus) => (
             <li key={bus._id}>
               <button
+                className={`driverlist-btn`}
+                onClick={() => handledriverList(bus._id)}
+              ></button>
+              <button
                 className={`bus-btn ${
                   selectedBusId === bus._id ? "bus-btn-selected" : ""
                 }`}
                 onClick={() => handleBusSelect(bus._id)}
-              >
+              >              
                 <div className="time-and-schedule">
                   <p>{convertTo12HourFormat(bus.departureTime)}</p>
                   <p>{bus.schedule}</p>
