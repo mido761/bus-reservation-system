@@ -37,9 +37,11 @@ const UserProfile = () => {
         //   const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
         //     params: { ids: busIds.join(",") },
         //   });
-          const userBusesResponse = await axios.get(`${backEndUrl}/user/form-based-bus/${userId}`);
-          console.log(userBusesResponse)
-          setBusDetails(userBusesResponse.data);
+        const userBusesResponse = await axios.get(
+          `${backEndUrl}/user/form-based-bus/${userId}`
+        );
+        console.log(userBusesResponse);
+        setBusDetails(userBusesResponse.data);
         // } else {
         //   setError("No booked buses found.");
         // }
@@ -60,33 +62,39 @@ const UserProfile = () => {
   const getInitials = (name) => {
     if (!name) return "";
     const names = name.trim().split(" ");
-    return names.map((n) => n[0]).join("").toUpperCase();
+    return names
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
   };
 
   if (loading) return <LoadingPage />;
 
   return (
-    <div className="profile-container">
-      <div className="card">
-        {/* Avatar */}
-        <div className="avatar">
-          {userDetails?.name ? getInitials(userDetails.name) : "?"}
-        </div>
+    <div className="profile-page">
+      <div className="profile-container">
+        <div className="card">
+          {/* Avatar */}
+          <div className="avatar">
+            {userDetails?.name ? getInitials(userDetails.name) : "?"}
+          </div>
 
-        {/* User Info */}
-        <div className="info">
-          <span className="info-1">{userDetails?.name || "No Name"}</span>
-          <span className="info-2">{userDetails?.email || "No Email"}</span>
-        </div>
+          {/* User Info */}
+          <div className="info">
+            <span className="info-1">{userDetails?.name || "No Name"}</span>
+            <span className="info-2">{userDetails?.email || "No Email"}</span>
+          </div>
 
-        {/* Contact Info */}
-        <div className="content-1">
-          <FaPhone className="icon" /> {userDetails?.phoneNumber || "No Phone"}
-        </div>
+          {/* Contact Info */}
+          <div className="content-1">
+            <FaPhone className="icon" />{" "}
+            {userDetails?.phoneNumber || "No Phone"}
+          </div>
 
-        {/* Dashboard Section */}
-        <div className="content-2">
-          <Dashboard error={error} busDetails={busDetails} userId={userId} />
+          {/* Dashboard Section */}
+          <div className="content-2">
+            <Dashboard error={error} busDetails={busDetails} userId={userId} />
+          </div>
         </div>
       </div>
     </div>

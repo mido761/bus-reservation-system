@@ -13,6 +13,8 @@ const pusher = new Pusher({
   cluster: process.env.PUSHER_CLUSTER,
   useTLS: true,
 });
+
+
 router.get("/:id", async (req, res) => {
   try {
     const busId = req.params.id;
