@@ -4,6 +4,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import Auth from "./Auth.jsx";
 
 // Import components
+import DriverList from "./components/driverlist/driverlist.jsx";
 import Navbar from "./components/navbar/nav.jsx";
 import Signup from "./components/signup/Signup.jsx";
 import Login from "./components/login/login.jsx";
@@ -26,9 +27,10 @@ function App() {
     <HashRouter basename="/">
       <Routes>
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/driver-list" element={<DriverList />} />
 
         {/* Protected Routes */}
         <Route

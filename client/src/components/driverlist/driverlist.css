@@ -1,0 +1,395 @@
+/* Professional Bus List UI Styles */
+
+.bus-list-container {
+  padding: 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #2d3748;
+  background-color: #f7fafc;
+  min-height: 100vh;
+}
+
+.section-header {
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.section-header h2 {
+  font-size: 1.75rem;
+  color: #1a202c;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin: 0;
+  padding-bottom: 0.75rem;
+  position: relative;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--secondary-color);
+  border-radius: 3px;
+}
+
+/* Bus selection area */
+.bus-selection-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.time-button {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 140px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.time-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.time-button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.time-button:hover::before {
+  left: 100%;
+}
+
+.time-button.selected {
+  background-color: #1e4c8f;
+  font-weight: bold;
+  box-shadow: 0 0 0 3px rgba(30, 76, 143, 0.3), 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.time-display {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.02em;
+}
+
+.route-mini-info {
+  font-size: 0.8rem;
+  opacity: 0.95;
+  font-weight: 500;
+}
+
+/* Passenger details panel */
+.passenger-details-panel {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  border: 1px solid #edf2f7;
+}
+
+.selected-bus-info {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.selected-route {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.route-from, .route-to {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.route-arrow {
+  color: #a0aec0;
+  transform: scale(1.5);
+  margin: 0 0.25rem;
+}
+
+.route-schedule {
+  font-size: 0.9rem;
+  color: #718096;
+  margin-left: auto;
+  padding: 0.35rem 0.75rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Stats row */
+.passenger-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  min-width: 140px;
+  flex: 1;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #edf2f7;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card.total {
+  background-color: #ebf4ff;
+  border-left: 5px solid var(--secondary-color);
+}
+
+.stat-card.route {
+  border-left: 5px solid #4caf50;
+  background: linear-gradient(to right, rgba(76, 175, 80, 0.05), transparent);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #718096;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a202c;
+  letter-spacing: -0.02em;
+}
+
+/* Search area */
+.search-container {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.search-container::before {
+
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a0aec0;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.875rem 1rem 0.875rem 2.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  color: #4a5568;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(30, 76, 143, 0.15);
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+/* Table styling */
+.passenger-table-wrapper {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #edf2f7;
+}
+
+.passenger-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.passenger-table th {
+  background-color: #f8fafc;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-weight: 600;
+  color: #4a5568;
+  border-bottom: 2px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.passenger-table td {
+  padding: 1rem 1.5rem;
+  color: white;
+  font-weight: 500;
+}
+
+.passenger-table tr:hover {
+  filter: brightness(1.1);
+}
+
+.passenger-table tr td:first-child {
+  width: 60px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Empty states */
+.no-results, .no-buses {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #718096;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-weight: 500;
+  border: 1px solid #edf2f7;
+}
+
+.no-results::before, .no-buses::before {
+  content: '📭';
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bus-list-container {
+    padding: 1rem;
+  }
+  
+  .passenger-details-panel {
+    padding: 1.25rem;
+  }
+  
+  .selected-route {
+    font-size: 1rem;
+  }
+  
+  .route-schedule {
+    display: block;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+  
+  .passenger-stats-row {
+    flex-direction: column;
+  }
+  
+  .time-button {
+    min-width: 120px;
+  }
+  
+  .time-display {
+    font-size: 1.2rem;
+  }
+  
+  .passenger-table th, 
+  .passenger-table td {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Animation for loading transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.passenger-details-panel {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Print styles for reports */
+@media print {
+  .bus-list-container {
+    padding: 0;
+    background: white;
+  }
+  
+  .time-buttons-row,
+  .search-container {
+    display: none;
+  }
+  
+  .passenger-details-panel {
+    box-shadow: none;
+    border: none;
+    padding: 0;
+  }
+  
+  .passenger-table-wrapper {
+    box-shadow: none;
+    border: none;
+  }
+  
+  .passenger-table th {
+    background-color: white;
+    color: black;
+  }
+}

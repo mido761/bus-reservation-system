@@ -90,6 +90,7 @@ const BusList = () => {
       });
     }
   };
+ 
 
   const handlePassengerClick = (passenger, seat) => {
     setSelectedPassenger(passenger);
@@ -221,7 +222,7 @@ const BusList = () => {
     } catch (error) {
       console.error("Error blacklisting user:", error);
       setIsBlacklisting(false);
-      setAlertMessage("⚠️ Error blacklisting the user!");
+      setAlertMessage("⚠️ This user is already blacklisted");
       setAlertFlag(true);
 
       setTimeout(() => {
@@ -329,12 +330,13 @@ const BusList = () => {
         <ul className="bus-list">
           {busList.map((bus) => (
             <li key={bus._id}>
+              
               <button
                 className={`bus-btn ${
                   selectedBusId === bus._id ? "bus-btn-selected" : ""
                 }`}
                 onClick={() => handleBusSelect(bus._id)}
-              >
+              >              
                 <div className="time-and-schedule">
                   <p>{convertTo12HourFormat(bus.departureTime)}</p>
                   <p>{bus.schedule}</p>
