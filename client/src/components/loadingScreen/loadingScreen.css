@@ -1,16 +1,14 @@
-/* From Uiverse.io by adamgiebl */
-.loading-component{
-  background-color: transparent;
-  height: 100%;
-}
-
-.loading-component > .dots-container {
+.dots-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  background-color: transparent;
-  height: 100%;
+  height: 100vh;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1500;
 }
 
 .dot {
@@ -18,7 +16,7 @@
   width: 20px;
   margin-right: 10px;
   border-radius: 10px;
-  background-color: var( --primary-color);
+    background-color: var(--primary-color);
   animation: pulse 1.5s infinite ease-in-out;
 }
 
@@ -37,6 +35,7 @@
 .dot:nth-child(3) {
   animation-delay: 0.1s;
 }
+
 
 @keyframes pulse {
   0% {
