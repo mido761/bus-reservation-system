@@ -5,6 +5,7 @@ import Overlay from "../overlayScreen/overlay";
 import "../login/login.css";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import { HiEye, HiEyeOff } from "react-icons/hi"; // Import eye icons from react-icons
+import Verification from "./verification";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -13,35 +14,72 @@ function ForgotPassword() {
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [verificationFlag, setVerificationFlag] = useState(true);
 
   const navigate = useNavigate();
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${backEndUrl}/api/forgot-password`,
+  //       { email },
+  //       { withCredentials: true }
+  //     );
+  //     // const response = {"status": 200}
+  //     if (response.status === 200) {
+  //       setTimeout(() => {
+  //         setIsLoading(false);
+  //         setAlertMessage("Reset password link sent!");
+  //         setAlertFlag(true);
+  //       }, 1000);
+  //     }
+  //   } catch (error) {
+  //     if (error.status === 404) {
+  //       setAlertMessage("Email not found");
+  //     } else {
+  //       setAlertMessage("There was an error during verification");
+  //     }
+
+  //     setTimeout(() => {
+  //       setIsLoading(false);
+  //       setAlertFlag(true);
+  //     }, 1000);
+
+  //     setTimeout(() => {
+  //       setAlertFlag(false);
+  //     }, 2200);
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `${backEndUrl}/api/forgot-password`,
-        { email },
-        { withCredentials: true }
-      );
-      // const response = {"status": 200}
-      if (response.status === 200) {
+
+
+      if (result.status === 201) {
         setTimeout(() => {
           setIsLoading(false);
-          setAlertMessage("Reset password link sent!");
+          setAlertMessage(
+            <p>
+              <br /> Check your email for verification Code.
+            </p>
+          );
           setAlertFlag(true);
         }, 1000);
-      }
-    } catch (error) {
-      if (error.status === 404) {
-        setAlertMessage("Email not found");
-      } else {
-        setAlertMessage("There was an error during verification");
-      }
 
+        setTimeout(() => {
+          setAlertFlag(false);
+          localStorage.setItem("verificationToken", result.data.token);
+          setVerificationFlag(true);
+        }, 2500);
+      }
+    } catch (err) {
       setTimeout(() => {
         setIsLoading(false);
+        setAlertMessage(err.response?.data?.message || "An error occurred.");
         setAlertFlag(true);
       }, 1000);
 
@@ -53,7 +91,7 @@ function ForgotPassword() {
 
   return (
     <div className="login-container">
-      <div className="login-form">
+      {!verificationFlag ? (<div className="login-form">
         <h2>Forgot Password</h2>
         <p style={{ fontSize: "10px", margin: "auto", marginBottom: "25px" }}>
           Please enter your email to reset the password
@@ -71,8 +109,12 @@ function ForgotPassword() {
           <button type="submit">Reset password</button>
         </form>
         <br />
-        <Link to="/login"><pre>Already registerd? Login</pre></Link>
-      </div>
+        <Link to="/login">
+          <pre>Already registerd? Login</pre>
+        </Link>
+      </div>) : (
+        <Verification setVerificationFlag={setVerificationFlag} />
+      )}
 
       {isLoading && <LoadingScreen />}
 
