@@ -26,7 +26,7 @@ const BusList = () => {
 
   const fetchBusList = async () => {
     try {
-      const response = await axios.get(`${backEndUrl}/buses`);
+      const response = await axios.get(`${backEndUrl}/driver-list/buses`);
       setBusList(response.data);
       setPageLoading(false);
     } catch (error) {
@@ -38,7 +38,7 @@ const BusList = () => {
   const fetchPassengersForBus = async (busId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${backEndUrl}/seats/driver-list/${busId}`);
+      const response = await axios.get(`${backEndUrl}/driver-list/seats/${busId}`);
       const seats = Array.isArray(response.data.data.passengerList) ? response.data.data.passengerList : [];
       const users = Array.isArray(response.data.data.passengerList) ? response.data.data.passengerList : [];
       setSeatList(seats);
