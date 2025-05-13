@@ -130,8 +130,8 @@ function Verification({ setVerificationFlag, email }) {
     try {
       const token = localStorage.getItem("verificationToken");
       const response = await axios.post(
-        `${backEndUrl}/api/register/resend-code`,
-        { token }
+        `${backEndUrl}/api//resend-code`,
+        { email }
       );
 
       if (response.status === 200) {
