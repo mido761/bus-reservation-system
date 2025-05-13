@@ -10,8 +10,8 @@ const UserSchema = new mongoose.Schema({
   // seats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Seat" }],
   // bookedTime: [{type: Date, required:false}],
   role: { type: String, required: false, default: "user" },
-  resetToken: { type: String, required: false },
-  resetTokenExpires: {
+  verificationCode: { type: String, required: false },
+  verificationCodeExpires: {
     type: Date,
     required: false,
     default: () => new Date(Date.now() + 10*  60 * 1000),
