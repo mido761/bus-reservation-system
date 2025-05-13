@@ -162,12 +162,12 @@ const Homepage = () => {
     } catch (err) {
       console.error("Booking failed:", err);
       setLoading(false);
-      setAlertMessage("⚠️ you can only book a seat after bus time by an hour!");
+      setAlertMessage(`⚠️${err.response?.data?.message || "An error occurred." }` );
       setAlertFlag(true);
 
       setTimeout(() => {
         setAlertFlag(false);
-      }, 2200);
+      }, 5000);
     }
   };
 
