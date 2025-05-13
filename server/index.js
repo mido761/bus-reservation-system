@@ -18,6 +18,7 @@ const middleware = require("./controllers/middleware");
 const register = require("./routes/register");
 const forgotPassword = require("./routes/forgotPassword")
 const blackList = require("./routes/blackList");
+const driverList = require("./routes/driverList");
 const path = require("path");
 // For email vraification
 const nodemailer = require("nodemailer");
@@ -112,7 +113,8 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
 });
 
 // app.use('/home', (req, res) => {res.send("Server is running")} );
-app.use("/buses", busRoutes);
+app.use("/buses", middleware.isAuthenticated, busRoutes);
+app.use("/driver-list", driverList);
 // app.use('/api', bookingRoutes);
 app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
 app.use("/formselection", middleware.isAuthenticated,  FormSelection);
@@ -168,43 +170,6 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-
-// app.post('/api/register', async (req , res) => {
-//     // const {email,password} = req.body;
-//     // userModel.findOne({email})
-//     // .then(userExist => {
-//     //     if(userExist){
-//     //         res.json("email already exists")
-//     //     }else{
-//     //         userModel.create(req.body)
-//     //         .then(userNew => res.json(userNew))
-//     //         .catch(err => res.json(err))
-//     //         res.json("succsse")
-//     //     }
-
-//     // })
-//     // .catch(err => res.json(err))
-
-//     const { name,phoneNumber, email, password } = req.body;
-
-//     try {
-//         const userExist = await userModel.findOne({ email });
-//         if (userExist) {
-//             return res.json("Email already exists");
-//         }
-
-//         // Hash the password before saving
-//         const hashedPassword = await bcrypt.hash(password, 10);
-
-//         // Create new user
-//         const newUser = await userModel.create({name,phoneNumber,email,password: hashedPassword});
-
-//         res.status(201).json(newUser);
-
-//     } catch (err) {
-//         res.status(500).json("Internal server error");
-//     }
-// })
 
 app.post("/logout", middleware.isAuthenticated, (req, res) => {
   req.session.destroy((err) => {
