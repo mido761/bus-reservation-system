@@ -344,6 +344,11 @@ router.delete("/:busId", async (req, res) => {
   }
 });
 
+
+
+
+/////
+
 // router.get("/passenger/:id", async (req, res) => {
 //     try {
 //         const busId = req.params.id;
