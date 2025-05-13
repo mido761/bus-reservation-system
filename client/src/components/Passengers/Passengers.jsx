@@ -75,7 +75,7 @@ const PassengersPage = () => {
       console.error("Error cancelling the seat", error);
       setShowCancelOverlay(false);
       setIsLoading(false);
-      setAlertMessage("⚠️ Error canceling the seat!");
+      setAlertMessage("⚠️ You can only cancel your seats before the bus time by 3 hours!");
       setAlertFlag(true);
 
       setTimeout(() => {

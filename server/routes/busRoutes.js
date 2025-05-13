@@ -174,7 +174,7 @@ router.get("/", async (req, res) => {
 });
 
 // Fetch multiple buses at once
-router.get("/userBuses", async (req, res) => {
+router.get("/userBuses",middleware.isAuthenticated, async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
 
   if (ids) {
@@ -184,7 +184,7 @@ router.get("/userBuses", async (req, res) => {
   return res.json((busDetails = []));
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id",middleware.isAuthenticated, async (req, res) => {
   try {
     const response = await busForm.findById(req.params.id);
     res.status(200).json(response);
@@ -255,7 +255,7 @@ router.delete("/busForm/:id", middleware.isAuthoraized, async (req, res) => {
 });
 
 // Update a bus
-router.put("/edit-bus/:busId", async (req, res) => {
+router.put("/edit-bus/:busId", middleware.isAuthoraized,async (req, res) => {
   const busId = req.params.busId;
   console.log(req.body);
   try {
