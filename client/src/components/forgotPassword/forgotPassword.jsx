@@ -14,7 +14,7 @@ function ForgotPassword() {
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [verificationFlag, setVerificationFlag] = useState(true);
+  const [verificationFlag, setVerificationFlag] = useState(false);
 
   const navigate = useNavigate();
 
@@ -57,9 +57,13 @@ function ForgotPassword() {
     e.preventDefault();
     setIsLoading(true);
     try {
+      const response = await axios.post(
+        `${backEndUrl}/api/forgot-password`,
+        { email },
+        { withCredentials: true }
+      );
 
-
-      if (result.status === 201) {
+      if (response.status === 200) {
         setTimeout(() => {
           setIsLoading(false);
           setAlertMessage(
@@ -72,7 +76,7 @@ function ForgotPassword() {
 
         setTimeout(() => {
           setAlertFlag(false);
-          localStorage.setItem("verificationToken", result.data.token);
+          // localStorage.setItem("verificationToken", result.data.token);
           setVerificationFlag(true);
         }, 2500);
       }
@@ -91,29 +95,31 @@ function ForgotPassword() {
 
   return (
     <div className="login-container">
-      {!verificationFlag ? (<div className="login-form">
-        <h2>Forgot Password</h2>
-        <p style={{ fontSize: "10px", margin: "auto", marginBottom: "25px" }}>
-          Please enter your email to reset the password
-        </p>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="email">Your Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            required
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      {!verificationFlag ? (
+        <div className="login-form">
+          <h2>Forgot Password</h2>
+          <p style={{ fontSize: "10px", margin: "auto", marginBottom: "25px" }}>
+            Please enter your email to reset the password
+          </p>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="email">Your Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          <button type="submit">Reset password</button>
-        </form>
-        <br />
-        <Link to="/login">
-          <pre>Already registerd? Login</pre>
-        </Link>
-      </div>) : (
-        <Verification setVerificationFlag={setVerificationFlag} />
+            <button type="submit">Reset password</button>
+          </form>
+          <br />
+          <Link to="/login">
+            <pre>Already registerd? Login</pre>
+          </Link>
+        </div>
+      ) : (
+        <Verification setVerificationFlag={setVerificationFlag} email={email}/>
       )}
 
       {isLoading && <LoadingScreen />}

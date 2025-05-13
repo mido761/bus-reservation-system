@@ -44,7 +44,9 @@ exports.forgotPassword = async (req, res) => {
 };
 
 exports.resetPassword = async (req, res) => {
-  const { email, verificationCode, password } = req.body;
+  const { email, otp, password } = req.body;
+  // console.log(email, verificationCode.join(""), password)
+  const verificationCode = otp.join("");
 
   try {
     const user = await User.findOne({

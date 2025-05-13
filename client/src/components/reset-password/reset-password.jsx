@@ -48,58 +48,58 @@ function ResetPassword() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
 
-    setError(""); // Clear error if passwords match
-    passwordValidation(password);
+  //   setError(""); // Clear error if passwords match
+  //   passwordValidation(password);
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      return;
-    }
+  //   if (password !== confirmPassword) {
+  //     setError("Passwords do not match!");
+  //     return;
+  //   }
 
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        `${backEndUrl}/api/reset-password/${token}`,
-        { password },
-        { withCredentials: true }
-      );
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await axios.post(
+  //       `${backEndUrl}/api/reset-password/${token}`,
+  //       { password },
+  //       { withCredentials: true }
+  //     );
 
-      if (response.status === 200) {
-        setTimeout(() => {
-          setIsLoading(false);
-          setAlertMessage("Your password has been successfully reset!");
-          setAlertFlag(true);
-        }, 1000);
+  //     if (response.status === 200) {
+  //       setTimeout(() => {
+  //         setIsLoading(false);
+  //         setAlertMessage("Your password has been successfully reset!");
+  //         setAlertFlag(true);
+  //       }, 1000);
 
-        setTimeout(() => {
-          setAlertFlag(false);
-        }, 15200);
+  //       setTimeout(() => {
+  //         setAlertFlag(false);
+  //       }, 15200);
 
-        setTimeout(() => {
-          navigate("/login");
-        }, 5200);
-      }
-    } catch (error) {
-      if (error.status === 404) {
-        setAlertMessage("User not found");
-      } else if (error.status === 401) {
-        setAlertMessage("Password is incorrect");
-      } else if (error.status === 400) {
-        setAlertMessage("Token expired, please try again!");
-      } else {
-        setAlertMessage("There was an error during login");
-      }
+  //       setTimeout(() => {
+  //         navigate("/login");
+  //       }, 5200);
+  //     }
+  //   } catch (error) {
+  //     if (error.status === 404) {
+  //       setAlertMessage("User not found");
+  //     } else if (error.status === 401) {
+  //       setAlertMessage("Password is incorrect");
+  //     } else if (error.status === 400) {
+  //       setAlertMessage("Token expired, please try again!");
+  //     } else {
+  //       setAlertMessage("There was an error during login");
+  //     }
 
-      setTimeout(() => {
-        setIsLoading(false);
-        setAlertMessage(error.response.data.message);
-        setAlertFlag(true);
-      }, 1000);
-    }
-  };
+  //     setTimeout(() => {
+  //       setIsLoading(false);
+  //       setAlertMessage(error.response.data.message);
+  //       setAlertFlag(true);
+  //     }, 1000);
+  //   }
+  // };
 
   useEffect(() => {
     setError("");
@@ -109,9 +109,9 @@ function ResetPassword() {
   return (
     <div className="login-container">
       <div className="login-form">
-        <h2>Reset Password</h2>
+        {/* <h2>Reset Password</h2> */}
 
-        <form onSubmit={handleSubmit}>
+        {/* <form onSubmit={handleSubmit}> */}
           <label htmlFor="password">Password</label>
           <div className="password-container">
             <input
@@ -164,20 +164,20 @@ function ResetPassword() {
           </div>
    
 
-          <button type="submit">Save password</button>
-        </form>
-        <Link to="/login" style={{fontSize:"14px"}}>
+          {/* <button type="submit">Save password</button> */}
+        {/* </form> */}
+        {/* <Link to="/login" style={{fontSize:"14px"}}>
           Login
-        </Link>
+        </Link> */}
       </div>
-
+{/* 
       {isLoading && <LoadingScreen />}
 
       <Overlay
         alertFlag={alertFlag}
         alertMessage={alertMessage}
         setAlertFlag={setAlertFlag}
-      />
+      /> */}
     </div>
   );
 }
