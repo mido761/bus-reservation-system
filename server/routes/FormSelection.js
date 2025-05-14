@@ -122,7 +122,11 @@ router.delete("/:busId", async (req, res) => {
     }
 
     const now = new Date();
-
+    const egyptTime = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Africa/Cairo",
+      dateStyle: "full",
+      timeStyle: "long"
+    }).format(now);
     // Assume `bus.schedule` is in format "YYYY-MM-DD"
     // Assume `bus.departureTime` is in format "HH:mm" (e.g., "13:45")
     // Assume `bus.allowance.cancelTimeAllowance` is in milliseconds (e.g., 3600000 for 1 hour)
@@ -132,8 +136,8 @@ router.delete("/:busId", async (req, res) => {
     
     // Calculate cutoff time (when cancellation is no longer allowed)
     const cancelDeadline = new Date(fullDepartureDateTime - bus.allowance.cancelTimeAllowance);
-    console.log(fullDepartureDateTime.toString(),now.toString())
-    if (!isAdmin && (now.toLocaleString() > cancelDeadline.toLocaleString())) {
+    console.log(fullDepartureDateTime.toString(),egyptTime.toString())
+    if (!isAdmin && (egyptTime > cancelDeadline)) {
       return res.status(400).json({
         message: `You can only cancel your seats before the bus by ${bus.allowance.cancelTimeAllowance / (60 * 60 * 1000)} hours!`,
       });
