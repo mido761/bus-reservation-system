@@ -125,8 +125,8 @@ router.post("/formbuses", middleware.isAuthoraized, async (req, res) => {
       },
       departureTime: departureTime,
       allowance: {
-        cancelTimeAllowance: cancelTimeAllowance,
-        bookingTimeAllowance: bookingTimeAllowance,
+        cancelTimeAllowance: cancelTimeAllowance * 60 * 60 * 1000,
+        bookingTimeAllowance: bookingTimeAllowance * 60 * 60 * 1000,
       },
     });
     // console.log(newBus);
@@ -174,7 +174,7 @@ router.get("/", async (req, res) => {
 });
 
 // Fetch multiple buses at once
-router.get("/userBuses",middleware.isAuthenticated, async (req, res) => {
+router.get("/userBuses", middleware.isAuthenticated, async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
 
   if (ids) {
@@ -184,7 +184,7 @@ router.get("/userBuses",middleware.isAuthenticated, async (req, res) => {
   return res.json((busDetails = []));
 });
 
-router.get("/:id",middleware.isAuthenticated, async (req, res) => {
+router.get("/:id", middleware.isAuthenticated, async (req, res) => {
   try {
     const response = await busForm.findById(req.params.id);
     res.status(200).json(response);
@@ -233,11 +233,11 @@ router.delete("/busForm/:id", middleware.isAuthoraized, async (req, res) => {
   try {
     const busId = req.params.id;
 
-    if(!busId) { return res.status(404).json({ error: "Bus not found" })}
-    
-    const seats = await Seat.deleteMany({busId: busId}) 
+    if (!busId) { return res.status(404).json({ error: "Bus not found" }) }
 
-    if(!seats){ return res.status(400).json({error: "Error deleting seats!"})}
+    const seats = await Seat.deleteMany({ busId: busId })
+
+    if (!seats) { return res.status(400).json({ error: "Error deleting seats!" }) }
 
     const deletedBus = await busForm.deleteOne({ _id: busId });
 
@@ -247,7 +247,7 @@ router.delete("/busForm/:id", middleware.isAuthoraized, async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "Bus deleted successfully"});
+      .json({ message: "Bus deleted successfully" });
   } catch (err) {
     console.error("Error deleting the Item", err);
     res.status(500).json({ error: "Internal server error" });
@@ -255,7 +255,7 @@ router.delete("/busForm/:id", middleware.isAuthoraized, async (req, res) => {
 });
 
 // Update a bus
-router.put("/edit-bus/:busId", middleware.isAuthoraized,async (req, res) => {
+router.put("/edit-bus/:busId", middleware.isAuthoraized, async (req, res) => {
   const busId = req.params.busId;
   console.log(req.body);
   try {

@@ -33,7 +33,7 @@ const AddBus = () => {
     setPrice(110);
     setPickupLocation("E-JUST");
     setArrivalLocation("Cairo");
-    setCancelTimeAllowance(2);
+    setCancelTimeAllowance(3);
     setBookingTimeAllowance(1);
     setAllowedNumberOfBags(2);
     setSchedule(today);
@@ -56,7 +56,9 @@ const AddBus = () => {
           pickupLocation,
           arrivalLocation,
           arrivalTime,
-          departureTime
+          departureTime,
+          cancelTimeAllowance,
+          bookingTimeAllowance
         });
       } else {
         await axios.post(`${backEndUrl}/buses/formbuses`, {
@@ -68,6 +70,8 @@ const AddBus = () => {
           arrivalLocation,
           departureTime,
           arrivalTime,
+          cancelTimeAllowance,
+          bookingTimeAllowance
         });
       }
 
@@ -147,16 +151,16 @@ const AddBus = () => {
           onChange={(e) => setSchedule(e.target.value)}
         />
 
-{busType === "seat" && (
-  <>
-    <label>Price</label>
-    <input
-      type="number"
-      value={price}
-      onChange={(e) => setPrice(e.target.value)}
-    />
-  </>
-)}
+        {busType === "seat" && (
+          <>
+            <label>Price</label>
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+          </>
+        )}
 
 
         <label>Departure Time</label>
