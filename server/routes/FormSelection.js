@@ -132,7 +132,7 @@ router.delete("/:busId", async (req, res) => {
     
     // Calculate cutoff time (when cancellation is no longer allowed)
     const cancelDeadline = new Date(fullDepartureDateTime - bus.allowance.cancelTimeAllowance);
-    console.log(fullDepartureDateTime.toLocaleString(),now.toLocaleString())
+    console.log(fullDepartureDateTime.toString(),now.toString())
     if (!isAdmin && (now.toLocaleString() > cancelDeadline.toLocaleString())) {
       return res.status(400).json({
         message: `You can only cancel your seats before the bus by ${bus.allowance.cancelTimeAllowance / (60 * 60 * 1000)} hours!`,
