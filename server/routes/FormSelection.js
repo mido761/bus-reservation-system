@@ -7,6 +7,7 @@ const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
 const seat = require("../models/seat");
 const BlackList = require("../models/blackList")
+const { DateTime } = require('luxon');
 
 /**
  * @route GET /formselection/:id
@@ -64,11 +65,11 @@ router.post("/:busId", async (req, res) => {
 
     const numberOfSeats = await Seat.countDocuments({ bookedBy: userId }); // count the number of seats for the user
 
-    const blacklisted = await BlackList.find({userId:userId});
-    if(!isAdmin && blacklisted.length>0){
-     return res.status(400).json({
+    const blacklisted = await BlackList.find({ userId: userId });
+    if (!isAdmin && blacklisted.length > 0) {
+      return res.status(400).json({
         message: "You are Black Listed",
-      }); 
+      });
     };
 
     if (!isAdmin && numberOfSeats > 1) {
@@ -77,16 +78,16 @@ router.post("/:busId", async (req, res) => {
       });
     };
 
-    if (numberOfSeats > 0){
-      const oldBus = await Seat.find({ bookedBy: userId }, {busId: 1}); // Get the bus of the user's seat
+    if (numberOfSeats > 0) {
+      const oldBus = await Seat.find({ bookedBy: userId }, { busId: 1 }); // Get the bus of the user's seat
       const sameBus = oldBus[0].busId.toString() === busId; // ensure same bus
 
       // Regular users can't book in multiple buses
-      if (!isAdmin &&  !sameBus) {
+      if (!isAdmin && !sameBus) {
         return res.status(400).json({
           message: "Multiple Buses are not allowed!"
         });
-      }      
+      }
     }
 
     // make the new seat 
@@ -154,19 +155,30 @@ router.delete("/:busId", async (req, res) => {
       });
     }
 
-    const now = new Date();
+    const now = DateTime.utc();
+  
 
     // Assume `bus.schedule` is in format "YYYY-MM-DD"
     // Assume `bus.departureTime` is in format "HH:mm" (e.g., "13:45")
     // Assume `bus.allowance.cancelTimeAllowance` is in milliseconds (e.g., 3600000 for 1 hour)
 
     // Combine date and time into full Date object
-    const fullDepartureDateTime = new Date(`${bus.schedule}T${bus.departureTime}:00`);
-    
+    // const fullDepartureDateTime = new Date(`${bus.schedule}T${bus.departureTime}:00`);
+    const egyptDate = DateTime.fromISO(`${bus.schedule}T${bus.departureTime}`, {
+      zone: 'Africa/Cairo',
+    });
+
+    // Convert to UTC
+    const fullDepartureDateTime = egyptDate.toUTC();
+
+    console.log("UTC bus:", fullDepartureDateTime.toISO());
+    console.log("UTC now:", now.toISO());
+
+
     // Calculate cutoff time (when cancellation is no longer allowed)
     const cancelDeadline = new Date(fullDepartureDateTime - bus.allowance.cancelTimeAllowance);
- 
-    if (!isAdmin && (now > cancelDeadline)) {
+    console.log(`bus time   ${fullDepartureDateTime}  ,  time now   ${now}`)
+    if (!isAdmin && (now > cancelDeadline )) {
       return res.status(400).json({
         message: `You can only cancel your seats before the bus by ${bus.allowance.cancelTimeAllowance / (60 * 60 * 1000)} hours!`,
       });
