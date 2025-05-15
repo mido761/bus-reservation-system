@@ -7,7 +7,16 @@ const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
 const seat = require("../models/seat");
 const BlackList = require("../models/blackList")
-// retrieve bus details
+
+/**
+ * @route GET /formselection/:id
+ * @description Get details of a specific bus form
+ * @access Public
+ * @param {string} req.params.id - Bus ID to fetch
+ * @returns {Object} Bus form details
+ * @throws {404} If bus not found
+ * @throws {500} For internal server errors
+ */
 router.get("/:id", async (req, res) => {
   try {
     const busId = req.params.id;
@@ -24,7 +33,19 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// book seat endpoint
+/**
+ * @route POST /formselection/:busId
+ * @description Book a seat on a specific bus
+ * @access Public
+ * @param {string} req.params.busId - ID of the bus to book
+ * @param {Object} req.body
+ * @param {string} req.body.userId - ID of the user booking the seat
+ * @param {string} req.body.destination - Destination/route for the booking
+ * @returns {Object} Success message
+ * @throws {404} If user or bus not found
+ * @throws {400} If user is blacklisted or exceeds booking limits
+ * @throws {500} For internal server errors
+ */
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { userId, destination } = req.body;
@@ -87,7 +108,19 @@ router.post("/:busId", async (req, res) => {
   }
 });
 
-// cancel seat endpoint
+/**
+ * @route DELETE /formselection/:busId
+ * @description Cancel a seat booking
+ * @access Public
+ * @param {string} req.params.busId - ID of the bus
+ * @param {Object} req.body
+ * @param {string} req.body.seatId - ID of the seat to cancel
+ * @param {string} req.body.userId - ID of the user canceling the seat
+ * @returns {Object} Success message
+ * @throws {404} If bus, user, or seat not found
+ * @throws {400} If cancellation time has passed or user doesn't own the seat
+ * @throws {500} For internal server errors
+ */
 router.delete("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { seatId, userId } = req.body;

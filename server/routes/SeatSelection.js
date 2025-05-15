@@ -1,3 +1,9 @@
+/**
+ * @file SeatSelection.js
+ * @description Advanced seat booking and reservation management with real-time updates
+ * @module SeatSelectionRoutes
+ */
+
 const express = require("express");
 const router = express.Router();
 const Bus = require("../models/busModel");
@@ -5,6 +11,10 @@ const User = require("../models/user");
 const Pusher = require("pusher");
 const innerAuth = require("../controllers/Inner Authorization");
 
+/**
+ * @const {Pusher}
+ * @description Pusher configuration for real-time updates
+ */
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
   key: process.env.PUSHER_KEY,
@@ -12,6 +22,16 @@ const pusher = new Pusher({
   cluster: process.env.PUSHER_CLUSTER,
   useTLS: true,
 });
+
+/**
+ * @route GET /seatselection/:id
+ * @description Get bus details for seat selection
+ * @access Public
+ * @param {string} req.params.id - Bus ID
+ * @returns {Object} Bus details
+ * @throws {404} If bus not found
+ * @throws {500} For server errors
+ */
 router.get("/:id", async (req, res) => {
   try {
     const busId = req.params.id;
@@ -28,6 +48,19 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @route POST /seatselection/:busId
+ * @description Book seats with validation and real-time updates
+ * @access Public
+ * @param {string} req.params.busId - Bus ID
+ * @param {Object} req.body
+ * @param {string} req.body.selectedSeats - Comma-separated seat numbers
+ * @param {string} req.body.userId - User booking the seats
+ * @returns {Object} Booking confirmation
+ * @throws {404} If bus/user not found
+ * @throws {400} If booking violates rules
+ * @throws {500} For server errors
+ */
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { selectedSeats, userId } = req.body;
@@ -152,6 +185,19 @@ router.post("/:busId", async (req, res) => {
   }
 });
 
+/**
+ * @route POST /seatselection/reserve/:busId
+ * @description Temporarily reserve seats before payment
+ * @access Public
+ * @param {string} req.params.busId - Bus ID
+ * @param {Object} req.body.data
+ * @param {Array<string>} req.body.data.selectedSeats - Seats to reserve
+ * @param {string} req.body.data.userId - User reserving seats
+ * @returns {Object} Reservation status
+ * @throws {400} If reservation violates rules
+ * @throws {404} If user not found
+ * @throws {500} For server errors
+ */
 router.post("/reserve/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { selectedSeats, userId } = req.body.data;
@@ -252,6 +298,19 @@ router.post("/reserve/:busId", async (req, res) => {
   }
 });
 
+/**
+ * @route DELETE /seatselection/:busId
+ * @description Cancel seat bookings with cascading updates
+ * @access Public
+ * @param {string} req.params.busId - Bus ID
+ * @param {Object} req.body
+ * @param {Array<string>} req.body.selectedSeats - Seats to cancel
+ * @param {string} req.body.userId - User canceling seats
+ * @returns {Object} Cancellation confirmation
+ * @throws {404} If bus/user/seat not found
+ * @throws {400} If cancellation violates rules
+ * @throws {500} For server errors
+ */
 router.delete("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { selectedSeats, userId } = req.body;

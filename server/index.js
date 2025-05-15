@@ -8,6 +8,11 @@ const userModel = require("./models/user");
 const Bus = require("./models/busModel");
 // const BusForm = require("../models/busForm");
 require("dotenv").config();
+
+/**
+ * @const {Object} Routes
+ * @description Import route handlers
+ */
 const busRoutes = require("./routes/busRoutes");
 const userRouter = require("./routes/userRoutes");
 const SeatSelection = require("./routes/SeatSelection");
@@ -23,6 +28,10 @@ const path = require("path");
 // For email vraification
 const nodemailer = require("nodemailer");
 
+/**
+ * @const {Pusher}
+ * @description Real-time updates configuration
+ */
 const Pusher = require("pusher");
 
 const pusher = new Pusher({
@@ -35,7 +44,15 @@ const pusher = new Pusher({
 
 const app = express();
 
+/**
+ * @const {Object} app
+ * @description Express application instance
+ */
 
+/**
+ * @const {Array<string>} allowedOrigins
+ * @description CORS configuration for allowed origins
+ */
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
@@ -53,8 +70,10 @@ app.use(
   })
 );
 
-
-// Middleware for parsing JSON and URL-encoded form data
+/**
+ * @middleware
+ * @description Middleware for parsing JSON and URL-encoded form data
+ */
 app.use(express.json()); // For JSON payloads
 app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
 
@@ -70,6 +89,15 @@ app.options("*", (req, res) => {
   res.sendStatus(200); // Respond with 200 for preflight requests
 });
 
+/**
+ * @middleware
+ * @description Session configuration
+ * @property {string} secret - Session secret key
+ * @property {boolean} resave - Forces session resave
+ * @property {boolean} saveUninitialized - Save uninitialized sessions
+ * @property {Object} store - MongoDB session store
+ * @property {Object} cookie - Session cookie settings
+ */
 app.use(
   session({
     secret: "ARandomStringThatIsHardToGuess12345",
@@ -86,6 +114,14 @@ app.use(
   })
 );
 
+/**
+ * @route POST /notifications
+ * @description Handle real-time notifications using Pusher
+ * @access Public
+ * @param {Object} req.body
+ * @param {string} req.body.message - Notification message
+ * @param {string} req.body.recepient - Target recipient
+ */
 app.post("/notifications", (req, res) => {
   const { message, recepient } = req.body;
   pusher.trigger("notifications", "message", {
@@ -113,6 +149,10 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
 });
 
 // app.use('/home', (req, res) => {res.send("Server is running")} );
+/**
+ * @routes
+ * @description Register route handlers
+ */
 app.use("/buses", middleware.isAuthenticated, busRoutes);
 app.use("/driver-list", driverList);
 // app.use('/api', bookingRoutes);
@@ -129,7 +169,10 @@ app.use("/api", forgotPassword);
 // Contact routes
 app.use("/contact", middleware.isAuthenticated, contactRoutes);
 
-//MongoDB connection
+/**
+ * @database
+ * @description MongoDB connection
+ */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
@@ -138,6 +181,18 @@ mongoose
 //Routes
 // app.get("/api/buses", require('./routes/busRoutes'))
 
+/**
+ * @route POST /api/login
+ * @description Authenticate user and create session
+ * @access Public
+ * @param {Object} req.body
+ * @param {string} req.body.email - User email
+ * @param {string} req.body.password - User password
+ * @returns {string} Authentication status message
+ * @throws {401} If credentials are invalid
+ * @throws {404} If user not found
+ * @throws {500} For server errors
+ */
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -170,7 +225,14 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-
+/**
+ * @route POST /logout
+ * @description End user session and clear cookies
+ * @access Protected
+ * @middleware isAuthenticated
+ * @returns {string} Logout status message
+ * @throws {500} If session destruction fails
+ */
 app.post("/logout", middleware.isAuthenticated, (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -181,6 +243,14 @@ app.post("/logout", middleware.isAuthenticated, (req, res) => {
   });
 });
 
+/**
+ * @route GET /auth/:busId
+ * @description Verify authentication for specific bus access
+ * @access Protected
+ * @middleware isAuthenticated
+ * @param {string} req.params.busId - Bus ID
+ * @returns {Object} Authentication status and bus ID
+ */
 app.get("/auth/:busId", middleware.isAuthenticated, (req, res) => {
   const busId = req.params.busId;
   req.session.busId = busId;
@@ -191,6 +261,12 @@ app.get("/auth/:busId", middleware.isAuthenticated, (req, res) => {
   }
 });
 
+/**
+ * @route GET /auth
+ * @description Check general authentication status
+ * @access Public
+ * @returns {Object} Authentication details including user role and bus ID
+ */
 app.get("/auth", (req, res) => {
   if (req.session.userId) {
     res.status(200).json({
@@ -204,7 +280,16 @@ app.get("/auth", (req, res) => {
   }
 });
 
-// for profile to show the bus that are reserved
+/**
+ * @route POST /payment
+ * @description Process bus reservation payment
+ * @access Protected
+ * @middleware isAuthenticated
+ * @param {Object} req.body
+ * @param {string} req.body.userId - User ID
+ * @param {string} req.body.busId - Bus ID
+ * @throws {404} If bus or user not found
+ */
 app.post("/payment", middleware.isAuthenticated, async (req, res) => {
   // const busId = req.params.busId;
   const { userId, busId } = req.body;
@@ -234,6 +319,13 @@ app.post("/payment", middleware.isAuthenticated, async (req, res) => {
   });
 // }
 
+/**
+ * @server
+ * @description Server initialization
+ * @property {number} PORT - Server port number
+ * @listens {number} PORT
+ * @event SIGINT - Graceful shutdown handler
+ */
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

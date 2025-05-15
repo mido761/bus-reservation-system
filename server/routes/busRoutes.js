@@ -8,7 +8,25 @@ const router = express.Router();
 const middleware = require("../controllers/middleware");
 const mongoose = require("mongoose");
 
-// Add new Bus details
+/**
+ * @route POST /buses
+ * @description Create a new bus with specified details
+ * @access Private - Admin only
+ * @param {Object} req.body
+ * @param {number} req.body.totalSeats - Total number of seats in the bus
+ * @param {number} req.body.busNumber - Unique identifier for the bus
+ * @param {string} req.body.schedule - Bus schedule/frequency
+ * @param {number} req.body.minNoPassengers - Minimum number of passengers required
+ * @param {number} req.body.price - Ticket price
+ * @param {string} req.body.pickupLocation - Starting point
+ * @param {string} req.body.arrivalLocation - Destination
+ * @param {string} req.body.departureTime - Time of departure
+ * @param {string} req.body.arrivalTime - Expected arrival time
+ * @param {number} req.body.cancelTimeAllowance - Time limit for cancellation
+ * @param {number} req.body.bookingTimeAllowance - Time limit for booking
+ * @param {number} req.body.allowedNumberOfBags - Maximum bags per passenger
+ * @returns {Object} Message indicating success or failure
+ */
 router.post("/", middleware.isAuthoraized, async (req, res) => {
   try {
     const {
@@ -90,6 +108,20 @@ router.post("/", middleware.isAuthoraized, async (req, res) => {
   }
 });
 
+/**
+ * @route POST /buses/formbuses
+ * @description Create a new bus form template
+ * @access Private - Admin only
+ * @param {Object} req.body
+ * @param {string} req.body.schedule - Bus schedule
+ * @param {number} req.body.price - Ticket price
+ * @param {string} req.body.pickupLocation - Starting point
+ * @param {string} req.body.arrivalLocation - Destination
+ * @param {string} req.body.departureTime - Time of departure
+ * @param {number} req.body.cancelTimeAllowance - Cancellation time limit
+ * @param {number} req.body.bookingTimeAllowance - Booking time limit
+ * @returns {Object} Message indicating success or failure
+ */
 router.post("/formbuses", middleware.isAuthoraized, async (req, res) => {
   try {
     const {
@@ -163,7 +195,12 @@ router.post("/formbuses", middleware.isAuthoraized, async (req, res) => {
 //   }
 // });
 
-// Get all buses
+/**
+ * @route GET /buses
+ * @description Get all bus form templates
+ * @access Public
+ * @returns {Array<Object>} Array of bus form templates
+ */
 router.get("/", async (req, res) => {
   try {
     const buses = await busForm.find();
@@ -173,8 +210,14 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Fetch multiple buses at once
-router.get("/userBuses",middleware.isAuthenticated, async (req, res) => {
+/**
+ * @route GET /buses/userBuses
+ * @description Get multiple buses by their IDs
+ * @access Private - Authenticated users only
+ * @param {string} req.query.ids - Comma-separated list of bus IDs
+ * @returns {Array<Object>} Array of bus details
+ */
+router.get("/userBuses", middleware.isAuthenticated, async (req, res) => {
   const { ids } = req.query; // Expecting ids as comma-separated values
 
   if (ids) {
@@ -184,7 +227,14 @@ router.get("/userBuses",middleware.isAuthenticated, async (req, res) => {
   return res.json((busDetails = []));
 });
 
-router.get("/:id",middleware.isAuthenticated, async (req, res) => {
+/**
+ * @route GET /buses/:id
+ * @description Get a specific bus form template by ID
+ * @access Private - Authenticated users only
+ * @param {string} req.params.id - Bus ID
+ * @returns {Object} Bus form template details
+ */
+router.get("/:id", middleware.isAuthenticated, async (req, res) => {
   try {
     const response = await busForm.findById(req.params.id);
     res.status(200).json(response);
@@ -193,6 +243,13 @@ router.get("/:id",middleware.isAuthenticated, async (req, res) => {
   }
 });
 
+/**
+ * @route DELETE /buses/:id
+ * @description Delete a bus and update related user records
+ * @access Private - Admin only
+ * @param {string} req.params.id - Bus ID to delete
+ * @returns {Object} Message indicating success or failure
+ */
 router.delete("/:id", middleware.isAuthoraized, async (req, res) => {
   try {
     const id = req.params.id;
