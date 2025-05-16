@@ -201,7 +201,7 @@ const handleBookSeatConfirm = async () => {
           <input
             type="date"
             onChange={(e) => setDate(e.target.value)}
-            value={date}
+            value={date || "DD/MM/YY"}
           />
           <button className="search-btn" onClick={handleSearch}>
             Search
