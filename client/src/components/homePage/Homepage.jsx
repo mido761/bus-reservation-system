@@ -37,6 +37,16 @@ const Homepage = () => {
   const [showReservedPassengerList, setShowReservedPassengerList] =
     useState(false);
 
+
+  // Format today's date to set as min date
+  const getTodayFormatted = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const fetchBuses = async () => {
     try {
       const [req_user, response] = await Promise.all([
@@ -142,7 +152,7 @@ const Homepage = () => {
     }
   };
 
-const handleBookSeatConfirm = async () => {
+  const handleBookSeatConfirm = async () => {
     setLoading(true);
     try {
       await axios.post(
@@ -154,19 +164,19 @@ const handleBookSeatConfirm = async () => {
       setLoading(false);
       setAlertMessage("✅ Seat booked successfully! Now redirecting to passenger list...");
       setAlertFlag(true);
-      
+
       // Using the same timeout for both alert hiding and navigation (2200ms)
       const redirectTimeout = 2200;
-      
+
       setTimeout(() => {
         setAlertFlag(false);
         // Navigate to passengers page with the busId
-        navigate("/passengers", { 
-          state: { 
-            busId: selectedBus._id, 
+        navigate("/passengers", {
+          state: {
+            busId: selectedBus._id,
             userId,
-            fromBooking: true 
-          } 
+            fromBooking: true
+          }
         });
       }, redirectTimeout);
     } catch (err) {
@@ -198,11 +208,18 @@ const handleBookSeatConfirm = async () => {
             <option value="Cairo">Cairo</option>
             <option value="E-JUST">E-JUST</option>
           </select>
-          <input
-            type="date"
-            onChange={(e) => setDate(e.target.value)}
-            value={date || "DD/MM/YY"}
-          />
+          
+          <div className="date-input-container">
+            <input
+              type="date"
+              onChange={(e) => setDate(e.target.value)}
+              value={date}
+              min={getTodayFormatted()}
+              className={!date ? "date-empty" : ""}
+            />
+            {!date && <div className="date-placeholder">Select Travel Date</div>}
+          </div>
+
           <button className="search-btn" onClick={handleSearch}>
             Search
           </button>
@@ -233,9 +250,8 @@ const handleBookSeatConfirm = async () => {
               filteredBuses.map((bus, index) => (
                 <div
                   key={bus._id}
-                  className={`bus-container ${
-                    filteredBuses.length > 1 && index === 0 ? "top-margin" : ""
-                  }`}
+                  className={`bus-container ${filteredBuses.length > 1 && index === 0 ? "top-margin" : ""
+                    }`}
                 >
                   <button
                     className="list-btn top-right-btn"
@@ -276,17 +292,15 @@ const handleBookSeatConfirm = async () => {
             <div className="destination-selector">
               <div className="button-group">
                 <button
-                  className={`destination-btn ${
-                    destination === "Dandy" ? "selected" : ""
-                  }`}
+                  className={`destination-btn ${destination === "Dandy" ? "selected" : ""
+                    }`}
                   onClick={() => setDestination("Dandy")}
                 >
                   Dandy
                 </button>
                 <button
-                  className={`destination-btn ${
-                    destination === "Ramses" ? "selected" : ""
-                  }`}
+                  className={`destination-btn ${destination === "Ramses" ? "selected" : ""
+                    }`}
                   onClick={() => setDestination("Ramses")}
                 >
                   Ramses
