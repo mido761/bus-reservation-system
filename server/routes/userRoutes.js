@@ -9,43 +9,12 @@ const middleware = require("../controllers/middleware");
 const { default: mongoose } = require("mongoose");
 const { route } = require("./busRoutes");
 
-// Add new User details
-// router.post("/bus", async (req, res) => {
-//     try {
-//         const { name, email, password, bookedBuses } = req.body;
-
-//         console.log(req.body);
-
-//         // Check if all required fields are provided
-//         // !name || !email || !password ||
-//         if (!bookedBuses) {
-//             return res.status(400).json({
-//                 message: "Missing required fields",
-//             });
-//         }
-
-//         // console.log('Name:', name);
-//         // console.log('Email:', email);
-//         // console.log('Password:', password);
-
-//         const newUser = new User({
-//             name: name,
-//             email: email,
-//             password: password,
-//             bookedBuses: {
-//                 BusId: bookedBuses.BusId,
-//                 SeatsNumbers: bookedBuses.SeatsNumbers
-//             }
-//         });
-
-//         const user = await newUser.save();
-//         res.status(201).json(user);
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// })
-
-// Get all Users
+/**
+ * @route GET /user
+ * @description Get all users in the system
+ * @access Private - Admin only
+ * @returns {Array<Object>} Array of user objects
+ */
 router.get("/", middleware.isAuthoraized, async (req, res) => {
   try {
     const users = await User.find();
@@ -55,7 +24,13 @@ router.get("/", middleware.isAuthoraized, async (req, res) => {
   }
 });
 
-// Get Specific User
+/**
+ * @route GET /user/profile/:userId
+ * @description Get a specific user's profile
+ * @access Public
+ * @param {string} req.params.userId - User ID to fetch
+ * @returns {Object} User profile details
+ */
 router.get("/profile/:userId", async (req, res) => {
   const userId = req.params.userId;
   try {
@@ -66,6 +41,14 @@ router.get("/profile/:userId", async (req, res) => {
   }
 });
 
+/**
+ * @route POST /user/profiles
+ * @description Get multiple user profiles by their IDs
+ * @access Public
+ * @param {Object} req.body
+ * @param {string[]} req.body.userIds - Array of user IDs to fetch
+ * @returns {Array<Object>} Array of user profiles with selected fields
+ */
 router.post("/profiles", async (req, res) => {
   const { userIds } = req.body;
   const users = await User.find(
@@ -75,13 +58,27 @@ router.post("/profiles", async (req, res) => {
   res.json(users);
 });
 
+/**
+ * @route POST /user/profilesNames
+ * @description Get names of multiple users by their IDs
+ * @access Public
+ * @param {Object} req.body
+ * @param {string[]} req.body.userIds - Array of user IDs to fetch
+ * @returns {Array<Object>} Array of user names
+ */
 router.post("/profilesNames", async (req, res) => {
   const { userIds } = req.body;
   const users = await User.find({ _id: { $in: userIds } }, "name"); // Fetch all users at once
   res.json(users);
 });
 
-// get a specific bus for seat-based buses
+/**
+ * @route GET /user/bus/:id
+ * @description Get all buses booked by a specific user (seat-based)
+ * @access Public
+ * @param {string} req.params.id - User ID
+ * @returns {Array<Object>} Array of bus details
+ */
 router.get("/bus/:id", async (req, res) => {
   try {
     const users = await User.find({ _id: req.params.id });
@@ -96,7 +93,13 @@ router.get("/bus/:id", async (req, res) => {
   }
 });
 
-// get a specific bus for form-based buses
+/**
+ * @route GET /user/form-based-bus/:id
+ * @description Get all buses booked by a specific user (form-based)
+ * @access Public
+ * @param {string} req.params.id - User ID
+ * @returns {Array<Object>} Array of bus form details
+ */
 router.get("/form-based-bus/:id", async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -121,7 +124,13 @@ router.get("/form-based-bus/:id", async (req, res) => {
   }
 });
 
-
+/**
+ * @route DELETE /user/bus/:id
+ * @description Delete a user and their bookings
+ * @access Public
+ * @param {string} req.params.id - User ID to delete
+ * @returns {Object} Success/failure message
+ */
 router.delete("/bus/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -136,6 +145,13 @@ router.delete("/bus/:id", async (req, res) => {
   }
 });
 
+/**
+ * @route PUT /user/check-in/:userId
+ * @description Mark a user as checked in
+ * @access Public
+ * @param {string} req.params.userId - User ID to check in
+ * @returns {Object} Updated user object and success message
+ */
 router.put("/check-in/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -151,6 +167,13 @@ router.put("/check-in/:userId", async (req, res) => {
   }
 });
 
+/**
+ * @route PUT /user/check-out/:userId
+ * @description Mark a user as checked out
+ * @access Public
+ * @param {string} req.params.userId - User ID to check out
+ * @returns {Object} Updated user object and success message
+ */
 router.put("/check-out/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -166,6 +189,15 @@ router.put("/check-out/:userId", async (req, res) => {
   }
 });
 
+/**
+ * @route PUT /user/edit-gender/:userId
+ * @description Update a user's gender
+ * @access Public
+ * @param {string} req.params.userId - User ID to update
+ * @param {Object} req.body
+ * @param {string} req.body.gender - New gender value
+ * @returns {Object} Updated user object and success message
+ */
 router.put("/edit-gender/:userId", async (req, res) => {
   try {
     const { gender } = req.body; // ✅ Extract gender

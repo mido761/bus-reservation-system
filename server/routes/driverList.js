@@ -6,8 +6,23 @@ const Bus = require("../models/busForm");
 const Seat = require("../models/seat");
 const User = require("../models/user");
 
+/**
+ * @typedef {Object} PassengerInfo
+ * @property {string} name - Name of the passenger
+ * @property {string} route - Seat route/number
+ */
 
-
+/**
+ * @route GET /driver-list/seats/:id
+ * @description Get list of passengers and their seat assignments for a specific bus
+ * @access Public
+ * @param {string} req.params.id - Bus ID to check
+ * @returns {Object} Object containing passenger list with names and seat routes
+ * @property {Array<PassengerInfo>} data.passengerList - Array of passenger details
+ * @throws {404} If bus not found
+ * @throws {400} If user list is invalid
+ * @throws {500} For internal server errors
+ */
 router.get("/seats/:id", async (req, res) => {
   try {
     const busId = req.params.id;
@@ -63,6 +78,13 @@ router.get("/seats/:id", async (req, res) => {
   }
 });
 
+/**
+ * @route GET /driver-list/buses
+ * @description Get all available buses
+ * @access Public
+ * @returns {Array<Object>} Array of bus objects
+ * @throws {400} For fetch errors
+ */
 router.get("/buses", async (req, res) => {
   try {
     const buses = await Bus.find();
