@@ -8,16 +8,7 @@ const innerAuth = require("../controllers/Inner Authorization");
 const seat = require("../models/seat");
 const BlackList = require("../models/blackList")
 const { DateTime } = require('luxon');
-
-/**
- * @route GET /formselection/:id
- * @description Get details of a specific bus form
- * @access Public
- * @param {string} req.params.id - Bus ID to fetch
- * @returns {Object} Bus form details
- * @throws {404} If bus not found
- * @throws {500} For internal server errors
- */
+// retrieve bus details
 router.get("/:id", async (req, res) => {
   try {
     const busId = req.params.id;
@@ -34,19 +25,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-/**
- * @route POST /formselection/:busId
- * @description Book a seat on a specific bus
- * @access Public
- * @param {string} req.params.busId - ID of the bus to book
- * @param {Object} req.body
- * @param {string} req.body.userId - ID of the user booking the seat
- * @param {string} req.body.destination - Destination/route for the booking
- * @returns {Object} Success message
- * @throws {404} If user or bus not found
- * @throws {400} If user is blacklisted or exceeds booking limits
- * @throws {500} For internal server errors
- */
+// book seat endpoint
 router.post("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { userId, destination } = req.body;
@@ -109,19 +88,7 @@ router.post("/:busId", async (req, res) => {
   }
 });
 
-/**
- * @route DELETE /formselection/:busId
- * @description Cancel a seat booking
- * @access Public
- * @param {string} req.params.busId - ID of the bus
- * @param {Object} req.body
- * @param {string} req.body.seatId - ID of the seat to cancel
- * @param {string} req.body.userId - ID of the user canceling the seat
- * @returns {Object} Success message
- * @throws {404} If bus, user, or seat not found
- * @throws {400} If cancellation time has passed or user doesn't own the seat
- * @throws {500} For internal server errors
- */
+// cancel seat endpoint
 router.delete("/:busId", async (req, res) => {
   const busId = req.params.busId;
   const { seatId, userId } = req.body;
@@ -167,17 +134,21 @@ router.delete("/:busId", async (req, res) => {
     const egyptDate = DateTime.fromISO(`${bus.schedule}T${bus.departureTime}`, {
       zone: 'Africa/Cairo',
     });
+    // console.log(egyptDate)
 
     // Convert to UTC
     const fullDepartureDateTime = egyptDate.toUTC();
 
-    console.log("UTC bus:", fullDepartureDateTime.toISO());
-    console.log("UTC now:", now.toISO());
+    // console.log("UTC bus:", fullDepartureDateTime);
+    // console.log("UTC now:", now);
 
 
     // Calculate cutoff time (when cancellation is no longer allowed)
-    const cancelDeadline = new Date(fullDepartureDateTime - bus.allowance.cancelTimeAllowance);
-    console.log(`bus time   ${fullDepartureDateTime}  ,  time now   ${now}`)
+    // const cancelDeadline = new Date(fullDepartureDateTime - bus.allowance.cancelTimeAllowance);
+
+    const cancelDeadline = fullDepartureDateTime.minus({ milliseconds: bus.allowance.cancelTimeAllowance });
+
+    console.log(`bus time   ${fullDepartureDateTime}  ,  time now   ${now}, Deadline: ${cancelDeadline}`)
     if (!isAdmin && (now > cancelDeadline )) {
       return res.status(400).json({
         message: `You can only cancel your seats before the bus by ${bus.allowance.cancelTimeAllowance / (60 * 60 * 1000)} hours!`,
