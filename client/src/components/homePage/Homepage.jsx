@@ -208,7 +208,7 @@ const Homepage = () => {
             <option value="Cairo">Cairo</option>
             <option value="E-JUST">E-JUST</option>
           </select>
-          
+
           <div className="date-input-container">
             <input
               type="date"
@@ -301,9 +301,9 @@ const Homepage = () => {
                 <button
                   className={`destination-btn ${destination === "Ramses" ? "selected" : ""
                     }`}
-                  onClick={() => setDestination("Ramses")}
+                  onClick={() => setDestination("Abasyea")}
                 >
-                  Ramses
+                  Abasyea
                 </button>
               </div>
             </div>
