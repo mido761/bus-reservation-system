@@ -37,6 +37,15 @@ const Homepage = () => {
   const [showReservedPassengerList, setShowReservedPassengerList] =
     useState(false);
 
+  // Format today's date to set as min date
+  const getTodayFormatted = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const fetchBuses = async () => {
     try {
       const [req_user, response] = await Promise.all([
@@ -198,11 +207,18 @@ const handleBookSeatConfirm = async () => {
             <option value="Cairo">Cairo</option>
             <option value="E-JUST">E-JUST</option>
           </select>
-          <input
-            type="date"
-            onChange={(e) => setDate(e.target.value)}
-            value={date}
-          />
+          
+          <div className="date-input-container">
+            <input
+              type="date"
+              onChange={(e) => setDate(e.target.value)}
+              value={date}
+              min={getTodayFormatted()}
+              className={!date ? "date-empty" : ""}
+            />
+            {!date && <div className="date-placeholder">Select Travel Date</div>}
+          </div>
+          
           <button className="search-btn" onClick={handleSearch}>
             Search
           </button>
