@@ -52,9 +52,9 @@ router.post("/:busId", async (req, res) => {
       });
     };
 
-    if (!isAdmin && numberOfSeats > 1) {
+    if (!isAdmin && numberOfSeats > 0) {
       return res.status(400).json({
-        message: "Only two seats are allowed per user on the same bus!",
+        message: "Only one seats are allowed per user on the same bus!",
       });
     };
 
