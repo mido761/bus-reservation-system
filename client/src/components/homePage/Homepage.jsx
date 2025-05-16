@@ -142,7 +142,7 @@ const Homepage = () => {
     }
   };
 
-  const handleBookSeatConfirm = async () => {
+const handleBookSeatConfirm = async () => {
     setLoading(true);
     try {
       await axios.post(
@@ -150,24 +150,31 @@ const Homepage = () => {
         { userId, destination },
         { withCredentials: true }
       );
-      setShowBookingConfirm(false);
       setShowBusOptions(false);
       setLoading(false);
-      setAlertMessage("✅ Seat booking confirmed!");
+      setAlertMessage("✅ Seat booked successfully! Now redirecting to passenger list...");
       setAlertFlag(true);
-
+      
+      // Using the same timeout for both alert hiding and navigation (2200ms)
+      const redirectTimeout = 2200;
+      
       setTimeout(() => {
         setAlertFlag(false);
-      }, 2200);
+        // Navigate to passengers page with the busId
+        navigate("/passengers", { 
+          state: { 
+            busId: selectedBus._id, 
+            userId,
+            fromBooking: true 
+          } 
+        });
+      }, redirectTimeout);
     } catch (err) {
       console.error("Booking failed:", err);
       setLoading(false);
-      setAlertMessage("⚠️ you can only book a seat after bus time by an hour!");
+      setAlertMessage("⚠️ You can only book 2 seats max!");
       setAlertFlag(true);
-
-      setTimeout(() => {
-        setAlertFlag(false);
-      }, 2200);
+      setTimeout(() => setAlertFlag(false), 2200);
     }
   };
 
