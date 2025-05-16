@@ -33,7 +33,7 @@ const AddBus = () => {
     setPrice(110);
     setPickupLocation("E-JUST");
     setArrivalLocation("Cairo");
-    setCancelTimeAllowance(2);
+    setCancelTimeAllowance(3);
     setBookingTimeAllowance(1);
     setAllowedNumberOfBags(2);
     setSchedule(today);
@@ -56,7 +56,9 @@ const AddBus = () => {
           pickupLocation,
           arrivalLocation,
           arrivalTime,
-          departureTime
+          departureTime,
+          cancelTimeAllowance,
+          bookingTimeAllowance
         });
       } else {
         await axios.post(`${backEndUrl}/buses/formbuses`, {
@@ -67,7 +69,8 @@ const AddBus = () => {
           pickupLocation,
           arrivalLocation,
           departureTime,
-          arrivalTime,
+          cancelTimeAllowance,
+          bookingTimeAllowance
         });
       }
 
