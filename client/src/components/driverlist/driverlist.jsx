@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingComponent from "../loadingComponent/loadingComponent";
-import LoadingScreen from "../loadingScreen/loadingScreen";
 import LoadingPage from "../loadingPage/loadingPage";
 import Overlay from "../overlayScreen/overlay";
 import "./driverlist.css";
@@ -16,18 +14,42 @@ const BusList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
   const [alertFlag, setAlertFlag] = useState(false);
   const [passengersCount, setPassengersCount] = useState({
     total: 0,
     byRoute: {}
   });
-  const navigate = useNavigate();
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
 
   const fetchBusList = async () => {
     try {
       const response = await axios.get(`${backEndUrl}/driver-list/buses`);
-      setBusList(response.data);
+      const buses = response.data;
+      
+      // Group buses by date and sort within each date by departure time
+      const sortedBuses = buses.sort((a, b) => {
+        const dateCompare = new Date(a.schedule) - new Date(b.schedule);
+        if (dateCompare !== 0) return dateCompare;
+        return a.departureTime.localeCompare(b.departureTime);
+      });
+
+      setBusList(sortedBuses);
+      
+      // Set initial selected date to the earliest date if not already set
+      if (sortedBuses.length > 0 && !selectedDate) {
+        setSelectedDate(sortedBuses[0].schedule);
+      }
+      
       setPageLoading(false);
     } catch (error) {
       console.error("Error fetching bus list:", error);
@@ -92,6 +114,16 @@ const BusList = () => {
     setSearchQuery(e.target.value);
   };
 
+  // Group buses by date
+  const busesByDate = busList.reduce((acc, bus) => {
+    const date = bus.schedule;
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+    acc[date].push(bus);
+    return acc;
+  }, {});
+
   const filteredPassengers = passengers.filter((passenger, idx) => {
     const query = searchQuery.toLowerCase().trim();
     const userName = passenger?.name?.toLowerCase() || "";
@@ -137,24 +169,43 @@ const BusList = () => {
       </div>
       
       <div className="bus-selection-area">
-        <div className="time-buttons-row">
-          {busList.length > 0 ? (
-            busList.map((bus) => (
-              <button
-                key={bus._id}
-                className={`time-button ${selectedBusId === bus._id ? "selected" : ""}`}
-                onClick={() => handleBusSelect(bus._id)}
-              >
-                <div className="time-display">{convertTo12HourFormat(bus.departureTime)}</div>
-                <div className="route-mini-info">
-                  {bus.location.pickupLocation} → {bus.location.arrivalLocation}
-                </div>
-              </button>
-            ))
-          ) : (
-            <div className="no-buses">No buses available at this time.</div>
-          )}
-        </div>
+        {Object.keys(busesByDate).length > 0 ? (
+          <>
+            <div className="date-tabs">
+              {Object.entries(busesByDate).map(([date, buses]) => (
+                <button
+                  key={date}
+                  className={`date-tab ${selectedDate === date ? "selected" : ""}`}
+                  onClick={() => setSelectedDate(date)}
+                >
+                  <div className="date-tab-content">
+                    <span className="date-label">{formatDate(date)}</span>
+                    <span className="bus-count">
+                      {buses.length} {buses.length === 1 ? "bus" : "buses"}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="time-buttons-row">
+              {busesByDate[selectedDate]?.map((bus) => (
+                <button
+                  key={bus._id}
+                  className={`time-button ${selectedBusId === bus._id ? "selected" : ""}`}
+                  onClick={() => handleBusSelect(bus._id)}
+                >
+                  <div className="time-display">{convertTo12HourFormat(bus.departureTime)}</div>
+                  <div className="route-mini-info">
+                    {bus.location.pickupLocation} → {bus.location.arrivalLocation}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="no-buses">No buses available.</div>
+        )}
         
         {selectedBusId && (
           <div className="passenger-details-panel">
@@ -226,11 +277,9 @@ const BusList = () => {
         )}
       </div>
       
-      {isLoading && <LoadingScreen />}
       {alertFlag && (
         <Overlay
           alertFlag={alertFlag}
-          alertMessage={alertMessage}
           setAlertFlag={setAlertFlag}
         />
       )}
