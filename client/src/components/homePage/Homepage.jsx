@@ -301,9 +301,9 @@ const Homepage = () => {
                 <button
                   className={`destination-btn ${destination === "Ramses" ? "selected" : ""
                     }`}
-                  onClick={() => setDestination("Abasyea")}
+                  onClick={() => setDestination("Ramses")}
                 >
-                  Abasyea
+                  Ramses
                 </button>
               </div>
             </div>
