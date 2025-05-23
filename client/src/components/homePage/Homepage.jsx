@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Homepage.css";
-import Footer from "../footer/footer";
-import Navbar from "../navbar/nav";
-import LoadingPage from "../loadingPage/loadingPage";
 import LoadingComponent from "../loadingComponent/loadingComponent";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
@@ -20,22 +17,12 @@ const Homepage = () => {
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [showContactForm, setShowContactForm] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [responseMessage, setResponseMessage] = useState("");
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [showBusOptions, setShowBusOptions] = useState(false);
   const [selectedBus, setSelectedBus] = useState(null);
-  const [showBookingConfirm, setShowBookingConfirm] = useState(false);
-  const [showPassengerList, setShowPassengerList] = useState(false);
-  const [passengerList, setPassengerList] = useState([]);
   const [destination, setDestination] = useState("");
-  const [reservedPassengers, setReservedPassengers] = useState([]);
-  const [showReservedPassengerList, setShowReservedPassengerList] =
-    useState(false);
+  const [availableDestinations, setAvailableDestinations] = useState([]);
 
   // Format today's date to set as min date
   const getTodayFormatted = () => {
@@ -48,12 +35,9 @@ const Homepage = () => {
 
   const fetchBuses = async () => {
     try {
-      const [req_user, response] = await Promise.all([
-        axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
-      ]);
+      const req_user = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
       const res = await axios.get(`${backEndUrl}/buses`);
       setBuses(res.data);
-      // setFilteredBuses(res.data);
       setUserId(req_user.data.userId);
     } catch (error) {
       console.error("Error fetching buses:", error);
@@ -73,8 +57,16 @@ const Homepage = () => {
   ];
 
   const handleBusSelect = (bus) => {
+    // Set available destinations based on direction
+    if (bus.location.pickupLocation === "E-JUST" && bus.location.arrivalLocation === "Cairo") {
+      setAvailableDestinations(["Ramses", "Dandy"]);
+    } else if (bus.location.pickupLocation === "Cairo" && bus.location.arrivalLocation === "E-JUST") {
+      setAvailableDestinations(["Abaseya", "Dandy", "Sadat"]);
+    }
+    
     setSelectedBus(bus);
     setShowBusOptions(true);
+    setDestination(""); // Reset destination when selecting a new bus
   };
 
   const handleSearch = () => {
@@ -99,18 +91,6 @@ const Homepage = () => {
     setTimeout(handleSearch, 0);
   };
 
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-    const contactData = { name, email, message };
-    try {
-      await axios.post(`${backEndUrl}/contact`, contactData);
-      setResponseMessage("Message sent successfully");
-    } catch (error) {
-      setResponseMessage("Failed to send message");
-      console.error("Error sending contact message:", error);
-    }
-  };
-
   const convertTo12HourFormat = (time) => {
     if (!time || !time.includes(":")) return "";
     const [hour, minute] = time.split(":");
@@ -123,35 +103,18 @@ const Homepage = () => {
     if (hour12 === 0) hour12 = 12;
     return `${hour12}:${minute} ${period}`;
   };
+
   const handleSeeReservedPassengers = async (bus) => {
     try {
       setSelectedBus(bus);
-      // Fetch the reserved passengers for the selected bus
-      const response = await axios.get(`/formselection/${bus._id}`);
-
-      // Extract passengers from the response
-      let data = response.data;
-
-      // Safely extract an array from any possible shape
-      // if (Array.isArray(data)) {
-      setPassengerList(data); // case: direct array
-      // } else if (Array.isArray(data.passengers)) {
-      //   setPassengerList(data.passengers); // case: { passengers: [...] }
-      // } else {
-      //   console.error("Unexpected response format");
-      //   setPassengerList([]); // fallback to empty list
-      // }
-
-      // Navigate to the /passengers page with the busId and userId
       navigate("/passengers", { state: { busId: bus._id, userId } });
       setShowBusOptions(false);
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
-      setPassengerList([]); // Fallback to empty list
     }
   };
 
-const handleBookSeatConfirm = async () => {
+  const handleBookSeatConfirm = async () => {
     setLoading(true);
     try {
       await axios.post(
@@ -164,12 +127,10 @@ const handleBookSeatConfirm = async () => {
       setAlertMessage("✅ Seat booked successfully! Now redirecting to passenger list...");
       setAlertFlag(true);
       
-      // Using the same timeout for both alert hiding and navigation (2200ms)
       const redirectTimeout = 2200;
       
       setTimeout(() => {
         setAlertFlag(false);
-        // Navigate to passengers page with the busId
         navigate("/passengers", { 
           state: { 
             busId: selectedBus._id, 
@@ -286,27 +247,20 @@ const handleBookSeatConfirm = async () => {
               className="close-button"
               onClick={() => setShowBusOptions(false)}
             >
-              x{/* <img src="cancel.png" alt="Delete" /> */}
+              x
             </button>
             <h3>Select destination</h3>
             <div className="destination-selector">
               <div className="button-group">
-                <button
-                  className={`destination-btn ${
-                    destination === "Dandy" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Dandy")}
-                >
-                  Dandy
-                </button>
-                <button
-                  className={`destination-btn ${
-                    destination === "Ramses" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Ramses")}
-                >
-                  Ramses
-                </button>
+                {availableDestinations.map((dest) => (
+                  <button
+                    key={dest}
+                    className={`destination-btn ${destination === dest ? "selected" : ""}`}
+                    onClick={() => setDestination(dest)}
+                  >
+                    {dest}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -323,67 +277,6 @@ const handleBookSeatConfirm = async () => {
         </div>
       )}
 
-      {/* Booking Confirmation Modal */}
-      {/* {showBookingConfirm && selectedBus && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Confirm Booking</h3>
-            <div className="destination-selector">
-              <div className="button-group">
-                <button
-                  className={`destination-btn ${
-                    destination === "Dandy" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Dandy")}
-                >
-                  Dandy
-                </button>
-                <button
-                  className={`destination-btn ${
-                    destination === "Ramses" ? "selected" : ""
-                  }`}
-                  onClick={() => setDestination("Ramses")}
-                >
-                  Ramses
-                </button>
-              </div>
-            </div>
-
-            {destination ? (
-              <button onClick={handleBookSeatConfirm}>Confirm</button>
-            ) : (
-              <p style={{ color: "red", marginTop: "10px" }}>
-                Please select a destination
-              </p>
-            )}
-            <button onClick={() => setShowBookingConfirm(false)}>Cancel</button>
-          </div>
-        </div>
-      )} */}
-
-      {/* Reserved Passenger List Modal */}
-      {showReservedPassengerList && selectedBus && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Reserved Passengers</h3>
-            {reservedPassengers.length > 0 ? (
-              <ul>
-                {reservedPassengers.map((passenger, idx) => (
-                  <li key={idx}>
-                    Name: {passenger.name} | Phone: {passenger.phoneNumber} |
-                    Seats: {passenger.numberOfSeats}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No reserved passengers found.</p>
-            )}
-            <button onClick={() => setShowReservedPassengerList(false)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
       {loading && <LoadingScreen />}
       {alertFlag && (
         <Overlay
