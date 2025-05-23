@@ -292,6 +292,13 @@ const Homepage = () => {
             <div className="destination-selector">
               <div className="button-group">
                 <button
+                  className={`destination-btn ${destination === "Sadat" ? "selected" : ""
+                    }`}
+                  onClick={() => setDestination("Sadat")}
+                >
+                  Sadat
+                </button>
+                <button
                   className={`destination-btn ${destination === "Dandy" ? "selected" : ""
                     }`}
                   onClick={() => setDestination("Dandy")}
