@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import LoadingComponent from "../loadingComponent/loadingComponent";
 import LoadingScreen from "../loadingScreen/loadingScreen";
@@ -11,8 +11,8 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const PassengersPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { busId } = location.state || {};
-  const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [alertFlag, setAlertFlag] = useState(false);
@@ -22,6 +22,11 @@ const PassengersPage = () => {
   const [seatId, setSeatId] = useState("");
   const [showCancelOverlay, setShowCancelOverlay] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showSwitchModal, setShowSwitchModal] = useState(false);
+  const [availableBuses, setAvailableBuses] = useState([]);
+  const [selectedNewBus, setSelectedNewBus] = useState(null);
+  const [destination, setDestination] = useState("");
+  const [availableDestinations, setAvailableDestinations] = useState([]);
 
   const fetchReservedPassengers = async () => {
     try {
@@ -40,10 +45,11 @@ const PassengersPage = () => {
         `${backEndUrl}/user/profile/${userID}`
       );
       setUserInfo(userProfileResponse.data);
+      
       setPageLoading(false);
     } catch (error) {
       console.error("Error fetching reserved passengers:", error);
-      setPassengers([]);
+      setSeats([]);
       setPageLoading(false);
     }
   };
@@ -59,7 +65,7 @@ const PassengersPage = () => {
       );
 
       if (cancelResponse.status === 200) {
-        setSeats(seats.filter((seat) => seat.seatId !== seatId)); // Remove passenger from the list
+        setSeats(seats.filter((seat) => seat.seatId !== seatId));
         setShowCancelOverlay(false);
         setSeatId("");
 
@@ -84,7 +90,118 @@ const PassengersPage = () => {
     }
   };
 
-  const handleSeatSelection = (seatIdSelected, index) => {
+  const handleSwitchClick = async (seatIdToSwitch) => {
+    setIsLoading(true);
+    try {
+      // First get the current bus details to know the route
+      const currentBusResponse = await axios.get(`${backEndUrl}/buses/${busId}`);
+      const currentBus = currentBusResponse.data;
+      console.log("Current bus:", currentBus);
+
+      // Then get all available buses
+      const allBusesResponse = await axios.get(`${backEndUrl}/buses`);
+      console.log("All buses:", allBusesResponse.data);
+
+      // Filter buses with the same route and future dates
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set to start of day for date comparison
+
+      const filteredBuses = allBusesResponse.data.filter(bus => {
+        const busDate = new Date(bus.schedule);
+        busDate.setHours(0, 0, 0, 0); // Set to start of day for date comparison
+        
+        const isValidBus = bus._id !== busId && 
+          bus.location.pickupLocation === currentBus.location.pickupLocation &&
+          bus.location.arrivalLocation === currentBus.location.arrivalLocation &&
+          busDate >= today;
+
+        console.log("Bus being checked:", {
+          id: bus._id,
+          schedule: bus.schedule,
+          pickup: bus.location.pickupLocation,
+          arrival: bus.location.arrivalLocation,
+          isValid: isValidBus,
+          currentPickup: currentBus.location.pickupLocation,
+          currentArrival: currentBus.location.arrivalLocation
+        });
+
+        return isValidBus;
+      });
+      
+      console.log("Filtered buses:", filteredBuses);
+      
+      setAvailableBuses(filteredBuses);
+      setSeatId(seatIdToSwitch);
+      setShowSwitchModal(true);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching available buses:", error);
+      setIsLoading(false);
+      setAlertMessage("⚠️ Error fetching available buses!");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2200);
+    }
+  };
+
+  const handleBusSelect = (bus) => {
+    setSelectedNewBus(bus);
+    if (bus.location.pickupLocation === "E-JUST" && bus.location.arrivalLocation === "Cairo") {
+      setAvailableDestinations(["Ramses", "Dandy"]);
+    } else if (bus.location.pickupLocation === "Cairo" && bus.location.arrivalLocation === "E-JUST") {
+      setAvailableDestinations(["Abaseya", "Dandy"]);
+    }
+  };
+
+  const handleSwitchConfirm = async () => {
+    if (!selectedNewBus || !destination) {
+      setAlertMessage("⚠️ Please select a bus and destination!");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2200);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Cancel current booking
+      await axios.delete(`${backEndUrl}/formselection/${busId}`, {
+        data: { seatId: seatId, userId: currentUser },
+      });
+
+      // Create new booking
+      await axios.post(
+        `${backEndUrl}/formselection/${selectedNewBus._id}`,
+        { userId: currentUser, destination },
+        { withCredentials: true }
+      );
+
+      setShowSwitchModal(false);
+      setSelectedNewBus(null);
+      setDestination("");
+      setIsLoading(false);
+      setAlertMessage("✅ Trip switched successfully! Redirecting to new trip List...");
+      setAlertFlag(true);
+      
+      // Redirect to the new trip's passenger list after a short delay
+      setTimeout(() => {
+        setAlertFlag(false);
+        navigate("/passengers", { 
+          state: { 
+            busId: selectedNewBus._id, 
+            userId: currentUser,
+            fromSwitch: true 
+          } 
+        });
+      }, 2000);
+    } catch (error) {
+      console.error("Error switching trip:", error);
+      setIsLoading(false);
+      setAlertMessage("⚠️ Error switching trip. Please try again!");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2200);
+    }
+  };
+
+  const handleSeatSelection = (seatIdSelected) => {
     setSeatId(seatIdSelected);
     setShowCancelOverlay(true);
   };
@@ -101,9 +218,31 @@ const PassengersPage = () => {
     }
   }, [busId]);
 
+  useEffect(() => {
+    // Show welcome message when redirected from switch
+    if (location.state?.fromSwitch) {
+      setAlertMessage("👋 Welcome to your new trip details!");
+      setAlertFlag(true);
+      setTimeout(() => setAlertFlag(false), 2200);
+    }
+  }, []);
+
   if (pageLoading) {
     return <LoadingPage />;
   }
+
+  const convertTo12HourFormat = (time) => {
+    if (!time || !time.includes(":")) return "";
+    const [hour, minute] = time.split(":");
+    let period = "AM";
+    let hour12 = parseInt(hour, 10);
+    if (hour12 >= 12) {
+      period = "PM";
+      if (hour12 > 12) hour12 -= 12;
+    }
+    if (hour12 === 0) hour12 = 12;
+    return `${hour12}:${minute} ${period}`;
+  };
 
   return (
     <div className="passengers-page">
@@ -116,7 +255,7 @@ const PassengersPage = () => {
               <col style={{ width: "10%" }} />
               <col style={{ width: "20%" }} />
               <col style={{ width: "10%" }} />
-              <col style={{ width: "10%" }} />
+              <col style={{ width: "20%" }} />
             </colgroup>
 
             <tbody>
@@ -130,14 +269,20 @@ const PassengersPage = () => {
                         <td>{userInfo.name}</td>
                         <td>{seat.route}</td>
                         <td>
-                          <button
-                            className="cancel-button"
-                            onClick={() =>
-                              handleSeatSelection(seat.seatId, idx)
-                            }
-                          >
-                            cancel
-                          </button>
+                          <div className="action-buttons">
+                            <button
+                              className="cancel-button"
+                              onClick={() => handleSeatSelection(seat.seatId)}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              className="switch-button"
+                              onClick={() => handleSwitchClick(seat.seatId)}
+                            >
+                              Switch Trip
+                            </button>
+                          </div>
                         </td>
                       </>
                     ) : (
@@ -154,10 +299,9 @@ const PassengersPage = () => {
       ) : isLoading ? (
         <LoadingComponent />
       ) : (
-        <p className="no-data">No reserved passengers found. {seats[0]}</p>
+        <p className="no-data">No reserved passengers found.</p>
       )}
 
-      {/* Cancel Confirmation Modal */}
       {showCancelOverlay && (
         <div className="modal-overlay">
           <div className="modal">
@@ -177,6 +321,72 @@ const PassengersPage = () => {
           </div>
         </div>
       )}
+
+      {showSwitchModal && (
+        <div className="modal-overlay">
+          <div className="modal switch-modal">
+            <button
+              className="close-button"
+              onClick={() => {
+                setShowSwitchModal(false);
+                setSelectedNewBus(null);
+                setDestination("");
+              }}
+            >
+              ×
+            </button>
+            <h3>Switch Trip</h3>
+            <div className="available-buses">
+              <h4>Select New Bus</h4>
+              {availableBuses.length > 0 ? (
+                <div className="bus-options">
+                  {availableBuses.map((bus) => (
+                    <div
+                      key={bus._id}
+                      className={`bus-option ${selectedNewBus?._id === bus._id ? 'selected' : ''}`}
+                      onClick={() => handleBusSelect(bus)}
+                    >
+                      <p>Date: {bus.schedule}</p>
+                      <p>Time: {convertTo12HourFormat(bus.departureTime)}</p>
+                      <p>From: {bus.location.pickupLocation}</p>
+                      <p>To: {bus.location.arrivalLocation}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="no-buses">No available buses for switching.</p>
+              )}
+
+              {selectedNewBus && (
+                <div className="destination-selection">
+                  <h4>Select Destination</h4>
+                  <div className="destination-options">
+                    {availableDestinations.map((dest) => (
+                      <button
+                        key={dest}
+                        className={`destination-btn ${destination === dest ? 'selected' : ''}`}
+                        onClick={() => setDestination(dest)}
+                      >
+                        {dest}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedNewBus && destination && (
+                <button
+                  className="confirm-switch"
+                  onClick={handleSwitchConfirm}
+                >
+                  Confirm Switch
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {isLoading && <LoadingScreen />}
       {alertFlag && (
         <Overlay

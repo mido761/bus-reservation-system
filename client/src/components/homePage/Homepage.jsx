@@ -61,7 +61,7 @@ const Homepage = () => {
     if (bus.location.pickupLocation === "E-JUST" && bus.location.arrivalLocation === "Cairo") {
       setAvailableDestinations(["Ramses", "Dandy"]);
     } else if (bus.location.pickupLocation === "Cairo" && bus.location.arrivalLocation === "E-JUST") {
-      setAvailableDestinations(["Abaseya", "Dandy", "Sadat"]);
+      setAvailableDestinations(["Abaseya", "Dandy"]);
     }
     
     setSelectedBus(bus);
