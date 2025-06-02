@@ -58,7 +58,7 @@ router.post("/:busId", async (req, res) => {
       });
     };
 
-    if (numberOfSeats > 0) {
+    if (numberOfSeats > 1) {
       const oldBus = await Seat.find({ bookedBy: userId }, { busId: 1 }); // Get the bus of the user's seat
       const sameBus = oldBus[0].busId.toString() === busId; // ensure same bus
 

@@ -18,7 +18,7 @@ router.get("/seats/:id", async (req, res) => {
       return res.status(404).json({ message: "Bus not found" });
     }
 
-    const seats = await Seat.find({ busId }, { _id: 1 ,bookedBy:1,route: 1 });
+    const seats = await Seat.find({ busId }, { _id: 1 ,bookedBy:1,route: 1 }).sort({bookedTime:1});
     let userList = seats.map((seat) => seat.bookedBy);
     const seatNoUserId = seats.map((seat)=> seat.route)
     // console.log(userList)

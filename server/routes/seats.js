@@ -19,7 +19,8 @@ router.get("/:id", async (req, res) => {
     const seats = await Seat.find(
       { busId: busId },
       { bookedBy: 1, route: 1, bookedTime: 1, checkInStatus: 1 }
-    );
+    ).sort({bookedTime:1});
+
     let userList = seats.map((seat) => seat.bookedBy);
     // console.log(userList)
     // console.log(seats)
