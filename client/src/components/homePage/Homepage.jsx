@@ -299,11 +299,11 @@ const Homepage = () => {
                   Dandy
                 </button>
                 <button
-                  className={`destination-btn ${destination === "Ramses" ? "selected" : ""
+                  className={`destination-btn ${destination === "Abasaya" ? "selected" : ""
                     }`}
-                  onClick={() => setDestination("Ramses")}
+                  onClick={() => setDestination("Abasaya")}
                 >
-                  Ramses
+                  Abasaya
                 </button>
               </div>
             </div>
