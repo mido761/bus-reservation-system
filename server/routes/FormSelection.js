@@ -52,13 +52,13 @@ router.post("/:busId", async (req, res) => {
       });
     };
 
-    if (!isAdmin && numberOfSeats > 0) {
+    if (!isAdmin && numberOfSeats > 1) {
       return res.status(400).json({
         message: "Only one seats are allowed per user on the same bus!",
       });
     };
 
-    if (numberOfSeats > 1) {
+    if (numberOfSeats > 0) {
       const oldBus = await Seat.find({ bookedBy: userId }, { busId: 1 }); // Get the bus of the user's seat
       const sameBus = oldBus[0].busId.toString() === busId; // ensure same bus
 
