@@ -34,8 +34,8 @@ const Homepage = () => {
   const [passengerList, setPassengerList] = useState([]);
   const [destination, setDestination] = useState("");
   const [reservedPassengers, setReservedPassengers] = useState([]);
-  const [showReservedPassengerList, setShowReservedPassengerList] =
-    useState(false);
+  const [showReservedPassengerList, setShowReservedPassengerList] = useState(false);
+  const [availableDestinations, setAvailableDestinations] = useState([]);
 
 
   // Format today's date to set as min date
@@ -73,9 +73,22 @@ const Homepage = () => {
     { id: 3, route: "E-JUST to Cairo" },
   ];
 
+  // const handleBusSelect = (bus) => {
+  //   setSelectedBus(bus);
+  //   setShowBusOptions(true);
+  // };
+
   const handleBusSelect = (bus) => {
+    // Set available destinations based on direction
+    if (bus.location.pickupLocation === "E-JUST" && bus.location.arrivalLocation === "Cairo") {
+      setAvailableDestinations(["Ramses", "Dandy"]);
+    } else if (bus.location.pickupLocation === "Cairo" && bus.location.arrivalLocation === "E-JUST") {
+      setAvailableDestinations(["Abaseya", "Dandy"]);
+    }
+    
     setSelectedBus(bus);
     setShowBusOptions(true);
+    setDestination(""); // Reset destination when selecting a new bus
   };
 
   const handleSearch = () => {
@@ -278,15 +291,15 @@ const Homepage = () => {
         </>
       )}
 
-      {/* Option Modal */}
-      {showBusOptions && selectedBus && (
+ 
+      {/* {showBusOptions && selectedBus && (
         <div className="modal-overlay">
           <div className="modal">
             <button
               className="close-button"
               onClick={() => setShowBusOptions(false)}
             >
-              x{/* <img src="cancel.png" alt="Delete" /> */}
+              x
             </button>
             <h3>Select destination</h3>
             <div className="destination-selector">
@@ -319,7 +332,45 @@ const Homepage = () => {
             )}
           </div>
         </div>
+      )}  */}
+
+        {showBusOptions && selectedBus && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <button
+              className="close-button"
+              onClick={() => setShowBusOptions(false)}
+            >
+              x
+            </button>
+            <h3>Select destination</h3>
+            <div className="destination-selector">
+              <div className="button-group">
+                {availableDestinations.map((dest) => (
+                  <button
+                    key={dest}
+                    className={`destination-btn ${destination === dest ? "selected" : ""}`}
+                    onClick={() => setDestination(dest)}
+                  >
+                    {dest}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {destination ? (
+              <button className="cofirm-btn" onClick={handleBookSeatConfirm}>
+                Confirm
+              </button>
+            ) : (
+              <p style={{ color: "red", marginTop: "10px" }}>
+                Please select a destination
+              </p>
+            )}
+          </div>
+        </div>
       )}
+
 
       {/* Booking Confirmation Modal */}
       {/* {showBookingConfirm && selectedBus && (
