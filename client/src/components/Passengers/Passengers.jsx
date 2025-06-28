@@ -27,6 +27,25 @@ const PassengersPage = () => {
   const [selectedNewBus, setSelectedNewBus] = useState(null);
   const [destination, setDestination] = useState("");
   const [availableDestinations, setAvailableDestinations] = useState([]);
+  
+  // New state for bus details
+  const [busDetails, setBusDetails] = useState(null);
+  const [busDetailsLoading, setBusDetailsLoading] = useState(true);
+  const [busDetailsError, setBusDetailsError] = useState(null);
+
+  const fetchBusDetails = async () => {
+    try {
+      setBusDetailsLoading(true);
+      const response = await axios.get(`${backEndUrl}/buses/${busId}`);
+      setBusDetails(response.data);
+      setBusDetailsError(null);
+    } catch (error) {
+      console.error("Error fetching bus details:", error);
+      setBusDetailsError("Failed to load bus details");
+    } finally {
+      setBusDetailsLoading(false);
+    }
+  };
 
   const fetchReservedPassengers = async () => {
     try {
@@ -191,7 +210,7 @@ const PassengersPage = () => {
             fromSwitch: true 
           } 
         });
-      }, 2000);
+      }, 2200);
     } catch (error) {
       console.error("Error switching trip:", error);
       setIsLoading(false);
@@ -212,8 +231,77 @@ const PassengersPage = () => {
     return index <= lastGreenIndex ? "green" : "red";
   };
 
+  const convertTo12HourFormat = (time) => {
+    if (!time || !time.includes(":")) return "";
+    const [hour, minute] = time.split(":");
+    let period = "AM";
+    let hour12 = parseInt(hour, 10);
+    if (hour12 >= 12) {
+      period = "PM";
+      if (hour12 > 12) hour12 -= 12;
+    }
+    if (hour12 === 0) hour12 = 12;
+    return `${hour12}:${minute} ${period}`;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const renderBusDetailsCard = () => {
+    if (busDetailsLoading) {
+      return (
+        <div className="bus-details-card">
+          <div className="bus-details-loading">
+            Loading bus details...
+          </div>
+        </div>
+      );
+    }
+
+    if (busDetailsError) {
+      return (
+        <div className="bus-details-card">
+          <div className="bus-details-error">
+            {busDetailsError}
+          </div>
+        </div>
+      );
+    }
+
+    if (!busDetails) return null;
+
+    return (
+      <article className="bus-details-card">
+        <div className="bus-details-content">
+          <time className="bus-schedule-time">
+            {formatDate(busDetails.schedule)}
+          </time>
+          <div className="bus-route-title">
+            {busDetails.location?.pickupLocation} → {busDetails.location?.arrivalLocation}
+          </div>
+          <div className="bus-details-tags">
+        
+            <span className="bus-tag time">
+              {convertTo12HourFormat(busDetails.departureTime)}
+            </span>
+         
+          </div>
+        </div>
+      </article>
+    );
+  };
+
   useEffect(() => {
     if (busId) {
+      fetchBusDetails();
       fetchReservedPassengers();
     }
   }, [busId]);
@@ -231,22 +319,12 @@ const PassengersPage = () => {
     return <LoadingPage />;
   }
 
-  const convertTo12HourFormat = (time) => {
-    if (!time || !time.includes(":")) return "";
-    const [hour, minute] = time.split(":");
-    let period = "AM";
-    let hour12 = parseInt(hour, 10);
-    if (hour12 >= 12) {
-      period = "PM";
-      if (hour12 > 12) hour12 -= 12;
-    }
-    if (hour12 === 0) hour12 = 12;
-    return `${hour12}:${minute} ${period}`;
-  };
-
   return (
     <div className="passengers-page">
       <h2 className="title">Reserved Passengers</h2>
+      
+      {/* Bus Details Card */}
+      {renderBusDetailsCard()}
 
       {seats.length > 0 ? (
         <div className="table-container" style={{ overflowX: "auto" }}>
@@ -379,7 +457,7 @@ const PassengersPage = () => {
                   className="confirm-switch"
                   onClick={handleSwitchConfirm}
                 >
-                  Confirm Switch
+                  Confirm
                 </button>
               )}
             </div>

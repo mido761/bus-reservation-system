@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
 .title {
@@ -19,17 +19,131 @@
   color: #333;
 }
 
+/* Bus Details Card - Converted from Tailwind */
+.bus-details-card {
+  position: relative;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #86efac, #3b82f6, #a855f7);
+  background-size: 400% 400%;
+  padding: 2px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  animation: gradient-shift 6s ease infinite;
+}
+
+.bus-details-card:hover {
+  background-size: 400% 400%;
+  animation: gradient-shift 4s ease infinite;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bus-details-content {
+  width: 320px;
+  border-radius: 10px;
+  background-color: white;
+  padding: 24px 16px 16px 16px;
+  position: relative;
+}
+
+.bus-schedule-time {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.bus-route-title {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #111827;
+  text-decoration: none;
+  display: block;
+}
+
+.bus-route-title:hover {
+  text-decoration: underline;
+  color: #3b82f6;
+}
+
+.bus-details-tags {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.bus-tag {
+  white-space: nowrap;
+  border-radius: 9999px;
+  background-color: #f3e8ff;
+  padding: 2px 10px;
+  font-size: 12px;
+  color: #7c3aed;
+  border: 1px solid #e9d5ff;
+}
+
+.bus-tag.status {
+  background-color: #dcfce7;
+  color: #16a34a;
+  border-color: #bbf7d0;
+}
+
+.bus-tag.time {
+  background-color: #fef3c7;
+  color: #d97706;
+  border-color: #fde68a;
+}
+
+/* Loading state for bus details */
+.bus-details-loading {
+  width: 320px;
+  height: 120px;
+  border-radius: 10px;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Error state for bus details */
+.bus-details-error {
+  width: 320px;
+  border-radius: 10px;
+  background-color: #fef2f2;
+  padding: 16px;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  text-align: center;
+}
+
 /* Table */
 .table-container {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+  width: 100%;
 }
 
 .passenger-table {
   width: 100%;
-  table-layout: auto; /* allow flexible width */
+  table-layout: auto;
   border-collapse: collapse;
   min-width: 330px;
 }
@@ -54,10 +168,9 @@
   z-index: 1;
 }
 
-/* You can target specific columns by index */
 .passenger-table th:last-child,
 .passenger-table td:last-child {
-  width: 80px; /* Smaller width for Action buttons */
+  width: 80px;
 }
 
 .passenger-table tr:nth-child(even) {
@@ -400,6 +513,10 @@
   .cancel-button,
   .switch-button {
     width: 100%;
+  }
+
+  .bus-details-content {
+    width: 280px;
   }
 }
 

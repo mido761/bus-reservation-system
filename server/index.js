@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const session = require("express-session");
-const MonogoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo");
 const userModel = require("./models/user");
 const Bus = require("./models/busModel");
 // const BusForm = require("../models/busForm");
@@ -104,7 +104,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
-    store: MonogoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       httpOnly: true,
       sameSite: "strict",
