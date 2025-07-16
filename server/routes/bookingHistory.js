@@ -11,17 +11,17 @@ router.get('/user/:id', async (req, res) => {
         if (!bookingHistory){
             return res.status(400).json({message: 'Not booking history find'});
         }
-        res.status(200).json({ message: 'Booking history successful find', bookingHistory: bookingHistory});
+        return res.status(200).json({ message: 'Booking history successfully found!', bookingHistory: bookingHistory});
     } catch (err){
-        res.status(400).json({ message: 'Error finding booking history', error:err});
+        return res.status(400).json({ message: 'Error finding booking history', error:err});
     }
 });
 
 
 // Search all users
-router.post('/admin', async (req, res) => {
+router.get('/admin', async (req, res) => {
     try {
-        const {schedule} = req.body;
+        // const {schedule} = req.body;
         const bookingHistory = await BookingHistory.find({schedule:schedule});
         if (!bookingHistory){
             return res.status(400).json({message: 'Not booking history find'});

@@ -1,17 +1,36 @@
 import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import "./mytrips.css";
-
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const MyTrips = () => {
   const [loading, setLoading] = useState(true);
   const [trips, setTrips] = useState([]);
+  const [userId, setUserId] = useState("");
+
+  const getUserTrips = async () => {
+    console.log("fetching history...")
+    try {
+      const req_user = await axios.get(`${backEndUrl}/auth`, {
+        withCredentials: true,
+      });
+      const user_id = req_user.data.userId
+      setUserId(req_user.data.userId);
+
+      const user_history = await axios.get(
+        `${backEndUrl}/bookingHistory/user/${user_id}`
+      );
+      setTrips(user_history.data.bookingHistory);
+
+    } catch (err) {
+      console.error("Error Fetching user history!", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Simulate loading and fetching data
-    setTimeout(() => {
-      setTrips(dummyTrips); // Replace with [] to test 'no trips' message
-      setLoading(false);
-    }, 1200);
+    getUserTrips();
   }, []);
 
   return (
@@ -25,21 +44,21 @@ const MyTrips = () => {
         <table className="mytrips-table">
           <thead>
             <tr>
-              <th>Date</th>
+              <th>schedule</th>
               <th>From</th>
               <th>To</th>
-              <th>Seat</th>
-              <th>Status</th>
+              <th>route</th>
+              <th>createdAt</th>
             </tr>
           </thead>
           <tbody>
             {trips.map((trip) => (
               <tr key={trip.id}>
-                <td>{trip.date}</td>
+                <td>{trip.schedule}</td>
                 <td>{trip.from}</td>
                 <td>{trip.to}</td>
-                <td>{trip.seat}</td>
-                <td>{trip.status}</td>
+                <td>{trip.route}</td>
+                <td>{trip.createdAt}</td>
               </tr>
             ))}
           </tbody>

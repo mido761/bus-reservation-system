@@ -161,7 +161,7 @@ app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
 app.use("/formselection", middleware.isAuthenticated,  FormSelection);
 app.use("/seats", middleware.isAuthenticated,  FormSeats);
 app.use("/user", middleware.isAuthenticated, userRouter);
-app.use("/bookingHistory", middleware.isAuthenticated, bookingHistory);
+app.use("/bookingHistory", bookingHistory);
 app.use("/blacklist", middleware.isAuthoraized, blackList);
 
 // Email verifaction
