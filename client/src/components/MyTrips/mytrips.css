@@ -1,0 +1,55 @@
+.mytrips-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.mytrips-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+  background: #fafbfc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mytrips-table th, .mytrips-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.mytrips-table th {
+  background: #f5f6fa;
+  color: #333;
+  font-weight: 600;
+}
+
+.mytrips-table tr:last-child td {
+  border-bottom: none;
+}
+
+.mytrips-loading {
+  margin: 40px 0;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+.mytrips-empty {
+  margin: 40px 0;
+  font-size: 1.1rem;
+  color: #b00;
+}
+
+@media (max-width: 600px) {
+  .mytrips-container {
+    padding: 8px;
+  }
+  .mytrips-table th, .mytrips-table td {
+    padding: 8px 2px;
+    font-size: 0.95rem;
+  }
+}
