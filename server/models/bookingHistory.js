@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const bookingHistory = new mongoose.Schema({
-  userId: {
+  bookedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
@@ -14,23 +14,29 @@ const bookingHistory = new mongoose.Schema({
     type: String,
     required: true,
   },
-  shcedule: {
+  route: {
+    type: String,
+    required: true,
+  },
+  schedule: {
     type: Date,
     required: true,
   },
   checkInStatus: {
     type: Boolean,
-    required: true,
+    required: false,
+    default: false,
   },
   paymentStatus: {
     type: Boolean,
-    required: true,
+    required: false,
+    default: false,
   },
-  bookingStatus: {
-    type: String,
-    enum: ["booked", "cancelled", "completed"],
-    default: "booked",
-  },
+//   bookingStatus: {
+//     type: String,
+//     enum: ["booked", "cancelled", "completed"],
+//     default: "booked",
+//   },
   createdAt: { type: Date, default: Date.now },
 });
 
