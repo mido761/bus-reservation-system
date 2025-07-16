@@ -167,6 +167,7 @@ router.put("/check-in/:userId", async (req, res) => {
   }
 });
 
+
 /**
  * @route PUT /user/check-out/:userId
  * @description Mark a user as checked out
@@ -178,6 +179,7 @@ router.put("/check-out/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
+    // add it to boking history too. 
 
     user.checkInStatus = false; // Mark user as checked in
     await user.save();
@@ -188,6 +190,7 @@ router.put("/check-out/:userId", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 /**
  * @route PUT /user/edit-gender/:userId

@@ -17,6 +17,7 @@ const busRoutes = require("./routes/busRoutes");
 const userRouter = require("./routes/userRoutes");
 const SeatSelection = require("./routes/SeatSelection");
 const FormSelection = require("./routes/FormSelection");
+const bookingHistory = require("./routes/bookingHistory");
 const FormSeats = require("./routes/seats");
 const contactRoutes = require("./routes/contactRoutes");
 const middleware = require("./controllers/middleware");
@@ -160,6 +161,7 @@ app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
 app.use("/formselection", middleware.isAuthenticated,  FormSelection);
 app.use("/seats", middleware.isAuthenticated,  FormSeats);
 app.use("/user", middleware.isAuthenticated, userRouter);
+app.use("/bookingHistory", middleware.isAuthenticated, bookingHistory);
 app.use("/blacklist", middleware.isAuthoraized, blackList);
 
 // Email verifaction

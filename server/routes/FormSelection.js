@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const Bus = require("../models/busForm");
+const BookingHistory = require("../models/bookingHistory");
 // const Bus = require("../models/busModel");
 const Seat = require("../models/seat");
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
-const seat = require("../models/seat");
 const BlackList = require("../models/blackList")
 const { DateTime } = require('luxon');
+
+
 // retrieve bus details
 router.get("/:id", async (req, res) => {
   try {
@@ -78,6 +80,18 @@ router.post("/:busId", async (req, res) => {
       route: destination,
     });
     await newSeat.save();
+
+    // make the new seat 
+    const newBookingHistory = new BookingHistory({
+      bookedBy: userId,
+      from: bus.location.pickupLocation,
+      to: bus.location.arrivalLocation,
+      route: destination,
+      schedule: bus.schedule,
+      createdAt: new Date(),
+    });
+    await newBookingHistory.save();
+
 
     return res.status(200).json({ message: "Seats booked successfully!" });
   } catch (error) {
