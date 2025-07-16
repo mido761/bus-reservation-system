@@ -6,7 +6,6 @@ const BookingHistory = require("../models/bookingHistory");
 const Seat = require("../models/seat");
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
-const seat = require("../models/seat");
 const BlackList = require("../models/blackList")
 const { DateTime } = require('luxon');
 

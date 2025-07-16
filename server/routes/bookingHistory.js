@@ -3,37 +3,32 @@ const BookingHistory = require("../models/bookingHistory")
 const router = express.Router();
 
 // Check user specific history
-router.get('/bookingHistory-user/:id', async (req, res) => {
+router.get('/user/:id', async (req, res) => {
+    const userId = req.params.id;
     try {
-        const {busId, userName, seatsBooked} = req.body;
-        const bus = await Bus.findById(busId);
-        if (!bus || bus.availableSeats < seatsBooked){
-            return res.status(400).json({message: 'Not seats available'});
+        // const {busId, userName, seatsBooked} = req.body;
+        const bookingHistory = await BookingHistory.find({bookedBy:userId});
+        if (!bookingHistory){
+            return res.status(400).json({message: 'Not booking history find'});
         }
-        const newBooking = new Booking({busId, userName, seatsBooked});
-        await bus.save();
-
-        res.status(200).json({ message: 'Booking successful', booking: newBooking});
+        res.status(200).json({ message: 'Booking history successful find', bookingHistory: bookingHistory});
     } catch (err){
-        res.status(400).json({ message: 'Error booking the bus', error:err});
+        res.status(400).json({ message: 'Error finding booking history', error:err});
     }
 });
 
 
 // Search all users
-router.post('/bookingHistory', async (req, res) => {
+router.post('/admin', async (req, res) => {
     try {
-        const {busId, userName, seatsBooked} = req.body;
-        const bus = await Bus.findById(busId);
-        if (!bus || bus.availableSeats < seatsBooked){
-            return res.status(400).json({message: 'Not seats available'});
+        const {schedule} = req.body;
+        const bookingHistory = await BookingHistory.find({schedule:schedule});
+        if (!bookingHistory){
+            return res.status(400).json({message: 'Not booking history find'});
         }
-        const newBooking = new Booking({busId, userName, seatsBooked});
-        await bus.save();
-
-        res.status(200).json({ message: 'Booking successful', booking: newBooking});
+        res.status(200).json({ message: 'Booking history successful find', bookingHistory: bookingHistory});
     } catch (err){
-        res.status(400).json({ message: 'Error booking the bus', error:err});
+        res.status(400).json({ message: 'Error finding booking history', error:err});
     }
 });
 
