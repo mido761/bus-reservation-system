@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import "./mytrips.css";
+import { format } from 'date-fns';
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const MyTrips = () => {
@@ -41,28 +42,42 @@ const MyTrips = () => {
       ) : trips.length === 0 ? (
         <div className="mytrips-empty">You have no trip history yet.</div>
       ) : (
-        <table className="mytrips-table">
-          <thead>
-            <tr>
-              <th>schedule</th>
-              <th>From</th>
-              <th>To</th>
-              <th>route</th>
-              <th>createdAt</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trips.map((trip) => (
-              <tr key={trip.id}>
-                <td>{trip.schedule}</td>
-                <td>{trip.from}</td>
-                <td>{trip.to}</td>
-                <td>{trip.route}</td>
-                <td>{trip.createdAt}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="mytrips-list">
+          {trips.map((trip, idx) => (
+            <div className="mytrips-card" key={trip.id || idx}>
+              <div className="mytrips-card-header">
+                <span className="mytrips-date-professional">
+                  {(() => {
+                    const rawDate = trip.schedule || trip.dateTime || trip.scheduleTime || trip.createdAt;
+                    if (!rawDate) return 'Trip';
+                    return format(new Date(rawDate), 'dd/MM/yyyy');
+                  })()}
+                </span>
+                <span className="mytrips-reserved-at">
+                  Reserved at: {(() => {
+                    const reservedDate = trip.createdAt;
+                    if (!reservedDate) return '-';
+                    return format(new Date(reservedDate), 'dd/MM/yyyy, hh:mm a');
+                  })()}
+                </span>
+              </div>
+              <hr className="mytrips-divider" />
+              <div className="mytrips-card-route">
+                <div className="mytrips-route-line">
+                  <span className="mytrips-dot green"></span>
+                  <span>{trip.from}</span>
+                </div>
+                <div className="mytrips-route-line">
+                  <span className="mytrips-dot orange"></span>
+                  <span>{trip.to}</span>
+                </div>
+              </div>
+              {trip.route && (
+                <div className="mytrips-card-extra">{trip.route}</div>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
