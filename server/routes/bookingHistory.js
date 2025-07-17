@@ -7,7 +7,7 @@ router.get('/user/:id', async (req, res) => {
     const userId = req.params.id;
     try {
         // const {busId, userName, seatsBooked} = req.body;
-        const bookingHistory = await BookingHistory.find({bookedBy:userId});
+        const bookingHistory = await BookingHistory.find({'bookedBy.Id':userId});
         if (!bookingHistory){
             return res.status(400).json({message: 'Not booking history find'});
         }
