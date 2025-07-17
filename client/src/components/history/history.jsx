@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from 'axios';
 import "./history.css";
 
 
@@ -20,6 +21,7 @@ const WifiLoader = ({ text = "loading" }) => (
     <div className="text" data-text={text}></div>
   </div>
 );
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const History = () => {
   const [search, setSearch] = useState("");
@@ -27,14 +29,28 @@ const History = () => {
   const [trips, setTrips] = useState(null);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = (e) => {
+  const handleSearch =  async (e) => {
     e.preventDefault();
     setLoading(true);
+    console.log("fetching history...")
+    try {
+
+      const history = await axios.post(
+        `${backEndUrl}/bookingHistory/admin`,
+        {schedule: search}
+      );
+      setTrips(history.data.bookingHistory);
+
+    } catch (err) {
+      console.error("Error Fetching user history!", err);
+    } finally {
+      setLoading(false);
+    }
     setSearched(true);
-    setTrips(null);
+    // setTrips(null);
     // Simulate API call
     setTimeout(() => {
-      setTrips(dummyUsers[search.trim().toLowerCase()] || []);
+
       setLoading(false);
     }, 1200);
   };
@@ -44,7 +60,7 @@ const History = () => {
       <h2>User Trips</h2>
       <form className="history-search-form" onSubmit={handleSearch}>
         <input
-          type="text"
+          type="date"
           placeholder="Enter user information"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -62,21 +78,25 @@ const History = () => {
         <table className="history-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>From</th>
+              <th>bookedByName</th>
+              <th>bookedByemail</th>
+              <th>schedule</th>
+              <th>from</th>
               <th>To</th>
-              <th>Seat</th>
-              <th>Status</th>
+              <th>route</th>
+              <th>createdAt</th>
             </tr>
           </thead>
           <tbody>
             {trips.map((trip) => (
               <tr key={trip.id}>
-                <td>{trip.date}</td>
+                <td>{trip.bookedBy.name}</td>
+                <td>{trip.bookedBy.email}</td>
+                <td>{trip.schedule}</td>
                 <td>{trip.from}</td>
                 <td>{trip.to}</td>
-                <td>{trip.seat}</td>
-                <td>{trip.status}</td>
+                <td>{trip.route}</td>
+                <td>{trip.createdAt}</td>
               </tr>
             ))}
           </tbody>

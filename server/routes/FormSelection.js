@@ -83,7 +83,11 @@ router.post("/:busId", async (req, res) => {
 
     // make the new seat 
     const newBookingHistory = new BookingHistory({
-      bookedBy: userId,
+      bookedBy: {
+        Id: userId,
+        name: user.name,
+        email: user.email
+      },
       from: bus.location.pickupLocation,
       to: bus.location.arrivalLocation,
       route: destination,

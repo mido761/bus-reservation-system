@@ -19,10 +19,13 @@ router.get('/user/:id', async (req, res) => {
 
 
 // Search all users
-router.get('/admin', async (req, res) => {
+router.post('/admin', async (req, res) => {
     try {
-        // const {schedule} = req.body;
-        const bookingHistory = await BookingHistory.find({schedule:schedule});
+        const {schedule} = req.body;
+        console.log(schedule)
+        let newschedule = new Date(schedule)
+        console.log(newschedule)
+        const bookingHistory = await BookingHistory.find({schedule:newschedule});
         if (!bookingHistory){
             return res.status(400).json({message: 'Not booking history find'});
         }

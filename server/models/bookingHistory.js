@@ -2,9 +2,19 @@ const mongoose = require("mongoose");
 
 const bookingHistory = new mongoose.Schema({
   bookedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+   Id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+  },
+    name:{
+      type: String,
+      required: true,
+  },
+    email:{
+      type: String,
+      required: true,
+  }
   },
   from: {
     type: String,
