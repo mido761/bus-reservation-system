@@ -83,6 +83,7 @@ router.post("/:busId", async (req, res) => {
 
     // make the new seat 
     const newBookingHistory = new BookingHistory({
+      busId: busId,
       bookedBy: {
         Id: userId,
         name: user.name,
@@ -175,6 +176,7 @@ router.delete("/:busId", async (req, res) => {
 
     // All checks passed — proceed with cancellation
     // Delete the seat
+    await BookingHistory.updateOne({'bookedBy.Id' : userId},{bookingStatus:"cancelled"} )
     await Seat.findByIdAndDelete(seatId);
 
     return res.status(200).json("Seat cancelled successfully.");

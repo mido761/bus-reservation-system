@@ -4,6 +4,7 @@ const busForm = require("../models/busForm");
 const User = require("../models/user");
 const Seat = require("../models/seat");
 const blackList = require("../models/blackList");
+const BookingHistory = require("../models/bookingHistory");
 const router = express.Router();
 const middleware = require("../controllers/middleware");
 const mongoose = require("mongoose");
@@ -293,8 +294,10 @@ router.delete("/busForm/:id", middleware.isAuthoraized, async (req, res) => {
     if(!busId) { return res.status(404).json({ error: "Bus not found" })}
     
     const seats = await Seat.deleteMany({busId: busId}) 
+    const updateBookingHistory = await BookingHistory.updateMany({busId:busId},{bookingStatus:"completed"})
 
     if(!seats){ return res.status(400).json({error: "Error deleting seats!"})}
+    if(!updateBookingHistory.acknowledged){ return res.status(400).json({error: "Error Updateing Booking History!"})}
 
     const deletedBus = await busForm.deleteOne({ _id: busId });
 
