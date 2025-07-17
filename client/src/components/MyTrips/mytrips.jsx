@@ -71,6 +71,9 @@ const MyTrips = () => {
                   <span className="mytrips-dot orange"></span>
                   <span>{trip.to}</span>
                 </div>
+                <div className = "mytrips-status">
+                  {trip.bookingStatus}
+                </div>
               </div>
               {trip.route && (
                 <div className="mytrips-card-extra">{trip.route}</div>
