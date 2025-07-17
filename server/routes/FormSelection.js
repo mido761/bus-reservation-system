@@ -176,7 +176,7 @@ router.delete("/:busId", async (req, res) => {
 
     // All checks passed — proceed with cancellation
     // Delete the seat
-    await BookingHistory.updateOne({'bookedBy.Id' : userId},{bookingStatus:"cancelled"} )
+    await BookingHistory.updateOne({'bookedBy.Id': userId,bookingStatus:"booked", route:seat.route, busId:seat.busId},{bookingStatus:"cancelled"} )
     await Seat.findByIdAndDelete(seatId);
 
     return res.status(200).json("Seat cancelled successfully.");
