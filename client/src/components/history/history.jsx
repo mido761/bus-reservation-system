@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import axios from 'axios';
+import { format } from 'date-fns';
 import "./history.css";
-
-
 
 const WifiLoader = ({ text = "loading" }) => (
   <div className="wifi-loader">
@@ -29,30 +28,23 @@ const History = () => {
   const [trips, setTrips] = useState(null);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch =  async (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log("fetching history...")
+    setSearched(true);
+    setTrips(null);
     try {
-
       const history = await axios.post(
         `${backEndUrl}/bookingHistory/admin`,
-        {schedule: search}
+        { schedule: search }
       );
       setTrips(history.data.bookingHistory);
-
     } catch (err) {
       console.error("Error Fetching user history!", err);
+      setTrips([]);
     } finally {
       setLoading(false);
     }
-    setSearched(true);
-    // setTrips(null);
-    // Simulate API call
-    setTimeout(() => {
-
-      setLoading(false);
-    }, 1200);
   };
 
   return (
@@ -75,32 +67,49 @@ const History = () => {
       ) : searched && (!trips || trips.length === 0) ? (
         <div className="history-empty">No trips found for this user.</div>
       ) : trips && trips.length > 0 ? (
-        <table className="history-table">
-          <thead>
-            <tr>
-              <th>bookedByName</th>
-              <th>bookedByemail</th>
-              <th>schedule</th>
-              <th>from</th>
-              <th>To</th>
-              <th>route</th>
-              <th>createdAt</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trips.map((trip) => (
-              <tr key={trip.id}>
-                <td>{trip.bookedBy.name}</td>
-                <td>{trip.bookedBy.email}</td>
-                <td>{trip.schedule}</td>
-                <td>{trip.from}</td>
-                <td>{trip.to}</td>
-                <td>{trip.route}</td>
-                <td>{trip.createdAt}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="mytrips-list">
+          {trips.map((trip, idx) => (
+            <div className="mytrips-card" key={trip._id || trip.id || idx}>
+              <div className="mytrips-card-header">
+                <span className="mytrips-date-professional">
+                  {(() => {
+                    const rawDate = trip.schedule || trip.date || trip.createdAt;
+                    if (!rawDate) return 'Trip';
+                    return format(new Date(rawDate), 'dd/MM/yyyy');
+                  })()}
+                </span>
+                <span className="mytrips-reserved-at">
+                  Reserved at: {(() => {
+                    const reservedDate = trip.createdAt || trip.date;
+                    if (!reservedDate) return '-';
+                    return format(new Date(reservedDate), 'dd/MM/yyyy, hh:mm a');
+                  })()}
+                </span>
+              </div>
+              <hr className="mytrips-divider" />
+              <div className="mytrips-card-route">
+                <div className="mytrips-route-line">
+                  <span className="mytrips-dot green"></span>
+                  <span>{trip.from}</span>
+                </div>
+                <div className="mytrips-route-line">
+                  <span className="mytrips-dot orange"></span>
+                  <span>{trip.to}</span>
+                </div>
+              </div>
+              <div className="mytrips-card-extra">Booked By: {trip.bookedBy?.name} ({trip.bookedBy?.email})</div>
+              {trip.seat && (
+                <div className="mytrips-card-extra">Seat: {trip.seat}</div>
+              )}
+              {trip.status && (
+                <div className="mytrips-card-extra">Status: {trip.status}</div>
+              )}
+              {trip.route && (
+                <div className="mytrips-card-extra">Route: {trip.route}</div>
+              )}
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="history-tip">Search for a user to view their trips.</div>
       )}
