@@ -8,6 +8,7 @@ const BusFormSchema = new mongoose.Schema({
         pickupLocation: {type: String, required: true},
         arrivalLocation: {type: String, required: true},        
     },
+    
     departureTime: {type: String, required: true},
     allowance: {
         cancelTimeAllowance: {type: Number, required: false,  default: 3 * 60 * 60 * 1000,  }, // 3 hour in milliseconds
