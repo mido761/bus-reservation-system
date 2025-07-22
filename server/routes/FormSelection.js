@@ -6,8 +6,8 @@ const Seat = require("../models/seat");
 const User = require("../models/user");
 const innerAuth = require("../controllers/Inner Authorization");
 const seat = require("../models/seat");
-const BlackList = require("../models/blackList")
-const { DateTime } = require('luxon');
+const BlackList = require("../models/blackList");
+const { DateTime } = require("luxon");
 
 // retrieve bus details
 router.get("/:id", async (req, res) => {
@@ -43,34 +43,42 @@ router.post("/:busId", async (req, res) => {
     }
     const isAdmin = innerAuth.isAuthorized(user); // Check if the user is an admin
 
-    const numberOfSeats = await Seat.countDocuments({ bookedBy: userId }); // count the number of seats for the user
+    const numberOfSeats = await Seat.countDocuments({ bookedBy: userId, busId: busId }); // count the number of seats for the user
 
     const blacklisted = await BlackList.find({ userId: userId });
     if (!isAdmin && blacklisted.length > 0) {
       return res.status(400).json({
         message: "You are Black Listed",
       });
-    };
+    }
 
     if (!isAdmin && numberOfSeats > 1) {
       return res.status(400).json({
-        message: "Only one seats are allowed per user on the same bus!",
+        message: "Only two seats are allowed per user on the same bus!",
       });
-    };
+    }
 
     if (numberOfSeats > 0) {
       const oldBus = await Seat.find({ bookedBy: userId }, { busId: 1 }); // Get the bus of the user's seat
+
+      const oldBusId = oldBus[0].busId;
+      const oldBusObject = await Bus.findById(oldBusId);
+
       const sameBus = oldBus[0].busId.toString() === busId; // ensure same bus
 
+      const sameRoute =
+        oldBusObject.location.arrivalLocation.toString() ===
+        bus.location.arrivalLocation; // ensure different routes
+
       // Regular users can't book in multiple buses
-      if (!isAdmin && !sameBus) {
+      if (!isAdmin && (sameBus ^ sameRoute)) {
         return res.status(400).json({
-          message: "Multiple Buses are not allowed!"
+          message: "You can't book multiple buses for the same route!",
         });
       }
     }
 
-    // make the new seat 
+    // make the new seat
     const newSeat = new Seat({
       busId: busId,
       bookedBy: userId,
@@ -132,21 +140,24 @@ router.delete("/:busId", async (req, res) => {
     // Combine date and time into full Date object
     // const fullDepartureDateTime = new Date(`${bus.schedule}T${bus.departureTime}:00`);
     const egyptDate = DateTime.fromISO(`${bus.schedule}T${bus.departureTime}`, {
-      zone: 'Africa/Cairo',
+      zone: "Africa/Cairo",
     });
     // console.log(egyptDate)
 
     // Convert to UTC
     const fullDepartureDateTime = egyptDate.toUTC();
 
-
     // Calculate cutoff time (when cancellation is no longer allowed)
-    const cancelDeadline = fullDepartureDateTime.minus({ milliseconds: bus.allowance.cancelTimeAllowance });
+    const cancelDeadline = fullDepartureDateTime.minus({
+      milliseconds: bus.allowance.cancelTimeAllowance,
+    });
 
-    console.log(`bus time   ${fullDepartureDateTime}  ,  time now   ${now}, Deadline: ${cancelDeadline}`)
-    if (!isAdmin && (now > cancelDeadline )) {
+
+    if (!isAdmin && now > cancelDeadline) {
       return res.status(400).json({
-        message: `You can only cancel your seats before the bus by ${bus.allowance.cancelTimeAllowance / (60 * 60 * 1000)} hours!`,
+        message: `You can only cancel your seats before the bus by ${
+          bus.allowance.cancelTimeAllowance / (60 * 60 * 1000)
+        } hours!`,
       });
     }
 

@@ -193,9 +193,9 @@ const Homepage = () => {
         });
       }, redirectTimeout);
     } catch (err) {
-      console.error("Booking failed:", err);
+      console.error("Booking failed:", err.response.data.message);
       setLoading(false);
-      setAlertMessage("⚠️ You can only book 2 seats max!");
+      setAlertMessage(err.response.data.message);
       setAlertFlag(true);
       setTimeout(() => setAlertFlag(false), 2200);
     }
