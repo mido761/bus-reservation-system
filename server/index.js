@@ -26,7 +26,6 @@ const auth = require('./routes/authRouter')
 const forgotPassword = require("./routes/forgotPassword")
 const blackList = require("./routes/blackList");
 const driverList = require("./routes/driverList");
-const driverList = require("./routes/driverList");
 const path = require("path");
 // For email vraification
 const nodemailer = require("nodemailer");
