@@ -2,6 +2,19 @@ const bcrypt = require("bcrypt");
 const userModel = require("../../models/user");
 const session = require("../../utils/session")
 
+
+/**
+ * @route POST /api/login
+ * @description Authenticate user and create session
+ * @access Public
+ * @param {Object} req.body
+ * @param {string} req.body.email - User email
+ * @param {string} req.body.password - User password
+ * @returns {string} Authentication status message
+ * @throws {401} If credentials are invalid
+ * @throws {404} If user not found
+ * @throws {500} For server errors
+ */
 module.exports.login = async (req, res) => {
   const { email, password } = req.body;
 

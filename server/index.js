@@ -185,67 +185,10 @@ mongoose
 //Routes
 // app.get("/api/buses", require('./routes/busRoutes'))
 
-/**
- * @route POST /api/login
- * @description Authenticate user and create session
- * @access Public
- * @param {Object} req.body
- * @param {string} req.body.email - User email
- * @param {string} req.body.password - User password
- * @returns {string} Authentication status message
- * @throws {401} If credentials are invalid
- * @throws {404} If user not found
- * @throws {500} For server errors
- */
-// app.post("/api/login", async (req, res) => {
-//   const { email, password } = req.body;
+// login, logout, and registeration in future
+app.use("/api/auth", auth)
 
-//   try {
-//     const user = await userModel.findOne({ email });
-//     if (!user) {
-//       return res.status(404).json("This email does not exist");
-//     }
 
-//     // Check password validity
-//     const isPasswordValid = await bcrypt.compare(password, user.password);
-//     if (!isPasswordValid) {
-//       return res.status(401).json("The password is incorrect");
-//     }
-
-//     // Regenerate session to prevent session fixation
-//     req.session.regenerate((err) => {
-//       if (err) {
-//         return res.status(500).json("Session error");
-//       }
-
-//       // Set new session values
-//       req.session.userId = user._id;
-//       req.session.userRole = user.role;
-
-//       res.status(200).json("Login successful");
-//     });
-//   } catch (err) {
-//     res.status(500).json("Internal server error");
-//   }
-// });
-
-/**
- * @route POST /logout
- * @description End user session and clear cookies
- * @access Protected
- * @middleware isAuthenticated
- * @returns {string} Logout status message
- * @throws {500} If session destruction fails
- */
-// app.post("/logout", middleware.isAuthenticated, (req, res) => {
-//   req.session.destroy((err) => {
-//     if (err) {
-//       return res.status(500).json("failed to logout");
-//     }
-//     res.clearCookie("connect.sid");
-//     res.status(200).json("logout successfuly");
-//   });
-// });
 
 /**
  * @route GET /auth/:busId
