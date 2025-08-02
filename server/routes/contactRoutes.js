@@ -4,7 +4,13 @@ const mongoose = require('mongoose');
 const Contact = require('../models/Contact');  // Import the Contact model
 const middleware = require("../controllers/middleware");
 
-// GET all contact messages
+/**
+ * @route GET /contact
+ * @description Get all contact messages
+ * @access Private - Admin only
+ * @returns {Array<Object>} Array of contact messages
+ * @throws {500} For internal server errors
+ */
 router.get('/', middleware.isAuthoraized, async (req, res) => {
   try {
     console.log('Fetching all contact messages...');
@@ -16,7 +22,17 @@ router.get('/', middleware.isAuthoraized, async (req, res) => {
   }
 });
 
-// POST a new contact message
+/**
+ * @route POST /contact
+ * @description Submit a new contact message
+ * @access Private - Authenticated users only
+ * @param {Object} req.body
+ * @param {string} req.body.name - Name of the sender
+ * @param {string} req.body.email - Email of the sender
+ * @param {string} req.body.message - Contact message content
+ * @returns {Object} The created contact message
+ * @throws {500} For internal server errors
+ */
 router.post('/', middleware.isAuthenticated, async (req, res) => {
   const { name, email, message } = req.body;
   console.log('Received contact message:', req.body); // Log the incoming request data
@@ -38,8 +54,17 @@ router.post('/', middleware.isAuthenticated, async (req, res) => {
   }
 });
 
-// DELETE a contact message by ID
-router.delete('/:id',  middleware.isAuthoraized, async (req, res) => {
+/**
+ * @route DELETE /contact/:id
+ * @description Delete a specific contact message
+ * @access Private - Admin only
+ * @param {string} req.params.id - ID of the contact message to delete
+ * @returns {Object} Success message
+ * @throws {400} If ID format is invalid
+ * @throws {404} If contact message not found
+ * @throws {500} For internal server errors
+ */
+router.delete('/:id', middleware.isAuthoraized, async (req, res) => {
   const contactId = req.params.id;
   console.log('Deleting contact message with ID:', contactId);
 

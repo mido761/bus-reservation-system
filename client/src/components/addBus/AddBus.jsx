@@ -69,7 +69,6 @@ const AddBus = () => {
           pickupLocation,
           arrivalLocation,
           departureTime,
-          arrivalTime,
           cancelTimeAllowance,
           bookingTimeAllowance
         });

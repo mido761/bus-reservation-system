@@ -22,6 +22,8 @@ import Footer from "./components/footer/footer.jsx";
 import EditBus from "./components/editBus/editBus.jsx";
 import Passengers from "./components/Passengers/Passengers";
 import BlacklistPage from "./components/blacklist/Blacklist.jsx"; 
+import MyTrips from "./components/MyTrips/mytrips.jsx";
+import History from "./components/history/history.jsx";
 function App() {
   return (
     <HashRouter basename="/">
@@ -107,6 +109,26 @@ function App() {
             </Auth>
           }
         />
+        <Route
+     path="/my-trips"
+     element={
+       <Auth>
+         <Navbar />
+         <MyTrips />
+         <Footer />
+       </Auth>
+     }
+   />
+   <Route
+     path="/history"
+     element={
+       <Auth>
+         <Navbar />
+         <History />
+         <Footer />
+       </Auth>
+     }
+   />
         <Route
           path="/black-list"
           element={

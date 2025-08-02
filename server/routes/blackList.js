@@ -8,6 +8,15 @@ const router = express.Router();
 const middleware = require("../controllers/middleware");
 const mongoose = require("mongoose");
 
+/**
+ * @route POST /blacklist/:busId
+ * @description Add all users who haven't checked in for a specific bus to the blacklist
+ * @access Private - Admin only
+ * @param {string} req.params.busId - ID of the bus to check
+ * @returns {Object} Success message and array of blacklisted users
+ * @throws {404} If bus not found
+ * @throws {500} For internal server errors
+ */
 router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
   try {  
     const busId = req.params.busId;
@@ -38,6 +47,16 @@ router.post("/:busId", middleware.isAuthoraized, async (req, res) => {
   }
 });
 
+/**
+ * @route POST /blacklist/user/:seatId
+ * @description Add a specific user to the blacklist based on their seat
+ * @access Private - Admin only
+ * @param {string} req.params.seatId - ID of the seat to check
+ * @returns {Object} Success message and blacklisted user details
+ * @throws {404} If seat not found
+ * @throws {400} If user is already blacklisted
+ * @throws {500} For internal server errors
+ */
 router.post("/user/:seatId", middleware.isAuthoraized, async (req, res) => {
   try {  
     const seatId = req.params.seatId;
@@ -74,6 +93,15 @@ router.post("/user/:seatId", middleware.isAuthoraized, async (req, res) => {
   }
 });
 
+/**
+ * @route GET /blacklist
+ * @description Get all blacklisted users with their details
+ * @access Public
+ * @returns {Object} Object containing blacklist entries and user details
+ * @property {Array<Object>} blacklist - Array of blacklist entries
+ * @property {Array<Object>} userNameNum - Array of user details (name, phone)
+ * @throws {500} For internal server errors
+ */
 router.get("/", async (req, res) => {
   try {
     const blacklist = await blackList.find();
@@ -111,6 +139,16 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @route DELETE /blacklist/:id
+ * @description Remove a user from the blacklist
+ * @access Public
+ * @param {string} req.params.id - ID of the blacklist entry to remove
+ * @returns {Object} Success message and removed blacklist entry
+ * @throws {400} If ID format is invalid
+ * @throws {404} If blacklist entry not found
+ * @throws {500} For internal server errors
+ */
 router.delete("/:id", async (req, res) => {
   try {
     const id = req.params.id;
