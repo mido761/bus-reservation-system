@@ -16,6 +16,7 @@ const FormSeats = require("./routes/seats");
 const contactRoutes = require("./routes/contactRoutes");
 const middleware = require("./controllers/middleware");
 const register = require("./routes/register");
+const auth = require('./routes/authRouter')
 const forgotPassword = require("./routes/forgotPassword")
 const blackList = require("./routes/blackList");
 const driverList = require("./routes/driverList");
@@ -137,49 +138,50 @@ mongoose
 
 //Routes
 // app.get("/api/buses", require('./routes/busRoutes'))
+app.use("/api/auth", auth)
 
-app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
+// app.post("/api/login", async (req, res) => {
+//   const { email, password } = req.body;
 
-  try {
-    const user = await userModel.findOne({ email });
-    if (!user) {
-      return res.status(404).json("This email does not exist");
-    }
+//   try {
+//     const user = await userModel.findOne({ email });
+//     if (!user) {
+//       return res.status(404).json("This email does not exist");
+//     }
 
-    // Check password validity
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json("The password is incorrect");
-    }
+//     // Check password validity
+//     const isPasswordValid = await bcrypt.compare(password, user.password);
+//     if (!isPasswordValid) {
+//       return res.status(401).json("The password is incorrect");
+//     }
 
-    // Regenerate session to prevent session fixation
-    req.session.regenerate((err) => {
-      if (err) {
-        return res.status(500).json("Session error");
-      }
+//     // Regenerate session to prevent session fixation
+//     req.session.regenerate((err) => {
+//       if (err) {
+//         return res.status(500).json("Session error");
+//       }
 
-      // Set new session values
-      req.session.userId = user._id;
-      req.session.userRole = user.role;
+//       // Set new session values
+//       req.session.userId = user._id;
+//       req.session.userRole = user.role;
 
-      res.status(200).json("Login successful");
-    });
-  } catch (err) {
-    res.status(500).json("Internal server error");
-  }
-});
+//       res.status(200).json("Login successful");
+//     });
+//   } catch (err) {
+//     res.status(500).json("Internal server error");
+//   }
+// });
 
 
-app.post("/logout", middleware.isAuthenticated, (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json("failed to logout");
-    }
-    res.clearCookie("connect.sid");
-    res.status(200).json("logout successfuly");
-  });
-});
+// app.post("/logout", middleware.isAuthenticated, (req, res) => {
+//   req.session.destroy((err) => {
+//     if (err) {
+//       return res.status(500).json("failed to logout");
+//     }
+//     res.clearCookie("connect.sid");
+//     res.status(200).json("logout successfuly");
+//   });
+// });
 
 app.get("/auth/:busId", middleware.isAuthenticated, (req, res) => {
   const busId = req.params.busId;

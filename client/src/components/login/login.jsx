@@ -24,7 +24,7 @@ function Login() {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `${backEndUrl}/api/login`,
+        `${backEndUrl}/api/auth/login`,
         { email, password },
         { withCredentials: true }
       );
