@@ -10,7 +10,7 @@ const router = express.Router() // used for controllers reference
 
 // use controllers with router method
 router.post("/login", loginController.login);
-router.post("/logout", middleware.isAuthenticated,logoutController.logout);
+router.post("/logout", middleware.isAuthenticated, logoutController.logout);
 // router.post("/register", registerController);
 
 // export the file as a module that could be imported somewhere else

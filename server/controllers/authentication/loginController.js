@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const userModel = require("../../models/user");
-const session = require("../../utils/session")
+const session = require("../../utils/session");
 
 
 /**
@@ -15,6 +15,7 @@ const session = require("../../utils/session")
  * @throws {404} If user not found
  * @throws {500} For server errors
  */
+
 module.exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -31,10 +32,9 @@ module.exports.login = async (req, res) => {
     }
 
     // Regenerate session to prevent session fixation
-    session.regenerate(req, user);
-    
-    res.status(200).json("Login successful");
-  } catch (err) {
+    session.regenerate(req, res, user);
+      } catch (err) {
+    console.error(err)
     res.status(500).json("Internal server error");
   }
 };
