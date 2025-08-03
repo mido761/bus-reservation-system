@@ -1,0 +1,4 @@
+Transformed to MVC and increased code reusability:
+    Login 
+    Logout
+    Regiseter(send verification code, resend verification code, verify code, Save new user)
