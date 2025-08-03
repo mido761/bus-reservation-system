@@ -88,10 +88,8 @@ function Verification({ setVerificationFlag }) {
 
     if (e.key === "Enter") {
       e.preventDefault(); // Prevents form submission
-      console.log("Enter key pressed, but form not submitted!");
     }
 
-    console.log(otp);
   };
 
   const handleResendCode = async () => {

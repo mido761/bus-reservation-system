@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 const userModel = require("../../models/user");
 const session = require("../../utils/session");
 
-
 /**
  * @route POST /api/login
  * @description Authenticate user and create session
@@ -33,8 +32,8 @@ module.exports.login = async (req, res) => {
 
     // Regenerate session to prevent session fixation
     session.regenerate(req, res, user);
-      } catch (err) {
-    console.error(err)
+  } catch (err) {
+    console.error(err);
     res.status(500).json("Internal server error");
   }
 };

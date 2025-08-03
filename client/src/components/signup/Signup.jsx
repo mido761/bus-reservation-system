@@ -81,7 +81,7 @@ function Signup() {
     }
 
     try {
-      const result = await axios.post(`${backEndUrl}/api/register`, {
+      const result = await axios.post(`${backEndUrl}/api/register/send-code`, {
         name,
         phoneNumber,
         email,
