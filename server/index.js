@@ -103,6 +103,7 @@ app.options("*", (req, res) => {
  */
 app.use(
   session({
+    secret: "AnotherRandomStringThatIsHardToGuess12345",
     secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
