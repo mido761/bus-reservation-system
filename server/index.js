@@ -13,10 +13,11 @@ require("dotenv").config();
  * @const {Object} Routes
  * @description Import route handlers
  */
-const busRoutes = require("./routes/busRoutes");
+// const busRoutes = require("./routes/busRoutes");
 const userRouter = require("./routes/userRoutes");
 const SeatSelection = require("./routes/SeatSelection");
 const FormSelection = require("./routes/FormSelection");
+const FormRouter = require("./routes/formRouter");
 const bookingHistory = require("./routes/bookingHistory");
 const FormSeats = require("./routes/seats");
 const contactRoutes = require("./routes/contactRoutes");
@@ -102,7 +103,6 @@ app.options("*", (req, res) => {
  */
 app.use(
   session({
-    secret: "ARandomStringThatIsHardToGuess12345",
     secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
@@ -110,7 +110,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "strict",
-      Secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     },
   })
@@ -155,11 +155,11 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
  * @routes
  * @description Register route handlers
  */
-app.use("/buses", middleware.isAuthenticated, busRoutes);
-app.use("/driver-list", driverList);
-app.use("/driver-list", driverList);
+// app.use("/buses", middleware.isAuthenticated, busRoutes);
+app.use("/driver-list", middleware.isAuthenticated, driverList);
 // app.use('/api', bookingRoutes);
 app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
+app.use("/form", middleware.isAuthenticated,  FormRouter);
 app.use("/formselection", middleware.isAuthenticated,  FormSelection);
 app.use("/seats", middleware.isAuthenticated,  FormSeats);
 app.use("/user", middleware.isAuthenticated, userRouter);

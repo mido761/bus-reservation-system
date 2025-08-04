@@ -32,7 +32,7 @@ const BusList = () => {
 
   const fetchBusList = async () => {
     try {
-      const response = await axios.get(`${backEndUrl}/buses`);
+      const response = await axios.get(`${backEndUrl}/form/`);
       setBusList(response.data);
       setPageLoading(false);
     } catch (error) {
@@ -247,7 +247,7 @@ const BusList = () => {
   };
 
   const handleEdit = (busId) => {
-    navigate(`/edit-bus/${busId}`);
+    navigate(`/edit-form/${busId}`);
   };
 
   const handleDel = async (busId) => {
@@ -263,7 +263,7 @@ const BusList = () => {
 
     setIsLoading(true);
     try {
-      await axios.delete(`${backEndUrl}/buses/busForm/${busId}`);
+      await axios.delete(`${backEndUrl}/form/del-form/${busId}`);
       setBusList(busList.filter((bus) => bus._id !== busId));
 
       setIsLoading(false);

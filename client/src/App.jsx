@@ -141,7 +141,7 @@ function App() {
         />
 
         <Route
-          path="/bus-list"
+          path="/form"
           element={
             <Auth requireAdmin={true}>
               <Navbar />
@@ -151,7 +151,7 @@ function App() {
           }
         />
         <Route
-          path="/edit-bus/:busId"
+          path="/edit-form/:busId"
           element={
             <Auth requireAdmin={true}>
               <Navbar />

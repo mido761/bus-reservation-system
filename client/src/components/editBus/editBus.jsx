@@ -19,7 +19,7 @@ const EditBus = () => {
   useEffect(() => {
     const fetchBus = async () => {
       try {
-        const response = await axios.get(`${backEndUrl}/buses/${busId}`);
+        const response = await axios.get(`${backEndUrl}/form/${busId}`);
         setBusData(response.data);
       } catch (error) {
         console.error("Error fetching bus data", error);
@@ -54,10 +54,10 @@ const EditBus = () => {
     if (window.confirm("Are you sure you want to update this bus?")) {
       setIsLoading(true);
       try {
-        await axios.put(`${backEndUrl}/buses/edit-bus/${busId}`, busData);
+        await axios.put(`${backEndUrl}/form/edit-form/${busId}`, busData);
         setAlertMessage("✅ Bus updated successfully!");
         setAlertFlag(true);
-        setTimeout(() => navigate("/bus-list"), 2000);
+        setTimeout(() => navigate("/form"), 2000);
       } catch (error) {
         console.error("Error updating bus", error);
         setAlertMessage("⚠️ Error updating bus");

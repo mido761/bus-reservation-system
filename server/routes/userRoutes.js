@@ -7,7 +7,7 @@ const BusForm = require("../models/busForm");
 const Seat = require("../models/seat");
 const middleware = require("../controllers/middleware");
 const { default: mongoose } = require("mongoose");
-const { route } = require("./busRoutes");
+// const { route } = require("./busRoutes");
 
 /**
  * @route GET /user

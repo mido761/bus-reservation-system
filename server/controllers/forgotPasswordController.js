@@ -19,18 +19,7 @@ function generateVerificationCode() {
   return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit code
 }
 
-/**
- * @function forgotPassword
- * @description Handles the initial password reset request by sending a verification code
- * @async
- * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.email - User's email address
- * @param {Object} res - Express response object
- * @returns {Promise<void>}
- * @throws {404} If user not found
- * @throws {500} If email sending fails or other server error
- */
+
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -67,20 +56,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-/**
- * @function resetPassword
- * @description Verifies the OTP and updates user's password
- * @async
- * @param {Object} req - Express request object
- * @param {Object} req.body - Request body
- * @param {string} req.body.email - User's email address
- * @param {Array<string>} req.body.otp - Array of OTP digits
- * @param {string} req.body.password - New password
- * @param {Object} res - Express response object
- * @returns {Promise<void>}
- * @throws {400} If verification code is invalid or expired
- * @throws {500} If password update fails or other server error
- */
+
 exports.resetPassword = async (req, res) => {
   const { email, otp, password } = req.body;
   const verificationCode = otp.join("");

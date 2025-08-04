@@ -42,8 +42,12 @@ const Homepage = () => {
       const [req_user, response] = await Promise.all([
         axios.get(`${backEndUrl}/auth`, { withCredentials: true }),
       ]);
-      const res = await axios.get(`${backEndUrl}/buses`);
-      setBuses(res.data);
+      const res = await axios.get(`${backEndUrl}/form`);
+
+      if (Array.isArray(res.data)) {
+        setBuses(res.data);
+      }
+
       // setFilteredBuses(res.data);
       setUserId(req_user.data.userId);
     } catch (error) {

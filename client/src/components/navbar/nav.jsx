@@ -123,9 +123,9 @@ function Navbar() {
           </button>
         )}
 
-        {!(location.pathname === "/bus-list") && isAuthorized && (
-          <button className="nav-link" onClick={() => navigate("/bus-list")}>
-            Buses
+        {!(location.pathname === "/form") && isAuthorized && (
+          <button className="nav-link" onClick={() => navigate("/form")}>
+            Forms
           </button>
         )}
 

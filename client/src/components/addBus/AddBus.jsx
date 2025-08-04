@@ -61,7 +61,7 @@ const AddBus = () => {
           bookingTimeAllowance
         });
       } else {
-        await axios.post(`${backEndUrl}/buses/formbuses`, {
+        await axios.post(`${backEndUrl}/form/add-form`, {
           totalSeats,
           busNumber,
           schedule,

@@ -36,7 +36,7 @@ const PassengersPage = () => {
   const fetchBusDetails = async () => {
     try {
       setBusDetailsLoading(true);
-      const response = await axios.get(`${backEndUrl}/buses/${busId}`);
+      const response = await axios.get(`${backEndUrl}/form/${busId}`);
       setBusDetails(response.data);
       setBusDetailsError(null);
     } catch (error) {
@@ -113,12 +113,12 @@ const PassengersPage = () => {
     setIsLoading(true);
     try {
       // First get the current bus details to know the route
-      const currentBusResponse = await axios.get(`${backEndUrl}/buses/${busId}`);
+      const currentBusResponse = await axios.get(`${backEndUrl}/form/${busId}`);
       const currentBus = currentBusResponse.data;
       console.log("Current bus:", currentBus);
 
       // Then get all available buses
-      const allBusesResponse = await axios.get(`${backEndUrl}/buses`);
+      const allBusesResponse = await axios.get(`${backEndUrl}/form`);
       console.log("All buses:", allBusesResponse.data);
 
       // Filter buses with the same route and future dates
