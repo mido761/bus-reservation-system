@@ -92,6 +92,8 @@ app.options("*", (req, res) => {
   res.sendStatus(200); // Respond with 200 for preflight requests
 });
 
+
+
 /**
  * @middleware
  * @description Session configuration
