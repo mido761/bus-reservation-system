@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './PaymentSuccess.css';
-import authen from '../../Auth';
+import Auth from '../../Auth.jsx';
 
 const port = 3001
 
@@ -9,7 +9,7 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const { selectedSeats } = useParams();
   console.log(selectedSeats)
-  authen()
+  Auth()
 
   const handleProceedToTicketSummary = () => {
     navigate(`/ticket-summary/${selectedSeats}`);  // Redirects to the TicketSummary page
