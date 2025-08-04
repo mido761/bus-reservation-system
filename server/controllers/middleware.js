@@ -17,9 +17,9 @@ const app = express();
  * @throws {401} If user is not authenticated
  */
 const isAuthenticated = (req, res, next) => {
-  if (process.env.NODE_ENV === "development") return next();
+  // if (process.env.NODE_ENV === "development") return next();
   
-  if (req.session.userId) {
+  if (req.session && req.session.userId) {
     return next();
   }
   return res.status(401).json({ message: "unauthenticated: Please log in" });
@@ -39,9 +39,9 @@ const isAuthenticated = (req, res, next) => {
  * @throws {401} If user is not authorized as admin
  */
 const isAuthoraized = (req, res, next) => {
-  if (process.env.NODE_ENV === "development") return next();
+  // if (process.env.NODE_ENV === "development") return next();
  
-  if (req.session.userId && req.session.userRole === "admin") {
+  if (req.session && req.session.userId && req.session.userRole === "admin") {
     return next();
   }
   return res.status(401).json({ message: "Unauthorized, Access denied" });
