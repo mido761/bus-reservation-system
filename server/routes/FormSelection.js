@@ -63,9 +63,9 @@ router.post("/:busId", async (req, res) => {
       const oldBus = await Seat.find({ bookedBy: userId }, { busId: 1 }); // Get the bus of the user's seat
       const sameBus = oldBus[0].busId.toString() === busId; // ensure same bus
 
-      const sameRoute =
-        oldBusObject.location.arrivalLocation.toString() ===
-        bus.location.arrivalLocation; // ensure different routes
+      // const sameRoute =
+      //   oldBusObject.location.arrivalLocation.toString() ===
+      //   bus.location.arrivalLocation; // ensure different routes
 
       // Regular users can't book in multiple buses
       if (!isAdmin && !sameBus) {
