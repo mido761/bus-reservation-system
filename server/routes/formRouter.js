@@ -40,8 +40,6 @@ router.get("/:id", middleware.isAuthenticated, getFormByID)
  */
 router.post("/add-form", middleware.isAuthoraized, addNewForm);
 
-
-
 // Update Form
 router.put("/edit-form/:busId", middleware.isAuthoraized, updateForm);
 

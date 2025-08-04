@@ -3,4 +3,4 @@ Transformed to MVC and increased code reusability:
     Logout
     Regiseter(send verification code, resend verification code, verify code, Save new user)
     Form Routes (Get ALl, get defined, add new, update One, remove One) // separated Seat-Based from Spot-Based 
-    
+    Seats Routes (Get all seats for a certain form, get driver list seats, get specific seat info, check in/out)
