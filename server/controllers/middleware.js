@@ -19,6 +19,7 @@ const app = express();
 const isAuthenticated = (req, res, next) => {
   // if (process.env.NODE_ENV === "development") return next();
   
+  console.log(req.session)
   if (req.session && req.session.userId) {
     return next();
   }
@@ -40,6 +41,7 @@ const isAuthenticated = (req, res, next) => {
  */
 const isAuthoraized = (req, res, next) => {
   // if (process.env.NODE_ENV === "development") return next();
+  console.log(req.session)
  
   if (req.session && req.session.userId && req.session.userRole === "admin") {
     return next();

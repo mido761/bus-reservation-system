@@ -59,9 +59,6 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "http://localhost:5000",
-  "http://192.168.0.130:5173",
-  "http://192.168.0.130:5000",
   process.env.BACK_END_URL,
 ];
 app.use(
@@ -82,15 +79,13 @@ app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
 
 // // Handle OPTIONS preflight request for CORS
 app.options("*", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.sendStatus(200); // Respond with 200 for preflight requests
+  res.sendStatus(200);
 });
+
 
 
 
@@ -105,14 +100,13 @@ app.options("*", (req, res) => {
  */
 app.use(
   session({
-    secret: "AnotherRandomStringThatIsHardToGuess12345",
     secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "None",
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     },
@@ -219,14 +213,14 @@ app.get("/auth/:busId", middleware.isAuthenticated, (req, res) => {
  */
 app.get("/auth", (req, res) => {
   if (req.session.userId) {
-    res.status(200).json({
+    return res.status(200).json({
       authenticated: true,
       userId: req.session.userId,
       userRole: req.session.userRole,
       busId: req.session.busId,
     });
   } else {
-    res.status(401).json({ authenticated: false });
+    return res.status(401).json({ authenticated: false });
   }
 });
 
