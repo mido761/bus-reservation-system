@@ -13,3 +13,6 @@ router.post("/:busId", bookSpot);
 
 // cancel seat endpoint
 router.delete("/:busId", cancelSpot);
+
+
+module.exports = router

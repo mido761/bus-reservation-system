@@ -15,7 +15,7 @@ const session = require("../../utils/session");
  * @throws {500} For server errors
  */
 
-module.exports.login = async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -40,3 +40,4 @@ module.exports.login = async (req, res) => {
 };
 
 
+module.exports = {login}

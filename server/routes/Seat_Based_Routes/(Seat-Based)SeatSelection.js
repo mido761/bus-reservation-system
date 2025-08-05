@@ -6,10 +6,10 @@
 
 const express = require("express");
 const router = express.Router();
-const Bus = require("../models/busModel");
-const User = require("../models/user");
+const Bus = require("../../models/busModel");
+const User = require("../../models/user");
 const Pusher = require("pusher");
-const innerAuth = require("../controllers/Inner Authorization");
+const innerAuth = require("../../controllers/Inner Authorization");
 
 /**
  * @const {Pusher}

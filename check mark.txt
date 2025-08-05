@@ -5,3 +5,4 @@ Transformed to MVC and increased code reusability:
     Form Routes (Get ALl, get defined, add new, update One, remove One) // separated Seat-Based from Spot-Based 
     Seats Routes (Get all seats for a certain form, get driver list seats, get specific seat info, check in/out)
     Form Booking Routes ( get form details, book a spot, cancel a spot)
+    User Details and actions ( get all users, get specific user info, get profile names for users, get user booked forms, edit gender)

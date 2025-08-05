@@ -8,6 +8,9 @@ const session = require("../../utils/session")
  * @returns {string} Logout status message
  * @throws {500} If session destruction fails
  */
-module.exports.logout = async (req, res) => {
+const logout = async (req, res) => {
   session.destroy(req, res)
 };
+
+
+module.exports = {logout}

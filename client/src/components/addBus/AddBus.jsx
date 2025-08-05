@@ -9,7 +9,7 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 const locations = ["Cairo", "E-JUST"];
 
 const AddBus = () => {
-  const [busType, setBusType] = useState("");
+  const [busType, setBusType] = useState("form");
   const [totalSeats, setAllSeats] = useState(15);
   const [busNumber, setbusNumber] = useState("");
   const [schedule, setSchedule] = useState("");
@@ -92,7 +92,7 @@ const AddBus = () => {
 
         {/* <label>Bus Type</label> */}
         <div className="bus-type-selection improved-ui">
-          <label className={busType === "seat" ? "selected" : ""}>
+          {/* <label className={busType === "seat" ? "selected" : ""}>
             <input
               type="radio"
               value="seat"
@@ -100,7 +100,7 @@ const AddBus = () => {
               onChange={(e) => setBusType(e.target.value)}
             />
             Seat-based
-          </label>
+          </label> */}
           <label className={busType === "form" ? "selected" : ""}>
             <input
               type="radio"

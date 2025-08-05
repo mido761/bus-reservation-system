@@ -15,9 +15,9 @@ require("dotenv").config();
  */
 // const busRoutes = require("./routes/busRoutes");
 const userRouter = require("./routes/userRoutes");
-const SeatSelection = require("./routes/SeatSelection");
-const FormBookingRouter = require("./routes/formBookingRouter");
-const FormRouter = require("./routes/formRouter");
+// const SeatSelection = require("./routes/SeatSelection");
+const formBookingRouter = require("./routes/formBookingRouter");
+const formRouter = require("./routes/formRouter");
 const bookingHistory = require("./routes/bookingHistory");
 const FormSeats = require("./routes/seats");
 const contactRoutes = require("./routes/contactRoutes");
@@ -171,10 +171,10 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
 // app.use("/buses", middleware.isAuthenticated, busRoutes);
 app.use("/driver-list", middleware.isAuthenticated, driverList);
 // app.use('/api', bookingRoutes);
-app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
-app.use("/form", middleware.isAuthenticated,  FormRouter);
+// app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
+app.use("/form", middleware.isAuthenticated, formRouter);
 // app.use("/formselection", middleware.isAuthenticated,  FormSelection);
-app.use("/formselection", middleware.isAuthenticated,  FormBookingRouter);
+app.use("/formselection", middleware.isAuthenticated, formBookingRouter);
 app.use("/seats", middleware.isAuthenticated,  FormSeats);
 app.use("/user", middleware.isAuthenticated, userRouter);
 app.use("/bookingHistory", bookingHistory);
