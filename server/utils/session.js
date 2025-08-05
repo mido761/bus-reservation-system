@@ -7,6 +7,7 @@ module.exports.regenerate = (req, res, user) => {
 
     req.session.save((err) => {
       if (err) return res.status(500).json("Failed to save session");
+      // console.log(req.session);
       return res.status(200).json("Login successful");
     });
   });

@@ -70,21 +70,15 @@ app.use(
   })
 );
 
-/**
- * @middleware
- * @description Middleware for parsing JSON and URL-encoded form data
- */
-app.use(express.json()); // For JSON payloads
-app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
 
 // // Handle OPTIONS preflight request for CORS
-app.options("*", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.sendStatus(200);
-});
+// app.options("*", (req, res) => {
+//   res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.setHeader("Access-Control-Allow-Credentials", "true");
+//   res.sendStatus(200);
+// });
 
 
 
@@ -98,20 +92,42 @@ app.options("*", (req, res) => {
  * @property {Object} store - MongoDB session store
  * @property {Object} cookie - Session cookie settings
  */
+
+// // Handle OPTIONS preflight request for CORS
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.sendStatus(200); // Respond with 200 for preflight requests
+});
+
 app.use(
   session({
+    secret: "ARandomStringThatIsHardToGuess12345",
     secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       httpOnly: true,
-      sameSite: "None",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      Secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     },
   })
 );
+
+/**
+ * @middleware
+ * @description Middleware for parsing JSON and URL-encoded form data
+ */
+app.use(express.json()); // For JSON payloads
+app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
+
 
 /**
  * @route POST /notifications
