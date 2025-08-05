@@ -14,6 +14,7 @@ const session = require("../../utils/session");
  * @throws {404} If user not found
  * @throws {500} For server errors
  */
+
 module.exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -30,19 +31,12 @@ module.exports.login = async (req, res) => {
     }
 
     // Regenerate session to prevent session fixation
-    req.session.regenerate((err) => {
-      if (err) {
-        return res.status(500).json("Session error");
-      }
-
-      // Set new session values
-      req.session.userId = user._id;
-      req.session.userRole = user.role;
-
-      res.status(200).json("Login successful");
-    });
+    session.regenerate(req, res, user);
+    
   } catch (err) {
+    console.error(err);
     res.status(500).json("Internal server error");
   }
 };
+
 
