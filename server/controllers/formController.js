@@ -35,10 +35,27 @@ const addNewForm = async (req, res) => {
       bookingTimeAllowance,
     } = req.body;
 
-    // Check if all required fields are provided
+    // Check if all required fields are provided (must check values and make sure of thier type, the ! comparator isn't enough)
+    // const validateBody = () => {
+    //   if (typeof schedule !== ""){
+    //     return false
+    //   }
+    //   if (typeof price !== "number"){
+    //     return false
+    //   }
+    //   if (typeof price !== "number"){
+    //     return false
+    //   }
+    //   if (typeof price !== "number"){
+    //     return false
+    //   }
+    //   if (typeof price !== "number"){
+    //     return false
+    //   }
+    // }
     if (
       !schedule ||
-      !price ||
+      !price || // zero values makes a problem
       !pickupLocation ||
       !arrivalLocation ||
       !departureTime

@@ -30,7 +30,7 @@ const AddBus = () => {
   const handleQuickAdd = () => {
     setAllSeats(15);
     setbusNumber("1234");
-    setPrice(110);
+    setPrice(0);
     setPickupLocation("E-JUST");
     setArrivalLocation("Cairo");
     setCancelTimeAllowance(3);
