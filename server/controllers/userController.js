@@ -3,7 +3,6 @@ const BusForm = require("../models/busForm");
 const Seat = require("../models/seat");
 const { default: mongoose } = require("mongoose");
 
-
 // Get all users in the system
 const getAllUsers = async (req, res) => {
   try {
@@ -18,7 +17,20 @@ const getAllUsers = async (req, res) => {
 const getUserInfo = async (req, res) => {
   const userId = req.params.userId;
   try {
-    const user = await User.findById(userId);
+    if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
+      return res.status(400).json("Invalid ID format");
+    }
+
+    if (req.session.userId.toString() !== req.params.userId) {
+      return res.status(403).json("Access denied");
+    }
+
+    const user = await User.findById(userId, {
+      _id: 0,
+      name: 1,
+      email: 1,
+      phoneNumber: 1,
+    });
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,7 +71,6 @@ const getUserForms = async (req, res) => {
   }
 };
 
-
 // Update a user's gender
 const editGender = async (req, res) => {
   try {
@@ -80,5 +91,10 @@ const editGender = async (req, res) => {
   }
 };
 
-
-module.exports = { getAllUsers, getUserInfo, getProfileNames, getUserForms, editGender };
+module.exports = {
+  getAllUsers,
+  getUserInfo,
+  getProfileNames,
+  getUserForms,
+  editGender,
+};

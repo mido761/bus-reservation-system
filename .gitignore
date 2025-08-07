@@ -27,3 +27,16 @@ package-lock.json
 client/package-lock.json
 package-lock.json
 client/package-lock.json
+
+### Testing logs and useless files
+
+# Ignore coverage output
+coverage/
+*.lcov
+
+# Ignore test logs
+test-results/
+*.log
+
+# Ignore test temp files
+tmp/

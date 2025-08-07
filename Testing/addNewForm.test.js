@@ -1,3 +1,4 @@
+const { validateBody } = require("../server/utils/bodyValidation/validateBody");
 const Joi = require("joi");
 
 const formSchema = Joi.object({
@@ -16,37 +17,27 @@ const correctBody = {
   departureTime: "16:00",
 };
 
-const validateBody = (input) => {
-  if (input === undefined) {
-    throw new Error("Nothing is passed to validate!");
-  }
-  const { error } = formSchema.validate(input);
 
-  if (error) {
-    throw new TypeError(error.details[0].message);
-  }
+describe("Testing the correctness of the input", () => {
+  test("Returns true for correct input", () => {
+    expect(validateBody(correctBody, formSchema)).toBeTruthy();
+  });
 
-  return true;
-};
+  test("throws an error for wrong input", () => {
+    const invalidBody = { ...correctBody, price: 0 };
+    expect(() => {
+      validateBody(invalidBody, formSchema);
+    }).toThrow();
+  });
 
-test("Returns true for correct input", () => {
-  expect(validateBody(correctBody)).toBeTruthy();
-});
+  test("throws an error if nothing is passed as input", () => {
+    expect(() => {
+      validateBody();
+    }).toThrow("Nothing is passed to validate!");
+  });
 
-test("throws an error for wrong input", () => {
-  const invalidBody = { ...correctBody, price: 0 };
-  expect(() => {
-    validateBody(invalidBody);
-  }).toThrow();
-});
-
-test("throws an error if nothing is passed as input", () => {
-  expect(() => {
-    validateBody();
-  }).toThrow("Nothing is passed to validate!");
-});
-
-test("Ensure schedule is a valid date string", () => {
-  const { error } = Joi.date().validate(correctBody.schedule);
-  expect(error).toBeUndefined();
+  test("Ensure schedule is a valid date string", () => {
+    const { error } = Joi.date().validate(correctBody.schedule);
+    expect(error).toBeUndefined();
+  });
 });
