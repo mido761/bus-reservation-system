@@ -2,21 +2,20 @@ const { DateTime } = require("luxon");
 const mongoose = require("mongoose");
 
 const ScheduleSchema = new mongoose.Schema({
-    bookongId:
-    { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Booking' 
-    },
-    busId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Bus' 
-    },
+    busId:[
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Bus'
+        }
+    ],
     routeId:{
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Route' 
     },
     departureTime:{type:DateTime,required:true},
     arrivalTime:{type:DateTime,required:true},
+    // departureDate:{type:String,required:true},
+    // arrivalDate:{type:String,required:true},
     avaibleSeats:{type:Number},
     Status:{
         type: String,

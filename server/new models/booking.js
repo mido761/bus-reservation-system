@@ -5,6 +5,14 @@ const BookingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Schedule' 
     },
+    passangerId:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    },
+    stopId:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Stop' 
+    },
     seatId:{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Seat' 
@@ -13,16 +21,16 @@ const BookingSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Payment'
     },
-    paymentStatus: {
-    type: String,
-    enum: ["sucsseful","pending",'failed'],
-    default: "pending",
-    },
+    // paymentStatus: {
+    // type: String,
+    // enum: ["sucsseful","pending",'failed'],
+    // default: "pending",
+    // },
     ticketId:{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Ticket' 
     },
-    bookingStatus: {
+    Status: {
     type: String,
     enum: ["accepted", "cancelled", "completed","pending",'failed'],
     default: "pending",

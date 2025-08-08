@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 
 const RouteSchema = new mongoose.Schema({
-    scheduleId:{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Schedule' 
-    },
     source:{
         type:String,
         required:true
@@ -21,9 +17,12 @@ const RouteSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    stops:{
-        type:Array,
-    },
+    stops: [
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Stop'
+        }
+    ],
     isActive:{
         type:Boolean,
         default:true

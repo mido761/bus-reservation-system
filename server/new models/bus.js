@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
 
 const BusSchema = new mongoose.Schema({
-    seatsId:{ 
-        type: Array, 
-        ref: 'Seat' 
-    },
+    seatsId: [
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seat'
+        }
+    ],
     blateNumber:{
         type:Number,
         required:true
