@@ -326,7 +326,7 @@ const BusList = () => {
   <div className="bus-list-page">
     <div className="bus-selection">
       <h3>Select a Bus</h3>
-      {busList.length > 0 ? (
+      {Array.isArray(busList) && busList.length > 0 ? (
         <ul className="bus-list">
           {busList.map((bus) => (
             <li key={bus._id}>

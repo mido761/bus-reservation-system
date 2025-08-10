@@ -18,6 +18,7 @@ const userRouter = require("./routes/userRoutes");
 // const SeatSelection = require("./routes/SeatSelection");
 const formBookingRouter = require("./routes/formBookingRouter");
 const formRouter = require("./routes/formRouter");
+const routeRouter = require('../newServer/routers/routeRouter');
 const bookingHistory = require("./routes/bookingHistory");
 const FormSeats = require("./routes/seats");
 const contactRoutes = require("./routes/contactRoutes");
@@ -163,6 +164,10 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
   });
 });
 
+app.use((req, res) => {
+  return res.status(404).json({ message: "Not Found" });
+});
+
 // app.use('/home', (req, res) => {res.send("Server is running")} );
 /**
  * @routes
@@ -173,6 +178,7 @@ app.use("/driver-list", middleware.isAuthenticated, driverList);
 // app.use('/api', bookingRoutes);
 // app.use("/seatselection", middleware.isAuthenticated,  SeatSelection);
 app.use("/form", middleware.isAuthenticated, formRouter);
+app.use("/route", middleware.isAuthoraized, routeRouter);
 // app.use("/formselection", middleware.isAuthenticated,  FormSelection);
 app.use("/formselection", middleware.isAuthenticated, formBookingRouter);
 app.use("/seats", middleware.isAuthenticated,  FormSeats);

@@ -9,6 +9,7 @@ const MyTrips = () => {
   const [trips, setTrips] = useState([]);
   const [userId, setUserId] = useState("");
 
+
   const getUserTrips = async () => {
     console.log("fetching history...")
     try {
@@ -39,11 +40,11 @@ const MyTrips = () => {
       <h2>My Trips</h2>
       {loading ? (
         <div className="mytrips-loading">Loading your trips...</div>
-      ) : trips.length === 0 ? (
+      ) : !trips ? (
         <div className="mytrips-empty">You have no trip history yet.</div>
       ) : (
         <div className="mytrips-list">
-          {trips.map((trip, idx) => (
+          {trips && trips.map((trip, idx) => (
             <div className="mytrips-card" key={trip.id || idx}>
               <div className="mytrips-card-header">
                 <span className="mytrips-date-professional">

@@ -13,7 +13,6 @@ const BusSchema = new mongoose.Schema({
     },
     busType:{
         type:String,
-        required,
     },
     capacity:{
         type:Number

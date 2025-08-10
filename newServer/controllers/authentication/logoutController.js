@@ -1,4 +1,4 @@
-const session = require("../../utils/session");
+const session = require("../../../server/utils/session")
 
 /**
  * @route POST /logout

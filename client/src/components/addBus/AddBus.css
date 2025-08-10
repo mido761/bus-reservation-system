@@ -89,6 +89,14 @@
   display: inline-block;
 }
 
+.add-bus label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
 /* Section layouts */
 .input-group {
   display: flex;

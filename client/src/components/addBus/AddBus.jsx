@@ -9,6 +9,7 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 const locations = ["Cairo", "E-JUST"];
 
 const AddBus = () => {
+  // Bus body
   const [busType, setBusType] = useState("form");
   const [totalSeats, setAllSeats] = useState(15);
   const [busNumber, setbusNumber] = useState("");
@@ -21,8 +22,11 @@ const AddBus = () => {
   const [cancelTimeAllowance, setCancelTimeAllowance] = useState("");
   const [bookingTimeAllowance, setBookingTimeAllowance] = useState("");
   const [allowedNumberOfBags, setAllowedNumberOfBags] = useState("");
+  
+  // OverLay
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+
   const [isLoading, setIsLoading] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
@@ -41,11 +45,11 @@ const AddBus = () => {
     setArrivalTime("21:00");
   };
 
+  // Needed
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      console.log(busType)
       if (busType === "seat") {
         console.log(busType)
         await axios.post(`${backEndUrl}/buses/`, {
@@ -61,7 +65,7 @@ const AddBus = () => {
           bookingTimeAllowance
         });
       } else {
-        await axios.post(`${backEndUrl}/form/add-form`, {
+        await axios.post(`${backEndUrl}/form/add-form`, { // Differs
           totalSeats,
           busNumber,
           schedule,
@@ -74,7 +78,7 @@ const AddBus = () => {
         });
       }
 
-      setAlertMessage("Bus added successfully");
+      setAlertMessage("Bus added successfully"); // Differs
       setAlertFlag(true);
     } catch (err) {
       setAlertMessage(err?.response?.data?.message || "Something went wrong");
