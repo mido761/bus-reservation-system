@@ -13,6 +13,8 @@ const userModel = require("./models/user");
  * @description Import route handlers
  */
 const userRouter = require("./routers/userRoutes");
+const busRouter = require('./routers/busRouter');
+const stopRouter = require('./routers/stopRouter');
 const routeRouter = require('./routers/routeRouter');
 const scheduleRouter = require('./routers/scheduleRouter');
 const authentication = require("./middleware/authentication");
@@ -139,7 +141,9 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
 app.use("/api/register", register);
 app.use("/api/auth", auth)
 app.use("/api", forgotPassword);
-app.use("/route", authentication.isAuthoraized, routeRouter);
+app.use("/bus", authentication.isAuthenticated, busRouter);
+app.use("/stop", authentication.isAuthenticated, stopRouter);
+app.use("/route", authentication.isAuthenticated, routeRouter);
 app.use("/schedule", authentication.isAuthenticated, scheduleRouter);
 app.use("/user", authentication.isAuthenticated, userRouter);
 

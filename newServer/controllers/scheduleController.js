@@ -16,11 +16,12 @@ const addSchedule = async (req, res) => {
   const { busId, routeId, departureDate, departureTime, arrivalTime } =
     req.body;
   try {
-    const combinedISO = `${departureDate}T${departureTime}:00`; // "2025-08-10T23:22:00"
+    const combinedDepartureISO = `${departureDate}T${departureTime}:00`; // "2025-08-10T23:22:00"
+    const combinedArrivalISO = `${departureDate}T${arrivalTime}:00`; // "2025-08-10T23:22:00"
 
     // Convert to JS Date object
-    const departureDateTime = new Date(combinedISO);
-    const arrivalDateTime = new Date(arrivalTime);
+    const departureDateTime = new Date(combinedDepartureISO);
+    const arrivalDateTime = new Date(combinedArrivalISO);
 
     console.log(departureDateTime, arrivalDateTime)
     const schedules = await Schedule.find({
