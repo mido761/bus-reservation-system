@@ -1,0 +1,116 @@
+.bus-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  background-color: var(--page-background);
+  min-height: 92vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.bus-container h2 {
+  color: var(--primary-hover);
+  margin-bottom: 20px;
+  font-size: 26px;
+}
+
+/* Add bus form */
+.add-bus-form {
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--form-background);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.add-bus-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.add-bus-form button {
+  padding: 12px;
+  background-color: var(--secondary-hover);
+  color: var(--button-text);
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-bus-form button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.add-bus-form button:active {
+  transform: translateY(1px);
+}
+
+/* Bus list */
+.bus-list {
+  width: 100%;
+  max-width: 600px;
+  list-style: none;
+  padding: 0;
+
+  /* Limited height + scroll */
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px; /* avoid scrollbar overlap */
+}
+
+.bus-list li {
+  background-color: var(--form-background);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  color: var(--text-color);
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.bus-list li:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px var(--shadow-color);
+}
+
+/* Scrollbar styling (optional) */
+.bus-list::-webkit-scrollbar {
+  width: 6px;
+}
+.bus-list::-webkit-scrollbar-thumb {
+  background-color: var(--primary-hover);
+  border-radius: 3px;
+}
+.bus-list::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .add-bus-form {
+    padding: 15px;
+  }
+
+  .bus-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

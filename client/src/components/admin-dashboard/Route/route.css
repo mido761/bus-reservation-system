@@ -1,0 +1,110 @@
+/* ===== Route Page Styles ===== */
+
+/* Main container */
+.route-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  background-color: var(--page-background);
+  min-height: 92vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Heading */
+.route-container h2 {
+  color: var(--primary-hover);
+  margin-bottom: 20px;
+  font-size: 26px;
+}
+
+/* Add route form */
+.add-route-form {
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--form-background);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.add-route-form input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.add-route-form input::placeholder {
+  color: #666;
+  font-size: 14px;
+}
+
+.add-route-form button {
+  padding: 12px;
+  background-color: var(--secondary-hover);
+  color: var(--button-text);
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-route-form button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.add-route-form button:active {
+  transform: translateY(1px);
+}
+
+/* Route list */
+.route-list {
+  width: 100%;
+  max-width: 600px;
+  list-style: none;
+  padding: 0;
+}
+
+.route-list li {
+  background-color: var(--form-background);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border-left: 5px solid var(--primary-hover);
+  box-shadow: 0 4px 10px var(--shadow-color);
+  color: var(--text-color);
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.route-list li:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px var(--shadow-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .add-route-form {
+    padding: 15px;
+  }
+
+  .route-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
