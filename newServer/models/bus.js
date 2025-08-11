@@ -7,18 +7,20 @@ const BusSchema = new mongoose.Schema({
         ref: 'Seat'
         }
     ],
-    blateNumber:{
-        type:Number,
+    plateNumber:{
+        type:String,
         required:true
     },
     busType:{
         type:String,
+        default:"microBus"
     },
     capacity:{
         type:Number
     },
     features:{
-        type:Array
+        type:Array,
+        default:["aircondition"]
     },
     IsActive:{
         type:Boolean,
