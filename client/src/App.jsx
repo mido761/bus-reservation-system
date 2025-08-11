@@ -21,10 +21,14 @@ import Profile from "./components/Profile/profile.jsx";
 import Footer from "./components/footer/footer.jsx";
 import EditBus from "./components/editBus/editBus.jsx";
 import Passengers from "./components/Passengers/Passengers";
-import BlacklistPage from "./components/blacklist/Blacklist.jsx";
+import BlacklistPage from "./components/admin-dashboard/blacklist/Blacklist.jsx";
 import MyTrips from "./components/MyTrips/mytrips.jsx";
-import History from "./components/history/history.jsx";
-import AddSchedule from "./components/addSchedule/addSchedule.jsx";
+import History from "./components/admin-dashboard/history/history.jsx";
+import AddSchedule from "./components/admin-dashboard/addSchedule/addSchedule.jsx";
+import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
+import Stops from "./components/admin-dashboard/Stops/stops.jsx";
+import Bus from "./components/admin-dashboard/Bus/bus.jsx";
+import AdminDashboard from "./components/admin-dashboard/admin-dashboard.jsx";
 
 function App() {
   return (
@@ -130,6 +134,46 @@ function App() {
             <Auth>
               <Navbar />
               <MyTrips />
+              <Footer />
+            </Auth>
+          }
+        />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <Auth>
+              <Navbar />
+              <AdminDashboard />
+              <Footer />
+            </Auth>
+          }
+        />
+        <Route
+          path="/route"
+          element={
+            <Auth>
+              <Navbar />
+              <AdminRoute />
+            <Footer />
+          </Auth>
+          }
+        />
+        <Route
+          path="/stops"
+          element={
+            <Auth>
+              <Navbar />
+              <Stops />
+              <Footer />
+            </Auth>
+          }
+        />
+        <Route
+          path="/bus"
+          element={
+            <Auth>
+              <Navbar />
+              <Bus />
               <Footer />
             </Auth>
           }

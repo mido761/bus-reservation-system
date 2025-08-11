@@ -117,11 +117,16 @@ function Navbar() {
             My Trips
           </button>
         )}
-        {!(location.pathname === "/history") && isAuthorized && (
+         {!(location.pathname === "/admin-dashboard") && (
+          <button className="nav-link" onClick={() => navigate("/admin-dashboard")}>
+            Admin Dashboard
+          </button>
+        )}
+        {/* {!(location.pathname === "/history") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/history")}>
             History
           </button>
-        )}
+        )} */}
 
         {!(location.pathname === "/form") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/form")}>
@@ -135,17 +140,17 @@ function Navbar() {
           </button>
         )}
 
-        {!(location.pathname === "/add-schedule") && isAuthorized && (
+        {/* {!(location.pathname === "/add-schedule") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/add-schedule")}>
             Add schedule
           </button>
-        )}
+        )} */}
 
-        {!(location.pathname === "/black-list") && isAuthorized && (
+        {/* {!(location.pathname === "/black-list") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/black-list")}>
             Black-list
           </button>
-        )}
+        )} */}
         <button id="logout-btn" className="nav-link" onClick={handleLogout}>
           Logout
         </button>
