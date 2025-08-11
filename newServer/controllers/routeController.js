@@ -19,6 +19,12 @@ const addRoutes = async (req, res) => {
             .status(400)
             .json("You should fill source & destination & distance & estimatedDuration & stops!");
         }
+        const routeInData = await Route.find({source:source,destination:destination});
+        if(routeInData.length>0){
+          return res
+          .status(400)
+          .json("This route is aleardy exist!");
+        }
         const newRoute = new Route({
             source:source,
             destination:destination,
