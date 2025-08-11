@@ -5,12 +5,13 @@ const SeatSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Bus' 
     },
-    SeatNubmer:{
+    seatNumber:{
         type:Number,
         required:true
     },
     seatType:{
-        type:String
+        type:String,
+        default:"microbusSeat"
     },
     isAvalable:{
         type:Boolean,
