@@ -23,14 +23,14 @@ const addSchedule = async (req, res) => {
     const departureDateTime = new Date(combinedDepartureISO);
     const arrivalDateTime = new Date(combinedArrivalISO);
 
-    console.log(departureDateTime, arrivalDateTime)
+    console.log(departureTime, departureDate, arrivalTime)
     const schedules = await Schedule.find({
       departure: departureDateTime,
       arrival: arrivalDateTime,
     });
 
     console.log(schedules);
-    if (schedules.length) {
+    if (schedules.length > 0) {
       return res
         .status(400)
         .json("A trip is already scheduled at the same time!");

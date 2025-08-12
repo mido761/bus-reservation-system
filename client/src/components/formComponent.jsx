@@ -72,7 +72,7 @@ const AddComponent = ({ formName, fields, endpoint, successMessage }) => {
           {Array.isArray(options) &&
             options.map((opt) => (
               <option key={opt._id ?? opt} value={opt.value}>
-                {opt}
+                {opt.value}
               </option>
             ))}
         </select>
@@ -88,6 +88,8 @@ const AddComponent = ({ formName, fields, endpoint, successMessage }) => {
       />
     );
   };
+
+  
   ////// body //////
   return (
     <>
