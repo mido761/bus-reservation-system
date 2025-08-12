@@ -11,7 +11,6 @@ const AddSchedule = () => {
   const [schedules, setSchedules] = useState([]);
   const [availableBuses, setAvailableBuses] = useState([]);
   const [routes, setRoutes] = useState([]);
-  const [routes, setRoutes] = useState([]);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
