@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
-import "./route.css"
+import "./route.css";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Route = () => {
+  const [stops, setStops] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -13,15 +14,31 @@ const Route = () => {
 
   // New state for adding a route
   const [newRoute, setNewRoute] = useState({
-    name: "",
-    start: "",
-    end: ""
+    source: "",
+    destination: "",
+    distance: 0,
+    estimatedDuration: 0,
+    stops: [],
+    isActive: true,
   });
 
-  const fetchRoutes = async () => {
+  const fetchStops = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const { data } = await axios.get(`${backEndUrl}/route/get-routes`);
+      const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
+      setStops(data);
+    } catch (err) {
+      setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
+      setAlertFlag(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+    const fetchRoutes = async () => {
+    setIsLoading(true);
+    try {
+      const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
       setRoutes(data);
     } catch (err) {
       setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
@@ -35,7 +52,10 @@ const Route = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      const { data } = await axios.post(`${backEndUrl}/route/add-route`, newRoute);
+      const { data } = await axios.post(
+        `${backEndUrl}/route/add-route`,
+        newRoute
+      );
       setAlertMessage("Route added successfully!");
       setAlertFlag(true);
       setNewRoute({ name: "", start: "", end: "" });
@@ -50,6 +70,7 @@ const Route = () => {
 
   useEffect(() => {
     fetchRoutes();
+    fetchStops();
   }, []);
 
   return (
@@ -59,25 +80,46 @@ const Route = () => {
       <form className="add-route-form" onSubmit={addRoute}>
         <input
           type="text"
-          placeholder="Route Name"
-          value={newRoute.name}
-          onChange={(e) => setNewRoute({ ...newRoute, name: e.target.value })}
+          placeholder="Source"
+          value={newRoute.source}
+          onChange={(e) => setNewRoute({ ...newRoute, source: e.target.value })}
           required
         />
         <input
           type="text"
-          placeholder="Start Location"
-          value={newRoute.start}
-          onChange={(e) => setNewRoute({ ...newRoute, start: e.target.value })}
+          placeholder="Destination"
+          value={newRoute.destination}
+          onChange={(e) =>
+            setNewRoute({ ...newRoute, destination: e.target.value })
+          }
           required
         />
         <input
-          type="text"
-          placeholder="End Location"
-          value={newRoute.end}
-          onChange={(e) => setNewRoute({ ...newRoute, end: e.target.value })}
+          type="number"
+          placeholder="Distance"
+          value={newRoute.distance}
+          onChange={(e) =>
+            setNewRoute({ ...newRoute, distance: e.target.value })
+          }
           required
         />
+        <input
+          type="number"
+          placeholder="Estimated Duration"
+          value={newRoute.distance}
+          onChange={(e) =>
+            setNewRoute({ ...newRoute, estimatedDuration: e.target.value })
+          }
+          required
+        />
+        <select name="stops" id="stops">
+          {Array.isArray(stops) &&
+            stops.map((stop) => {
+              <option value={stop.stopName} key={stop._id}>
+                {stop.stopName}
+              </option>;
+            })}
+        </select>
         <button type="submit">Add Route</button>
       </form>
 

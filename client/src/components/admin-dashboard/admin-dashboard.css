@@ -2,27 +2,28 @@
 
 .dashboard-wrapper {
   height: 100vh;
+  width: 100%;
+  padding-top: var(--total-header-height);
   display: flex;
   flex-direction: column;
   background-color: #f5f7fa;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Layout with sidebar and main content */
 .dashboard-layout {
+  position: relative;
   display: flex;
-  height: 100vh;
-  margin-top: 60px; /* accommodate fixed topbar */
-  height: calc(100vh - 60px);
+  /* height: 100%; */
 }
 
 /* Sidebar */
 .dashboard-sidebar {
   position: fixed;
-  top: 60px; /* below topbar */
+  top: var(--nav-bar-height); 
   left: 0;
   width: 260px;
-  height: calc(100vh - 60px);
+  height: 100%;
   background-color: #2f3b52;
   color: #fff;
   display: flex;
@@ -106,8 +107,6 @@
   text-align: center;
 }
 
-
-
 /* Scrollbar for sidebar */
 .sidebar-menu::-webkit-scrollbar {
   width: 6px;
@@ -134,7 +133,7 @@
   align-items: center;
   padding: 0 20px;
   z-index: 110;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   color: white;
 }
 
@@ -159,17 +158,17 @@
 @media (max-width: 768px) {
   .dashboard-layout {
     flex-direction: column;
-    margin-top: 60px;
-    height: auto;
+    /* margin-top: 60px; */
+    height: 100%;
   }
 
   .dashboard-sidebar {
-    position: relative;
+    position: fixed;
     width: 100%;
-    height: auto;
+    height: var(--elements-bar-height);
     flex-direction: row;
     overflow-x: auto;
-    padding: 10px 0;
+    padding: 0px 0;
   }
 
   .sidebar-logo {

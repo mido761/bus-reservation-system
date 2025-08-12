@@ -229,7 +229,7 @@ http://localhost:5000
 ### ###########################################################################
 ## Route
 
-### POST /route/add-routes
+### POST /route/add-route
 **Description** : Add a new route with the exisited Stops
 **Access**: Admin
 **Request Body**: 

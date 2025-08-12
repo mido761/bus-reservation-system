@@ -7,7 +7,7 @@ const {delRoutes} = require('../controllers/routeController');
 
 
 router.get('/get-routes', getRoutes);
-router.post('/add-routes', addRoutes);
-router.put('/edit-routes', editRoutes);
-router.delete('/del-routes', delRoutes);
+router.post('/add-route', addRoutes);
+router.put('/edit-route', editRoutes);
+router.delete('/del-route', delRoutes);
 module.exports = router;

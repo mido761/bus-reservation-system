@@ -9,6 +9,8 @@ const getStops = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
 const addStop = async (req, res) => {
   const {stopName,location} = req.body;
   try{

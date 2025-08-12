@@ -5,6 +5,7 @@ import "./admin-Dashboard.css";
 import Stop from "./Stops/stops";
 import Route from "./Route/route";
 import Bus from "./Bus/bus";
+import Schedule from "./Schedule/schedule";
 
 
 const AdminDashboard = () => {

@@ -24,7 +24,7 @@ import Passengers from "./components/Passengers/Passengers";
 import BlacklistPage from "./components/admin-dashboard/blacklist/Blacklist.jsx";
 import MyTrips from "./components/MyTrips/mytrips.jsx";
 import History from "./components/admin-dashboard/history/history.jsx";
-import AddSchedule from "./components/admin-dashboard/addSchedule/addSchedule.jsx";
+import Schedule from "./components/admin-dashboard/Schedule/Schedule.jsx";
 import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
 import Stops from "./components/admin-dashboard/Stops/stops.jsx";
 import Bus from "./components/admin-dashboard/Bus/bus.jsx";
@@ -117,16 +117,6 @@ function App() {
           }
         />
 
-        <Route
-          path="/add-schedule"
-          element={
-            <Auth requireAdmin={true}>
-              <Navbar />
-              <AddSchedule />
-              <Footer />
-            </Auth>
-          }
-        />
 
         <Route
           path="/my-trips"

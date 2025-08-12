@@ -100,11 +100,11 @@ function Login() {
           <button type="submit">Login</button>
         </form>
         <div className="actions-container">
-          <Link to="/forgot-password" className="back-button">
+          <Link to="/forgot-password" >
             Forgot Password?
           </Link>
 
-          <Link to="/register" className="back-button">
+          <Link to="/register" >
             Doesn't not have an account? Sign up
           </Link>
         </div>

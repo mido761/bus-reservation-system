@@ -1,10 +1,12 @@
 .stops-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 25px;
+  padding: 0;
+  /* padding-top: var(--nav-bar-height); */
   background-color: var(--page-background);
-  min-height: 92vh;
+  /* min-height: 92vh; */
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
