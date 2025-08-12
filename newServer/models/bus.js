@@ -7,7 +7,7 @@ const BusSchema = new mongoose.Schema({
         ref: 'Seat'
         }
     ],
-    blateNumber:{
+    plateNumber:{
         type:Number,
         required:true
     },

@@ -1,3 +1,4 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const ScheduleSchema = new mongoose.Schema({
@@ -5,11 +6,13 @@ const ScheduleSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Bus",
+      required:true
     },
   ],
   routeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Route",
+    required:true
   },
   departure: { type: Date, required: true },
   arrival: { type: Date, required: true },
