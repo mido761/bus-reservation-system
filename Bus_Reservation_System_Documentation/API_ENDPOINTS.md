@@ -226,6 +226,75 @@ http://localhost:5000
   "schedule": "2023-12-25"
 }
 ```
+### ###########################################################################
+## Route
+
+### POST /route/add-routes
+**Description** : Add a new route with the exisited Stops
+**Access**: Admin
+**Request Body**: 
+```json
+{
+  "source":"cairo",
+  "destination":"ejust",
+  "distance":333.3,
+  "estimatedDuration":33,
+  "stops":["6899b26657d09aa1f4f7b7b2","6899b24157d09aa1f4f7b7ae"],
+  "isActive":true
+}
+```
+**Response Body**:
+Status(200)
+```json
+{
+ "message": "Route added successfully!"
+}
+```
+
+## Bus
+
+### POST /bus/add-buses
+**Description** : Add a new bus with the seats that are connected to it in the array seats
+**Access**: Admin
+**Request Body**: 
+```json
+{
+
+    "blateNumber":"12345gjkl",
+    "capacity":12,
+    "features":["no"]
+}
+```
+**Response Body**:
+Status(200)
+```json
+{
+ "message": "bus added successfully!"
+}
+```
+
+## Stops
+
+### POST /stop/add-stop
+**Description** : Add a new stop
+**Access**: Admin
+**Request Body**: 
+```json
+{
+
+    "stopName":"Dandy",
+    "location":"https://share.google/dEA3PwzHeUtzUO3Po",
+}
+```
+**Response Body**:
+Status(200)
+```json
+{
+ "message": "bus added successfully!"
+}
+```
+
+
 
 ## Bus and Seat Management
 

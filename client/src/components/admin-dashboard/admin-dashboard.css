@@ -1,0 +1,199 @@
+/* admin-Dashboard.css */
+
+.dashboard-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Layout with sidebar and main content */
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  margin-top: 60px; /* accommodate fixed topbar */
+  height: calc(100vh - 60px);
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  position: fixed;
+  top: 60px; /* below topbar */
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 60px);
+  background-color: #2f3b52;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  user-select: none;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: left;
+  padding: 20px 30px 20px 30px;
+  letter-spacing: 2px;
+  border-bottom: 1px solid #455670;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Back button inside sidebar-logo */
+.back-button {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  user-select: none;
+  transition: color 0.2s ease;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-button:hover {
+  color: #a0b4d9;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Sidebar menu */
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0 10px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  margin-bottom: 10px;
+  user-select: none;
+}
+
+.sidebar-menu li:hover {
+  background-color: #3f4e72;
+  color: #f0f3ff;
+}
+
+.sidebar-menu li:active {
+  background-color: #1c2640;
+}
+
+.sidebar-menu li .icon {
+  font-size: 1.3rem;
+  margin-right: 14px;
+  width: 25px;
+  text-align: center;
+}
+
+
+
+/* Scrollbar for sidebar */
+.sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background-color: #536385;
+  border-radius: 3px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background-color: #2f3b52;
+}
+
+/* Fixed topbar */
+.dashboard-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #2f3b52;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 110;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  color: white;
+}
+
+/* Back button on topbar (if used) */
+.back-button-topbar {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-right: 20px;
+  padding: 0;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.back-button-topbar:hover {
+  color: #a0b4d9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+    margin-top: 60px;
+    height: auto;
+  }
+
+  .dashboard-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+
+  .sidebar-logo {
+    display: none;
+  }
+
+  .sidebar-menu {
+    display: flex;
+    flex-direction: row;
+    padding: 0 10px;
+    overflow-x: auto;
+    flex-grow: 0;
+  }
+
+  .sidebar-menu li {
+    margin: 0 10px;
+    padding: 10px 15px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .dashboard-main {
+    margin-left: 0;
+    padding: 20px;
+    height: auto;
+  }
+}

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Blacklist.css";
-import LoadingComponent from "../loadingComponent/loadingComponent";
-import LoadingScreen from "../loadingScreen/loadingScreen";
-import LoadingPage from "../loadingPage/loadingPage";
-import Overlay from "../overlayScreen/overlay";
+import LoadingComponent from "../../loadingComponent/loadingComponent";
+import LoadingScreen from "../../loadingScreen/loadingScreen";
+import LoadingPage from "../../loadingPage/loadingPage";
+import Overlay from "../../overlayScreen/overlay";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
