@@ -1,6 +1,6 @@
 /* Styling for the Signup Component */
 .register-page {
-  /* height: 100vh; */
+  height: 100vh;
   /* margin: auto; */
   display: flex;
   justify-content: center;

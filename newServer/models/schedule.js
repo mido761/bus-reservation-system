@@ -2,18 +2,17 @@ const { required } = require("joi");
 const mongoose = require("mongoose");
 
 const ScheduleSchema = new mongoose.Schema({
-  busId: [
+  busIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Bus",
-      required:true
+      ref: "Bus"
     },
   ],
-  routeId: {
+  routeIds: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Route",
     required:true
-  },
+  }],
   departure: { type: Date, required: true },
   arrival: { type: Date, required: true },
   // departureDate:{type:String,required:true},

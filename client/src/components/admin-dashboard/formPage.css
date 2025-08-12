@@ -1,0 +1,140 @@
+.form-page-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding: 25px;
+  background-color: var(--page-background);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 3vh;
+  /* max-width: 450px; */
+  width: 94%;
+  min-height: var(--page-height);
+  gap: 10px;
+}
+
+.form-page-container h2 {
+  color: var(--primary-hover);
+  margin-bottom: 10px;
+  font-size: 26px;
+  text-align: center;
+}
+
+/* Add bus form */
+.add-form {
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  background-color: var(--form-background);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.add-form label {
+  font-size: 0.8rem;
+  text-align: left;
+  color: var(--text-color);
+}
+
+.add-form input,
+.add-form select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 12px;
+  background-color: var(--background-color);
+  color: var(--secondary-text-color);
+}
+
+.add-form button {
+  padding: 12px;
+  background-color: var(--secondary-hover);
+  color: var(--button-text);
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.add-form button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.add-form button:active {
+  transform: translateY(1px);
+}
+
+/* Bus list */
+.list {
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: var(--form-background);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+  /* Limited height + scroll */
+  overflow-y: auto;
+  /* padding-right: 5px; avoid scrollbar overlap */
+}
+
+.list li {
+  background-color: var(--form-background);
+  padding:  18px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px var(--shadow-color);
+  color: var(--text-color);
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.list li:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px var(--shadow-color);
+}
+
+/* Scrollbar styling (optional) */
+.list::-webkit-scrollbar {
+  width: 6px;
+}
+.list::-webkit-scrollbar-thumb {
+  background-color: var(--primary-hover);
+  border-radius: 3px;
+}
+.list::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-page-container {
+    flex-direction: column;
+    width: 90%;
+  }
+  
+  .add-form {
+    padding: 15px;
+  }
+
+  .list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

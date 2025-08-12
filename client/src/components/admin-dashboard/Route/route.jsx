@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
-import "./route.css";
+import "../formPage.css";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Route = () => {
@@ -26,6 +27,7 @@ const Route = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
+      console.log(data);
       setStops(data);
     } catch (err) {
       setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
@@ -35,7 +37,7 @@ const Route = () => {
     }
   };
 
-    const fetchRoutes = async () => {
+  const fetchRoutes = async () => {
     setIsLoading(true);
     try {
       const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
@@ -74,56 +76,82 @@ const Route = () => {
   }, []);
 
   return (
-    <div className="route-container">
-      <h2>Available Routes</h2>
+    <div className="form-page-container">
+      <form className="add-form" onSubmit={addRoute}>
+        <h2>Add Route</h2>
+        <label htmlFor="Source">
+          Source
+          <input
+            type="text"
+            placeholder="Source"
+            value={newRoute.source}
+            onChange={(e) =>
+              setNewRoute({ ...newRoute, source: e.target.value })
+            }
+            required
+          />
+        </label>
 
-      <form className="add-route-form" onSubmit={addRoute}>
-        <input
-          type="text"
-          placeholder="Source"
-          value={newRoute.source}
-          onChange={(e) => setNewRoute({ ...newRoute, source: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Destination"
-          value={newRoute.destination}
-          onChange={(e) =>
-            setNewRoute({ ...newRoute, destination: e.target.value })
-          }
-          required
-        />
-        <input
-          type="number"
-          placeholder="Distance"
-          value={newRoute.distance}
-          onChange={(e) =>
-            setNewRoute({ ...newRoute, distance: e.target.value })
-          }
-          required
-        />
-        <input
-          type="number"
-          placeholder="Estimated Duration"
-          value={newRoute.distance}
-          onChange={(e) =>
-            setNewRoute({ ...newRoute, estimatedDuration: e.target.value })
-          }
-          required
-        />
-        <select name="stops" id="stops">
-          {Array.isArray(stops) &&
-            stops.map((stop) => {
-              <option value={stop.stopName} key={stop._id}>
-                {stop.stopName}
-              </option>;
-            })}
-        </select>
+        <label htmlFor="Destination">
+          Destination{" "}
+          <input
+            type="text"
+            placeholder="Destination"
+            value={newRoute.destination}
+            onChange={(e) =>
+              setNewRoute({ ...newRoute, destination: e.target.value })
+            }
+            required
+          />
+        </label>
+
+        <label htmlFor="Distance">
+          Distance
+          <input
+            type="number"
+            placeholder="Distance"
+            value={newRoute.distance}
+            onChange={(e) =>
+              setNewRoute({ ...newRoute, distance: e.target.value })
+            }
+            required
+          />
+        </label>
+
+        <label htmlFor="EstimatedDuration">
+          Estimated Duration
+          <input
+            type="number"
+            placeholder="Estimated Duration"
+            value={newRoute.estimatedDuration}
+            onChange={(e) =>
+              setNewRoute({ ...newRoute, estimatedDuration: e.target.value })
+            }
+            required
+          />
+        </label>
+
+        <label htmlFor="stops">
+          Stops{" "}
+          <select name="stops" id="stops" multiple>
+            {/* <option value='default'>
+              Choose Stops
+            </option> */}
+            {Array.isArray(stops) &&
+              stops.map((stop) => (
+                <option value={stop.stopName} key={stop._id}>
+                  {stop.stopName}
+                </option>
+              ))}
+          </select>
+        </label>
+
         <button type="submit">Add Route</button>
       </form>
 
-      <ul className="route-list">
+      <ul className="list">
+        <h2>Routes List</h2>
+
         {routes.map((route) => (
           <li key={route._id}>
             {route.name} ({route.start} → {route.end})

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
-import "./bus.css";
+// import "./bus.css";
+import "../formPage.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -15,7 +16,7 @@ const Bus = () => {
   // New bus form state
   const [newBus, setNewBus] = useState({
     busNumber: "",
-    capacity: ""
+    capacity: "",
   });
 
   // Fetch all buses
@@ -55,36 +56,48 @@ const Bus = () => {
   }, []);
 
   return (
-    <div className="bus-container">
-      <h2>Available Buses</h2>
-
+    <div className="form-page-container">
       {/* Add Bus Form */}
-      <form className="add-bus-form" onSubmit={addBus}>
-        <input
-          type="text"
-          placeholder="Bus Number"
-          value={newBus.busNumber}
-          onChange={(e) => setNewBus({ ...newBus, busNumber: e.target.value })}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Capacity"
-          value={newBus.capacity}
-          onChange={(e) => setNewBus({ ...newBus, capacity: e.target.value })}
-          required
-        />
+      <form className="add-form" onSubmit={addBus}>
+        <h2>Add Bus</h2>
+
+        <label htmlFor="BusNumber">
+          Bus Number
+          <input
+            type="text"
+            placeholder="Bus Number"
+            value={newBus.busNumber}
+            onChange={(e) =>
+              setNewBus({ ...newBus, busNumber: e.target.value })
+            }
+            required
+          />
+        </label>
+
+        <label htmlFor="Capacity">
+          Capacity
+          <input
+            type="number"
+            placeholder="Capacity"
+            value={newBus.capacity}
+            onChange={(e) => setNewBus({ ...newBus, capacity: e.target.value })}
+            required
+          />
+        </label>
+
         <button type="submit">Add Bus</button>
       </form>
 
       {/* Bus List */}
-      <ul className="bus-list">
-      {Array.isArray(buses) && buses.map((bus) => (
-  <li key={bus._id}>
-    {bus.busNumber} — {bus.capacity} seats
-  </li>
-))}
+      <ul className="list">
+        <h2>Bus list</h2>
 
+        {Array.isArray(buses) &&
+          buses.map((bus) => (
+            <li key={bus._id}>
+              {bus.busNumber} — {bus.capacity} seats
+            </li>
+          ))}
       </ul>
 
       {isLoading && <LoadingScreen />}

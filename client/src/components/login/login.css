@@ -1,5 +1,6 @@
 /* Styling for the Login Component */
 .login-container {
+  height: 100vh;
   padding: 10vh 8vw;
   background-color: var(--form-background);
   border-radius: 8px;

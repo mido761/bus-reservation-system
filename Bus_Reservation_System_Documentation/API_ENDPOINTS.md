@@ -1,6 +1,7 @@
 # API Endpoints Documentation
 
 ## Base URL
+
 ```
 http://localhost:5000
 ```
@@ -8,31 +9,39 @@ http://localhost:5000
 ## Authentication Endpoints
 
 ### POST /api/auth/login
+
 **Description**: Authenticate user and create session
 **Access**: Public
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com",
   "password": "userPassword"
 }
 ```
+
 **Response**:
+
 ```json
 {
   "message": "Login successful"
 }
 ```
+
 **Status Codes**:
+
 - 200: Success
 - 401: Invalid credentials
 - 404: User not found
 - 500: Server error
 
 ### POST /api/auth/logout
+
 **Description**: End user session and clear cookies
 **Access**: Protected (requires authentication)
 **Response**:
+
 ```json
 {
   "message": "logout successfuly"
@@ -40,9 +49,11 @@ http://localhost:5000
 ```
 
 ### GET /auth
+
 **Description**: Check general authentication status
 **Access**: Public
 **Response**:
+
 ```json
 {
   "authenticated": true,
@@ -53,11 +64,14 @@ http://localhost:5000
 ```
 
 ### GET /auth/:busId
+
 **Description**: Verify authentication for specific bus access
 **Access**: Protected
 **Parameters**:
+
 - `busId`: Bus ID to verify access
-**Response**:
+  **Response**:
+
 ```json
 {
   "authenticated": true,
@@ -68,9 +82,11 @@ http://localhost:5000
 ## User Registration Endpoints
 
 ### POST /api/register
+
 **Description**: Register new user with email verification
 **Access**: Public
 **Request Body**:
+
 ```json
 {
   "name": "User Name",
@@ -84,15 +100,19 @@ http://localhost:5000
 ## Password Reset Endpoints
 
 ### POST /api/forgot-password
+
 **Description**: Request password reset code
 **Access**: Public
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com"
 }
 ```
+
 **Response**:
+
 ```json
 {
   "message": "Verification code sent to your email"
@@ -100,21 +120,25 @@ http://localhost:5000
 ```
 
 ### POST /api/reset-password
+
 **Description**: Reset password with verification code
 **Access**: Public
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com",
-  "otp": ["1","2","3","4","5","6"],
+  "otp": ["1", "2", "3", "4", "5", "6"],
   "password": "newPassword"
 }
 ```
 
 ### POST /api/resend-code
+
 **Description**: Resend verification code
 **Access**: Public
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com"
@@ -124,9 +148,11 @@ http://localhost:5000
 ## User Management Endpoints
 
 ### GET /user
+
 **Description**: Get all users in the system
 **Access**: Admin only
 **Response**:
+
 ```json
 [
   {
@@ -140,11 +166,14 @@ http://localhost:5000
 ```
 
 ### GET /user/profile/:userId
+
 **Description**: Get specific user's profile
 **Access**: Public
 **Parameters**:
+
 - `userId`: User ID to fetch
-**Response**:
+  **Response**:
+
 ```json
 {
   "_id": "user_id",
@@ -156,9 +185,11 @@ http://localhost:5000
 ```
 
 ### POST /user/profilesNames
+
 **Description**: Get names of multiple users by their IDs
 **Access**: Public
 **Request Body**:
+
 ```json
 {
   "userIds": ["user_id_1", "user_id_2"]
@@ -166,17 +197,22 @@ http://localhost:5000
 ```
 
 ### GET /user/form-based-bus/:id
+
 **Description**: Get all buses booked by a specific user (form-based)
 **Access**: Public
 **Parameters**:
+
 - `id`: User ID
 
 ### PUT /user/check-in/:userId
+
 **Description**: Mark a user as checked in
 **Access**: Public
 **Parameters**:
+
 - `userId`: User ID to check in
-**Response**:
+  **Response**:
+
 ```json
 {
   "message": "User checked in successfully",
@@ -185,17 +221,22 @@ http://localhost:5000
 ```
 
 ### PUT /user/check-out/:userId
+
 **Description**: Mark a user as checked out
 **Access**: Public
 **Parameters**:
+
 - `userId`: User ID to check out
 
 ### PUT /user/edit-gender/:userId
+
 **Description**: Update a user's gender
 **Access**: Public
 **Parameters**:
+
 - `userId`: User ID to update
-**Request Body**:
+  **Request Body**:
+
 ```json
 {
   "gender": "male|female|other"
@@ -205,11 +246,14 @@ http://localhost:5000
 ## Booking Management Endpoints
 
 ### GET /bookingHistory/user/:id
+
 **Description**: Get booking history for specific user
 **Access**: Public
 **Parameters**:
+
 - `id`: User ID
-**Response**:
+  **Response**:
+
 ```json
 {
   "message": "Booking history successfully found!",
@@ -218,102 +262,156 @@ http://localhost:5000
 ```
 
 ### POST /bookingHistory/admin
+
 **Description**: Search booking history by schedule (Admin)
 **Access**: Admin
 **Request Body**:
+
 ```json
 {
   "schedule": "2023-12-25"
 }
 ```
-### ###########################################################################
+
+###
+
+## Schedule
+
+### POST /schedule/add-schedule
+
+**Description** : Add a new schedule with connected buses and its route
+**Access**: Admin
+**Request Body**:
+
+```json
+{
+  {
+    "busIds": ["64f98d1b2a5e1c1a2a6d8f01", "64f98d1b2a5e1c1a2a6d8f02"],
+    "routeIds": ["64f990b12a5e1c1a2a6d8f03"],
+    "departureDate": "2025-08-12",
+    "departureTime": "08:30",
+    "arrivalTime": "12:45"
+  }
+}
+```
+
+**Response Body**:
+Status(200)
+
+```json
+{
+  "message": "Schedule added successfully!"
+}
+```
+
+Status(400)
+
+```json
+{
+  "message": "A trip is already scheduled at the same time!"
+}
+```
+
 ## Route
 
 ### POST /route/add-route
+
 **Description** : Add a new route with the exisited Stops
 **Access**: Admin
-**Request Body**: 
+**Request Body**:
+
 ```json
 {
-  "source":"cairo",
-  "destination":"ejust",
-  "distance":333.3,
-  "estimatedDuration":33,
-  "stops":["6899b26657d09aa1f4f7b7b2","6899b24157d09aa1f4f7b7ae"],
-  "isActive":true
+  "source": "cairo",
+  "destination": "ejust",
+  "distance": 333.3,
+  "estimatedDuration": 33,
+  "stops": ["6899b26657d09aa1f4f7b7b2", "6899b24157d09aa1f4f7b7ae"],
+  "isActive": true
 }
 ```
+
 **Response Body**:
 Status(200)
+
 ```json
 {
- "message": "Route added successfully!"
+  "message": "Route added successfully!"
 }
 ```
 
 ## Bus
 
 ### POST /bus/add-buses
+
 **Description** : Add a new bus with the seats that are connected to it in the array seats
 **Access**: Admin
-**Request Body**: 
+**Request Body**:
+
 ```json
 {
-
-    "blateNumber":"12345gjkl",
-    "capacity":12,
-    "features":["no"]
+  "blateNumber": "12345gjkl",
+  "capacity": 12,
+  "features": ["no"]
 }
 ```
+
 **Response Body**:
 Status(200)
+
 ```json
 {
- "message": "bus added successfully!"
+  "message": "bus added successfully!"
 }
 ```
 
 ## Stops
 
 ### POST /stop/add-stop
+
 **Description** : Add a new stop
 **Access**: Admin
-**Request Body**: 
+**Request Body**:
+
 ```json
 {
-
-    "stopName":"Dandy",
-    "location":"https://share.google/dEA3PwzHeUtzUO3Po",
+  "stopName": "Dandy",
+  "location": "https://share.google/dEA3PwzHeUtzUO3Po"
 }
 ```
+
 **Response Body**:
 Status(200)
+
 ```json
 {
- "message": "bus added successfully!"
+  "message": "bus added successfully!"
 }
 ```
-
-
 
 ## Bus and Seat Management
 
 ### GET /form
+
 **Description**: Get bus forms
 **Access**: Protected
 
 ### POST /formselection
+
 **Description**: Submit booking form
 **Access**: Protected
 
 ### GET /seats
+
 **Description**: Get seat information
 **Access**: Protected
 
 ### POST /payment
+
 **Description**: Process bus reservation payment
 **Access**: Protected
 **Request Body**:
+
 ```json
 {
   "userId": "user_id",
@@ -324,23 +422,28 @@ Status(200)
 ## Admin Management Endpoints
 
 ### GET /driver-list
+
 **Description**: Get list of drivers
 **Access**: Admin only
 
 ### GET /blacklist
+
 **Description**: Get blacklisted users
 **Access**: Admin only
 
 ### POST /blacklist
+
 **Description**: Add user to blacklist
 **Access**: Admin only
 
 ## Contact and Support
 
 ### POST /contact
+
 **Description**: Submit contact form
 **Access**: Protected
 **Request Body**:
+
 ```json
 {
   "name": "User Name",
@@ -353,9 +456,11 @@ Status(200)
 ## Real-time Notifications
 
 ### POST /notifications
+
 **Description**: Send real-time notifications via Pusher
 **Access**: Public
 **Request Body**:
+
 ```json
 {
   "message": "Notification message",
@@ -368,6 +473,7 @@ Status(200)
 All endpoints may return the following error responses:
 
 ### 400 Bad Request
+
 ```json
 {
   "message": "Invalid request data",
@@ -376,6 +482,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
   "message": "unauthenticated: Please log in"
@@ -383,6 +490,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 403 Forbidden
+
 ```json
 {
   "message": "Unauthorized, Access denied"
@@ -390,6 +498,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 404 Not Found
+
 ```json
 {
   "message": "Resource not found"
@@ -397,6 +506,7 @@ All endpoints may return the following error responses:
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
   "message": "Internal server error",
@@ -411,9 +521,11 @@ For protected endpoints, include session cookies automatically handled by the br
 ## Rate Limiting
 
 Currently, no rate limiting is implemented. Consider implementing rate limiting for production use, especially for:
+
 - Password reset endpoints
 - Registration endpoints
 - Login attempts
 
 ---
-*Last updated: $(Get-Date)*
+
+_Last updated: $(Get-Date)_

@@ -7,7 +7,6 @@ import Route from "./Route/route";
 import Bus from "./Bus/bus";
 import Schedule from "./Schedule/schedule";
 
-
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
@@ -54,40 +53,42 @@ const AdminDashboard = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <div className="dashboard-layout">
-        {/* Sidebar */}
-        <aside className="dashboard-sidebar">
-          <div className="sidebar-logo">
-            <button
-              className="back-button"
-              onClick={() => navigate("/")}
-              aria-label="Go back to home"
-              title="Go back"
-              type="button"
-            >
-              ←
-            </button>
-            Admin Panel
-          </div>
-          <ul className="sidebar-menu">
-            <li onClick={() => handleNavClick("stop")}>
-              <span className="icon">📍</span> Stops
-            </li>
-            <li onClick={() => handleNavClick("route")}>
-              <span className="icon">🛣</span> Routes
-            </li>
-            <li onClick={() => handleNavClick("bus")}>
-              <span className="icon">🚌</span> Buses
-            </li>
-            <li onClick={() => handleNavClick("schedule")}>
-              <span className="icon">⏰</span> Schedule
-            </li>
-          </ul>
-        </aside>
+      {/* <div className="dashboard-layout"> */}
+      {/* Sidebar */}
+      <aside className="dashboard-sidebar">
+        <div className="sidebar-logo">
+          <button
+            className="back-button"
+            onClick={() => navigate("/")}
+            aria-label="Go back to home"
+            title="Go back"
+            type="button"
+          >
+            ←
+          </button>
+          Admin Panel
+        </div>
+        <ul className="sidebar-menu">
+          <li onClick={() => handleNavClick("schedule")}>
+            <span className="icon">⏰</span> Schedule
+          </li>
+          <li onClick={() => handleNavClick("route")}>
+            <span className="icon">🛣</span> Routes
+          </li>
+          <li onClick={() => handleNavClick("stop")}>
+            <span className="icon">📍</span> Stops
+          </li>
 
-        {/* Main Content */}
-        <main className="dashboard-main">{renderPage()}</main>
-      </div>
+          <li onClick={() => handleNavClick("bus")}>
+            <span className="icon">🚌</span> Buses
+          </li>
+        </ul>
+      </aside>
+
+      {/* Main Content */}
+      {/* {renderPage()} */}
+      <main className="dashboard-main">{renderPage()}</main>
+      {/* </div> */}
     </div>
   );
 };

@@ -13,43 +13,49 @@ const getSchedules = async (req, res) => {
 };
 
 const addSchedule = async (req, res) => {
-  const { busId, routeId, departureDate, departureTime, arrivalTime } =
+  const { busIds, routeIds, departureDate, departureTime, arrivalTime } =
     req.body;
+
   try {
-    const combinedDepartureISO = `${departureDate}T${departureTime}:00`; // "2025-08-10T23:22:00"
-    const combinedArrivalISO = `${departureDate}T${arrivalTime}:00`; // "2025-08-10T23:22:00"
+    if (
+      !routeIds?.length ||
+      !departureDate ||
+      !departureTime ||
+      !arrivalTime
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-    // Convert to JS Date object
-    const departureDateTime = new Date(combinedDepartureISO);
-    const arrivalDateTime = new Date(combinedArrivalISO);
+    // Combine date & times into full Date objects
+    const departureDateTime = new Date(`${departureDate}T${departureTime}:00Z`);
+    const arrivalDateTime = new Date(`${departureDate}T${arrivalTime}:00Z`);
 
-    console.log(departureTime, departureDate, arrivalTime)
-    const schedules = await Schedule.find({
+    // Check for existing schedule at the same departure/arrival times
+    const existingSchedules = await Schedule.find({
       departure: departureDateTime,
       arrival: arrivalDateTime,
     });
 
-    console.log(schedules);
-    if (schedules.length > 0) {
+    if (existingSchedules.length > 0) {
       return res
         .status(400)
-        .json("A trip is already scheduled at the same time!");
+        .json({ message: "A trip is already scheduled at the same time!" });
     }
 
-
-    // Save the new schedule in MongoDB
+    // Create & save the new schedule
     const newSchedule = new Schedule({
-      busId: busId,
-      routeId: routeId,
+      busIds: busIds, // Assuming Schedule schema allows array or multiple
+      routeIds: routeIds, // Same here
       departure: departureDateTime,
       arrival: arrivalDateTime,
     });
 
     await newSchedule.save();
 
-    return res.status(200).json("Schedule added successfully!");
+    return res.status(200).json({ message: "Schedule added successfully!" });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.error("Error adding schedule:", error);
+    return res.status(500).json({ message: error.message || "Server error" });
   }
 };
 

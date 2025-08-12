@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
-import "./stops.css";
+// import "./stops.css";
+import "../formPage.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -15,7 +16,7 @@ const Stops = () => {
   // New stop form state
   const [newStop, setNewStop] = useState({
     stopName: "",
-    location: ""
+    location: "",
   });
 
   // Fetch all stops
@@ -55,30 +56,43 @@ const Stops = () => {
   }, []);
 
   return (
-    <div className="stops-container">
-      <h2>Available Stops</h2>
-
+    <div className="form-page-container">
       {/* Add Stop Form */}
-      <form className="add-stop-form" onSubmit={addStop}>
-        <input
-          type="text"
-          placeholder="Stop Name"
-          value={newStop.stopName}
-          onChange={(e) => setNewStop({ ...newStop, stopName: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Location"
-          value={newStop.location}
-          onChange={(e) => setNewStop({ ...newStop, location: e.target.value })}
-          required
-        />
+      <form className="add-form" onSubmit={addStop}>
+        <h2>Add Stop</h2>
+        <label htmlFor="StopName">
+          Stop Name
+          <input
+            type="text"
+            placeholder="Stop Name"
+            value={newStop.stopName}
+            onChange={(e) =>
+              setNewStop({ ...newStop, stopName: e.target.value })
+            }
+            required
+          />
+        </label>
+
+        <label htmlFor="Location">
+          Location
+          <input
+            type="text"
+            placeholder="Location"
+            value={newStop.location}
+            onChange={(e) =>
+              setNewStop({ ...newStop, location: e.target.value })
+            }
+            required
+          />
+        </label>
+
         <button type="submit">Add Stop</button>
       </form>
 
       {/* Stops List */}
-      <ul className="stops-list">
+      <ul className="list">
+        <h2>Stops List</h2>
+
         {stops.map((stop) => (
           <li key={stop._id}>
             {stop.stopName} — {stop.location}

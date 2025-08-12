@@ -5,6 +5,7 @@
   --secondary-color: #a87c0b; /* Rich Gold for accents */
   --secondary-hover: #d4af37; /* Brighter Gold for emphasis */
   --text-color: #000000; /* Black for strong contrast */
+  --secondary-text-color: #000000a6; /* Grey for soft contrast */
   --background-color: #ffffff; /* Clean white background */
   --card-background: #d4af37;
   --card-hover: #b8860b;
@@ -15,17 +16,25 @@
   --selected-btn: #2ecc71;
   --nav-bar-height: 8vh;
   --elements-bar-height: 6vh;
+  --elements-bar-width: 20vw;
   --total-header-height: calc(
     var(--nav-bar-height) + var(--elements-bar-height)
   );
-  --page-height: 100vh - var(--total-header-height);
+  --page-height: calc(100vh - var(--total-header-height));
+  --page-width: calc(98vw - var(--elements-bar-width));
+
+  --phone-height: calc(100vh - var(--nav-bar-height));
+  --phone-width: calc(98vw - var(--elements-bar-width));
+
+  --footer-height: 8vh;
 }
 
 #app {
-  min-height: 92vh;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   justify-items: center;
 }
 

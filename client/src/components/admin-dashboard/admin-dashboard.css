@@ -1,11 +1,11 @@
 /* admin-Dashboard.css */
 
 .dashboard-wrapper {
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
-  padding-top: var(--total-header-height);
+  padding-top: var(--nav-bar-height);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   background-color: #f5f7fa;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -17,32 +17,42 @@
   /* height: 100%; */
 }
 
+/* Main */
+.dashboard-main {
+  position: relative;
+  min-height: var(--phone-height);
+  min-width: var(--phone-width);
+  height: 100%;
+  /* margin-left: var(--elements-bar-width); */
+}
+
 /* Sidebar */
 .dashboard-sidebar {
-  position: fixed;
-  top: var(--nav-bar-height); 
-  left: 0;
-  width: 260px;
-  height: 100%;
+  /* position: fixed;
+  top: var(--nav-bar-height);
+  left: 0; */
+  width: var(--elements-bar-width);
+  min-height: var(--phone-height);
   background-color: #2f3b52;
   color: #fff;
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
   user-select: none;
   z-index: 100;
+  /* display: none; */
 }
 
 .sidebar-logo {
-  font-size: 1.8rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-align: left;
-  padding: 20px 30px 20px 30px;
+  padding: 10%;
   letter-spacing: 2px;
   border-bottom: 1px solid #455670;
   margin-bottom: 20px;
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 12px;
 }
@@ -63,6 +73,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  display: none;
 }
 
 .back-button:hover {
@@ -109,7 +120,7 @@
 
 /* Scrollbar for sidebar */
 .sidebar-menu::-webkit-scrollbar {
-  width: 6px;
+  height: 5px;
 }
 
 .sidebar-menu::-webkit-scrollbar-thumb {
@@ -156,17 +167,28 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .dashboard-layout {
+  .dashboard-wrapper {
+    padding-top: var(--nav-bar-height);
     flex-direction: column;
-    /* margin-top: 60px; */
+  }
+
+  /* .dashboard-layout {
+    flex-direction: column;
+    height: 100%;
+  } */
+
+  .dashboard-main {
+    padding-top: var(--elements-bar-height);
     height: 100%;
   }
 
   .dashboard-sidebar {
     position: fixed;
     width: 100%;
-    height: var(--elements-bar-height);
+    min-height: var(--elements-bar-height);
+    height: var(--elements-bar-phone-height);
     flex-direction: row;
+    justify-content: center;
     overflow-x: auto;
     padding: 0px 0;
   }
@@ -190,9 +212,8 @@
     white-space: nowrap;
   }
 
-  .dashboard-main {
-    margin-left: 0;
-    padding: 20px;
-    height: auto;
+  .sidebar-menu::-webkit-scrollbar {
+    width: 2px;
+    height: 4px;
   }
 }
