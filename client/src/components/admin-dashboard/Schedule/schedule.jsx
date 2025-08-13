@@ -43,14 +43,11 @@ const AddSchedule = () => {
       setIsLoading(true);
       const { data } = await axios.get(`${backEndUrl}/schedule/get-schedules`);
 
-      const routeNames = data.routeIds.map((id) => {
-        const route = routes?.find((r) => r._id === id);
-        return route ? `${route.source} - ${route.destination}` : null;
-      });
-
       setSchedules(data);
     } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error fetching buses!");
+      setAlertMessage(
+        err?.response?.data?.message || "Error fetching Schedules!"
+      );
       setAlertFlag(true);
     } finally {
       setIsLoading(false);
@@ -59,9 +56,9 @@ const AddSchedule = () => {
 
   const fetchAvailableBuses = async () => {
     try {
-      const buses = await axios.get(`${backEndUrl}/bus/get-available-buses`);
+      const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`);
 
-      setAvailableBuses(buses.data);
+      setAvailableBuses(data);
     } catch (err) {
       console.error(
         "Error fetching available buses!",
@@ -131,6 +128,7 @@ const AddSchedule = () => {
       setSchedules((prev) => [...prev, formData]);
       setAlertMessage("Schedule Added Successfully"); // Differs
       setAlertFlag(true);
+      fetchSchedules();
     } catch (err) {
       console.error(err);
       setAlertMessage(err?.response?.data?.message || "Something went wrong");
@@ -140,19 +138,6 @@ const AddSchedule = () => {
       setTimeout(() => setAlertFlag(false), 2200);
     }
   };
-
-  const fields = [
-    {
-      name: "Bus",
-      defaultValue: undefined,
-      type: "select",
-      options: availableBuses,
-    },
-    { name: "Route", defaultValue: undefined, type: "select", options: routes },
-    { name: "Departure Date", defaultValue: "", type: "date" },
-    { name: "DepartureTime", defaultValue: "", type: "time" },
-    { name: "ArrivalTime", defaultValue: "", type: "time" },
-  ];
 
   return (
     <div className="form-page-container">
@@ -199,33 +184,34 @@ const AddSchedule = () => {
       </form>
 
       {/* Schedules List */}
-      <ul className="list">
+      <div className="list-container">
         <h2>Schedule list</h2>
-
-        {Array.isArray(schedules) &&
-          schedules.map((schedule) => (
-            <li key={schedule._id}>
-              {formatDateTime(schedule.departure, "date")}
-              <br />
-              {formatDateTime(schedule.departure)} ----{" "}
-              {formatDateTime(schedule.arrival)}
-              <br />
-              {schedule.routeIds
-                .map(
+        <ul className="list">
+          {Array.isArray(schedules) &&
+            schedules.map((schedule) => (
+              <li key={schedule._id}>
+                {formatDateTime(schedule.departure, "date")}
+                <br />
+                {formatDateTime(schedule.departure)} ----{" "}
+                {formatDateTime(schedule.arrival)}
+                <br />
+                {schedule.routeIds
+                  .map(
+                    (id) =>
+                      routes?.find(
+                        (route) => route._id.toString() === id.toString()
+                      )?.source
+                  )
+                  .join("---")}{" "}
+                <br />
+                {schedule.busIds.map(
                   (id) =>
-                    routes?.find(
-                      (route) => route._id.toString() === id.toString()
-                    )?.source
-                )
-                .join("---")}{" "}
-              <br />
-              {schedule.busIds.map(
-                (id) =>
-                  availableBuses?.find((bus) => bus._id === id)?.plateNumber
-              )}
-            </li>
-          ))}
-      </ul>
+                    availableBuses?.find((bus) => bus._id === id)?.plateNumber
+                )}
+              </li>
+            ))}
+        </ul>
+      </div>
 
       {isLoading && <LoadingScreen />}
       <Overlay

@@ -342,7 +342,7 @@ Status(200)
 
 ## Bus
 
-### POST /bus/add-buses
+### POST /bus/add-bus
 
 **Description** : Add a new bus with the seats that are connected to it in the array seats
 **Access**: Admin
@@ -350,7 +350,7 @@ Status(200)
 
 ```json
 {
-  "blateNumber": "12345gjkl",
+  "plateNumber": "12345gjkl",
   "capacity": 12,
   "features": ["no"]
 }

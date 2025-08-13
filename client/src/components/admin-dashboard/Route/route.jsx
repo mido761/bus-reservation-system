@@ -40,7 +40,8 @@ const Route = () => {
   const fetchRoutes = async () => {
     setIsLoading(true);
     try {
-      const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
+      const { data } = await axios.get(`${backEndUrl}/route/get-routes`);
+      console.log(data)
       setRoutes(data);
     } catch (err) {
       setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
@@ -148,16 +149,16 @@ const Route = () => {
 
         <button type="submit">Add Route</button>
       </form>
-
-      <ul className="list">
+      <div className="list-container">
         <h2>Routes List</h2>
-
-        {routes.map((route) => (
-          <li key={route._id}>
-            {route.name} ({route.start} → {route.end})
-          </li>
-        ))}
-      </ul>
+        <ul className="list">
+          {Array.isArray(routes) && routes.map((route) => (
+            <li key={route._id}>
+              ({route.source} → {route.destination})
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {isLoading && <LoadingScreen />}
       <Overlay

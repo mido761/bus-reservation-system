@@ -23,8 +23,9 @@
 /* Add bus form */
 .add-form {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   max-width: 400px;
+  max-height: 85vh;
   background-color: var(--form-background);
   padding: 20px;
   border-radius: 12px;
@@ -32,7 +33,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 25px;
+  /* margin-bottom: 25px; */
 }
 
 .add-form label {
@@ -73,19 +74,48 @@
   transform: translateY(1px);
 }
 
-/* Bus list */
+/* list */
+
+/* 
+list-container
+      |
+    list
+      |
+      ul
+      |
+      li
+*/
+
+.list-container {
+  width: 100%;
+  max-width: 400px;
+  min-height: 100%;
+  max-height: calc(var(--page-height) - 0.8vh);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--form-background);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+.list-container h2 {
+  margin: 15px 20px;
+  padding: 10px;
+  border-radius: 25px;
+  box-shadow: 0 6px 20px var(--shadow-color);
+}
+
 .list {
   width: 100%;
   max-width: 400px;
   height: 100%;
+  max-height: 80%;
   list-style: none;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: var(--form-background);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px var(--shadow-color);
+  padding: 25px;
+  border-radius: 20px;
   /* Limited height + scroll */
   overflow-y: auto;
   /* padding-right: 5px; avoid scrollbar overlap */
@@ -93,7 +123,7 @@
 
 .list li {
   background-color: var(--form-background);
-  padding:  18px;
+  padding: 18px;
   margin-bottom: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 10px var(--shadow-color);
@@ -126,11 +156,20 @@
 @media (max-width: 768px) {
   .form-page-container {
     flex-direction: column;
+    align-items: center;
     width: 90%;
   }
-  
+
   .add-form {
     padding: 15px;
+  }
+
+  .list-container {
+    max-height: 55vh;
+  }
+
+  .list-container h2 {
+    margin: 15px 20px 10px;
   }
 
   .list li {

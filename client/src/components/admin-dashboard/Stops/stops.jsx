@@ -90,16 +90,17 @@ const Stops = () => {
       </form>
 
       {/* Stops List */}
-      <ul className="list">
+      <div className="list-container">
         <h2>Stops List</h2>
 
-        {stops.map((stop) => (
-          <li key={stop._id}>
-            {stop.stopName} — {stop.location}
-          </li>
-        ))}
-      </ul>
-
+        <ul className="list">
+          {stops.map((stop) => (
+            <li key={stop._id}>
+              {stop.stopName} — {stop.location}
+            </li>
+          ))}
+        </ul>
+      </div>
       {isLoading && <LoadingScreen />}
       <Overlay
         alertFlag={alertFlag}

@@ -1,5 +1,8 @@
 const Bus = require("../models/bus");
 const Seat = require("../models/seats")
+const mongoose = require('mongoose');
+
+
 const getAvailableBuses = async (req, res) => {
   try {
     const availableBuses = await Bus.find();
@@ -9,67 +12,61 @@ const getAvailableBuses = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
 const addBus = async (req, res) => {
-  const { plateNumber, busType, capacity, features, IsActive, seatType } = req.body;
-  const session = await mongoose.startSession();
-  session.startTransaction();
+const { plateNumber, busType, capacity, features, IsActive, seatType } = req.body;
 
-  try {
-    // 1️⃣ Check required fields
-    if (!(blateNumber && capacity)) {
-      return res.status(400).json("You should fill PlateNumber & capacity & features!");
-    }
-
-    // 2️⃣ Check for duplicate blateNumber
-    const exists = await Bus.findOne({ blateNumber }).session(session);
-    if (exists) {
-      return res.status(400).json("This blateNumber already exists!!");
-    }
-
-    // 3️⃣ Create & save bus
-    let newBus = new Bus({
-      plateNumber,
-      busType,
-      capacity,
-      features,
-      IsActive
-    });
-
-    await newBus.save({ session });
-
-    // 4️⃣ Prepare seat array
-    let seatsArray = [];
-    for (let i = 0; i < capacity; i++) {
-      seatsArray.push({
-        busId: newBus._id,
-        seatNumber: i + 1,
-        seatType
-      });
-    }
-
-    // 5️⃣ Insert seats
-    const newSeats = await Seat.insertMany(seatsArray, { session });
-    const seatIds = newSeats.map(seat => seat._id);
-
-    // 6️⃣ Update bus with seat IDs
-    newBus.seatsId = seatIds;
-    await newBus.save({ session });
-
-    // 7️⃣ Commit transaction
-    await session.commitTransaction();
-    session.endSession();
-
-    console.log(`${capacity} seats created for bus ${newBus._id}`);
-    return res.status(200).json("Bus added successfully!");
-  } catch (error) {
-    // Rollback on error
-    await session.abortTransaction();
-    session.endSession();
-    return res.status(500).json({ message: error.message });
+try {
+  if (!(plateNumber && capacity)) {
+    return res.status(400).json("You should fill blateNumber & capacity & features!");
   }
-  
+
+  const BlateNumberInData = await Bus.find({ plateNumber: plateNumber });
+
+  if (BlateNumberInData.length > 0) {
+    return res.status(400).json("This blateNumber already exists!!");
+  }
+
+  // 1️⃣ Save bus first
+  let newBus = new Bus({
+    plateNumber,
+    busType,
+    capacity,
+    features,
+    IsActive
+  });
+
+  await newBus.save();
+
+  // 2️⃣ Create seats with the saved bus's _id
+  let newSeatsArray = [];
+  for (let i = 0; i < capacity; i++) {
+    newSeatsArray.push({
+      busId: newBus._id,
+      seatNumber: i + 1,
+      seatType
+    });
+  }
+
+  // 3️⃣ Bulk insert seats
+  const newSeats = await Seat.insertMany(newSeatsArray);
+
+  // 4️⃣ Update bus with seat IDs
+  newBus.seatsId = newSeats.map(seat => seat._id);
+  await newBus.save();
+
+  console.log(`${capacity} seats created for bus ${newBus._id}`);
+
+  return res.status(200).json("Bus added successfully!");
+} catch (error) {
+  return res.status(500).json({ message: error.message });
+}
 
 };
+
+
+
 const editBus = async (req, res) => {
 
 };
