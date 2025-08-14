@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./admin-Dashboard.css";
+import "./admin-dashboard.css";
 
 import Stop from "./Stops/stops";
 import Route from "./Route/route";
