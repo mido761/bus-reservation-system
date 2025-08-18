@@ -4,8 +4,10 @@
  * @module ForgotPasswordRoutes
  */
 
-const express = require("express");
-const { forgotPassword, resetPassword, resendVerificationCode } = require("../controllers/forgotPasswordController");
+import express from "express";
+import { forgotPassword, resetPassword, resendVerificationCode } from "../controllers/forgotPasswordController.js";
+
+// ...existing code...
 
 const router = express.Router();
 
@@ -49,4 +51,4 @@ router.post("/reset-password", resetPassword);
  */
 router.post("/resend-code", resendVerificationCode);
 
-module.exports = router;
+export default router;

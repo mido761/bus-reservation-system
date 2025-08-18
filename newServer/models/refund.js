@@ -1,5 +1,5 @@
-const { DateTime } = require("luxon");
-const mongoose = require("mongoose");
+import { DateTime } from "luxon";
+import mongoose from "mongoose";
 
 const RefundSchema = new mongoose.Schema({
    paymentId:{
@@ -20,4 +20,4 @@ const RefundSchema = new mongoose.Schema({
     processedDate:{ type: DateTime,required:true}
 });
 
-module.exports = mongoose.model("Refund", RefundSchema);
+export default mongoose.model("Refund", RefundSchema);

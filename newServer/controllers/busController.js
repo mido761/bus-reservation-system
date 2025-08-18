@@ -1,6 +1,6 @@
-const Bus = require("../models/bus");
-const Seat = require("../models/seats")
-const mongoose = require('mongoose');
+import Bus from "../models/bus.js";
+import Seat from "../models/seats.js";
+import mongoose from "mongoose";
 
 
 const getAvailableBuses = async (req, res) => {
@@ -75,4 +75,4 @@ const delBus = async (req, res) => {
 
 };
 
-module.exports = { getAvailableBuses,addBus,editBus,delBus };
+export { getAvailableBuses, addBus, editBus, delBus };

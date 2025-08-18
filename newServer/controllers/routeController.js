@@ -1,5 +1,5 @@
-const Route = require("../models/route");
-const Stop = require("../models/stop");
+import Route from "../models/route.js";
+import Stop from "../models/stop.js";
 
 const getRoutes = async (req, res) => {
   try {
@@ -50,5 +50,5 @@ const delRoutes = (req, res) => {
 
 }
 
-module.exports = {getRoutes,addRoutes,editRoutes,delRoutes}
+export { getRoutes, addRoutes, editRoutes, delRoutes };
 

@@ -4,10 +4,10 @@
  * @module ForgotPasswordController
  */
 
-const crypto = require("crypto");
-const bcrypt = require("bcrypt");
-const User = require("../models/user");
-const nodemailer = require("nodemailer");
+import crypto from "crypto";
+import bcrypt from "bcrypt";
+import User from "../models/user.js";
+import nodemailer from "nodemailer";
 
 /**
  * @function generateVerificationCode
@@ -20,7 +20,7 @@ function generateVerificationCode() {
 }
 
 
-exports.forgotPassword = async (req, res) => {
+export async function forgotPassword(req, res) {
   const { email } = req.body;
 
   try {
@@ -57,7 +57,7 @@ exports.forgotPassword = async (req, res) => {
 };
 
 
-exports.resetPassword = async (req, res) => {
+export async function resetPassword(req, res) {
   const { email, otp, password } = req.body;
   const verificationCode = otp.join("");
 
@@ -97,7 +97,7 @@ exports.resetPassword = async (req, res) => {
  * @throws {404} If user not found
  * @throws {500} If email sending fails or other server error
  */
-exports.resendVerificationCode = async (req, res) => {
+export async function resendVerificationCode(req, res) {
   const { email } = req.body;
 
   try {

@@ -1,7 +1,7 @@
-const User = require("../models/user");
-// const BusForm = require("../models/busForm");
-// const Seat = require("./models/seat");
-const { default: mongoose } = require("mongoose");
+import User from "../models/user.js";
+// import BusForm from "../models/busForm.js";
+import Seat from "../models/seats.js";
+import mongoose from "mongoose";
 
 // Get all users in the system
 const getAllUsers = async (req, res) => {
@@ -91,7 +91,7 @@ const editGender = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   getAllUsers,
   getUserInfo,
   getProfileNames,

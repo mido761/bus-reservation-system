@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 /**
  * Nodemailer transporter configuration for sending verification emails
@@ -11,11 +11,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-module.exports.sendMail = async (recepient, subject, body) => {
+export default async function sendMail(recepient, subject, body) {
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: recepient,
     subject: subject,
     html: body,
   });
-};
+}

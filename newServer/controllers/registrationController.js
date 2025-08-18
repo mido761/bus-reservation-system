@@ -1,8 +1,9 @@
-const jwt = require("jsonwebtoken");
-const mailer = require("../utils/nodeMailer");
-const bcrypt = require("bcrypt");
-const User = require("../models/user");
-const dotenv = require("dotenv");
+dotenv.config();
+import jwt from "jsonwebtoken";
+import mailer from "../utils/nodeMailer.js";
+import bcrypt from "bcrypt";
+import User from "../models/user.js";
+import dotenv from "dotenv";
 dotenv.config();
 
 
@@ -15,7 +16,7 @@ function generateVerificationCode() {
 }
 
 
-exports.sendCode = async (req, res) => {
+export async function sendCode(req, res) {
   const { name, phoneNumber, email, password, gender } = req.body;
 
   try {
@@ -56,7 +57,7 @@ exports.sendCode = async (req, res) => {
 };
 
 
-exports.verifyUser = async (req, res) => {
+export async function verifyUser(req, res) {
   try {
     const { token, enteredOtp } = req.body;
     // Decode the JWT
@@ -93,7 +94,7 @@ exports.verifyUser = async (req, res) => {
 };
 
 
-exports.resendCode = async (req, res) => {
+export async function resendCode(req, res) {
   const { token } = req.body;
 
   try {

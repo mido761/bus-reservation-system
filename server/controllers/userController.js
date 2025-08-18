@@ -91,7 +91,7 @@ const editGender = async (req, res) => {
   }
 };
 
-module.exports = {
+export  {
   getAllUsers,
   getUserInfo,
   getProfileNames,

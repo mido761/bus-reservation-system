@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import { sendCode, verifyUser, resendCode } from "../controllers/registrationController.js";
+
 const router = express.Router();
-const register = require("../controllers/registrationController")
 
 /**
  * @route POST /api/register
@@ -16,7 +17,7 @@ const register = require("../controllers/registrationController")
  * @throws {400} If email exists or gender is invalid
  * @throws {500} For internal server errors
  */
-router.post("/send-code", register.sendCode);
+router.post("/send-code", sendCode);
 
 
 /**
@@ -30,7 +31,7 @@ router.post("/send-code", register.sendCode);
  * @throws {400} If verification code is invalid
  * @throws {500} For internal server errors
  */
-router.post("/verify-email", register.verifyUser);
+router.post("/verify-email", verifyUser);
 
 
 /**
@@ -42,7 +43,7 @@ router.post("/verify-email", register.verifyUser);
  * @returns {Object} Success message and new JWT token
  * @throws {500} For internal server errors
  */
-router.post("/resend-code", register.resendCode);
+router.post("/resend-code", resendCode);
 
 
-module.exports = router;
+export default router;

@@ -1,30 +1,34 @@
-const express = require("express");
-const cors = require("cors");
-const session = require("express-session");
-const mongoose = require("mongoose");
-const MongoStore = require("connect-mongo");
+import express from "express";
+import cors from "cors";
+import session from "express-session";
+import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
+import dotenv from "dotenv";
+import pg from 'pg';
+import pgSession from "connect-pg-simple";
 
-require("dotenv").config(({ path: '../.env' }));
+import userModel from "./models/user.js";
 
-const userModel = require("./models/user");
+import userRouter from "./routers/userRoutes.js";
+import busRouter from "./routers/busRouter.js";
+import stopRouter from "./routers/stopRouter.js";
+import routeRouter from "./routers/routeRouter.js";
+import scheduleRouter from "./routers/scheduleRouter.js";
+import authentication from "./middleware/authentication.js";
+import register from "./routers/registerRouter.js";
+import auth from "./routers/authRouter.js";
+import forgotPassword from "./routers/forgotPasswordRouter.js";
 
-/**
- * @const {Object} Routes
- * @description Import route handlers
- */
-const userRouter = require("./routers/userRoutes");
-const busRouter = require('./routers/busRouter');
-const stopRouter = require('./routers/stopRouter');
-const routeRouter = require('./routers/routeRouter');
-const scheduleRouter = require('./routers/scheduleRouter');
-const authentication = require("./middleware/authentication");
-const register = require("./routers/registerRouter");
-const auth = require('./routers/authRouter')
-const forgotPassword = require("./routers/forgotPasswordRouter")
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const path = require("path");
+// Load env vars
+dotenv.config({ path: "../.env" });
 
+const { Pool } = pg;
 const app = express();
 
 /**
@@ -73,13 +77,23 @@ app.options("*", (req, res) => {
   res.sendStatus(200); // Respond with 200 for preflight requests
 });
 
+const pool = new Pool({
+  connectionString: process.env.LOCAL_DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+
+const PgSessionStore = pgSession(session);
+
 app.use(
   session({
     secret: "ARandomStringThatIsHardToGuess12345",
     secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    store: new PgSessionStore({
+      pool: pool,
+      tableName: "user_sessions",
+    }),
     cookie: {
       httpOnly: true,
       sameSite: "strict",
@@ -222,4 +236,4 @@ const server = app.listen(PORT, () => console.log(`Server running on port ${PORT
 //   });
 // });
 
-module.exports = app;
+export default app;

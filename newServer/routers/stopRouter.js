@@ -1,9 +1,7 @@
-const express = require("express");
+import express from "express";
+import { getStops, addStop, editStop, delStop } from "../controllers/stopController.js";
+
 const router = express.Router();
-const {getStops} = require('../controllers/stopController');
-const {addStop} = require('../controllers/stopController');
-const {editStop} = require('../controllers/stopController');
-const {delStop} = require('../controllers/stopController');
 
 router.get('/get-stops', getStops);
 router.post('/add-stop', addStop);
@@ -11,4 +9,4 @@ router.put('/edit-stop', editStop);
 router.delete('/del-stop', delStop);
 
 
-module.exports = router;
+export default router;

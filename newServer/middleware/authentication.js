@@ -1,6 +1,6 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
 
 const app = express();
 
@@ -48,4 +48,4 @@ const isAuthoraized = (req, res, next) => {
   return res.status(401).json({ message: "Unauthorized, Access denied" });
 };
 
-module.exports = { isAuthenticated, isAuthoraized };
+export default { isAuthenticated, isAuthoraized };
