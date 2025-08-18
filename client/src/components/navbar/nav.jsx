@@ -117,7 +117,7 @@ function Navbar() {
             My Trips
           </button>
         )}
-         {!(location.pathname === "/admin-dashboard") && (
+         {!(location.pathname === "/admin-dashboard")&& isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/admin-dashboard")}>
             Admin Dashboard
           </button>

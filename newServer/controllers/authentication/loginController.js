@@ -33,6 +33,7 @@ const login = async (req, res) => {
       return res.status(401).json("The password is incorrect");
     }
 
+    console.log(user)
     // Regenerate session to prevent session fixation
     regenerate(req, res, user);
   } catch (err) {

@@ -131,7 +131,7 @@ function App() {
         <Route
           path="/admin-dashboard"
           element={
-            <Auth>
+            <Auth requireAdmin={true}>
               <Navbar />
               <AdminDashboard />
               <Footer />
