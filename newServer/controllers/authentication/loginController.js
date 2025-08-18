@@ -20,7 +20,8 @@ const login = async (req, res) => {
 
   try {
     const SearchForMailQuery = `SELECT * FROM users WHERE email = $1 LIMIT 1`
-    const {user} = await pool.query(SearchForMailQuery,[email]);
+    const {rows} = await pool.query(SearchForMailQuery,[email]);
+    const user = rows[0]
     if (!user) {
       return res.status(404).json("This email does not exist");
     }

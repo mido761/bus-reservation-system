@@ -2,7 +2,7 @@ export function regenerate(req, res, user) {
   req.session.regenerate((err) => {
     if (err) return res.status(500).json("Session error");
 
-    req.session.userId = user._id;
+    req.session.userId = user.user_id;
     req.session.userRole = user.role;
 
     req.session.save((err) => {
