@@ -2,8 +2,13 @@
 import pg from "pg";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({path: '../.env'});
 
+// Or use this if any error happened
+// dotenv.config();  
+
+
+console.log(process.env.LOCAL_DATABASE_URL)
 const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env.LOCAL_DATABASE_URL,
