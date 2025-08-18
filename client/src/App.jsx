@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+// import React from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Auth from "./Auth.jsx";
 
@@ -24,7 +24,7 @@ import Passengers from "./components/Passengers/Passengers";
 import BlacklistPage from "./components/admin-dashboard/blacklist/Blacklist.jsx";
 import MyTrips from "./components/MyTrips/mytrips.jsx";
 import History from "./components/admin-dashboard/history/history.jsx";
-import Schedule from "./components/admin-dashboard/Schedule/Schedule.jsx";
+// import Schedule from "./components/admin-dashboard/Schedule/Schedule.jsx";
 import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
 import Stops from "./components/admin-dashboard/Stops/stops.jsx";
 import Bus from "./components/admin-dashboard/Bus/bus.jsx";
@@ -168,6 +168,7 @@ function App() {
             </Auth>
           }
         />
+
         <Route
           path="/history"
           element={
@@ -178,6 +179,7 @@ function App() {
             </Auth>
           }
         />
+
         <Route
           path="/black-list"
           element={

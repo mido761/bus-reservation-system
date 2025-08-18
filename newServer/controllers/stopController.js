@@ -1,4 +1,4 @@
-const Stop = require("../models/stop");
+import Stop from "../models/stop.js";
 
 const getStops = async (req, res) => {
   try {
@@ -41,4 +41,4 @@ const delStop = async (req, res) => {
 //dont know
 };
 
-module.exports = { getStops, addStop,editStop,delStop};
+export { getStops, addStop, editStop, delStop };

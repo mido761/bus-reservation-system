@@ -15,7 +15,7 @@ const Bus = () => {
 
   // New bus form state
   const [newBus, setNewBus] = useState({
-    busNumber: "",
+    plateNumber: "",
     capacity: "",
   });
 
@@ -41,7 +41,7 @@ const Bus = () => {
       await axios.post(`${backEndUrl}/bus/add-bus`, newBus);
       setAlertMessage("Bus added successfully!");
       setAlertFlag(true);
-      setNewBus({ busNumber: "", capacity: "" });
+      setNewBus({ plateNumber: "", capacity: "" });
       fetchBuses();
     } catch (err) {
       setAlertMessage(err?.response?.data?.message || "Error adding bus!");
@@ -66,9 +66,9 @@ const Bus = () => {
           <input
             type="text"
             placeholder="Bus Number"
-            value={newBus.busNumber}
+            value={newBus.plateNumber}
             onChange={(e) =>
-              setNewBus({ ...newBus, busNumber: e.target.value })
+              setNewBus({ ...newBus, plateNumber: e.target.value })
             }
             required
           />
@@ -84,21 +84,22 @@ const Bus = () => {
             required
           />
         </label>
-
+ 
         <button type="submit">Add Bus</button>
       </form>
 
       {/* Bus List */}
-      <ul className="list">
+      <div className="list-container">
         <h2>Bus list</h2>
-
-        {Array.isArray(buses) &&
-          buses.map((bus) => (
-            <li key={bus._id}>
-              {bus.busNumber} — {bus.capacity} seats
-            </li>
-          ))}
-      </ul>
+        <ul className="list">
+          {Array.isArray(buses) &&
+            buses.map((bus) => (
+              <li key={bus._id}>
+                {bus.plateNumber} — {bus.capacity} seats
+              </li>
+            ))}
+        </ul>
+      </div>
 
       {isLoading && <LoadingScreen />}
       <Overlay

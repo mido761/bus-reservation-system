@@ -1,15 +1,13 @@
-const express = require("express");
+import express from "express";
+import { getAvailableBuses, addBus, editBus, delBus } from "../controllers/busController.js";
+
 const router = express.Router();
-const {getAvailableBuses} = require('../controllers/busController');
-const {addBus} = require('../controllers/busController');
-const {editBus} = require('../controllers/busController');
-const {delBus} = require('../controllers/busController');
 
 
 router.get('/get-available-buses', getAvailableBuses);
-router.post('/add-buses', addBus);
-router.put('/edit-buses', editBus);
-router.delete('/del-buses', delBus);
+router.post('/add-bus', addBus);
+router.put('/edit-bus', editBus);
+router.delete('/del-bus', delBus);
 
 
-module.exports = router;
+export default router;

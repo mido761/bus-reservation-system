@@ -1,4 +1,4 @@
-const session = require("../../../server/utils/session")
+import { destroy } from "../../utils/session.js";
 
 /**
  * @route POST /logout
@@ -9,8 +9,8 @@ const session = require("../../../server/utils/session")
  * @throws {500} If session destruction fails
  */
 const logout = async (req, res) => {
-  session.destroy(req, res)
+  destroy(req, res);
 };
 
 
-module.exports = {logout}
+export { logout };

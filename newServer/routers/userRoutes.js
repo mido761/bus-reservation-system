@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import authentication from "../middleware/authentication.js";
+import { getAllUsers, getUserInfo, getProfileNames, getUserForms, editGender } from "../controllers/userController.js";
+
 const router = express.Router();
-const authentication = require("../middleware/authentication");
-const {getAllUsers, getUserInfo, getProfileNames, getUserForms, editGender} = require("../controllers/userController");
 
 
 /**
@@ -164,4 +165,4 @@ router.put("/check-out/:userId", async (req, res) => {
 router.put("/edit-gender/:userId", editGender);
 
 
-module.exports = router;
+export default router;

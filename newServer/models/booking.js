@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const BookingSchema = new mongoose.Schema({
     scheduleId:{ 
@@ -26,6 +26,7 @@ const BookingSchema = new mongoose.Schema({
     // enum: ["sucsseful","pending",'failed'],
     // default: "pending",
     // },
+    //the ticket only should have a booking id
     ticketId:{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Ticket' 
@@ -43,4 +44,4 @@ const BookingSchema = new mongoose.Schema({
     
 });
 
-module.exports = mongoose.model("Booking", BookingSchema);
+export default mongoose.model("Booking", BookingSchema);

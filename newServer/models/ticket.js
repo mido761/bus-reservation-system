@@ -1,5 +1,5 @@
-const { DateTime } = require("luxon");
-const mongoose = require("mongoose");
+import { DateTime } from "luxon";
+import mongoose from "mongoose";
 
 const TicketSchema = new mongoose.Schema({
     bookongId:{ 
@@ -18,4 +18,4 @@ const TicketSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Ticket", TicketSchema);
+export default mongoose.model("Ticket", TicketSchema);

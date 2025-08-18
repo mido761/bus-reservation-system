@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const StopSchema = new mongoose.Schema({
     stopName:{
@@ -16,4 +16,4 @@ const StopSchema = new mongoose.Schema({
     
 });
 
-module.exports = mongoose.model("Stop", StopSchema);
+export default mongoose.model("Stop", StopSchema);

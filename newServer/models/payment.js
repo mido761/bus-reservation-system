@@ -1,5 +1,5 @@
-const { DateTime } = require("luxon");
-const mongoose = require("mongoose");
+import { DateTime } from "luxon";
+import mongoose from "mongoose";
 
 const PaymentSchema = new mongoose.Schema({
   bookongId: {
@@ -33,4 +33,4 @@ const PaymentSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Payment", PaymentSchema);
+export default mongoose.model("Payment", PaymentSchema);

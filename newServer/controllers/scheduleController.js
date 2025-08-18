@@ -1,6 +1,6 @@
-const Schedule = require("../models/schedule");
-const bus = require("../models/bus");
-const route = require("../models/route");
+import Schedule from "../models/schedule.js";
+import bus from "../models/bus.js";
+import route from "../models/route.js";
 
 const getSchedules = async (req, res) => {
   try {
@@ -59,4 +59,4 @@ const addSchedule = async (req, res) => {
   }
 };
 
-module.exports = { getSchedules, addSchedule };
+export { getSchedules, addSchedule };

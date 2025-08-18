@@ -1,12 +1,12 @@
-const expres = require('express');
-const router = expres.Router();
-const authentication = require("../middleware/authentication");
+import express from "express";
+import authentication from "../middleware/authentication.js";
+import { getSchedules, addSchedule } from "../controllers/scheduleController.js";
 
-const {getSchedules, addSchedule} = require('../controllers/scheduleController');
+const router = express.Router();
 
 
 router.get('/get-schedules', authentication.isAuthoraized, getSchedules);
 router.post('/add-schedule', authentication.isAuthoraized, addSchedule);
 
 
-module.exports = router;
+export default router;

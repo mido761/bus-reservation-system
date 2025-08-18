@@ -1,4 +1,4 @@
-module.exports.regenerate = (req, res, user) => {
+export function regenerate(req, res, user) {
   req.session.regenerate((err) => {
     if (err) return res.status(500).json("Session error");
 
@@ -10,9 +10,9 @@ module.exports.regenerate = (req, res, user) => {
       return res.status(200).json("Login successful");
     });
   });
-};
+}
 
-module.exports.destroy = (req, res) => {
+export function destroy(req, res) {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json("failed to logout");
@@ -20,4 +20,4 @@ module.exports.destroy = (req, res) => {
     res.clearCookie("connect.sid");
     return res.status(200).json("logout successfuly");
   });
-};
+}

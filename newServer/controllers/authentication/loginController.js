@@ -1,6 +1,6 @@
-const bcrypt = require("bcrypt");
-const userModel = require("../../models/user");
-const session = require("../../utils/session");
+import bcrypt from "bcrypt";
+import userModel from "../../models/user.js";
+import { regenerate } from "../../utils/session.js";
 
 /**
  * @route POST /api/login
@@ -31,7 +31,7 @@ const login = async (req, res) => {
     }
 
     // Regenerate session to prevent session fixation
-    session.regenerate(req, res, user);
+  regenerate(req, res, user);
     
   } catch (err) {
     console.error(err);
@@ -40,4 +40,4 @@ const login = async (req, res) => {
 };
 
 
-module.exports = {login}
+export { login };
