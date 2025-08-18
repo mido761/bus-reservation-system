@@ -2,10 +2,9 @@ dotenv.config();
 import jwt from "jsonwebtoken";
 import mailer from "../utils/nodeMailer.js";
 import bcrypt from "bcrypt";
-import pool from "./db.js";
+import pool from "../db.js";
 import dotenv from "dotenv";
 dotenv.config();
-
 /**
  * Generates a random 6-digit verification code
  * @returns {number} 6-digit verification code

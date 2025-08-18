@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import userModel from "../../models/user.js";
 import { regenerate } from "../../utils/session.js";
-
+import pool from "../../db.js"
 /**
  * @route POST /api/login
  * @description Authenticate user and create session
@@ -19,7 +19,8 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await userModel.findOne({ email });
+    const SearchForMailQuery = `SELECT * FROM users WHERE email = $1 LIMIT 1`
+    const {user} = await pool.query(SearchForMailQuery,[email]);
     if (!user) {
       return res.status(404).json("This email does not exist");
     }
