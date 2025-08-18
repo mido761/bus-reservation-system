@@ -1,8 +1,8 @@
 dotenv.config();
 import jwt from "jsonwebtoken";
-import mailer from "../utils/nodeMailer.js";
+import { sendMail } from "../utils/nodeMailer.js";
 import bcrypt from "bcrypt";
-import pool from "./db.js";
+import pool from "../db.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -24,16 +24,15 @@ export async function sendCode(req, res) {
         .json({ message: "Invalid gender. Choose male or female." });
     }
 
-    const query = `
+    const checkUser = `
     SELECT * FROM users
-    WHERE
-    RETURNING user_id, name, email
-
+    WHERE email = $1
     `;
 
-    const { rows } = await pool.query();
-    const userExist = await User.findOne({ email });
-    if (userExist) {
+    const { rows } = await pool.query(checkUser, [email]);
+    console.log(rows);
+    // const userExist = await User.findOne({ email });
+    if (rows.length > 0) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
@@ -45,11 +44,9 @@ export async function sendCode(req, res) {
       { expiresIn: "10m" }
     );
 
-    mailer.sendMail(
-      email,
-      (subject = "Verify Your Email"),
-      (body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`)
-    );
+    const subject = "Verify Your Email";
+    const body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
+    sendMail(email, subject, body);
 
     return res.status(201).json({
       message: "Registration successful! Check your email for verification.",
@@ -71,25 +68,36 @@ export async function verifyUser(req, res) {
 
     const code = tempUser.verificationCode;
 
+    console.log(enteredOtp, code, (Number(code) !== Number(enteredOtp)))
+
     // Validate the verification code
-    if (Number(code) !== Number(parseInt(enteredOtp))) {
+    if (Number(code) !== Number(enteredOtp)) {
       return res.status(400).json({ message: "Invalid verification code." });
     }
 
     // Hash the password before saving to the database
     const hashedPassword = await bcrypt.hash(tempUser.password, 10);
 
-    // Save the verified user in MongoDB
-    const newUser = new User({
-      name: tempUser.name,
-      phoneNumber: tempUser.phoneNumber,
-      email: tempUser.email,
-      password: hashedPassword,
-      gender: tempUser.gender,
-      verified: true,
-    });
+    const insertNewUser = `
+      INSERT INTO users (
+      username,
+      phone_number,
+      email,
+      password,
+      gender
+      ) 
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING user_id;
+    `;
 
-    await newUser.save();
+    const { user } = await pool.query(insertNewUser, [
+      tempUser.name,
+      tempUser.phoneNumber,
+      tempUser.email,
+      hashedPassword,
+      tempUser.gender,
+    ]);
+
 
     res.json({ message: "Email verified successfully! You can now log in." });
   } catch (error) {
@@ -123,7 +131,7 @@ export async function resendCode(req, res) {
       { expiresIn: "10m" }
     );
 
-    mailer.sendMail(
+    sendMail(
       (recepient = tempUser.email),
       (subject = "Verify Your Email"),
       (body = `<p>Your new verification code is: <strong>${newVerificationCode}</strong></p>`)
