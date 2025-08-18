@@ -79,7 +79,7 @@ app.options("*", (req, res) => {
 
 const pool = new Pool({
   connectionString: process.env.LOCAL_DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  // ssl: { rejectUnauthorized: false },
 });
 
 const PgSessionStore = pgSession(session);
@@ -168,10 +168,10 @@ app.use("/user", authentication.isAuthenticated, userRouter);
  * @database
  * @description MongoDB connection
  */
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(err));
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB connected"))
+//   .catch((err) => console.error(err));
 
 
 /**
@@ -225,6 +225,13 @@ app.get("/auth", (req, res) => {
  * @listens {number} PORT
  * @event SIGINT - Graceful shutdown handler
  */
+pool.connect()
+  .then(client => {
+    console.log("✅ Connected to PostgreSQL");
+    client.release();
+  })
+  .catch(err => console.error("❌ Postgres connection error", err.stack));
+
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
