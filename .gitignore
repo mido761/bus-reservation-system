@@ -40,3 +40,6 @@ test-results/
 
 # Ignore test temp files
 tmp/
+package-lock.json
+package.json
+client/package-lock.json
