@@ -1,14 +1,11 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import mongoose from "mongoose";
-import MongoStore from "connect-mongo";
 import dotenv from "dotenv";
-import pg from 'pg';
+import pool from './db.js'
 import pgSession from "connect-pg-simple";
 
 import userModel from "./models/user.js";
-
 import userRouter from "./routers/userRoutes.js";
 import busRouter from "./routers/busRouter.js";
 import stopRouter from "./routers/stopRouter.js";
@@ -28,7 +25,6 @@ const __dirname = path.dirname(__filename);
 // Load env vars
 dotenv.config({ path: "../.env" });
 
-const { Pool } = pg;
 const app = express();
 
 /**
@@ -77,16 +73,11 @@ app.options("*", (req, res) => {
   res.sendStatus(200); // Respond with 200 for preflight requests
 });
 
-const pool = new Pool({
-  connectionString: process.env.LOCAL_DATABASE_URL,
-  // ssl: { rejectUnauthorized: false },
-});
 
 const PgSessionStore = pgSession(session);
 
 app.use(
   session({
-    secret: "ARandomStringThatIsHardToGuess12345",
     secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
@@ -225,12 +216,6 @@ app.get("/auth", (req, res) => {
  * @listens {number} PORT
  * @event SIGINT - Graceful shutdown handler
  */
-pool.connect()
-  .then(client => {
-    console.log("✅ Connected to PostgreSQL");
-    client.release();
-  })
-  .catch(err => console.error("❌ Postgres connection error", err.stack));
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -2,10 +2,9 @@ dotenv.config();
 import jwt from "jsonwebtoken";
 import mailer from "../utils/nodeMailer.js";
 import bcrypt from "bcrypt";
-import User from "../models/user.js";
+import pool from "./db.js";
 import dotenv from "dotenv";
 dotenv.config();
-
 
 /**
  * Generates a random 6-digit verification code
@@ -14,7 +13,6 @@ dotenv.config();
 function generateVerificationCode() {
   return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit code
 }
-
 
 export async function sendCode(req, res) {
   const { name, phoneNumber, email, password, gender } = req.body;
@@ -25,6 +23,15 @@ export async function sendCode(req, res) {
         .status(400)
         .json({ message: "Invalid gender. Choose male or female." });
     }
+
+    const query = `
+    SELECT * FROM users
+    WHERE
+    RETURNING user_id, name, email
+
+    `;
+
+    const { rows } = await pool.query();
     const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(400).json({ message: "Email already exists" });
@@ -54,8 +61,7 @@ export async function sendCode(req, res) {
       .status(500)
       .json({ message: "Internal server error", error: err.message });
   }
-};
-
+}
 
 export async function verifyUser(req, res) {
   try {
@@ -91,8 +97,7 @@ export async function verifyUser(req, res) {
       .status(500)
       .json({ message: "Error verifying email", error: error.message });
   }
-};
-
+}
 
 export async function resendCode(req, res) {
   const { token } = req.body;
@@ -132,4 +137,4 @@ export async function resendCode(req, res) {
       error: err.message,
     });
   }
-};
+}
