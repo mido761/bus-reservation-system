@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import userModel from "../../models/user.js";
 import { regenerate } from "../../utils/session.js";
-import pool from "../../db.js"
+import pool from "../../db.js";
 /**
  * @route POST /api/login
  * @description Authenticate user and create session
@@ -19,8 +19,10 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const SearchForMailQuery = `SELECT * FROM users WHERE email = $1 LIMIT 1`
-    const {user} = await pool.query(SearchForMailQuery,[email]);
+    const SearchForMailQuery = `SELECT * FROM users WHERE email = $1 LIMIT 1`;
+    const { rows } = await pool.query(SearchForMailQuery, [email]);
+    const user = rows[0];
+
     if (!user) {
       return res.status(404).json("This email does not exist");
     }
@@ -32,13 +34,11 @@ const login = async (req, res) => {
     }
 
     // Regenerate session to prevent session fixation
-  regenerate(req, res, user);
-    
+    regenerate(req, res, user);
   } catch (err) {
     console.error(err);
     res.status(500).json("Internal server error");
   }
 };
-
 
 export { login };

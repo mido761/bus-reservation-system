@@ -41,6 +41,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   process.env.BACK_END_URL,
 ];
+
 app.use(
   cors({
     origin: allowedOrigins, // Allow the frontend origin
@@ -88,7 +89,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "strict",
-      Secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
     },
   })
