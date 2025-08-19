@@ -162,7 +162,7 @@ router.put("/check-out/:userId", async (req, res) => {
  * @param {string} req.body.gender - New gender value
  * @returns {Object} Updated user object and success message
  */
-router.put("/edit-gender/:userId", editGender);
+router.put("/edit-gender/:userId", authentication.isAuthenticated, editGender);
 
 
 export default router;

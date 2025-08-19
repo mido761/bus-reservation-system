@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 // import BusForm from "../models/busForm.js";
 import validator from "validator";
-import pool from '../db.js';
+import pool from "../db.js";
 import Seat from "../models/seats.js";
 import mongoose from "mongoose";
 
@@ -26,7 +26,7 @@ const getUserInfo = async (req, res) => {
       return res.status(400).json("Invalid UUID format");
     }
 
-    console.log("session: ", req.session)
+    console.log("session: ", req.session);
     if (req.session.userId.toString() !== req.params.userId) {
       return res.status(403).json("Access denied");
     }
@@ -44,8 +44,21 @@ const getUserInfo = async (req, res) => {
 // Get multiple user profiles by their IDs
 const getProfileNames = async (req, res) => {
   const { userIds } = req.body;
-  const users = await User.find({ _id: { $in: userIds } }, "name"); // Fetch all users at once
-  res.json(users);
+
+  try {
+    const getUsersNames = `
+      SELECT user_id, username
+      FROM users
+      WHERE user_id = ANY($1)
+    `;
+
+    const { rows } = await pool.query(getUsersNames, [userIds]);
+    const users = rows[0]
+
+    res.json(users);
+  } catch (err) {
+    console.error('Error getting users names: ', err.message)
+  }
 };
 
 // Get all buses booked by a specific user (form-based)
@@ -78,17 +91,25 @@ const getUserForms = async (req, res) => {
 // Update a user's gender
 const editGender = async (req, res) => {
   try {
+    const userId = req.params.userId;
     const { gender } = req.body; // ✅ Extract gender
 
     if (!gender) return res.status(400).json({ error: "Gender is required" });
 
-    const user = await User.findById(req.params.userId);
-    if (!user) return res.status(404).json({ error: "User not found" });
+    const updateGender = `
+    UPDATE users SET gender = $1 WHERE user_id = $2 RETURNING username, gender
+    `;
 
-    user.gender = gender; // ✅ Assign the correct value
-    await user.save();
+    const { rows } = await pool.query(updateGender, [gender, userId]);
 
-    res.json({ message: "Gender updated successfully", user });
+    const user = rows[0];
+
+    console.log(user);
+    if (!user) {
+      return res.json({ message: "Error updating gender!" });
+    }
+
+    return res.json({ message: "Gender updated successfully", user });
   } catch (error) {
     console.error("Server error:", error);
     res.status(500).json({ error: "Server error" });
