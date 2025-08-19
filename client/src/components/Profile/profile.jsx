@@ -78,7 +78,7 @@ const UserProfile = () => {
         <div className="card">
           {/* Avatar */}
           <div className="avatar">
-            {userDetails?.name ? getInitials(userDetails.username) : "?"}
+            {userDetails?.username ? getInitials(userDetails.username) : "?"}
           </div>
 
           {/* User Info */}
@@ -90,7 +90,7 @@ const UserProfile = () => {
           {/* Contact Info */}
           <div className="content-1">
             <FaPhone className="icon" />{" "}
-            {userDetails?.phoneNumber || "No Phone"}
+            {userDetails?.phone_number || "No Phone"}
           </div>
 
           {/* Dashboard Section */}
