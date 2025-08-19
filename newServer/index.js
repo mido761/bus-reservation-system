@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import session from "express-session";
 import dotenv from "dotenv";
-import pool from './db.js'
+import pool from "./db.js";
 import pgSession from "connect-pg-simple";
 
 import userModel from "./models/user.js";
@@ -44,53 +44,53 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: allowedOrigins, // Allow the frontend origin
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these methods, including OPTIONS
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow headers like Content-Type and Authorization
-    credentials: true, // Allow credentials (cookies/tokens) to be included
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like Postman) or valid frontend origin
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
-
-/**
- * @middleware
- * @description Session configuration
- * @property {string} secret - Session secret key
- * @property {boolean} resave - Forces session resave
- * @property {boolean} saveUninitialized - Save uninitialized sessions
- * @property {Object} store - MongoDB session store
- * @property {Object} cookie - Session cookie settings
- */
-
-// // Handle OPTIONS preflight request for CORS
+// Preflight (OPTIONS) handler — now returns a single origin string
 app.options("*", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.sendStatus(200); // Respond with 200 for preflight requests
+  res.sendStatus(200);
 });
 
-
+// Session config
 const PgSessionStore = pgSession(session);
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
+    secret:
+      process.env.SESSION_SECRET || "AnotherRandomStringThatIsHardToGuess12345",
     resave: false,
     saveUninitialized: false,
     store: new PgSessionStore({
-      pool: pool,
+      pool,
       tableName: "user_sessions",
     }),
     cookie: {
       httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day expiration
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // good for localhost
+      secure: process.env.NODE_ENV === "production", // must be false in dev
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
   })
 );
@@ -101,7 +101,6 @@ app.use(
  */
 app.use(express.json()); // For JSON payloads
 app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
-
 
 /**
  * @route POST /notifications
@@ -137,15 +136,13 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
   });
 });
 
-
-
 // app.use('/home', (req, res) => {res.send("Server is running")} );
 /**
  * @routes
  * @description Register route handlers
  */
 app.use("/api/register", register);
-app.use("/api/auth", auth)
+app.use("/api/auth", auth);
 app.use("/api", forgotPassword);
 app.use("/bus", authentication.isAuthenticated, busRouter);
 app.use("/stop", authentication.isAuthenticated, stopRouter);
@@ -164,7 +161,6 @@ app.use("/user", authentication.isAuthenticated, userRouter);
 //   .connect(process.env.MONGO_URI)
 //   .then(() => console.log("MongoDB connected"))
 //   .catch((err) => console.error(err));
-
 
 /**
  * @route GET /auth/:busId
@@ -204,10 +200,10 @@ app.get("/auth", (req, res) => {
 });
 
 // if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../client/dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
-  });
+app.use(express.static(path.join(__dirname, "../client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
+});
 // }
 
 /**
@@ -219,7 +215,9 @@ app.get("/auth", (req, res) => {
  */
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const server = app.listen(PORT, () =>
+  console.log(`Server running on port ${PORT}`)
+);
 
 // process.on("SIGINT", () => {
 //   console.log("Shutting down server...");

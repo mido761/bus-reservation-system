@@ -8,7 +8,6 @@ dotenv.config({path: '../.env'});
 // dotenv.config();  
 
 
-console.log(process.env.LOCAL_DATABASE_URL)
 const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env.LOCAL_DATABASE_URL,

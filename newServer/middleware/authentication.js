@@ -1,6 +1,7 @@
 import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
+import dotenv from 'dotenv';
+
+dotenv.config({path: '../.env'});
 
 const app = express();
 
@@ -17,7 +18,7 @@ const app = express();
  * @throws {401} If user is not authenticated
  */
 const isAuthenticated = (req, res, next) => {
-  if (process.env.NODE_ENV === "development") return next();
+  // if (process.env.NODE_ENV === "development") return next();
   
   console.log(req.session, req.session.userId)
   if (req.session && req.session.userId) {
@@ -40,7 +41,7 @@ const isAuthenticated = (req, res, next) => {
  * @throws {401} If user is not authorized as admin
  */
 const isAuthoraized = (req, res, next) => {
-  if (process.env.NODE_ENV === "development") return next();
+  // if (process.env.NODE_ENV === "development") return next();
  
   if (req.session && req.session.userId && req.session.userRole === "admin") {
     return next();

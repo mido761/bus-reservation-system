@@ -1,13 +1,18 @@
 import User from "../models/user.js";
 // import BusForm from "../models/busForm.js";
+import validator from "validator";
+import pool from '../db.js';
 import Seat from "../models/seats.js";
 import mongoose from "mongoose";
 
 // Get all users in the system
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    const getUsers = `SELECT username, email FROM users`;
+    const { rows } = await pool.query(getUsers);
+    const users = rows[0];
+
+    return res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -17,20 +22,19 @@ const getAllUsers = async (req, res) => {
 const getUserInfo = async (req, res) => {
   const userId = req.params.userId;
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
-      return res.status(400).json("Invalid ID format");
+    if (!validator.isUUID(req.params.userId)) {
+      return res.status(400).json("Invalid UUID format");
     }
 
+    console.log("session: ", req.session)
     if (req.session.userId.toString() !== req.params.userId) {
       return res.status(403).json("Access denied");
     }
 
-    const user = await User.findById(userId, {
-      _id: 0,
-      name: 1,
-      email: 1,
-      phoneNumber: 1,
-    });
+    const getUser = `SELECT username, email FROM users WHERE user_id = $1`;
+    const { rows } = await pool.query(getUser, [userId]);
+    const user = rows[0];
+
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -91,10 +95,4 @@ const editGender = async (req, res) => {
   }
 };
 
-export {
-  getAllUsers,
-  getUserInfo,
-  getProfileNames,
-  getUserForms,
-  editGender,
-};
+export { getAllUsers, getUserInfo, getProfileNames, getUserForms, editGender };

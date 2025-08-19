@@ -26,7 +26,9 @@ const UserProfile = () => {
         const userId = req_user.data.userId;
 
         // Fetch user profile
-        const res = await axios.get(`${backEndUrl}/user/profile/${userId}`);
+        const res = await axios.get(`${backEndUrl}/user/profile/${userId}`, {
+          withCredentials: true,
+        });
         setUserDetails(res.data);
         const userDetails = res.data;
 
@@ -76,12 +78,12 @@ const UserProfile = () => {
         <div className="card">
           {/* Avatar */}
           <div className="avatar">
-            {userDetails?.name ? getInitials(userDetails.name) : "?"}
+            {userDetails?.name ? getInitials(userDetails.username) : "?"}
           </div>
 
           {/* User Info */}
           <div className="info">
-            <span className="info-1">{userDetails?.name || "No Name"}</span>
+            <span className="info-1">{userDetails?.username || "No Name"}</span>
             <span className="info-2">{userDetails?.email || "No Email"}</span>
           </div>
 
