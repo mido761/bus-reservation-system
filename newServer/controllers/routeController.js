@@ -68,13 +68,16 @@ const linkStop = async (req, res) => {
   const {routeId, stopId, position} = req.body
   try {
     const link = `
-    INSERT INTO route_stop (routeId, stopId, position) VALUES ($1, $2, $3)
+    INSERT INTO route_stop (route_id, stop_id, position) 
+    VALUES ($1, $2, $3)
+    RETURNING *
     `;
 
-    const { rows: rsRows } = await pool.query(link, [routeId, stopId, position]);
-    const route_stop = rsRows[0];
+    const { rows } = await pool.query(link, [routeId, stopId, position]);
+    const route_stop = rows[0];
+    console.log(rows)
 
-    return res.status(200).json(route_stop);
+    return res.status(200).json({newLink: route_stop});
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
