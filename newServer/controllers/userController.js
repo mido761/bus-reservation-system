@@ -31,7 +31,7 @@ const getUserInfo = async (req, res) => {
       return res.status(403).json("Access denied");
     }
 
-    const getUser = `SELECT username, email FROM users WHERE user_id = $1`;
+    const getUser = `SELECT username, email, phone_number FROM users WHERE user_id = $1`;
     const { rows } = await pool.query(getUser, [userId]);
     const user = rows[0];
 
@@ -62,6 +62,7 @@ const getProfileNames = async (req, res) => {
 };
 
 // Get all buses booked by a specific user (form-based)
+//still not converted
 const getUserForms = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

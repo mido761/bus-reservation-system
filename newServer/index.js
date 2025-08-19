@@ -145,8 +145,9 @@ app.use("/api/register", register);
 app.use("/api/auth", auth);
 app.use("/api", forgotPassword);
 app.use("/bus", authentication.isAuthenticated, busRouter);
-app.use("/stop", authentication.isAuthenticated, stopRouter);
-app.use("/route",  routeRouter);
+// app.use("/stop", authentication.isAuthenticated, stopRouter);
+app.use("/stop", stopRouter);
+app.use("/route", authentication.isAuthenticated, routeRouter);
 app.use("/schedule", authentication.isAuthenticated, scheduleRouter);
 app.use("/user",  userRouter);
 
