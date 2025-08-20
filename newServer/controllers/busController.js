@@ -1,13 +1,16 @@
 import Bus from "../models/bus.js";
 import Seat from "../models/seats.js";
 import mongoose from "mongoose";
+import pool from "../db.js"
+import { DateTime } from "luxon";
 
 
 const getAvailableBuses = async (req, res) => {
   try {
-    const availableBuses = await Bus.find();
-
-    return res.status(200).json(availableBuses);
+    const searchQuery = 'select * from bus'
+    const {row} = await pool.query(searchQuery);
+    const availableBuses = row
+    return res.status(200).json({buses: availableBuses});
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -15,53 +18,59 @@ const getAvailableBuses = async (req, res) => {
 
 
 const addBus = async (req, res) => {
-const { plateNumber, busType, capacity, features, IsActive, seatType } = req.body;
+  const { plateNumber, busType, capacity, isActive = true, seatType = 'V' } = req.body;
 
-try {
-  if (!(plateNumber && capacity)) {
-    return res.status(400).json("You should fill blateNumber & capacity & features!");
-  }
+  try {
+    if (!(plateNumber && capacity)) {
+      return res.status(400).json("You should fill blateNumber & capacity & features!");
+    }
 
-  const BlateNumberInData = await Bus.find({ plateNumber: plateNumber });
+    const checkQuery = 'SELECT * FROM bus WHERE plate_number = $1';
+    const BlateNumberInData = await pool.query(checkQuery,[plateNumber]);
 
-  if (BlateNumberInData.length > 0) {
-    return res.status(400).json("This blateNumber already exists!!");
-  }
+    if (BlateNumberInData.rows.length > 0) {
+      return res.status(400).json("This blateNumber already exists!!");
+    }
 
-  // 1️⃣ Save bus first
-  let newBus = new Bus({
-    plateNumber,
-    busType,
-    capacity,
-    features,
-    IsActive
-  });
+    const insertQuery =
+    `INSERT INTO bus (plate_number, bus_type, capacity, is_active,created_at)
+    VALUES ($1,$2,$3,$4,$5)
+    RETURNING *;`
+    const Now = DateTime.now()
+    const insertBus = await pool.query(insertQuery, [plateNumber, busType, capacity, isActive,Now])
+    const newBus = insertBus.rows[0];
+    console.log(newBus)
 
-  await newBus.save();
+    // // 4️⃣ Generate seats data
+    // const seatValues = [];
+    // for (let i = 0; i < capacity; i++) {
+    //   seatValues.push(`${newBus.bus_id}, ${i + 1}, '${seatType}', 'A'`);
+    // }
+    // console.log("INSERT VALUES:", seatValues.join(", "));
+    // 5️⃣ Bulk insert seats
+    //     const insertSeats = await pool.query(
+    //   `INSERT INTO seat (bus_id, seat_number, seat_type, status)
+    //     VALUES ${seatValues.join(", ")}
+    //     RETURNING*;`
+    // );
 
-  // 2️⃣ Create seats with the saved bus's _id
-  let newSeatsArray = [];
-  for (let i = 0; i < capacity; i++) {
-    newSeatsArray.push({
-      busId: newBus._id,
-      seatNumber: i + 1,
-      seatType
+    const insertSeats = await pool.query(
+      `INSERT INTO seat (bus_id, seat_number, seat_type, status)
+      SELECT '${newBus.bus_id}', gs, 'normalSeat', 'Available'
+      FROM generate_series(1, ${capacity}) gs
+      RETURNING*;`
+    );
+
+    console.log(`${capacity} seats created for bus ${newBus._id}`);
+
+    return res.status(200).json({
+      message: "Bus added successfully!",
+      bus: newBus,
+      seats: insertSeats.rows
     });
+  }catch (error) {
+    return res.status(500).json({ message: error.message });
   }
-
-  // 3️⃣ Bulk insert seats
-  const newSeats = await Seat.insertMany(newSeatsArray);
-
-  // 4️⃣ Update bus with seat IDs
-  newBus.seatsId = newSeats.map(seat => seat._id);
-  await newBus.save();
-
-  console.log(`${capacity} seats created for bus ${newBus._id}`);
-
-  return res.status(200).json("Bus added successfully!");
-} catch (error) {
-  return res.status(500).json({ message: error.message });
-}
 
 };
 

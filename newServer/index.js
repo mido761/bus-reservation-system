@@ -145,7 +145,8 @@ app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
 app.use("/api/register", register);
 app.use("/api/auth", auth);
 app.use("/api", forgotPassword);
-app.use("/bus", authentication.isAuthenticated, busRouter);
+// app.use("/bus", authentication.isAuthenticated, busRouter);
+app.use("/bus", busRouter);
 // app.use("/stop", authentication.isAuthenticated, stopRouter);
 app.use("/stop", stopRouter);
 // app.use("/route", authentication.isAuthenticated, routeRouter);
