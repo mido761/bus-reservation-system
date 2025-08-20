@@ -41,23 +41,25 @@ const addBus = async (req, res) => {
     const newBus = insertBus.rows[0];
     console.log(newBus)
 
-    // 4️⃣ Generate seats data
-    const seatValues = [];
-    for (let i = 0; i < capacity; i++) {
-      seatValues.push(`${newBus.bus_id}, ${i + 1}, '${seatType}', 'A'`);
-    }
-    console.log("INSERT VALUES:", seatValues.join(", "));
-        // 5️⃣ Bulk insert seats
-    const insertSeats = await pool.query(
-      `INSERT INTO seat (bus_id, seat_number, seat_type, status)
-      SELECT '${newBus.bus_id}', gs, 'normalSeat', 'Available'
-      FROM generate_series(1, ${capacity}) gs;`
-    );
+    // // 4️⃣ Generate seats data
+    // const seatValues = [];
+    // for (let i = 0; i < capacity; i++) {
+    //   seatValues.push(`${newBus.bus_id}, ${i + 1}, '${seatType}', 'A'`);
+    // }
+    // console.log("INSERT VALUES:", seatValues.join(", "));
+    // 5️⃣ Bulk insert seats
     //     const insertSeats = await pool.query(
     //   `INSERT INTO seat (bus_id, seat_number, seat_type, status)
     //     VALUES ${seatValues.join(", ")}
     //     RETURNING*;`
     // );
+
+    const insertSeats = await pool.query(
+      `INSERT INTO seat (bus_id, seat_number, seat_type, status)
+      SELECT '${newBus.bus_id}', gs, 'normalSeat', 'Available'
+      FROM generate_series(1, ${capacity}) gs
+      RETURNING*;`
+    );
 
     console.log(`${capacity} seats created for bus ${newBus._id}`);
 
