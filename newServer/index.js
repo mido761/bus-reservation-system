@@ -11,6 +11,7 @@ import busRouter from "./routers/busRouter.js";
 import stopRouter from "./routers/stopRouter.js";
 import routeRouter from "./routers/routeRouter.js";
 import tripRouter from "./routers/tripRouter.js";
+import bookingRouter from "./routers/bookingRouter.js";
 import authentication from "./middleware/authentication.js";
 import register from "./routers/registerRouter.js";
 import auth from "./routers/authRouter.js";
@@ -151,6 +152,7 @@ app.use("/stop", stopRouter);
 app.use("/route", routeRouter);
 // app.use("/trip", authentication.isAuthenticated, tripRouter);
 app.use("/trip", tripRouter);
+app.use("/booking", bookingRouter);
 app.use("/user",  userRouter);
 
 // app.use((req, res) => {
