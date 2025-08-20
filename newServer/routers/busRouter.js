@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 router.get('/get-available-buses', getAvailableBuses);
-router.post('/add-bus', addBus);
+router.post('/add-bus', addBus); 
 router.put('/edit-bus', editBus);
 router.delete('/del-bus', delBus);
 
