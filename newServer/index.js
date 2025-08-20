@@ -10,7 +10,7 @@ import userRouter from "./routers/userRoutes.js";
 import busRouter from "./routers/busRouter.js";
 import stopRouter from "./routers/stopRouter.js";
 import routeRouter from "./routers/routeRouter.js";
-import scheduleRouter from "./routers/scheduleRouter.js";
+import tripRouter from "./routers/tripRouter.js";
 import authentication from "./middleware/authentication.js";
 import register from "./routers/registerRouter.js";
 import auth from "./routers/authRouter.js";
@@ -149,7 +149,8 @@ app.use("/bus", authentication.isAuthenticated, busRouter);
 app.use("/stop", stopRouter);
 // app.use("/route", authentication.isAuthenticated, routeRouter);
 app.use("/route", routeRouter);
-app.use("/schedule", authentication.isAuthenticated, scheduleRouter);
+// app.use("/trip", authentication.isAuthenticated, tripRouter);
+app.use("/trip", tripRouter);
 app.use("/user",  userRouter);
 
 // app.use((req, res) => {

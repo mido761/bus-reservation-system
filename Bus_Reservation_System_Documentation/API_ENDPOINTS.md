@@ -340,6 +340,30 @@ Status(200)
 }
 ```
 
+### GET /route/route-stops/:routeId
+
+**Description** : Get all stops linked to a specific route
+**Access**: public
+**Request params**:
+routeId in the URL:
+`/route/get-route-stops/c7e89484-9808-433b-abcb-32bc5a01c577`
+
+**Response Body**:
+Status(200)
+
+```json
+{
+    "stops": {
+        "stop_id": "3c68282f-7da6-4a70-90fe-c6a89cb857c7",
+        "position": 1,
+        "stop_name": "dandy",
+        "location": "ajdgfkjahgjdfa",
+        "distance_from_source": 120,
+        "is_active": null
+    }
+}
+```
+
 ## Bus
 
 ### POST /bus/add-bus
