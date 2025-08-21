@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.get("/get-all-bookings", getBookings);
 router.get("/booking-info/:bookingId", getBookingInfo);
-router.get("/get-user-bookings/:userId", getUserBookings);
+router.get("/get-user-bookings", getUserBookings);
 router.get("/get-trip-bookings/:tripId", getTripBookings);
 router.get("/get-bus-bookings/:busId", getBusBookings);
 router.post("/book", book);

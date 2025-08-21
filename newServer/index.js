@@ -152,7 +152,7 @@ app.use("/stop", stopRouter);
 // app.use("/route", authentication.isAuthenticated, routeRouter);
 app.use("/route", routeRouter);
 // app.use("/trip", authentication.isAuthenticated, tripRouter);
-app.use("/trip", tripRouter);
+app.use("/trip", authentication.isAuthoraized, tripRouter);
 app.use("/booking", bookingRouter);
 app.use("/user",  userRouter);
 
