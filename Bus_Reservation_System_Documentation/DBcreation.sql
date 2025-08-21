@@ -172,3 +172,22 @@ ALTER TABLE IF EXISTS public.booking
 
 ALTER TABLE booking
 ALTER COLUMN booking_id SET DEFAULT gen_random_uuid();
+
+ALTER TABLE IF EXISTS public.booking DROP COLUMN IF EXISTS priority;
+
+ALTER TABLE IF EXISTS public.booking
+    ALTER COLUMN status SET DEFAULT 'pending';
+
+ALTER TABLE IF EXISTS public.booking
+    RENAME payment_id TO seat_id;
+
+ALTER TABLE IF EXISTS public.booking
+    ADD COLUMN pirority integer DEFAULT 3;
+ALTER TABLE IF EXISTS public.booking DROP CONSTRAINT IF EXISTS booking_payment_id_fkey;
+
+ALTER TABLE IF EXISTS public.booking
+    ADD CONSTRAINT booking_seat_id_fkey FOREIGN KEY (seat_id)
+    REFERENCES public.seat (seat_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
