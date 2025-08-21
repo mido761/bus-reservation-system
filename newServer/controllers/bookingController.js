@@ -145,8 +145,8 @@ async function getBusBookings(req, res) {
 
 async function book(req, res) {
   // TODO: Create a new booking
-  const { tripId, passengerId, stopId } = req.body;
-  try {
+  const {tripId , stopId} = req.body;
+  try{
     const checkQuery = `select * from booking where status = $1`;
     const checkBooking = await pool.query(checkQuery, ["pending"]);
     if (checkBooking.rows.length > 0) {
@@ -156,7 +156,9 @@ async function book(req, res) {
           "You have pending booking to book another seat you must complete the pending!"
         );
     }
-    const addQuery = `insert into booking (trip_id, passenger_id, stop_id)
+    const passengerId = req.session.userId
+    const addQuery = 
+    `insert into booking (trip_id, passenger_id, stop_id)
     values($1,$2,$3)
     Returning*`;
     const addBook = await pool.query(addQuery, [tripId, passengerId, stopId]);
