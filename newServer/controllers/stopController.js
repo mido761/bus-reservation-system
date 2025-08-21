@@ -1,4 +1,3 @@
-import Stop from "../models/stop.js";
 import pool from "../db.js"
 
 const getStops = async (req, res) => {
