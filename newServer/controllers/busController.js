@@ -20,59 +20,66 @@ const getAvailableBuses = async (req, res) => {
 const addBus = async (req, res) => {
   const { plateNumber, busType, capacity, isActive = true, seatType = 'V' } = req.body;
 
+  const client = await pool.connect(); // Get a client from the pool
   try {
+    await client.query('BEGIN'); // Start transaction
+
     if (!(plateNumber && capacity)) {
       return res.status(400).json("You should fill plateNumber & capacity & features!");
     }
 
+    // 🔎 Check if bus already exists
     const checkQuery = 'SELECT * FROM bus WHERE plate_number = $1';
-    const BlateNumberInData = await pool.query(checkQuery,[plateNumber]);
+    const BlateNumberInData = await client.query(checkQuery, [plateNumber]);
 
     if (BlateNumberInData.rows.length > 0) {
+      await client.query('ROLLBACK'); // rollback transaction
       return res.status(400).json("This plateNumber already exists!!");
     }
 
-    const insertQuery =
-    `INSERT INTO bus (plate_number, bus_type, capacity, is_active,created_at)
-    VALUES ($1,$2,$3,$4,$5)
-    RETURNING *;`
-    const Now = DateTime.now()
-    const insertBus = await pool.query(insertQuery, [plateNumber, busType, capacity, isActive,Now])
+    // 🚍 Insert bus
+    const insertQuery = `
+      INSERT INTO bus (plate_number, bus_type, capacity, is_active, created_at)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+    `;
+    const Now = DateTime.now();
+    const insertBus = await client.query(insertQuery, [
+      plateNumber,
+      busType,
+      capacity,
+      isActive,
+      Now,
+    ]);
     const newBus = insertBus.rows[0];
-    console.log(newBus)
 
-    // // 4️⃣ Generate seats data
-    // const seatValues = [];
-    // for (let i = 0; i < capacity; i++) {
-    //   seatValues.push(`${newBus.bus_id}, ${i + 1}, '${seatType}', 'A'`);
-    // }
-    // console.log("INSERT VALUES:", seatValues.join(", "));
-    // 5️⃣ Bulk insert seats
-    //     const insertSeats = await pool.query(
-    //   `INSERT INTO seat (bus_id, seat_number, seat_type, status)
-    //     VALUES ${seatValues.join(", ")}
-    //     RETURNING*;`
-    // );
-
-    const insertSeats = await pool.query(
+    // 💺 Insert seats for this bus
+    const insertSeats = await client.query(
       `INSERT INTO seat (bus_id, seat_number, seat_type, status)
-      SELECT '${newBus.bus_id}', gs, 'normalSeat', 'Available'
-      FROM generate_series(1, ${capacity}) gs
-      RETURNING*;`
+       SELECT $1, gs, $2, 'Available'
+       FROM generate_series(1, $3) gs
+       RETURNING *;`,
+      [newBus.bus_id, seatType, capacity]
     );
 
-    console.log(`${capacity} seats created for bus ${newBus._id}`);
+    // ✅ Commit transaction if everything succeeds
+    await client.query('COMMIT');
+
+    console.log(`${capacity} seats created for bus ${newBus.bus_id}`);
 
     return res.status(200).json({
       message: "Bus added successfully!",
       bus: newBus,
-      seats: insertSeats.rows
+      seats: insertSeats.rows,
     });
-  }catch (error) {
+  } catch (error) {
+    await client.query('ROLLBACK'); // ❌ rollback if anything fails
     return res.status(500).json({ message: error.message });
+  } finally {
+    client.release(); // release client back to pool
   }
-
 };
+
 
 
 
