@@ -146,7 +146,7 @@ const AddSchedule = () => {
         <label htmlFor="buses">
           Available Buses
           <select name="busIds" id="buses" multiple onChange={handleChange}>
-            {availableBuses.map((bus) => (
+            {Array.isArray(availableBuses) && availableBuses.map((bus) => (
               <option key={bus._id} value={bus._id}>
                 {bus.plateNumber}
               </option>
@@ -157,7 +157,7 @@ const AddSchedule = () => {
         <label htmlFor="routes">
           Routes
           <select name="routeIds" id="routes" multiple onChange={handleChange}>
-            {routes.map((route) => (
+            {Array.isArray(routes) && routes.map((route) => (
               <option key={route._id} value={route._id}>
                 {route.source} ---- {route.destination}
               </option>

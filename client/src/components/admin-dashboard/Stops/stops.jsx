@@ -94,7 +94,7 @@ const Stops = () => {
         <h2>Stops List</h2>
 
         <ul className="list">
-          {stops.map((stop) => (
+          {Array.isArray(stops) && stops.map((stop) => (
             <li key={stop._id}>
               {stop.stopName} — {stop.location}
             </li>
