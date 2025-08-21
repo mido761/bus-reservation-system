@@ -21,10 +21,12 @@ const Bus = () => {
 
   // Fetch all buses
   const fetchBuses = async () => {
+    
     try {
       setIsLoading(true);
-      const { data } = await axios.get(`${backEndUrl}/bus/get-buses`);
-      setBuses(data);
+      const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`);
+      // console.log(data.buses)
+      setBuses(data.buses);
     } catch (err) {
       setAlertMessage(err?.response?.data?.message || "Error fetching buses!");
       setAlertFlag(true);
@@ -94,8 +96,8 @@ const Bus = () => {
         <ul className="list">
           {Array.isArray(buses) &&
             buses.map((bus) => (
-              <li key={bus._id}>
-                {bus.plateNumber} — {bus.capacity} seats
+              <li key={bus.bus_id}>
+                {bus.plate_number} — {bus.capacity} seats
               </li>
             ))}
         </ul>

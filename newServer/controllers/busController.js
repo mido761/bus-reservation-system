@@ -8,8 +8,8 @@ import { DateTime } from "luxon";
 const getAvailableBuses = async (req, res) => {
   try {
     const searchQuery = 'select * from bus'
-    const {row} = await pool.query(searchQuery);
-    const availableBuses = row
+    const {rows} = await pool.query(searchQuery);
+    const availableBuses = rows
     return res.status(200).json({buses: availableBuses});
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -22,14 +22,14 @@ const addBus = async (req, res) => {
 
   try {
     if (!(plateNumber && capacity)) {
-      return res.status(400).json("You should fill blateNumber & capacity & features!");
+      return res.status(400).json("You should fill plateNumber & capacity & features!");
     }
 
     const checkQuery = 'SELECT * FROM bus WHERE plate_number = $1';
     const BlateNumberInData = await pool.query(checkQuery,[plateNumber]);
 
     if (BlateNumberInData.rows.length > 0) {
-      return res.status(400).json("This blateNumber already exists!!");
+      return res.status(400).json("This plateNumber already exists!!");
     }
 
     const insertQuery =

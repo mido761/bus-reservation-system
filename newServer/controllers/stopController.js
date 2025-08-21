@@ -3,8 +3,8 @@ import pool from "../db.js"
 const getStops = async (req, res) => {
   try {
     const getquery = 'select * from stop'
-    const {row} = await pool.query(getquery);
-    const stops = row
+    const {rows} = await pool.query(getquery);
+    const stops = rows
     return res.status(200).json(stops);
   } catch (error) {
     return res.status(500).json({ message: error.message });

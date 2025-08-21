@@ -14,13 +14,13 @@ const AdminDashboard = () => {
   const [stops, setStops] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [buses, setBuses] = useState([]);
-  const [schedules, setSchedules] = useState([]);
+  const [trips, setTrips] = useState([]); // changed from schedules
 
   // Handlers to add data
   const addStop = (stop) => setStops((prev) => [...prev, stop]);
   const addRoute = (route) => setRoutes((prev) => [...prev, route]);
   const addBus = (bus) => setBuses((prev) => [...prev, bus]);
-  const addSchedule = (schedule) => setSchedules((prev) => [...prev, schedule]);
+  const addTrip = (trip) => setTrips((prev) => [...prev, trip]); // changed from addSchedule
 
   // For demo: track which page to show (replace with React Router if you want)
   const [activePage, setActivePage] = useState("stop");
@@ -42,8 +42,8 @@ const AdminDashboard = () => {
           <Schedule
             buses={buses}
             routes={routes}
-            schedules={schedules}
-            onAddSchedule={addSchedule}
+            trips={trips} // changed from schedules
+            onAddTrip={addTrip} // changed from onAddSchedule
           />
         );
       default:
@@ -69,8 +69,8 @@ const AdminDashboard = () => {
           Admin Panel
         </div>
         <ul className="sidebar-menu">
-          <li onClick={() => handleNavClick("schedule")}>
-            <span className="icon">⏰</span> Schedule
+          <li onClick={() => handleNavClick("trip")}>
+            <span className="icon">🚍</span>  trip
           </li>
           <li onClick={() => handleNavClick("route")}>
             <span className="icon">🛣</span> Routes

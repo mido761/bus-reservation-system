@@ -140,8 +140,8 @@ const Route = () => {
             </option> */}
             {Array.isArray(stops) &&
               stops.map((stop) => (
-                <option value={stop.stopName} key={stop._id}>
-                  {stop.stopName}
+                <option value={stop.stop_name} key={stop.stop_id}>
+                  {stop.stop_name}
                 </option>
               ))}
           </select>

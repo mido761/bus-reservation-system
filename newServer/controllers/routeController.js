@@ -9,7 +9,7 @@ const getRoutes = async (req, res) => {
     `;
 
     const { rows } = await pool.query(getRoutes);
-    const routes = rows[0];
+    const routes = rows;
 
     return res.status(200).json(routes);
   } catch (error) {

@@ -16,8 +16,8 @@ const AddSchedule = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    busIds: [], // array of bus IDs
-    routeIds: [], // array of route IDs
+    // busIds: [], // array of bus IDs
+    routeId: "", // array of route IDs
     departureDate: "",
     departureTime: "",
     arrivalTime: "",
@@ -142,8 +142,9 @@ const AddSchedule = () => {
   return (
     <div className="form-page-container">
       <form action="" onSubmit={handleSubmit} className="add-form">
-        <h2>Add Schedule</h2>
-        <label htmlFor="buses">
+        <h2>Add Trip</h2>
+        
+        {/* <label htmlFor="buses">
           Available Buses
           <select name="busIds" id="buses" multiple onChange={handleChange}>
             {Array.isArray(availableBuses) && availableBuses.map((bus) => (
@@ -152,11 +153,11 @@ const AddSchedule = () => {
               </option>
             ))}
           </select>
-        </label>
+        </label> */}
 
         <label htmlFor="routes">
           Routes
-          <select name="routeIds" id="routes" multiple onChange={handleChange}>
+          <select name="routeIds" id="routes" onChange={handleChange}>
             {Array.isArray(routes) && routes.map((route) => (
               <option key={route._id} value={route._id}>
                 {route.source} ---- {route.destination}
@@ -180,12 +181,12 @@ const AddSchedule = () => {
           <input type="time" name="arrivalTime" onChange={handleChange} />
         </label>
 
-        <button type="submit">Add Schedule</button>
+        <button type="submit">Add Trip</button>
       </form>
 
       {/* Schedules List */}
       <div className="list-container">
-        <h2>Schedule list</h2>
+        <h2>Trip List</h2>
         <ul className="list">
           {Array.isArray(schedules) &&
             schedules.map((schedule) => (
