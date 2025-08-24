@@ -22,6 +22,7 @@ const getTrips = async (req, res) => {
 
 const getTrip = async (req, res) => {
   const { routeId, date } = req.body;
+  console.log(routeId, date)
 
   try {
     // Validate inputs first
@@ -46,7 +47,7 @@ const getTrip = async (req, res) => {
       return res.status(404).json({ message: "No trips found for this route and date" });
     }
 
-    return res.status(200).json(trip);
+    return res.status(200).json({ message: "Trip found successfully!", data: trip });;
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

@@ -4,6 +4,7 @@ import axios from "axios";
 import "./Homepage.css";
 import Hero from "./Hero";
 import SearchBar from "./SearchBar";
+
 import PopularRoutes from "./PopularRoutes";
 import BusList from "./Trips";
 
@@ -16,6 +17,8 @@ const Homepage = () => {
   const [date, setDate] = useState("");
   const [filteredBuses, setFilteredBuses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [allRoutes, setAllRoutes] = useState([]);
+  
 
   const popularRoutes = [
     { id: 1, route: "Cairo to E-JUST" },
@@ -26,13 +29,21 @@ const Homepage = () => {
     setIsLoading(true);
     setFilteredBuses([]);
     try {
-      const res = await axios.get(`${backEndUrl}/form`);
+      console.log(allRoutes)
+      const route = allRoutes.find(
+          r => r.source === pickupPoint && r.destination === arrivalPoint
+      );
+      console.log(route)
+
+      const res = await axios.post(`${backEndUrl}/trip/get-trip`, {routeId:route.route_id, date:date});
+      console.log(res.data.data)
+      
       if (Array.isArray(res.data)) {
-        const filtered = res.data.filter(
+        const filtered = res.data.data.find(
           (bus) =>
-            bus.location.pickupLocation === pickupPoint &&
-            bus.location.arrivalLocation === arrivalPoint &&
-            bus.schedule === date
+            bus.source=== pickupPoint &&
+            bus.destination === arrivalPoint &&
+            bus.date === date
         );
         setFilteredBuses(filtered);
       }
@@ -74,6 +85,7 @@ const Homepage = () => {
         setArrivalPoint={setArrivalPoint}
         setDate={setDate}
         onSearch={handleSearch}
+        setAllRoutes={setAllRoutes} 
       />
       <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} />
       <BusList

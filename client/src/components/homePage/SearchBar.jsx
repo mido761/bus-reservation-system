@@ -6,17 +6,19 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const SearchBar = ({
   pickupPoint, arrivalPoint, date,
-  setPickupPoint, setArrivalPoint, setDate, onSearch
+  setPickupPoint, setArrivalPoint, setDate, onSearch, setAllRoutes   
 }) => {
   const [pickupOptions, setPickupOptions] = useState([]);
   const [arrivalOptions, setArrivalOptions] = useState([]);
+
 
   useEffect(() => {
     axios.get(`${backEndUrl}/route/get-routes`)
       .then(res => {
         const routes = res.data || [];
-        setPickupOptions([...new Set(routes.map(r => r.pickupLocation))]);
-        setArrivalOptions([...new Set(routes.map(r => r.arrivalLocation))]);
+        setPickupOptions([...new Set(routes.map(r => r.source))]);
+        setArrivalOptions([...new Set(routes.map(r => r.destination))]);
+        setAllRoutes(routes)
       })
       .catch(() => {
         setPickupOptions([]);
