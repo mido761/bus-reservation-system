@@ -120,6 +120,7 @@ const HomepageOld = () => {
     if (hour12 === 0) hour12 = 12;
     return `${hour12}:${minute} ${period}`;
   };
+  
   const handleSeeReservedPassengers = async (bus) => {
     try {
       setSelectedBus(bus);
