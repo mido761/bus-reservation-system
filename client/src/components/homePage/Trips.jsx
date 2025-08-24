@@ -19,9 +19,9 @@ const Trips = ({ buses, isLoading, onSeePassengers, onBook, convertTo12HourForma
               <img src="arrow.png" alt="See Passengers" />
             </button>
             <div className="list-body">
-              <p>{bus.location.arrivalLocation}</p>
-              <p>{bus.schedule}</p>
-              <p>Time: {convertTo12HourFormat(bus.departureTime)}</p>
+              <p>{bus.route_id}</p>
+              <p>{bus.date}</p>
+              {/* <p>Time: {convertTo12HourFormat(bus.departureTime)}</p> */}
             </div>
             <button onClick={() => onBook(bus)}>
               Book a seat

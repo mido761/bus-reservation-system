@@ -22,8 +22,6 @@ const getTrips = async (req, res) => {
 
 const getTrip = async (req, res) => {
   const { routeId, date } = req.body;
-  console.log(routeId, date)
-
   try {
     // Validate inputs first
     if (!routeId || !date) {

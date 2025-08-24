@@ -38,13 +38,13 @@ const Homepage = () => {
       const res = await axios.post(`${backEndUrl}/trip/get-trip`, {routeId:route.route_id, date:date});
       console.log(res.data.data)
       
-      if (Array.isArray(res.data)) {
-        const filtered = res.data.data.find(
-          (bus) =>
-            bus.source=== pickupPoint &&
-            bus.destination === arrivalPoint &&
-            bus.date === date
+      if (Array.isArray(res.data.data)) {
+        const filtered = res.data.data.filter(
+          (trip) =>
+            trip.route_id === route.route_id &&
+            trip.date === date
         );
+        console.log(filtered)
         setFilteredBuses(filtered);
       }
     } catch (error) {
