@@ -37,7 +37,7 @@ const AdminDashboard = () => {
         return <Route stops={stops} routes={routes} onAddRoute={addRoute} />;
       case "bus":
         return <Bus buses={buses} onAddBus={addBus} />;
-      case "schedule":
+      case "trip":
         return (
           <Schedule
             buses={buses}

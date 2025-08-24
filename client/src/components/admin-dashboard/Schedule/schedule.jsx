@@ -7,8 +7,8 @@ import "../formPage.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-const AddSchedule = () => {
-  const [schedules, setSchedules] = useState([]);
+const AddTrip = () => {
+  const [trips, setTrips] = useState([]);
   const [availableBuses, setAvailableBuses] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [alertFlag, setAlertFlag] = useState(false);
@@ -25,35 +25,29 @@ const AddSchedule = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    console.log(name, value);
     // Handle multiple select separately
-    if (name === "busIds" || name === "routeIds") {
-      const values = Array.from(
-        e.target.selectedOptions,
-        (option) => option.value
-      );
-      setFormData((prev) => ({ ...prev, [name]: values }));
+    if (name === "routeId") {
+      setFormData((prev) => ({ ...prev, [name]: value }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const fetchSchedules = async () => {
+  const fetchTrips = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get(`${backEndUrl}/schedule/get-schedules`);
-
-      setSchedules(data);
+      const { data } = await axios.get(`${backEndUrl}/trip/get-trips`);
+      console.log(data);
+      setTrips(data);
     } catch (err) {
-      setAlertMessage(
-        err?.response?.data?.message || "Error fetching Schedules!"
-      );
+      console.error(err);
+      setAlertMessage(err?.response?.data?.message || "Error fetching Trips!");
       setAlertFlag(true);
     } finally {
       setIsLoading(false);
     }
   };
-
   const fetchAvailableBuses = async () => {
     try {
       const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`);
@@ -85,12 +79,15 @@ const AddSchedule = () => {
   };
 
   useEffect(() => {
-    fetchAvailableBuses();
+    // fetchAvailableBuses();
     fetchRoutes();
-    fetchSchedules();
+    fetchTrips();
   }, []);
 
   const formatDateTime = (time, type) => {
+    const today = new Date().toISOString().split("T")[0]; // e.g. "2025-08-21"
+    const fullDateTime = `${today}T${time}`; // "2025-08-21T17:00:00"
+
     const DateTime = new Date(time).toLocaleString("en-GB", {
       day: "2-digit",
       month: "short",
@@ -106,7 +103,7 @@ const AddSchedule = () => {
       year: "numeric",
     });
 
-    const TimeOnly = new Date(time).toLocaleString("en-GB", {
+    const TimeOnly = new Date(fullDateTime).toLocaleString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
@@ -123,12 +120,12 @@ const AddSchedule = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.post(`${backEndUrl}/schedule/add-schedule`, formData);
+      await axios.post(`${backEndUrl}/trip/add-trip`, formData);
 
-      setSchedules((prev) => [...prev, formData]);
-      setAlertMessage("Schedule Added Successfully"); // Differs
+      setTrips((prev) => [...prev, formData]);
+      setAlertMessage("Trip Added Successfully");
       setAlertFlag(true);
-      fetchSchedules();
+      fetchTrips();
     } catch (err) {
       console.error(err);
       setAlertMessage(err?.response?.data?.message || "Something went wrong");
@@ -143,7 +140,7 @@ const AddSchedule = () => {
     <div className="form-page-container">
       <form action="" onSubmit={handleSubmit} className="add-form">
         <h2>Add Trip</h2>
-        
+
         {/* <label htmlFor="buses">
           Available Buses
           <select name="busIds" id="buses" multiple onChange={handleChange}>
@@ -157,12 +154,20 @@ const AddSchedule = () => {
 
         <label htmlFor="routes">
           Routes
-          <select name="routeIds" id="routes" onChange={handleChange}>
-            {Array.isArray(routes) && routes.map((route) => (
-              <option key={route._id} value={route._id}>
-                {route.source} ---- {route.destination}
-              </option>
-            ))}
+          <select
+            name="routeId"
+            id="routes"
+            onChange={(e) => {
+              handleChange(e);
+            }}
+          >
+            <option value="default">Choose Route</option>
+            {Array.isArray(routes) &&
+              routes.map((route) => (
+                <option key={route.route_id} value={route.route_id}>
+                  {route.source} ---- {route.destination}
+                </option>
+              ))}
           </select>
         </label>
 
@@ -184,31 +189,22 @@ const AddSchedule = () => {
         <button type="submit">Add Trip</button>
       </form>
 
-      {/* Schedules List */}
+      {/* Trips List */}
       <div className="list-container">
         <h2>Trip List</h2>
         <ul className="list">
-          {Array.isArray(schedules) &&
-            schedules.map((schedule) => (
-              <li key={schedule._id}>
-                {formatDateTime(schedule.departure, "date")}
+          {Array.isArray(trips) &&
+            trips.map((trip) => (
+              <li key={trip.trip_id}>
+                {formatDateTime(trip.date, "date")}
                 <br />
-                {formatDateTime(schedule.departure)} ----{" "}
-                {formatDateTime(schedule.arrival)}
+                {formatDateTime(trip.departure_time)} ----{" "}
+                {formatDateTime(trip.arrival_time)}
                 <br />
-                {schedule.routeIds
-                  .map(
-                    (id) =>
-                      routes?.find(
-                        (route) => route._id.toString() === id.toString()
-                      )?.source
-                  )
-                  .join("---")}{" "}
-                <br />
-                {schedule.busIds.map(
-                  (id) =>
-                    availableBuses?.find((bus) => bus._id === id)?.plateNumber
-                )}
+                {
+                  routes.find((route) => route.route_id === trip.route_id)
+                    ?.source
+                }
               </li>
             ))}
         </ul>
@@ -224,4 +220,4 @@ const AddSchedule = () => {
   );
 };
 
-export default AddSchedule;
+export default AddTrip;
