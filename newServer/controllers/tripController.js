@@ -15,31 +15,48 @@ const getTrips = async (req, res) => {
 };
 
 const getTrip = async (req, res) => {
+  const { routeId, date } = req.body;
+
   try {
+    // Validate inputs first
+    if (!routeId || !date) {
+      return res.status(400).json({ message: "routeId and date are required" });
+    }
+
     const getTrips = `
-    SELECT * FROM trips
+      SELECT * FROM trips 
+      WHERE route_id = $1 AND "date" = $2;
     `;
 
-    const { rows: trips } = await pool.query(getTrips);
+    // Format date to YYYY-MM-DD
+    const formattedDate = new Date(date).toISOString().split("T")[0];
 
-    return res.status(200).json(trips);
+    const { rows: trip } = await pool.query(getTrips, [routeId, formattedDate]);
+
+    // Handle empty result
+    if (trip.length === 0) {
+      return res.status(404).json({ message: "No trips found for this route and date" });
+    }
+
+    return res.status(200).json(trip);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
+
 const addTrip = async (req, res) => {
-  const { routeId, departureDate, departureTime, arrivalTime } = req.body;
+  const { routeId, date, departureTime, arrivalTime } = req.body;
 
   try {
-    if (!routeId || !departureDate || !departureTime || !arrivalTime) {
+    if (!routeId || !date || !departureTime || !arrivalTime) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    console.log(routeId, departureDate, departureTime, arrivalTime);
+    console.log(routeId, date, departureTime, arrivalTime);
 
     // Convert date to ISO format (YYYY-MM-DD)
-    const formattedDate = new Date(departureDate).toISOString().split("T")[0];
+    const formattedDate = new Date(date).toISOString().split("T")[0];
 
     // Check if trip already exists
     const checkTrip = `
