@@ -6,7 +6,7 @@ import Hero from "./Hero";
 import SearchBar from "./SearchBar";
 
 import PopularRoutes from "./PopularRoutes";
-import BusList from "./Trips";
+import Trips from "./Trips";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -15,9 +15,12 @@ const Homepage = () => {
   const [pickupPoint, setPickupPoint] = useState("");
   const [arrivalPoint, setArrivalPoint] = useState("");
   const [date, setDate] = useState("");
-  const [filteredBuses, setFilteredBuses] = useState([]);
+  const [filteredTrips, setFilteredTrips] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [allRoutes, setAllRoutes] = useState([]);
+  const [route, setroute] = useState({});
+
+
   
 
   const popularRoutes = [
@@ -27,13 +30,17 @@ const Homepage = () => {
 
   const handleSearch = async () => {
     setIsLoading(true);
-    setFilteredBuses([]);
+  setFilteredTrips([]);
     try {
       console.log(allRoutes)
       const route = allRoutes.find(
           r => r.source === pickupPoint && r.destination === arrivalPoint
       );
       console.log(route)
+      if(!route){
+        console.log("a7a")
+      }
+      setroute(route)
 
       const res = await axios.post(`${backEndUrl}/trip/get-trip`, {routeId:route.route_id, date:date});
       console.log(res.data.data)
@@ -45,10 +52,10 @@ const Homepage = () => {
             trip.date === date
         );
         console.log(filtered)
-        setFilteredBuses(filtered);
+    setFilteredTrips(filtered);
       }
     } catch (error) {
-      setFilteredBuses([]);
+  setFilteredTrips([]);
     } finally {
       setIsLoading(false);
     }
@@ -88,12 +95,13 @@ const Homepage = () => {
         setAllRoutes={setAllRoutes} 
       />
       <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} />
-      <BusList
-        buses={filteredBuses}
+      <Trips
+  trips={filteredTrips}
         isLoading={isLoading}
         onSeePassengers={() => {}}
         onBook={() => {}}
         convertTo12HourFormat={convertTo12HourFormat}
+        route= {route}
       />
     </div>
   );
