@@ -1,0 +1,25 @@
+.bus-list {
+  margin-top: 2rem;
+}
+.bus-container {
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.list-btn.top-right-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+}
+.list-body {
+  flex: 1;
+  margin-left: 2rem;
+}
