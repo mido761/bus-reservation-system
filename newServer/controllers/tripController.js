@@ -1,4 +1,10 @@
 import pool from "../db.js";
+import pg from "pg";
+const types = pg.types;
+
+// OID 1082 is DATE in Postgres
+types.setTypeParser(1082, (val) => val); 
+
 
 const getTrips = async (req, res) => {
   try {
@@ -32,6 +38,8 @@ const getTrip = async (req, res) => {
     const formattedDate = new Date(date).toISOString().split("T")[0];
 
     const { rows: trip } = await pool.query(getTrips, [routeId, formattedDate]);
+    // const formattedDate2 = new Date(trip.date).toISOString().split("T")[0];
+    // => "2025-08-22"
 
     // Handle empty result
     if (trip.length === 0) {
