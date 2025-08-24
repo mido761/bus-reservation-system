@@ -1,7 +1,7 @@
 import React from "react";
-import "./BusList.css";
+import "./Trips.css";
 
-const BusList = ({ buses, isLoading, onSeePassengers, onBook, convertTo12HourFormat }) => {
+const Trips = ({ buses, isLoading, onSeePassengers, onBook, convertTo12HourFormat }) => {
   if (isLoading) return <div className="bus-list-loading">Loading...</div>;
   return (
     <div className="bus-list">
@@ -35,4 +35,5 @@ const BusList = ({ buses, isLoading, onSeePassengers, onBook, convertTo12HourFor
   );
 };
 
-export default BusList;
+export default Trips;
+

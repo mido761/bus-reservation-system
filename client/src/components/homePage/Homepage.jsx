@@ -5,7 +5,7 @@ import "./Homepage.css";
 import Hero from "./Hero";
 import SearchBar from "./SearchBar";
 import PopularRoutes from "./PopularRoutes";
-import BusList from "./BusList";
+import BusList from "./Trips";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 

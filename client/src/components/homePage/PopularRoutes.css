@@ -1,17 +1,22 @@
 .popular-routes {
   margin-top: 1.5rem;
 }
+
 .popular-routes-list {
   display: flex;
   gap: 1rem;
 }
+
 .route-card {
   background: #e0e0e0;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
+
 .route-card:hover {
-  background: #bdbdbd;
+  background: #d0d0d0;
+  transform: translateY(-2px);
 }
+
