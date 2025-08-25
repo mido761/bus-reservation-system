@@ -18,7 +18,7 @@ const app = express();
  * @throws {401} If user is not authenticated
  */
 const isAuthenticated = (req, res, next) => {
-  // if (process.env.NODE_ENV === "development") return next();
+  if (process.env.NODE_ENV === "development") return next();
   
   console.log(req.session, req.session.userId)
   if (req.session && req.session.userId) {
@@ -41,7 +41,7 @@ const isAuthenticated = (req, res, next) => {
  * @throws {401} If user is not authorized as admin
  */
 const isAuthoraized = (req, res, next) => {
-  // if (process.env.NODE_ENV === "development") return next();
+  if (process.env.NODE_ENV === "development") return next();
  console.log(req.session)
   if (req.session && req.session.userId && req.session.userRole === "admin") {
     return next();

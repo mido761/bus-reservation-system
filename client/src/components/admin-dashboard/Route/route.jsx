@@ -3,11 +3,15 @@ import axios from "axios";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
 import "../formPage.css";
+import route from "../../../../../newServer/models/route";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Route = () => {
   const [stops, setStops] = useState([]);
+  const [linkedStops, setLinkedStops] = useState([]);
+  const [stopId, setStopId] = useState("");
+  const [position, setPosition] = useState(0);
   const [routes, setRoutes] = useState([]);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -37,12 +41,58 @@ const Route = () => {
     }
   };
 
+  const fetchLinkedStops = async () => {
+    setIsLoading(true);
+    try {
+      const { data } = await axios.get(
+        `${backEndUrl}/get-route-stops/${route.route_id}`
+      );
+      console.log(data);
+      setStops(data);
+    } catch (err) {
+      setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
+      setAlertFlag(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchRoutes = async () => {
     setIsLoading(true);
     try {
-      const { data } = await axios.get(`${backEndUrl}/route/get-routes`);
-      console.log(data)
-      setRoutes(data);
+      const { data } = await axios.get(
+        `${backEndUrl}/route/get-routes-with-stops`
+      );
+      console.log(data);
+
+      const groupedRoutes = data.routes.reduce((acc, curr) => {
+        // check if we already added this route
+        let route = acc.find((r) => r.route_id === curr.route_id);
+
+        if (!route) {
+          route = {
+            route_id: curr.route_id,
+            source: curr.source,
+            destination: curr.destination,
+            stops: [],
+          };
+          acc.push(route);
+        }
+
+        // push the stop into this route's stops
+        route.stops.push({
+          stop_id: curr.stop_id,
+          stop_name: curr.stop_name,
+          location: curr.location,
+          position: curr.position,
+          distance_from_source: curr.distance_from_source,
+          is_active: curr.is_active,
+        });
+
+        return acc;
+      }, []);
+
+      setRoutes(groupedRoutes);
     } catch (err) {
       setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
       setAlertFlag(true);
@@ -60,6 +110,30 @@ const Route = () => {
         newRoute
       );
       setAlertMessage("Route added successfully!");
+      setAlertFlag(true);
+      setNewRoute({ name: "", start: "", end: "" });
+      fetchRoutes(); // Refresh list
+    } catch (err) {
+      setAlertMessage(err?.response?.data?.message || "Error adding route!");
+      setAlertFlag(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLinkRouteStop = async (e, routeId) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      const { data } = await axios.post(
+        `${backEndUrl}/route/link-route-stop`,
+        { routeId, stopId, position },
+        {
+          withCredentials: true,
+        }
+      );
+
+      setAlertMessage("Route linked successfully!");
       setAlertFlag(true);
       setNewRoute({ name: "", start: "", end: "" });
       fetchRoutes(); // Refresh list
@@ -131,32 +205,74 @@ const Route = () => {
             required
           />
         </label>
-
-        <label htmlFor="stops">
-          Stops{" "}
-          <select name="stops" id="stops" multiple>
-            {/* <option value='default'>
-              Choose Stops
-            </option> */}
-            {Array.isArray(stops) &&
-              stops.map((stop) => (
-                <option value={stop.stop_name} key={stop.stop_id}>
-                  {stop.stop_name}
-                </option>
-              ))}
-          </select>
-        </label>
-
         <button type="submit">Add Route</button>
       </form>
       <div className="list-container">
         <h2>Routes List</h2>
         <ul className="list">
-          {Array.isArray(routes) && routes.map((route) => (
-            <li key={route._id}>
-              ({route.source} → {route.destination})
-            </li>
-          ))}
+          {Array.isArray(routes) &&
+            routes.map((route) => (
+              <li key={route._id}>
+                <div>
+                  ({route.source} → {route.destination}) <br />
+                  {/* {route.stop_name && route.stop_name} <br /> */}
+                  <ul>
+                    {route.stops
+                      .sort((a, b) => a.position - b.position) // order by position
+                      .map((stop) => (
+                        <li key={stop.stop_id}>
+                          {stop.position}. {stop.stop_name} ({stop.location})
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+                <label htmlFor="">
+                  Position:
+                  <input
+                    type="number"
+                    name="position"
+                    id=""
+                    onChange={(e) => setPosition(e.target.value)}
+                  />
+                </label>
+                <label htmlFor="stops">
+                  Link a route:
+                  <select
+                    name="stops"
+                    id="stops"
+                    onChange={(e) => setStopId(e.target.value)}
+                  >
+                    <option value="default">Choose stop</option>
+                    {Array.isArray(stops) &&
+                      stops
+                        .filter(
+                          (stop) =>
+                            !route.stops.some(
+                              (rs) => rs.stop_id === stop.stop_id
+                            )
+                        ) // exclude the route's stop
+                        .map((stop) => (
+                          <option key={stop.stop_id} value={stop.stop_id}>
+                            {stop.stop_name}
+                          </option>
+                        ))}
+                  </select>
+                </label>
+
+                <button
+                  onClick={(e) =>
+                    handleLinkRouteStop(
+                      e,
+                      route.route_id,
+                      route.stop_id,
+                      position
+                    )
+                  }
+                >
+                  Link
+                </button>
+              </li>
+            ))}
         </ul>
       </div>
 
@@ -171,3 +287,19 @@ const Route = () => {
 };
 
 export default Route;
+
+//
+// <label htmlFor="stops">
+//   Stops{" "}
+//   <select name="stops" id="stops" multiple>
+//     {/* <option value='default'>
+//       Choose Stops
+//     </option> */}
+//     {Array.isArray(stops) &&
+//       stops.map((stop) => (
+//         <option value={stop.stop_name} key={stop.stop_id}>
+//           {stop.stop_name}
+//         </option>
+//       ))}
+//   </select>
+// </label>
