@@ -19,6 +19,7 @@ const Homepage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [allRoutes, setAllRoutes] = useState([]);
   const [route, setroute] = useState({});
+  const [hasSearched, setHasSearched] = useState(false);
 
 
   
@@ -31,6 +32,7 @@ const Homepage = () => {
   const handleSearch = async () => {
     setIsLoading(true);
   setFilteredTrips([]);
+  setHasSearched(true);
     try {
       console.log(allRoutes)
       const route = allRoutes.find(
@@ -102,6 +104,7 @@ const Homepage = () => {
         onBook={() => {}}
         convertTo12HourFormat={convertTo12HourFormat}
         route= {route}
+        hasSearched={hasSearched}
       />
     </div>
   );

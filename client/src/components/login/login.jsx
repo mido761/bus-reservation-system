@@ -41,7 +41,7 @@ function Login() {
 
         setTimeout(() => {
           setAlertFlag(false);
-          navigate("/");
+          navigate("/home");
         }, 2200);
       }
     } catch (error) {

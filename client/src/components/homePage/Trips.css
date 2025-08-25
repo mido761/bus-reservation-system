@@ -1,26 +1,93 @@
-.bus-list {
+/* Container Card */
+.trip-card {
+  background: #e6f0fa;
+  border-radius: 12px;
+  padding: 1.5rem;
   margin-top: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.bus-container {
-  background: #f9f9f9;
+
+/* Header */
+.trip-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #cfe2f3;
+  padding: 0.8rem 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
+}
+
+.trip-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #003366;
+}
+
+.bus-icon {
+  font-size: 20px;
+}
+
+/* Each Trip Item */
+.trip-item {
+  background: #fff;
+  border-radius: 8px;
   padding: 1rem;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-.list-btn.top-right-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-}
-.list-body {
-  flex: 1;
-  margin-left: 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
+/* Trip Info */
+.trip-info p {
+  margin: 0.3rem 0;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Actions */
+.trip-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Buttons */
+.reserve-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 14px;
+}
+
+.reserve-btn:hover {
+  background: #0056b3;
+}
+
+.passengers-btn {
+  background: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.passengers-btn:hover {
+  background: #ddd;
+}
+
+/* No trips */
+.no-trips {
+  text-align: center;
+  padding: 1rem;
+  color: #555;
+}

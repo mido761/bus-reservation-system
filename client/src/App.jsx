@@ -29,21 +29,27 @@ import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
 import Stops from "./components/admin-dashboard/Stops/stops.jsx";
 import Bus from "./components/admin-dashboard/Bus/bus.jsx";
 import AdminDashboard from "./components/admin-dashboard/admin-dashboard.jsx";
-
+import LandingPage from "./components/LandingPage/landingpage.jsx";
+import { ToastContainer } from "react-toastify";             
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <HashRouter basename="/">
+      {/* Toasts will show up anywhere in the app */}
+        <ToastContainer position="top-center" autoClose={2000} />
       <Routes>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/driver-list" element={<DriverList />} />
+        <Route path="/" element={<LandingPage />} />
+        
 
 
         {/* Protected Routes */}
         <Route
-          path="/"
+          path="/home"
           element={
             <Auth>
               <Navbar />
