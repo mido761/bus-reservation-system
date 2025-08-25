@@ -1,0 +1,56 @@
+/* reserve.css */
+
+.reserve-page {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin-top: 64px;
+}
+
+.reserve-page h1 {
+  text-align: center;
+  color: #222;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.reserve-page p {
+  margin: 0.6rem 0;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.reserve-page strong {
+  color: #111;
+}
+
+.no-trip {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+/* optional confirm button (future use) */
+.confirm-btn {
+  margin-top: 2rem;
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.confirm-btn:hover {
+  background: #0056b3;
+}

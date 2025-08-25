@@ -99,13 +99,21 @@ const Homepage = () => {
       <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} />
       <Trips
   trips={filteredTrips}
-        isLoading={isLoading}
-        onSeePassengers={() => {}}
-        onBook={() => {}}
-        convertTo12HourFormat={convertTo12HourFormat}
-        route= {route}
-        hasSearched={hasSearched}
-      />
+  isLoading={isLoading}
+  onSeePassengers={() => {}}
+  onBook={(trip) => {
+    navigate("/reserve", {
+      state: {
+        trip,
+        route,
+      },
+    });
+  }}
+  convertTo12HourFormat={convertTo12HourFormat}
+  route={route}
+  hasSearched={hasSearched}
+/>
+
     </div>
   );
 };

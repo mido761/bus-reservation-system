@@ -32,6 +32,7 @@ import AdminDashboard from "./components/admin-dashboard/admin-dashboard.jsx";
 import LandingPage from "./components/LandingPage/landingpage.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Reserve from "./components/Booking/reserve.jsx";
 function App() {
   return (
     <HashRouter basename="/">
@@ -87,6 +88,16 @@ function App() {
             </Auth>
           }
         />
+<Route
+  path="/reserve"
+  element={
+    <Auth>
+      <Navbar />
+      <Reserve />
+      <Footer />
+    </Auth>
+  }
+/>
 
         <Route
           path="/payment-success/:selectedSeats"
@@ -109,7 +120,7 @@ function App() {
             </Auth>
           }
         />
-
+  <Route path="/reserve" element={<Reserve />} />
         <Route
           path="/add-bus"
           element={
