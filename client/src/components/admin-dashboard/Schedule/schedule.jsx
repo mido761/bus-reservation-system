@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
+import formatDateTime from "../../../formatDateAndTime";
 import "../formPage.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -83,38 +84,6 @@ const AddTrip = () => {
     fetchRoutes();
     fetchTrips();
   }, []);
-
-  const formatDateTime = (time, type) => {
-    const today = new Date().toISOString().split("T")[0]; // e.g. "2025-08-21"
-    const fullDateTime = `${today}T${time}`; // "2025-08-21T17:00:00"
-
-    const DateTime = new Date(time).toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    const DateOnly = new Date(time).toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-
-    const TimeOnly = new Date(fullDateTime).toLocaleString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    return type === "dateTime"
-      ? DateTime
-      : type === "date"
-      ? DateOnly
-      : TimeOnly;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
