@@ -11,6 +11,28 @@ const getStops = async (req, res) => {
   }
 };
 
+const getStopsRoute = async (req , res) => {
+  const routeId = req.params.routeId
+  try {
+    const getRouteStops= `
+    SELECT rs.stop_id, rs.position, s.stop_name, s.location, s.distance_from_source, s.is_active
+    FROM route_stop rs
+    INNER JOIN stop s ON rs.stop_id = s.stop_id
+    WHERE rs.route_id = $1
+    ORDER BY rs.position
+    `;
+
+    const { rows } = await pool.query(getRouteStops, [routeId]);
+
+    const stops = rows;
+
+    return res.status(200).json({stops: stops});
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+
+}
+
 
 const addStop = async (req, res) => {
   const {stopName,location,distanceFromSource} = req.body;
@@ -68,4 +90,4 @@ try {
 
 };
 
-export { getStops, addStop, editStop, delStop };
+export { getStops, addStop, editStop, delStop,getStopsRoute };
