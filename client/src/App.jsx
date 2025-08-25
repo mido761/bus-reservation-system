@@ -79,7 +79,7 @@ function App() {
         />
 
         <Route
-          path="/payment/:selectedSeats"
+          path="/payment"
           element={
             <Auth>
               <Navbar />
@@ -88,16 +88,16 @@ function App() {
             </Auth>
           }
         />
-<Route
-  path="/reserve"
-  element={
-    <Auth>
-      <Navbar />
-      <Reserve />
-      <Footer />
-    </Auth>
-  }
-/>
+        <Route
+          path="/reserve"
+          element={
+            <Auth>
+              <Navbar />
+              <Reserve />
+              <Footer />
+            </Auth>
+          }
+        />
 
         <Route
           path="/payment-success/:selectedSeats"

@@ -9,8 +9,10 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 const Payment = () => {
   const { selectedSeats } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { booking,trip,route,selectedStop} = location.state || {};
   const [paymentDetails, setPaymentDetails] = useState({
-    paymentMethod: "cash", // Default to Visa
+    paymentMethod:[ "cash","paymob"]// Default to Visa
   });
 
   // overlay screen

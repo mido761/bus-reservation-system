@@ -157,6 +157,7 @@ async function book(req, res) {
         );
     }
     const passengerId = req.session.userId
+    console.log(passengerId)
     const addQuery = 
     `insert into booking (trip_id, passenger_id, stop_id)
     values($1,$2,$3)
