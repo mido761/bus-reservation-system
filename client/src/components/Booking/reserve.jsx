@@ -29,8 +29,17 @@ const Reserve = () => {
         <>
           <p><strong>Route:</strong> {route.source} → {route.destination}</p>
           <p><strong>Date:</strong> {trip.date}</p>
-          <p><strong>Departure:</strong> {trip.departure_time}</p>
-          <p><strong>Arrival:</strong> {trip.arrival_time}</p>
+          <p><strong>Departure:</strong> {formatDateTime(trip.departure_time)}</p>
+          <p><strong>Arrival:</strong> {formatDateTime(trip.arrival_time)}</p>
+          <p><strong>stops:</strong></p>
+          <ul>
+            {stops.map((stop) => (
+              <li key={stop.stop_id}>
+                {stop.stop_name} – {stop.location} – {stop.postion} km
+              </li>
+            ))}
+          </ul>
+
 
           <button className="confirm-btn">Confirm Reservation</button>
         </>
