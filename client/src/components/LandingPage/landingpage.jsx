@@ -7,6 +7,15 @@ import "./landingpage.css";
 const LandingPage = () => {
   const navigate = useNavigate();
 
+  const handleBookNowClick = () => {
+    const authToken = sessionStorage.getItem("authToken");
+    if (authToken) {
+      navigate("/home");
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="landing-page">
       <LandingNavbar />
@@ -15,7 +24,7 @@ const LandingPage = () => {
           <h1>Welcome to VIP Travel</h1>
           <p>Book your Trips easily and quickly with easily steps.</p>
           <div className="action-buttons">
-            <button className="btn primary" onClick={() => navigate("/login")}>
+            <button className="btn primary" onClick={handleBookNowClick}>
               Book Now
             </button>
             <button className="btn secondary" onClick={() => navigate("/register")}>
