@@ -1,5 +1,3 @@
-import Route from "../models/route.js";
-import Stop from "../models/stop.js";
 import pool from "../db.js";
 
 const getRoutes = async (req, res) => {
@@ -17,10 +15,39 @@ const getRoutes = async (req, res) => {
   }
 };
 
-const getRouteStops = async (req, res) => {
-  const routeId = req.params.routeId
+const getRoutesWithStops = async (req, res) => {
   try {
-    const getRouteStops= `
+    const getRoutesWithStops = `
+    SELECT 
+    r.route_id,
+    r.source,
+    r.destination,
+    rs.stop_id,
+    rs.position,
+    s.stop_name,
+    s.location,
+    s.distance_from_source,
+    s.is_active
+    FROM route r
+    LEFT JOIN route_stop rs ON r.route_id = rs.route_id
+    LEFT JOIN stop s ON rs.stop_id = s.stop_id
+    ORDER BY r.route_id, rs.position;
+    `;
+
+    const { rows } = await pool.query(getRoutesWithStops);
+
+    const routesWithStops = rows;
+
+    return res.status(200).json({ routes: routesWithStops });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getRouteStops = async (req, res) => {
+  const routeId = req.params.routeId;
+  try {
+    const getRouteStops = `
     SELECT rs.stop_id, rs.position, s.stop_name, s.location, s.distance_from_source, s.is_active
     FROM route_stop rs
     INNER JOIN stop s ON rs.stop_id = s.stop_id
@@ -32,7 +59,7 @@ const getRouteStops = async (req, res) => {
 
     const stops = rows[0];
 
-    return res.status(200).json({stops: stops});
+    return res.status(200).json({ stops: stops });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -84,9 +111,8 @@ const addRoutes = async (req, res) => {
   }
 };
 
-
 const linkStop = async (req, res) => {
-  const {routeId, stopId, position} = req.body
+  const { routeId, stopId, position } = req.body;
   try {
     const link = `
     INSERT INTO route_stop (route_id, stop_id, position) 
@@ -95,21 +121,19 @@ const linkStop = async (req, res) => {
     `;
 
     const { rows } = await pool.query(link, [routeId, stopId, position]);
-    const route_stop = rows[0];
-    console.log(rows)
+    const route_stop = rows;
+    console.log(rows);
 
-    return res.status(200).json({newLink: route_stop});
+    return res.status(200).json({ newLink: route_stop });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-
-
 const editRoutes = (req, res) => {};
 
 const delRoutes = async (req, res) => {
-  const {routeId} = req.body;
+  const { routeId } = req.body;
   try {
     const checkRouteById = `
       SELECT * FROM route WHERE route_id = $1
@@ -138,4 +162,4 @@ const delRoutes = async (req, res) => {
   }
 };
 
-export { getRoutes, getRouteStops, addRoutes, linkStop, editRoutes, delRoutes };
+export { getRoutes, getRoutesWithStops, getRouteStops, addRoutes, linkStop, editRoutes, delRoutes };

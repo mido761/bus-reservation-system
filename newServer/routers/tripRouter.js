@@ -5,12 +5,12 @@ import { getTrips, addTrip, linkTripBus, editTrip, delTrip,getTrip } from "../co
 const router = express.Router();
 
 
-router.get('/get-trips', authentication.isAuthoraized, getTrips);
+router.get('/get-trips', getTrips);
 router.post('/get-trip', getTrip);
-router.post('/link-trip-bus', authentication.isAuthoraized, linkTripBus);
-router.post('/add-trip',authentication.isAuthoraized , addTrip);
-router.put('/edit-trip', authentication.isAuthoraized, editTrip);
-router.delete('/del-trip', authentication.isAuthoraized, delTrip);
+router.post('/link-trip-bus',  linkTripBus);
+router.post('/add-trip', addTrip);
+router.put('/edit-trip', editTrip);
+router.delete('/del-trip', delTrip);
 
 
 export default router;

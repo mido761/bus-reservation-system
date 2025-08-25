@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import formatDateTime from "../../../formatDateAndTime";
+import formatDateTime from "../../formatDateAndTime";
 import "./reserve.css";
 
 const Reserve = () => {

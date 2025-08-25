@@ -19,7 +19,7 @@ const AddTrip = () => {
   const [formData, setFormData] = useState({
     // busIds: [], // array of bus IDs
     routeId: "", // array of route IDs
-    departureDate: "",
+    date: "",
     departureTime: "",
     arrivalTime: "",
   });
@@ -142,7 +142,7 @@ const AddTrip = () => {
 
         <label>
           Departure Date
-          <input type="date" name="departureDate" onChange={handleChange} />
+          <input type="date" name="date" onChange={handleChange} />
         </label>
 
         <label>
