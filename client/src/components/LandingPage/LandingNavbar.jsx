@@ -7,15 +7,19 @@ const LandingNavbar = () => {
   const navigate = useNavigate();
 
   const handleHomeClick = (e) => {
-    const isLoggedIn = sessionStorage.getItem("isLoggedIn");
-    if (!isLoggedIn) {
-      e.preventDefault();
-      toast.warn("You must log in to access Home!"); // ✅ popup message
-      setTimeout(() => {
-        navigate("/login");
-      }, 2500); // wait for toast before redirecting
-    }
-  };
+  const authToken = sessionStorage.getItem("authToken");
+
+  if (!authToken) {
+    e.preventDefault();
+    toast.warn("You must log in to access Home!");
+    setTimeout(() => {
+      navigate("/login");
+    }, 2500); 
+  } else {
+    navigate("/home");
+  }
+};
+
 
   return (
     <nav className="landing-navbar">
