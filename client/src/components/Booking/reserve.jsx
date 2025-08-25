@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useState,useEffect } from "react";
 import axios from "axios";
-import formatDateTime from "../../../formatDateAndTime";
+import formatDateTime from "./../../formatDateAndTime";
 import "./reserve.css";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 const Reserve = () => {
