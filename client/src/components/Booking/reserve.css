@@ -1,5 +1,6 @@
 /* reserve.css */
 
+/* reserve.css */
 .reserve-page {
   max-width: 700px;
   margin: 2rem auto;
@@ -29,6 +30,20 @@
   color: #111;
 }
 
+/* Selected stop confirmation styling */
+.selected-stop {
+  margin-top: 1.5rem;
+  background: #f6fafd;
+  border: 2px solid #007bff;
+  color: #0c2340;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: 1.08rem;
+  font-weight: 500;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+}
+
 .no-trip {
   text-align: center;
   color: #888;
@@ -36,13 +51,38 @@
   margin-top: 1rem;
 }
 
-/* optional confirm button (future use) */
+
+/* Stop button styles */
+.stop-btn {
+  padding: 0.7rem 1.3rem;
+  margin: 0.3rem 0.5rem 0.3rem 0;
+  border: 2px solid black;
+  background: #f3f7ff;
+  color: #0c2340;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(0,123,255,0.06);
+}
+.stop-btn:hover {
+  background: #e6f0ff;
+  border-color: var(--primary-color);
+}
+.stop-btn.selected {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: #03172d;
+  box-shadow: 0 2px 8px rgba(104, 130, 156, 0.13);
+}
+
 .confirm-btn {
   margin-top: 2rem;
   display: block;
   width: 100%;
   padding: 12px;
-  background: #007bff;
+  background: var(--primary-color);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -52,5 +92,75 @@
 }
 
 .confirm-btn:hover {
+  background: #03172d;
+}
+
+/* Modal styles for trip confirmation */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 14px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  min-width: 320px;
+  max-width: 95vw;
+  text-align: center;
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-bottom: 1.2rem;
+  color: #0c2340;
+}
+
+.modal-details {
+  text-align: left;
+  margin-bottom: 1.5rem;
+  font-size: 1.08rem;
+}
+
+.modal-details strong {
+  color: var(--primary-color);
+}
+
+.modal-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-btn.confirm {
+  background: var(--primary-color);
+  color: #fff;
+}
+.modal-btn.confirm:hover {
   background: #0056b3;
+}
+.modal-btn.cancel {
+  background: #eee;
+  color: #333;
+}
+.modal-btn.cancel:hover {
+  background: #ddd;
 }
