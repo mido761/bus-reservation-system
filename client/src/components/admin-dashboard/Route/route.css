@@ -1,110 +1,104 @@
-/* ===== Route Page Styles ===== */
+/* route.css */
 
-/* Main container */
-.route-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 25px;
-  background-color: var(--page-background);
-  min-height: 92vh;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Heading */
-.route-container h2 {
-  color: var(--primary-hover);
-  margin-bottom: 20px;
-  font-size: 26px;
-}
-
-/* Add route form */
-.add-route-form {
-  width: 100%;
-  max-width: 500px;
-  background-color: var(--form-background);
-  padding: 20px;
+.list-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--secondary--color);
   border-radius: 12px;
-  box-shadow: 0 6px 20px var(--shadow-color);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: var(--secondary--color);
+  font-family: Arial, sans-serif;
 }
 
-.add-route-form input {
+.list-container h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  text-align: center;
+  color: var(--primary--color);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.list li div {
+  margin-bottom: 1rem;
+}
+
+.list li div ul {
+  list-style: decimal inside;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+  color: black;
+}
+
+.list li label {
+  display: block;
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+.list li input,
+.list li select {
   width: 100%;
-  padding: 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  font-size: 16px;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  transition: border-color 0.3s, background-color 0.3s;
-}
-
-.add-route-form input::placeholder {
-  color: #666;
-  font-size: 14px;
-}
-
-.add-route-form button {
-  padding: 12px;
-  background-color: var(--secondary-hover);
-  color: var(--button-text);
-  font-weight: 600;
-  font-size: 16px;
+  padding: 0.5rem;
+  border-radius: 8px;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  outline: none;
+  margin-top: 0.3rem;
+  background-color: #fff;
+  color: #333;
+  font-size: 0.9rem;
+  transition: box-shadow 0.2s;
 }
 
-.add-route-form button:hover {
-  background-color: var(--primary-hover);
+.list li input:focus,
+.list li select:focus {
+  box-shadow: 0 0 0 2px var(--primary--color);
+}
+
+.list li button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary--color);
+  color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.list li button:hover {
+  background-color: var(--secondary--color);
+  color: var(--primary--color);
   transform: translateY(-2px);
 }
 
-.add-route-form button:active {
-  transform: translateY(1px);
-}
-
-/* Route list */
-.route-list {
-  width: 100%;
-  max-width: 600px;
-  list-style: none;
-  padding: 0;
-}
-
-.route-list li {
-  background-color: var(--form-background);
-  padding: 14px 18px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border-left: 5px solid var(--primary-hover);
-  box-shadow: 0 4px 10px var(--shadow-color);
-  color: var(--text-color);
-  font-size: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-
-.route-list li:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 15px var(--shadow-color);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .add-route-form {
-    padding: 15px;
+@media (min-width: 768px) {
+  .list li {
+    display: flex;
+    flex-direction: column;
   }
 
-  .route-list li {
-    flex-direction: column;
-    align-items: flex-start;
+  .list li label,
+  .list li button {
+    width: 50%;
   }
 }
