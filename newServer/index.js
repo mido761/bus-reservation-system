@@ -12,6 +12,7 @@ import stopRouter from "./routers/stopRouter.js";
 import routeRouter from "./routers/routeRouter.js";
 import tripRouter from "./routers/tripRouter.js";
 import bookingRouter from "./routers/bookingRouter.js";
+import payment from "./routers/paymentRouter.js";
 import authentication from "./middleware/authentication.js";
 import register from "./routers/registerRouter.js";
 import auth from "./routers/authRouter.js";
@@ -155,7 +156,7 @@ app.use("/route", routeRouter);
 app.use("/trip",  tripRouter);
 app.use("/booking", bookingRouter);
 app.use("/user",  userRouter);
-
+app.use("/payment",payment)
 // app.use((req, res) => {
 //   return res.status(404).json({ message: "Not Found" });
 // });
