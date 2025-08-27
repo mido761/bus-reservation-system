@@ -4,7 +4,7 @@ import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
 import "../formPage.css";
 import route from "../../../../../newServer/models/route";
-
+import "./route.css"
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Route = () => {
