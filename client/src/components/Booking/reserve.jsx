@@ -89,7 +89,7 @@ const Reserve = () => {
             <p>
               <strong>Select a stop:</strong>
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="stops-list">
               {stops.map((stop) => (
                 <button
                   key={stop.stop_id}
@@ -97,8 +97,13 @@ const Reserve = () => {
                   className={`stop-btn${
                     selectedStop?.stop_id === stop.stop_id ? " selected" : ""
                   }`}
+                  tabIndex={0}
                 >
-                  {stop.stop_name} – {stop.location}
+                  <span className="stop-icon" role="img" aria-label="stop">🚌</span>
+                  <span>
+                    <span style={{fontWeight:600}}>{stop.stop_name}</span>
+                    <span style={{color:'#888', fontWeight:400}}> – {stop.location}</span>
+                  </span>
                 </button>
               ))}
             </div>
