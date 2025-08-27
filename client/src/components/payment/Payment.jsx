@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import PaymentType from "./paymenttype";
+import PaymentValid from "./paymentvalid";
 import { useNavigate, useParams ,useLocation} from "react-router-dom";
 import "./Payment.css";
 import axios from "axios";
@@ -49,16 +51,40 @@ const Payment = () => {
   //   return value.replace(/\D/g, "").slice(0, 3); // Allow only digits, max length of 3
   // };
 
-  const handlePaymentSubmit = async (e) => {
-    e.preventDefault();
-    setPaymentSuccess(true);
-    setIsLoading(true)
+  // New: Confirm payment method before proceeding
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingEvent, setPendingEvent] = useState(null);
 
-    // setConfirmationMessage(`
-    //   Your payment was made via ${
-    //     paymentDetails.paymentMethod === "visa" ? "Visa" : "Cash"
-    //   }.
-    // `);
+  const paymentMethodLabels = {
+    cash: "Cash",
+    standalone: "Standalone (Authorize Only)",
+    capture: "Capture (Authorize + Capture)"
+  };
+
+  const handlePaymentSubmit = (e) => {
+    e.preventDefault();
+    setPendingEvent(e);
+    setAlertMessage(
+      <div className="policy-popup">
+        <h2>Confirm Payment Method</h2>
+        <p>You have selected: <b>{paymentMethodLabels[paymentDetails.paymentMethod]}</b></p>
+        <div className="popup-btn-row">
+          <button className="popup-btn confirm" onClick={proceedPayment}>Confirm</button>
+          <button className="popup-btn cancel" onClick={cancelConfirm}>Cancel</button>
+        </div>
+      </div>
+    );
+    setAlertFlag(true);
+    setShowConfirm(true);
+  };
+
+  // Proceed with payment after confirmation
+  const proceedPayment = async (e) => {
+    if (e) e.preventDefault();
+    setShowConfirm(false);
+    setAlertFlag(false);
+    setPaymentSuccess(true);
+    setIsLoading(true);
     try {
       // const req_user = await axios.get(`${backEndUrl}/auth`, {
       //   withCredentials: true,
@@ -116,14 +142,9 @@ const Payment = () => {
           );
           setAlertFlag(true);
         }, 1000);
-
-        // setTimeout(() => {
-        //   setAlertFlag(false);
-        //   navigate(-1);
-        // }, 2200);
       } else {
         console.error("An error occurred:", error);
-         setTimeout(() => {
+        setTimeout(() => {
           setIsLoading(false);
           setAlertMessage(
             <div className="payment-success-container">
@@ -137,6 +158,13 @@ const Payment = () => {
         }, 1000);
       }
     }
+  };
+
+  const cancelConfirm = (e) => {
+    if (e) e.preventDefault();
+    setShowConfirm(false);
+    setAlertFlag(false);
+    setPendingEvent(null);
   };
 
   return (
@@ -225,107 +253,12 @@ const Payment = () => {
             </>
           )} */}
 
-          <div className="payment-method">
-            <div className="method-option">
-              <label>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="cash"
-                  checked={paymentDetails.paymentMethod === "cash"}
-                  onChange={(e) =>
-                    setPaymentDetails({
-                      ...paymentDetails,
-                      paymentMethod: e.target.value,
-                    })
-                  }
-                />
-                <span className="method-title">Cash</span>
-              </label>
-              <button
-                type="button"
-                className="policy-btn"
-                onClick={() => setAlertMessage(
-                  <div className="policy-popup">
-                    <h2>Cash Payment Policy</h2>
-                    <ul>
-                      <li>Pay directly to the bus driver before boarding.</li>
-                      <li>Reservation is held for 15 minutes before departure.</li>
-                      <li>No online refund for cash payments.</li>
-                    </ul>
-                  </div>
-                ) || setAlertFlag(true)}
-              >
-                View Policy
-              </button>
-            </div>
-            <div className="method-option">
-              <label>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="standalone"
-                  checked={paymentDetails.paymentMethod === "standalone"}
-                  onChange={(e) =>
-                    setPaymentDetails({
-                      ...paymentDetails,
-                      paymentMethod: e.target.value,
-                    })
-                  }
-                />
-                <span className="method-title">Standalone (Authorize Only)</span>
-              </label>
-              <button
-                type="button"
-                className="policy-btn"
-                onClick={() => setAlertMessage(
-                  <div className="policy-popup">
-                    <h2>Standalone Payment Policy</h2>
-                    <ul>
-                      <li>Amount is authorized but not captured until trip confirmation.</li>
-                      <li>Funds are held on your card for up to 7 days.</li>
-                      <li>Cancellation before capture will release the hold.</li>
-                    </ul>
-                  </div>
-                ) || setAlertFlag(true)}
-              >
-                View Policy
-              </button>
-            </div>
-            <div className="method-option">
-              <label>
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="capture"
-                  checked={paymentDetails.paymentMethod === "capture"}
-                  onChange={(e) =>
-                    setPaymentDetails({
-                      ...paymentDetails,
-                      paymentMethod: e.target.value,
-                    })
-                  }
-                />
-                <span className="method-title">Capture (Authorize + Capture)</span>
-              </label>
-              <button
-                type="button"
-                className="policy-btn"
-                onClick={() => setAlertMessage(
-                  <div className="policy-popup">
-                    <h2>Capture Payment Policy</h2>
-                    <ul>
-                      <li>Amount is authorized and captured immediately.</li>
-                      <li>Refunds are processed as per our refund policy.</li>
-                      <li>Best for instant confirmation and seat guarantee.</li>
-                    </ul>
-                  </div>
-                ) || setAlertFlag(true)}
-              >
-                View Policy
-              </button>
-            </div>
-          </div>
+          <PaymentType
+            paymentDetails={paymentDetails}
+            setPaymentDetails={setPaymentDetails}
+            setAlertMessage={setAlertMessage}
+            setAlertFlag={setAlertFlag}
+          />
 
           <button type="submit" className="cta-button">
             Book Now
@@ -334,11 +267,11 @@ const Payment = () => {
         {isLoading && <LoadingScreen />}
 
         {alertFlag && (
-          <Overlay
-            alertFlag={alertFlag}
-            alertMessage={alertMessage}
-            setAlertFlag={setAlertFlag}
-          />
+          <div className="popup-overlay">
+            {typeof alertMessage === "string"
+              ? <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
+              : alertMessage}
+          </div>
         )}
       </div>
     </div>
