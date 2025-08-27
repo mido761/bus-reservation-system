@@ -24,6 +24,7 @@ const addPayment = async (req, res) => {
 
 const standAlonePayment = async (req, res) => {
   const { booking, payment, trip, route, stop } = req.body;
+  console.log(trip)
   try {
     const userId = req.session.userId;
     const getUser = `SELECT username, email, phone_number FROM users WHERE user_id = $1`;
@@ -63,8 +64,9 @@ const standAlonePayment = async (req, res) => {
       extras: {
         ee: 22,
       },
+      special_reference: `${payment.payment_id}`,
 
-      notification_url: `${process.env.BASE_URL}/api/webhook`,
+      notification_url: `${process.env.BASE_URL}/payment/webhook`,
       redirection_url: "http://localhost:5000/#/ticket-summary",
       //Notification and redirection URL are working only with Cards and they overlap the transaction processed and response callbacks sent per Integration ID
     };
@@ -89,26 +91,20 @@ const standAlonePayment = async (req, res) => {
 };
 
 const webhookUpdate = async (req, res) => {
+  console.log("POST /payment/webhook called")
   const payload = req.body;
   const obj = payload.obj || {}; // Safely get 'obj', default to empty object if not present
 
-  // Helper function to safely get string value, handling booleans and null/undefined
-  const getSafeString = (value) => {
-    if (typeof value === "boolean") {
-      return value.toString();
-    }
-    // Convert to string; if null/undefined, default to empty string
-    return String(value ?? "");
-  };
-
   // --- Extract and prepare values from 'obj' for concatenation ---
   // Access properties from 'obj', not directly from 'payload'
-  const transactionId = getSafeString(obj.id);
-  const paymentId = getSafeString(obj.merchant_order_id);
+  const transactionId = payload.obj.id;
+  const paymentId = payload.obj.order.merchant_order_id;
+  console.log(paymentId)
   // const amount_cents = getSafeString(obj.amount_cents);
   // const created_at = getSafeString(obj.created_at);
   // const currency = getSafeString(obj.currency);
-  const error_occured = getSafeString(obj.error_occured);
+  const error_occured = payload.obj.error_occured;
+  console.log(error_occured)
   // const has_parent_transaction = getSafeString(obj.has_parent_transaction);
   // const objId = getSafeString(obj.id); // 'id' from 'obj'
   // const integration_id = getSafeString(obj.integration_id);
@@ -120,11 +116,11 @@ const webhookUpdate = async (req, res) => {
   // const is_voided = getSafeString(obj.is_voided);
   // const orderId = getSafeString(obj.order?.id); // Safely access nested order.id
   // const owner = getSafeString(obj.owner);
-  const pending = getSafeString(obj.pending);
+  const pending = payload.obj.pending;
   // const source_data_pan = getSafeString(obj.source_data?.pan); // Safely access nested source_data
-  const source_data_sub_type = getSafeString(obj.source_data?.sub_type);
-  const source_data_type = getSafeString(obj.source_data?.type);
-  const success = getSafeString(obj.success);
+  const source_data_sub_type = payload.obj.source_data?.sub_type;
+  const source_data_type = payload.obj.source_data?.type;
+  const success = payload.obj.success;
 
   const receivedHmac = req.query.hmac;
 
@@ -170,11 +166,11 @@ const webhookUpdate = async (req, res) => {
       if (result.rowCount === 0) {
         throw new Error("Payment update failed or already processed");
       }
-      console.log(paymentUpdate);
+
       const bookingId = result.rows[0].booking_id;
       // 2. Update booking
       const bookingUpdateResult = await client.query(
-        `UPDATE bookings
+        `UPDATE booking
        SET status = $2,
           priority = $3,
            updated_at = NOW()
