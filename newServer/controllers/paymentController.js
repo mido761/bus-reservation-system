@@ -21,6 +21,12 @@ const addPayment = async (req, res) => {
 };
 
 
+const standAlonePayment = async (req, res) => {
+    const {booking,payment,payment_method,trip} = req.body
+};
+
+
+
 const editPayment = async (req, res) => {
 
 };
@@ -29,4 +35,4 @@ const deletPayment = async (req, res) => {
 
 };
 
-export {getPayment, addPayment, editPayment,deletPayment};
+export {getPayment, addPayment, editPayment,deletPayment,standAlonePayment};

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams ,useLocation} from "react-router-dom";
 import "./Payment.css";
 import axios from "axios";
 import LoadingScreen from "../loadingScreen/loadingScreen";
@@ -10,9 +10,9 @@ const Payment = () => {
   const { selectedSeats } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { booking,trip,route,selectedStop} = location.state || {};
+  const { booking,trip,route,selectedStop,payment} = location.state || {};
   const [paymentDetails, setPaymentDetails] = useState({
-    paymentMethod:[ "cash","paymob"]// Default to Visa
+    paymentMethod:"cash"// Default to Visa
   });
 
   // overlay screen
@@ -29,25 +29,25 @@ const Payment = () => {
   // setIsProcessing(true);
 
   // Function to format card number
-  const formatCardNumber = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{4})(?=\d)/g, "$1 ")
-      .slice(0, 19); // Max 16 digits with spaces
-  };
+  // const formatCardNumber = (value) => {
+  //   return value
+  //     .replace(/\D/g, "")
+  //     .replace(/(\d{4})(?=\d)/g, "$1 ")
+  //     .slice(0, 19); // Max 16 digits with spaces
+  // };
 
-  // Function to format expiry date
-  const formatExpiryDate = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{2})(?=\d)/g, "$1/")
-      .slice(0, 5); // Max 4 digits in MM/YY format
-  };
+  // // Function to format expiry date
+  // const formatExpiryDate = (value) => {
+  //   return value
+  //     .replace(/\D/g, "")
+  //     .replace(/(\d{2})(?=\d)/g, "$1/")
+  //     .slice(0, 5); // Max 4 digits in MM/YY format
+  // };
 
-  // Function to strictly enforce 3 numeric characters for CVV
-  const formatCvc = (value) => {
-    return value.replace(/\D/g, "").slice(0, 3); // Allow only digits, max length of 3
-  };
+  // // Function to strictly enforce 3 numeric characters for CVV
+  // const formatCvc = (value) => {
+  //   return value.replace(/\D/g, "").slice(0, 3); // Allow only digits, max length of 3
+  // };
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
@@ -60,18 +60,20 @@ const Payment = () => {
     //   }.
     // `);
     try {
-      const req_user = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
+      // const req_user = await axios.get(`${backEndUrl}/auth`, {
+      //   withCredentials: true,
+      // });
 
-      const userId = req_user.data.userId;
-      const busId = req_user.data.busId;
+      // const userId = req_user.data.userId;
+      // const busId = req_user.data.busId;
+      console.log(booking)
+      console.log(payment)
 
+      if(e === "standalone"){
       await axios.post(
-        `${backEndUrl}/seatselection/${busId}`,
-        { selectedSeats, userId },
-        { withCredentials: true }
-      );
+        `${backEndUrl}/payment/stand-alone-payment`,
+        {booking,payment,trip}
+      );}
 
       setTimeout(() => {
         setIsLoading(false);
@@ -137,8 +139,8 @@ const Payment = () => {
       <div className="payment-box-container">
         <h1>Confirm Your Booking</h1>
         <form className="payment-form" onSubmit={handlePaymentSubmit}>
-          <div className="payment-method">
-            {/* <label>
+          {/* <div className="payment-method">
+            <label>
               <input
                 type="radio"
                 name="paymentMethod"
@@ -152,7 +154,7 @@ const Payment = () => {
                 }
               />
               Visa
-            </label> */}
+            </label>
             <label>
               <input
                 type="radio"
@@ -170,7 +172,7 @@ const Payment = () => {
             </label>
           </div>
 
-          {/* {paymentDetails.paymentMethod === "visa" && (
+          {paymentDetails.paymentMethod === "visa" && (
             <>
               <input
                 type="text"
@@ -213,6 +215,55 @@ const Payment = () => {
               />
             </>
           )} */}
+          <div className="payment-method">
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="cash"
+                checked={paymentDetails.paymentMethod === "cash"}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    paymentMethod: e.target.value,
+                  })
+                }
+              />
+              Cash
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="standalone"
+                checked={paymentDetails.paymentMethod === "standalone"}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    paymentMethod: e.target.value,
+                  })
+                }
+              />
+              Standalone (Authorize Only)
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="capture"
+                checked={paymentDetails.paymentMethod === "capture"}
+                onChange={(e) =>
+                  setPaymentDetails({
+                    ...paymentDetails,
+                    paymentMethod: e.target.value,
+                  })
+                }
+              />
+              Capture (Authorize + Capture)
+            </label>
+          </div>
 
           <button type="submit" className="cta-button">
             Book Now
