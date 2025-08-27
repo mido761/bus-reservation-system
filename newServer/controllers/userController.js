@@ -20,17 +20,17 @@ const getAllUsers = async (req, res) => {
 
 // Get a specific user's profile
 const getUserInfo = async (req, res) => {
-  const userId = req.params.userId;
+  ////////////////////////////////////////////////// need correction
+  // const userId = req.params.userId;
   try {
-    if (!validator.isUUID(req.params.userId)) {
-      return res.status(400).json("Invalid UUID format");
-    }
-
-    console.log("session: ", req.session);
-    if (req.session.userId.toString() !== req.params.userId) {
-      return res.status(403).json("Access denied");
-    }
-
+    // if (!validator.isUUID(req.params.userId)) {
+    //   return res.status(400).json("Invalid UUID format");
+    // }
+    // console.log("session: ", req.session);
+    // if (req.session.userId.toString() !== req.params.userId) {
+    //   return res.status(403).json("Access denied");
+    // }
+    const userId =req.session.userId
     const getUser = `SELECT username, email, phone_number FROM users WHERE user_id = $1`;
     const { rows } = await pool.query(getUser, [userId]);
     const user = rows[0];

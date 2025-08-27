@@ -86,16 +86,28 @@ const Payment = () => {
     setPaymentSuccess(true);
     setIsLoading(true);
     try {
-      // ...existing code...
-      console.log(booking);
-      console.log(payment);
+      // const req_user = await axios.get(`${backEndUrl}/auth`, {
+      //   withCredentials: true,
+      // });
 
-      if(paymentDetails.paymentMethod === "standalone"){
-        await axios.post(
-          `${backEndUrl}/payment/stand-alone-payment`,
-          {booking,payment,trip}
-        );
-      }
+      // const userId = req_user.data.userId;
+      // const busId = req_user.data.busId;
+      console.log(booking)
+      console.log(payment)
+      console.log(trip)
+
+      // if(e === "standalone"){
+      const res = await axios.post(
+        `${backEndUrl}/payment/stand-alone-payment`,
+        {booking:booking,
+          payment:payment,
+          trip:trip,
+          route:route,
+          stop:selectedStop}
+      );
+       console.log(res.data)
+      // }
+   
 
       setTimeout(() => {
         setIsLoading(false);
@@ -113,7 +125,8 @@ const Payment = () => {
 
       setTimeout(() => {
         setAlertFlag(false);
-        navigate(`/ticket-summary/${selectedSeats}`);
+        // navigate(res.data.PAYMENT_URL);
+        window.location.href = res.data.PAYMENT_URL;
       }, 2200);
     } catch (error) {
       if (error.response && error.response.status === 400) {
