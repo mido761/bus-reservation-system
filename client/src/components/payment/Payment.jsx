@@ -68,12 +68,20 @@ const Payment = () => {
       // const busId = req_user.data.busId;
       console.log(booking)
       console.log(payment)
+      console.log(trip)
 
-      if(e === "standalone"){
-      await axios.post(
+      // if(e === "standalone"){
+      const res = await axios.post(
         `${backEndUrl}/payment/stand-alone-payment`,
-        {booking,payment,trip}
-      );}
+        {booking:booking,
+          payment:payment,
+          trip:trip,
+          route:route,
+          stop:selectedStop}
+      );
+       console.log(res.data)
+      // }
+   
 
       setTimeout(() => {
         setIsLoading(false);
@@ -91,7 +99,8 @@ const Payment = () => {
 
       setTimeout(() => {
         setAlertFlag(false);
-        navigate(`/ticket-summary/${selectedSeats}`);
+        // navigate(res.data.PAYMENT_URL);
+        window.location.href = res.data.PAYMENT_URL;
       }, 2200);
     } catch (error) {
       if (error.response && error.response.status === 400) {

@@ -19,14 +19,14 @@ const UserProfile = () => {
       let busIds = [];
       try {
         // Fetch authenticated user
-        const req_user = await axios.get(`${backEndUrl}/auth`, {
-          withCredentials: true,
-        });
-        setUserId(req_user.data.userId);
-        const userId = req_user.data.userId;
+        // const req_user = await axios.get(`${backEndUrl}/auth`, {
+        //   withCredentials: true,
+        // });
+        // setUserId(req_user.data.userId);
+        // const userId = req_user.data.userId;
 
         // Fetch user profile
-        const res = await axios.get(`${backEndUrl}/user/profile/${userId}`, {
+        const res = await axios.get(`${backEndUrl}/user/profile`, {
           withCredentials: true,
         });
         setUserDetails(res.data);

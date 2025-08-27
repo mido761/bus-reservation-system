@@ -21,7 +21,7 @@ router.get("/", authentication.isAuthoraized, getAllUsers);
  * @param {string} req.params.userId - User ID to fetch
  * @returns {Object} User profile details
  */
-router.get("/profile/:userId", getUserInfo);
+router.get("/profile", getUserInfo);
 
 
 /**
