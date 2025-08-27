@@ -48,11 +48,14 @@ const Reserve = () => {
         tripId: trip.trip_id,
         stopId: selectedStop.stop_id,
       });
-      const booking = res.data;
+      const booking = res.data.booked;
+      const payment = res.data.payment;
+
       setShowModal(false);
       navigate("/payment", {
         state: {
           booking,
+          payment,
           trip,
           route,
           selectedStop,

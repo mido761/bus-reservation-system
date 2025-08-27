@@ -144,31 +144,55 @@ async function getBusBookings(req, res) {
 }
 
 async function book(req, res) {
-  // TODO: Create a new booking
-  const {tripId , stopId} = req.body;
-  try{
-    const checkQuery = `select * from booking where status = $1`;
-    const checkBooking = await pool.query(checkQuery, ["pending"]);
-    if (checkBooking.rows.length > 0) {
-      return res
-        .status(400)
-        .json(
-          "You have pending booking to book another seat you must complete the pending!"
-        );
-    }
-    const passengerId = req.session.userId
-    console.log(passengerId)
-    const addQuery = 
-    `insert into booking (trip_id, passenger_id, stop_id)
-    values($1,$2,$3)
-    Returning*`;
-    const addBook = await pool.query(addQuery, [tripId, passengerId, stopId]);
-    return res
-      .status(200)
-      .json({ message: "Booked successfuly!", booked: addBook.rows[0] });
+  const { tripId, stopId } = req.body;
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // Check if user already has pending booking
+    const checkQuery = `SELECT * FROM booking WHERE status = $1 AND passenger_id = $2`;
+    const checkBooking = await client.query(checkQuery, ["pending", req.session.userId]);
+
+    // if (checkBooking.rows.length > 0) {
+    //   await client.query("ROLLBACK");
+    //   return res.status(400).json(
+    //     "You have a pending booking. Complete it before booking another seat!"
+    //   );
+    // }
+
+    const passengerId = req.session.userId;
+    console.log("Passenger:", passengerId);
+
+    // Insert into booking
+    const addQuery = `
+      INSERT INTO booking (trip_id, passenger_id, stop_id, status)
+      VALUES ($1, $2, $3, 'pending')
+      RETURNING *`;
+    const addBook = await client.query(addQuery, [tripId, passengerId, stopId]);
+
+    // Insert into payment linked to booking
+    const addPaymentQ = `
+      INSERT INTO payment (booking_id, payment_status)
+      VALUES ($1, 'pending')
+      RETURNING *`;
+    const addPayment = await client.query(addPaymentQ, [addBook.rows[0].booking_id]);
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      message: "Booked successfully!",
+      booked: addBook.rows[0],
+      payment: addPayment.rows[0],
+    });
   } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Booking transaction failed:", error);
     return res.status(500).json({ message: error.message });
+  } finally {
+    client.release();
   }
+
 }
 
 async function confirmBooking(req, res) {

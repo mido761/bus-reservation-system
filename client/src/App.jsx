@@ -111,7 +111,7 @@ function App() {
         />
 
         <Route
-          path="/ticket-summary/:selectedSeats"
+          path="/ticket-summary"
           element={
             <Auth>
               <Navbar />

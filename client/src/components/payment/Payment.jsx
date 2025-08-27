@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import PaymentType from "./paymenttype";
+import PaymentValid from "./paymentvalid";
+import { useNavigate, useParams ,useLocation} from "react-router-dom";
 import "./Payment.css";
 import axios from "axios";
 import LoadingScreen from "../loadingScreen/loadingScreen";
@@ -10,9 +12,9 @@ const Payment = () => {
   const { selectedSeats } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { booking,trip,route,selectedStop} = location.state || {};
+  const { booking,trip,route,selectedStop,payment} = location.state || {};
   const [paymentDetails, setPaymentDetails] = useState({
-    paymentMethod:[ "cash","paymob"]// Default to Visa
+    paymentMethod:"cash"// Default to Visa
   });
 
   // overlay screen
@@ -29,49 +31,83 @@ const Payment = () => {
   // setIsProcessing(true);
 
   // Function to format card number
-  const formatCardNumber = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{4})(?=\d)/g, "$1 ")
-      .slice(0, 19); // Max 16 digits with spaces
+  // const formatCardNumber = (value) => {
+  //   return value
+  //     .replace(/\D/g, "")
+  //     .replace(/(\d{4})(?=\d)/g, "$1 ")
+  //     .slice(0, 19); // Max 16 digits with spaces
+  // };
+
+  // // Function to format expiry date
+  // const formatExpiryDate = (value) => {
+  //   return value
+  //     .replace(/\D/g, "")
+  //     .replace(/(\d{2})(?=\d)/g, "$1/")
+  //     .slice(0, 5); // Max 4 digits in MM/YY format
+  // };
+
+  // // Function to strictly enforce 3 numeric characters for CVV
+  // const formatCvc = (value) => {
+  //   return value.replace(/\D/g, "").slice(0, 3); // Allow only digits, max length of 3
+  // };
+
+  // New: Confirm payment method before proceeding
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingEvent, setPendingEvent] = useState(null);
+
+  const paymentMethodLabels = {
+    cash: "Cash",
+    standalone: "Standalone (Authorize Only)",
+    capture: "Capture (Authorize + Capture)"
   };
 
-  // Function to format expiry date
-  const formatExpiryDate = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{2})(?=\d)/g, "$1/")
-      .slice(0, 5); // Max 4 digits in MM/YY format
-  };
-
-  // Function to strictly enforce 3 numeric characters for CVV
-  const formatCvc = (value) => {
-    return value.replace(/\D/g, "").slice(0, 3); // Allow only digits, max length of 3
-  };
-
-  const handlePaymentSubmit = async (e) => {
+  const handlePaymentSubmit = (e) => {
     e.preventDefault();
+    setPendingEvent(e);
+    setAlertMessage(
+      <div className="policy-popup">
+        <h2>Confirm Payment Method</h2>
+        <p>You have selected: <b>{paymentMethodLabels[paymentDetails.paymentMethod]}</b></p>
+        <div className="popup-btn-row">
+          <button className="popup-btn confirm" onClick={proceedPayment}>Confirm</button>
+          <button className="popup-btn cancel" onClick={cancelConfirm}>Cancel</button>
+        </div>
+      </div>
+    );
+    setAlertFlag(true);
+    setShowConfirm(true);
+  };
+
+  // Proceed with payment after confirmation
+  const proceedPayment = async (e) => {
+    if (e) e.preventDefault();
+    setShowConfirm(false);
+    setAlertFlag(false);
     setPaymentSuccess(true);
-    setIsLoading(true)
-
-    // setConfirmationMessage(`
-    //   Your payment was made via ${
-    //     paymentDetails.paymentMethod === "visa" ? "Visa" : "Cash"
-    //   }.
-    // `);
+    setIsLoading(true);
     try {
-      const req_user = await axios.get(`${backEndUrl}/auth`, {
-        withCredentials: true,
-      });
+      // const req_user = await axios.get(`${backEndUrl}/auth`, {
+      //   withCredentials: true,
+      // });
 
-      const userId = req_user.data.userId;
-      const busId = req_user.data.busId;
+      // const userId = req_user.data.userId;
+      // const busId = req_user.data.busId;
+      console.log(booking)
+      console.log(payment)
+      console.log(trip)
 
-      await axios.post(
-        `${backEndUrl}/seatselection/${busId}`,
-        { selectedSeats, userId },
-        { withCredentials: true }
+      // if(e === "standalone"){
+      const res = await axios.post(
+        `${backEndUrl}/payment/stand-alone-payment`,
+        {booking:booking,
+          payment:payment,
+          trip:trip,
+          route:route,
+          stop:selectedStop}
       );
+       console.log(res.data)
+      // }
+   
 
       setTimeout(() => {
         setIsLoading(false);
@@ -89,7 +125,8 @@ const Payment = () => {
 
       setTimeout(() => {
         setAlertFlag(false);
-        navigate(`/ticket-summary/${selectedSeats}`);
+        // navigate(res.data.PAYMENT_URL);
+        window.location.href = res.data.PAYMENT_URL;
       }, 2200);
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -105,14 +142,9 @@ const Payment = () => {
           );
           setAlertFlag(true);
         }, 1000);
-
-        // setTimeout(() => {
-        //   setAlertFlag(false);
-        //   navigate(-1);
-        // }, 2200);
       } else {
         console.error("An error occurred:", error);
-         setTimeout(() => {
+        setTimeout(() => {
           setIsLoading(false);
           setAlertMessage(
             <div className="payment-success-container">
@@ -128,6 +160,13 @@ const Payment = () => {
     }
   };
 
+  const cancelConfirm = (e) => {
+    if (e) e.preventDefault();
+    setShowConfirm(false);
+    setAlertFlag(false);
+    setPendingEvent(null);
+  };
+
   return (
     <div
       className={`payment-container ${
@@ -137,8 +176,8 @@ const Payment = () => {
       <div className="payment-box-container">
         <h1>Confirm Your Booking</h1>
         <form className="payment-form" onSubmit={handlePaymentSubmit}>
-          <div className="payment-method">
-            {/* <label>
+          {/* <div className="payment-method">
+            <label>
               <input
                 type="radio"
                 name="paymentMethod"
@@ -152,7 +191,7 @@ const Payment = () => {
                 }
               />
               Visa
-            </label> */}
+            </label>
             <label>
               <input
                 type="radio"
@@ -170,7 +209,7 @@ const Payment = () => {
             </label>
           </div>
 
-          {/* {paymentDetails.paymentMethod === "visa" && (
+          {paymentDetails.paymentMethod === "visa" && (
             <>
               <input
                 type="text"
@@ -214,6 +253,13 @@ const Payment = () => {
             </>
           )} */}
 
+          <PaymentType
+            paymentDetails={paymentDetails}
+            setPaymentDetails={setPaymentDetails}
+            setAlertMessage={setAlertMessage}
+            setAlertFlag={setAlertFlag}
+          />
+
           <button type="submit" className="cta-button">
             Book Now
           </button>
@@ -221,11 +267,11 @@ const Payment = () => {
         {isLoading && <LoadingScreen />}
 
         {alertFlag && (
-          <Overlay
-            alertFlag={alertFlag}
-            alertMessage={alertMessage}
-            setAlertFlag={setAlertFlag}
-          />
+          <div className="popup-overlay">
+            {typeof alertMessage === "string"
+              ? <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
+              : alertMessage}
+          </div>
         )}
       </div>
     </div>
