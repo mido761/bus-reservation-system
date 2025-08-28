@@ -140,11 +140,11 @@ function Navbar() {
           </button>
         )} */}
 
-        {/* {!(location.pathname === "/add-schedule") && isAuthorized && (
-          <button className="nav-link" onClick={() => navigate("/add-schedule")}>
-            Add schedule
+        {!(location.pathname === "/my-bookings") && isAuthenticated && (
+          <button className="nav-link" onClick={() => navigate("/my-bookings")}>
+            My Bookings
           </button>
-        )} */}
+        )}
 
         {/* {!(location.pathname === "/black-list") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/black-list")}>

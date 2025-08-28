@@ -58,20 +58,42 @@ async function getUserBookings(req, res) {
   const userId = req.session.userId;
   try {
     //Query
+    // SELECT *
+    // FROM booking
+    // WHERE passenger_id = $1
+    // ORDER BY priority ASC, booked_at DESC
 
     const getBookingInfo = `
-    SELECT *
+    SELECT 
+      booking.booking_id,
+      trips.date,
+      trips.price,
+      route.source,
+      route.destination,
+      stop.stop_name,
+      seat.seat_number,
+      booking.status,
+      booking.booked_at,
+      booking.updated_at
     FROM booking
-    WHERE passenger_id = $1 
-    ORDER BY priority ASC, booked_at DESC
+    JOIN trips 
+      ON booking.trip_id = trips.trip_id 
+    LEFT JOIN route 
+      ON trips.route_id = route.route_id
+    LEFT JOIN stop 
+      ON booking.stop_id = stop.stop_id
+    LEFT JOIN seat 
+      ON booking.seat_id = seat.seat_id
+    WHERE booking.passenger_id = $1
+    ORDER BY booking.booked_at DESC
     `;
-
-    console.log(userId)
 
     const { rows: userBookings } = await pool.query(getBookingInfo, [userId]);
 
     if (!userBookings.length) {
-      return res.status(400).json({ message: "No bookings found for this user!" });
+      return res
+        .status(400)
+        .json({ message: "No bookings found for this user!" });
     }
 
     return res.status(200).json({
@@ -154,7 +176,10 @@ async function book(req, res) {
 
     // Check if user already has pending booking
     const checkQuery = `SELECT * FROM booking WHERE status = $1 AND passenger_id = $2`;
-    const checkBooking = await client.query(checkQuery, ["pending", req.session.userId]);
+    const checkBooking = await client.query(checkQuery, [
+      "pending",
+      req.session.userId,
+    ]);
 
     // if (checkBooking.rows.length > 0) {
     //   await client.query("ROLLBACK");
@@ -178,7 +203,9 @@ async function book(req, res) {
       INSERT INTO payment (booking_id, payment_status)
       VALUES ($1, 'pending')
       RETURNING *`;
-    const addPayment = await client.query(addPaymentQ, [addBook.rows[0].booking_id]);
+    const addPayment = await client.query(addPaymentQ, [
+      addBook.rows[0].booking_id,
+    ]);
 
     await client.query("COMMIT");
 
@@ -194,7 +221,6 @@ async function book(req, res) {
   } finally {
     client.release();
   }
-
 }
 
 async function confirmBooking(req, res) {

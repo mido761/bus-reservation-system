@@ -67,7 +67,7 @@ const standAlonePayment = async (req, res) => {
       special_reference: `${payment.payment_id}`,
 
       notification_url: `${process.env.BASE_URL}/payment/webhook`,
-      redirection_url: "http://localhost:5000/#/ticket-summary",
+      redirection_url: "http://localhost:5173/#/ticket-summary",
       //Notification and redirection URL are working only with Cards and they overlap the transaction processed and response callbacks sent per Integration ID
     };
 

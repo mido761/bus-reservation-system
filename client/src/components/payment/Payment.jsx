@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PaymentType from "./paymenttype";
 import PaymentValid from "./paymentvalid";
-import { useNavigate, useParams ,useLocation} from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import "./Payment.css";
 import axios from "axios";
 import LoadingScreen from "../loadingScreen/loadingScreen";
@@ -12,9 +12,9 @@ const Payment = () => {
   const { selectedSeats } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { booking,trip,route,selectedStop,payment} = location.state || {};
+  const { booking, trip, route, selectedStop, payment } = location.state || {};
   const [paymentDetails, setPaymentDetails] = useState({
-    paymentMethod:"cash"// Default to Visa
+    paymentMethod: "cash", // Default to Visa
   });
 
   // overlay screen
@@ -25,7 +25,6 @@ const Payment = () => {
 
   const [paymentSuccess, setPaymentSuccess] = useState(false); // New state for payment success
   const [confirmationMessage, setConfirmationMessage] = useState(""); // New state for the confirmation message
-
 
   // if (isProcessing) return; // Prevent multiple submissions
   // setIsProcessing(true);
@@ -58,7 +57,7 @@ const Payment = () => {
   const paymentMethodLabels = {
     cash: "Cash",
     standalone: "Standalone (Authorize Only)",
-    capture: "Capture (Authorize + Capture)"
+    capture: "Capture (Authorize + Capture)",
   };
 
   const handlePaymentSubmit = (e) => {
@@ -67,10 +66,17 @@ const Payment = () => {
     setAlertMessage(
       <div className="policy-popup">
         <h2>Confirm Payment Method</h2>
-        <p>You have selected: <b>{paymentMethodLabels[paymentDetails.paymentMethod]}</b></p>
+        <p>
+          You have selected:{" "}
+          <b>{paymentMethodLabels[paymentDetails.paymentMethod]}</b>
+        </p>
         <div className="popup-btn-row">
-          <button className="popup-btn confirm" onClick={proceedPayment}>Confirm</button>
-          <button className="popup-btn cancel" onClick={cancelConfirm}>Cancel</button>
+          <button className="popup-btn confirm" onClick={proceedPayment}>
+            Confirm
+          </button>
+          <button className="popup-btn cancel" onClick={cancelConfirm}>
+            Cancel
+          </button>
         </div>
       </div>
     );
@@ -92,23 +98,24 @@ const Payment = () => {
 
       // const userId = req_user.data.userId;
       // const busId = req_user.data.busId;
-      console.log(booking)
-      console.log(payment)
-      console.log(trip)
+      console.log(booking);
+      console.log(payment);
+      console.log(trip);
 
       // if(e === "standalone"){
       const res = await axios.post(
         `${backEndUrl}/payment/stand-alone-payment`,
-        {booking:booking,
-          payment:payment,
-          trip:trip,
-          route:route,
-          stop:selectedStop},
-          {withCredentials: true}
+        {
+          booking: booking,
+          payment: payment,
+          trip: trip,
+          route: route,
+          stop: selectedStop,
+        },
+        { withCredentials: true }
       );
-       console.log(res.data)
+      console.log(res.data);
       // }
-   
 
       setTimeout(() => {
         setIsLoading(false);
@@ -136,9 +143,7 @@ const Payment = () => {
           setAlertMessage(
             <div className="payment-success-container">
               <h1>⚠️ Payment Failed</h1>
-              <p>
-                {(error.response.data.message)}
-              </p>
+              <p>{error.response.data.message}</p>
             </div>
           );
           setAlertFlag(true);
@@ -150,9 +155,7 @@ const Payment = () => {
           setAlertMessage(
             <div className="payment-success-container">
               <h1>⚠️ Payment Failed</h1>
-              <p>
-              An error occurred while booking, please try again.
-              </p>
+              <p>An error occurred while booking, please try again.</p>
             </div>
           );
           setAlertFlag(true);
@@ -269,9 +272,15 @@ const Payment = () => {
 
         {alertFlag && (
           <div className="popup-overlay">
-            {typeof alertMessage === "string"
-              ? <Overlay alertFlag={alertFlag} alertMessage={alertMessage} setAlertFlag={setAlertFlag} />
-              : alertMessage}
+            {typeof alertMessage === "string" ? (
+              <Overlay
+                alertFlag={alertFlag}
+                alertMessage={alertMessage}
+                setAlertFlag={setAlertFlag}
+              />
+            ) : (
+              alertMessage
+            )}
           </div>
         )}
       </div>

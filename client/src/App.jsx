@@ -23,6 +23,7 @@ import EditBus from "./components/editBus/editBus.jsx";
 import Passengers from "./components/Passengers/Passengers";
 import BlacklistPage from "./components/admin-dashboard/blacklist/Blacklist.jsx";
 import MyTrips from "./components/MyTrips/mytrips.jsx";
+import MyBookings from "./components/myBookings/myBookings.jsx";
 import History from "./components/admin-dashboard/history/history.jsx";
 // import Schedule from "./components/admin-dashboard/Schedule/Schedule.jsx";
 import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
@@ -120,7 +121,7 @@ function App() {
             </Auth>
           }
         />
-  <Route path="/reserve" element={<Reserve />} />
+        <Route path="/reserve" element={<Reserve />} />
         <Route
           path="/add-bus"
           element={
@@ -142,6 +143,18 @@ function App() {
             </Auth>
           }
         />
+
+        <Route
+          path="/my-bookings"
+          element={
+            <Auth>
+              <Navbar />
+              <MyBookings />
+              <Footer />
+            </Auth>
+          }
+        />
+
         <Route
           path="/admin-dashboard"
           element={

@@ -27,6 +27,7 @@ const getUserTrips = async (req, res) => {
     trips.date,
     trips.departure_time,
     trips.arrival_time,
+    trips.status,
     trips.price,
     route.source,
     route.destination
