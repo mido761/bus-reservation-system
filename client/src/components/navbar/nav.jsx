@@ -128,17 +128,17 @@ function Navbar() {
           </button>
         )} */}
 
-        {!(location.pathname === "/form") && isAuthorized && (
+        {/* {!(location.pathname === "/form") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/form")}>
             Forms
           </button>
-        )}
-
+        )} */}
+{/* 
         {!(location.pathname === "/add-bus") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/add-bus")}>
             Add bus
           </button>
-        )}
+        )} */}
 
         {/* {!(location.pathname === "/add-schedule") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/add-schedule")}>

@@ -103,7 +103,8 @@ const Payment = () => {
           payment:payment,
           trip:trip,
           route:route,
-          stop:selectedStop}
+          stop:selectedStop},
+          {withCredentials: true}
       );
        console.log(res.data)
       // }

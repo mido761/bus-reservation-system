@@ -109,7 +109,7 @@ const webhookUpdate = async (req, res) => {
   const client = await pool.connect();
 
   try {
-    console.log("Body:", payload);
+    // console.log("Body:", payload);
 
     // 🔹 Validate basic input early
     if (!paymentId) {

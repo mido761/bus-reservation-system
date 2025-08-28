@@ -66,10 +66,12 @@ async function getUserBookings(req, res) {
     ORDER BY priority ASC, booked_at DESC
     `;
 
+    console.log(userId)
+
     const { rows: userBookings } = await pool.query(getBookingInfo, [userId]);
 
-    if (!userBookings) {
-      return res.status(400).json({ message: "No booking found with this ID" });
+    if (!userBookings.length) {
+      return res.status(400).json({ message: "No bookings found for this user!" });
     }
 
     return res.status(200).json({

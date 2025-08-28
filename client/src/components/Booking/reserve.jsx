@@ -47,7 +47,8 @@ const Reserve = () => {
       const res = await axios.post(`${backEndUrl}/booking/book`, {
         tripId: trip.trip_id,
         stopId: selectedStop.stop_id,
-      });
+      }, 
+    {withCredentials: true});
       const booking = res.data.booked;
       const payment = res.data.payment;
 

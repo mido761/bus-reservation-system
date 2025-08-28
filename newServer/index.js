@@ -4,6 +4,8 @@ import session from "express-session";
 import dotenv from "dotenv";
 import pool from "./db.js";
 import pgSession from "connect-pg-simple";
+// import fs from "fs";
+// import https from "https";
 
 import userModel from "./models/user.js";
 import userRouter from "./routers/userRoutes.js";
@@ -41,9 +43,10 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  process.env.BACK_END_URL,
+  "http://localhost:5000"
 ];
 
+console.log(process.env.BACK_END_URL);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -90,8 +93,8 @@ app.use(
     }),
     cookie: {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // good for localhost
-      secure: process.env.NODE_ENV === "production", // must be false in dev
+      sameSite: 'none', // good for localhost
+      secure: false, // must be false in dev
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
   })
@@ -153,10 +156,10 @@ app.use("/stop", stopRouter);
 // app.use("/route", authentication.isAuthenticated, routeRouter);
 app.use("/route", routeRouter);
 // app.use("/trip", authentication.isAuthenticated, tripRouter);
-app.use("/trip",  tripRouter);
+app.use("/trip", tripRouter);
 app.use("/booking", bookingRouter);
-app.use("/user",  userRouter);
-app.use("/payment",payment)
+app.use("/user", userRouter);
+app.use("/payment", payment);
 // app.use((req, res) => {
 //   return res.status(404).json({ message: "Not Found" });
 // });
@@ -220,11 +223,19 @@ app.get("*", (req, res) => {
  * @listens {number} PORT
  * @event SIGINT - Graceful shutdown handler
  */
-
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)
 );
+
+// const options = {
+//   key: fs.readFileSync("certs/server.key"),
+//   cert: fs.readFileSync("certs/server.cert"),
+// };
+
+// https.createServer(options, app).listen(3000, () => {
+//   console.log("HTTPS server running at https://localhost:3000");
+// });
 
 // process.on("SIGINT", () => {
 //   console.log("Shutting down server...");

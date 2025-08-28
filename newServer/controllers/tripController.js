@@ -3,8 +3,7 @@ import pg from "pg";
 const types = pg.types;
 
 // OID 1082 is DATE in Postgres
-types.setTypeParser(1082, (val) => val); 
-
+types.setTypeParser(1082, (val) => val);
 
 const getTrips = async (req, res) => {
   try {
@@ -13,6 +12,38 @@ const getTrips = async (req, res) => {
     `;
 
     const { rows: trips } = await pool.query(getTrips);
+
+    return res.status(200).json(trips);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getUserTrips = async (req, res) => {
+  try {
+    const getUserTrips = `
+  SELECT DISTINCT
+    trips.trip_id,
+    trips.date,
+    trips.departure_time,
+    trips.arrival_time,
+    trips.price,
+    route.source,
+    route.destination
+  FROM trips
+  JOIN booking 
+    ON trips.trip_id = booking.trip_id
+  LEFT JOIN route 
+    ON trips.route_id = route.route_id
+  LEFT JOIN stop 
+    ON booking.stop_id = stop.stop_id
+  WHERE booking.passenger_id = $1
+  ORDER BY trips.date DESC, trips.departure_time ASC
+`;
+
+    const { rows: trips } = await pool.query(getUserTrips, [
+      req.session.userId,
+    ]);
 
     return res.status(200).json(trips);
   } catch (error) {
@@ -42,15 +73,18 @@ const getTrip = async (req, res) => {
 
     // Handle empty result
     if (trip.length === 0) {
-      return res.status(404).json({ message: "No trips found for this route and date" });
+      return res
+        .status(404)
+        .json({ message: "No trips found for this route and date" });
     }
 
-    return res.status(200).json({ message: "Trip found successfully!", data: trip });;
+    return res
+      .status(200)
+      .json({ message: "Trip found successfully!", data: trip });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
-
 
 const addTrip = async (req, res) => {
   const { routeId, date, departureTime, arrivalTime } = req.body;
@@ -125,36 +159,43 @@ const editTrip = async (req, res) => {
 };
 
 const delTrip = async (req, res) => {
-  const {tripId} = req.body
+  const { tripId } = req.body;
   try {
     const checkTrip = `
       SELECT * 
       FROM trips
       WHERE trip_id= $1
     `;
-    const { rows } = await pool.query(checkTrip, [
-      tripId
-    ]);
+    const { rows } = await pool.query(checkTrip, [tripId]);
     const trip = rows[0];
 
     if (!trip) {
-      return res
-        .status(400)
-        .json({ message: "This trip doesn't exist!" });
+      return res.status(400).json({ message: "This trip doesn't exist!" });
     }
 
     const delTripQuery = `
     DELETE FROM trips
     WHERE trip_id = $1
     RETURNING *
-    `
+    `;
 
-    const {rows: deletedTrip} = await pool.query(delTripQuery, [tripId]);
+    const { rows: deletedTrip } = await pool.query(delTripQuery, [tripId]);
 
-    return res.status(200).json({message: "Trip deleted susccessfully!", deleted_trip: deletedTrip});
+    return res.status(200).json({
+      message: "Trip deleted susccessfully!",
+      deleted_trip: deletedTrip,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-export { getTrips, getTrip, addTrip, linkTripBus, editTrip, delTrip };
+export {
+  getTrips,
+  getUserTrips,
+  getTrip,
+  addTrip,
+  linkTripBus,
+  editTrip,
+  delTrip,
+};
