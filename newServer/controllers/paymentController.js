@@ -3,13 +3,24 @@ import axios from "axios";
 import pool from "../db.js";
 import hmacVerifier from "../utils/hmacVerifier.js";
 
-const getPayment = async (req, res) => {
+const getUserPayments = async (req, res) => {
   try {
-    const getRoutes = `
-    SELECT * FROM payment;
+    const getUserPayments = `
+    SELECT 
+      payment.payment_id,
+      payment.amount,
+      payment.payment_method,
+      payment.payment_status,
+      payment.created_at,
+      payment.updated_at
+    FROM payment
+    JOIN booking 
+      ON payment.booking_id = booking.booking_id
+    WHERE booking.passenger_id = $1
+    ORDER BY payment.created_at DESC, payment.updated_at DESC
     `;
 
-    const { rows } = await pool.query(getRoutes);
+    const { rows } = await pool.query(getUserPayments, [req.session.userId]);
     const routes = rows;
 
     return res.status(200).json(routes);
@@ -200,7 +211,7 @@ const editPayment = async (req, res) => {};
 const deletPayment = async (req, res) => {};
 
 export {
-  getPayment,
+  getUserPayments,
   webhookUpdate,
   addPayment,
   editPayment,
