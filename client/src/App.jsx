@@ -22,6 +22,7 @@ import Footer from "./components/footer/footer.jsx";
 import EditBus from "./components/editBus/editBus.jsx";
 import Passengers from "./components/Passengers/Passengers";
 import BlacklistPage from "./components/admin-dashboard/blacklist/Blacklist.jsx";
+import MyPayments from "./components/myPayments/myPayments.jsx";
 import MyTrips from "./components/MyTrips/mytrips.jsx";
 import MyBookings from "./components/myBookings/myBookings.jsx";
 import History from "./components/admin-dashboard/history/history.jsx";
@@ -139,6 +140,17 @@ function App() {
             <Auth>
               <Navbar />
               <MyTrips />
+              <Footer />
+            </Auth>
+          }
+        />
+
+        <Route
+          path="/my-payments"
+          element={
+            <Auth>
+              <Navbar />
+              <MyPayments />
               <Footer />
             </Auth>
           }

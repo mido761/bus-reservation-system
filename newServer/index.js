@@ -46,7 +46,6 @@ const allowedOrigins = [
   "http://localhost:5000"
 ];
 
-console.log(process.env.BACK_END_URL);
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -93,7 +92,7 @@ app.use(
     }),
     cookie: {
       httpOnly: true,
-      sameSite: 'none', // good for localhost
+      sameSite: 'lax', // good for localhost
       secure: false, // must be false in dev
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
@@ -202,7 +201,7 @@ app.get("/auth", (req, res) => {
       authenticated: true,
       userId: req.session.userId,
       userRole: req.session.userRole,
-      busId: req.session.busId,
+      // busId: req.session.busId,
     });
   } else {
     return res.status(401).json({ authenticated: false });

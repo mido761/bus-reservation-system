@@ -117,8 +117,18 @@ function Navbar() {
             My Trips
           </button>
         )}
-         {!(location.pathname === "/admin-dashboard")&& isAuthorized && (
-          <button className="nav-link" onClick={() => navigate("/admin-dashboard")}>
+
+        {!(location.pathname === "/my-payments") && (
+          <button className="nav-link" onClick={() => navigate("/my-payments")}>
+            My Payments
+          </button>
+        )}
+
+        {!(location.pathname === "/admin-dashboard") && isAuthorized && (
+          <button
+            className="nav-link"
+            onClick={() => navigate("/admin-dashboard")}
+          >
             Admin Dashboard
           </button>
         )}
@@ -133,7 +143,7 @@ function Navbar() {
             Forms
           </button>
         )} */}
-{/* 
+        {/* 
         {!(location.pathname === "/add-bus") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/add-bus")}>
             Add bus

@@ -21,9 +21,9 @@ const getUserPayments = async (req, res) => {
     `;
 
     const { rows } = await pool.query(getUserPayments, [req.session.userId]);
-    const routes = rows;
+    const payments = rows;
 
-    return res.status(200).json(routes);
+    return res.status(200).json({user_payments: payments});
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -115,6 +115,10 @@ const webhookUpdate = async (req, res) => {
   const source_data_type = obj.source_data?.type;
   const success = obj.success;
 
+  const payment_method = `${source_data_type || "N/A"} | ${
+    source_data_sub_type || "N/A"
+  }`;
+
   const receivedHmac = req.query.hmac;
 
   const client = await pool.connect();
@@ -127,23 +131,45 @@ const webhookUpdate = async (req, res) => {
       return res.status(400).json({ error: "Missing merchant_order_id" });
     }
 
-    if (error_occured) {
-      return res.status(422).json({ error: "Error occurred during payment" });
-    }
+    // if (error_occured) {
+    //   return res.status(422).json({ error: "Error occurred during payment" });
+    // }
 
     const validHMAC = hmacVerifier(payload, receivedHmac);
     if (!validHMAC) {
       return res.status(400).json({ error: "Invalid HMAC signature" });
     }
+    console.log(payload)
 
     if (!success) {
+      const updatePayment = `
+      UPDATE payment
+      SET payment_status = 'failed',
+          transaction_id = $2,
+          payment_method = $3,
+          updated_at = NOW()
+      WHERE payment_id = $1 
+      AND payment_status = 'pending'
+      RETURNING booking_id
+    `;
+
+      const result = await client.query(updatePayment, [
+        paymentId,
+        transactionId,
+        payment_method,
+      ]);
+
+      if (result.rowCount === 0) {
+        return res
+          .status(409)
+          .json({ error: "Payment already processed or not found" });
+      }
+
       return res.status(422).json({
         error: "Payment not successful",
-        message: obj?.data?.message || "Unknown failure"
+        message: obj?.data?.message || "Unknown failure",
       });
     }
-
-    const payment_method = `${source_data_type || "N/A"} | ${source_data_sub_type || "N/A"}`;
 
     await client.query("BEGIN");
 
@@ -167,7 +193,9 @@ const webhookUpdate = async (req, res) => {
 
     if (result.rowCount === 0) {
       await client.query("ROLLBACK");
-      return res.status(409).json({ error: "Payment already processed or not found" });
+      return res
+        .status(409)
+        .json({ error: "Payment already processed or not found" });
     }
 
     const bookingId = result.rows[0].booking_id;
@@ -184,18 +212,20 @@ const webhookUpdate = async (req, res) => {
 
     if (bookingUpdateResult.rowCount === 0) {
       await client.query("ROLLBACK");
-      return res.status(409).json({ error: "Booking update failed or already processed" });
+      return res
+        .status(409)
+        .json({ error: "Booking update failed or already processed" });
     }
 
     await client.query("COMMIT");
     return res.status(200).json({ ok: true });
-
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Payment webhook error:", err);
 
     // If it's a UUID casting error or bad input
-    if (err.code === "22P02") { // Postgres invalid_text_representation
+    if (err.code === "22P02") {
+      // Postgres invalid_text_representation
       return res.status(400).json({ error: "Invalid UUID format" });
     }
 
@@ -204,7 +234,6 @@ const webhookUpdate = async (req, res) => {
     client.release();
   }
 };
-
 
 const editPayment = async (req, res) => {};
 
