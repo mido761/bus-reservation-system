@@ -36,6 +36,7 @@
     "luxon": "^3.6.1",
     "mongod": "^2.0.0",
     "mongoose": "^8.9.2",
+    "node-cron": "^4.2.1",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.10",
     "pg": "^8.16.3",
