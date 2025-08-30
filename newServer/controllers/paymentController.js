@@ -34,91 +34,104 @@ const addPayment = async (req, res) => {
 };
 
 const standAlonePayment = async (req, res) => {
-  const { booking, payment, trip, route, stop } = req.body;
+  const { booking, trip, route } = req.body;
   console.log(trip);
   try {
-    const searchPaymentQ = `select * from payment where payment_id = $1 limit 1`
-    const {rows} = await pool.query(searchPaymentQ,[payment.payment_id]);
+    // search for an exsiting payment with this booking_id
+    const searchPaymentQ = `select * from payment where booking_id = $1 limit 1`
+    const {rows} = await pool.query(searchPaymentQ,[booking.booking_id]);
     const paymentindb = rows[0]
     console.log(paymentindb)
-if (!paymentindb) {
-   return res.status(404).send("Invalid payment session");
-}
-
-
-if (paymentindb.payment_status === "paid") {
-   return res.status(400).send("This payment is already completed.");
-}
-
-if (paymentindb.payment_status === "failed" || payment.status === "expired") {
-   return res.status(400).send("This payment session is no longer valid.");
-}
-
-// only allow if pending
-  if (paymentindb.payment_status === "pending") {
-   // continue payment flow
-
+    // get the user query
     const userId = req.session.userId;
     const getUser = `SELECT username, email, phone_number FROM users WHERE user_id = $1`;
-    const { rows } = await pool.query(getUser, [userId]);
-    const user = rows[0];
-    console.log([process.env.INTEGRATION_ID]);
-    // from session
-    const First_Name = "mohamed";
-    const Last_Name = "ahmed";
-    // const Customer_Phone_Number = 12343423;
-    // const customer_email = "modystar9999@gmail.com";
-    ////// creating body
-    const body = {
-      amount: trip.price, // amount_cents must be equal to the sum of the items amounts
-      currency: "EGP",
-      payment_methods: [Number(process.env.INTEGRATION_ID)], //Enter your integration ID as an Integar, you can list multiple integration IDs as -> "payment_methods": [{{Integration_ID_1}}, {{Integration_ID_2}}, {{Integration_ID_3}}], so the user can choose the payment method within the checkout page
+    const {userq} = await pool.query(getUser, [userId]);
+    const user = userq[0];
+    if (!paymentindb) {
+      // Insert into payment linked to booking
+      const addPaymentQ = `
+        INSERT INTO payment (booking_id, payment_status,payment_method)
+        VALUES ($1, 'pending','standAlone')
+        RETURNING *`;
+      const addPayment = await client.query(addPaymentQ, [
+        booking.booking_id,
+      ]);
 
-      items: [
+      return res.status(404).send("Invalid payment session");
+    }
+
+
+    if (paymentindb.payment_status === "paid") {
+      return res.status(400).send("This payment is already completed.");
+    }
+
+    if (paymentindb.payment_status === "failed" || payment.status === "expired") {
+      return res.status(400).send("This payment session is no longer valid.");
+    }
+
+  // only allow if pending
+    if (paymentindb.payment_status === "pending") {
+    // continue payment flow
+
+      // const userId = req.session.userId;
+      // const getUser = `SELECT username, email, phone_number FROM users WHERE user_id = $1`;
+      // const { rows } = await pool.query(getUser, [userId]);
+      // const user = rows[0];
+      // console.log([process.env.INTEGRATION_ID]);
+      // from session
+      const First_Name =user.name;
+      const Last_Name = "ahmed";
+      ////// creating body
+      const body = {
+        amount: trip.price, // amount_cents must be equal to the sum of the items amounts
+        currency: "EGP",
+        payment_methods: [Number(process.env.INTEGRATION_ID)], //Enter your integration ID as an Integar, you can list multiple integration IDs as -> "payment_methods": [{{Integration_ID_1}}, {{Integration_ID_2}}, {{Integration_ID_3}}], so the user can choose the payment method within the checkout page
+
+        items: [
+          {
+            name: "trip",
+            amount: trip.price,
+            description: `a trip from ${route.source} to ${route.destination} and pickup point is ${stop.stop_name}`,
+            quantity: 1,
+          },
+        ],
+        billing_data: {
+          first_name: First_Name, // First Name, Last Name, Phone number, & Email are mandatory fields within sending the intention request
+          last_name: Last_Name,
+          phone_number: user.phone_number,
+          city: "dumy",
+          country: "dumy",
+          email: user.email,
+          floor: "dumy",
+          state: "dumy",
+        },
+
+        extras: {
+          ee: 22,
+        },
+        special_reference: `${paymentindb.payment_id}`,
+
+        notification_url: `${process.env.BASE_URL}/payment/webhook`,
+        redirection_url: "http://localhost:5173/#/ticket-summary",
+        //Notification and redirection URL are working only with Cards and they overlap the transaction processed and response callbacks sent per Integration ID
+      };
+
+      ///// the paymob api call
+      const response = await axios.post(
+        "https://accept.paymob.com/v1/intention/",
+        body,
         {
-          name: "trip",
-          amount: trip.price,
-          description: `a trip from ${route.source} to ${route.destination} and pickup point is ${stop.stop_name}`,
-          quantity: 1,
-        },
-      ],
-      billing_data: {
-        first_name: First_Name, // First Name, Last Name, Phone number, & Email are mandatory fields within sending the intention request
-        last_name: Last_Name,
-        phone_number: user.phone_number,
-        city: "dumy",
-        country: "dumy",
-        email: user.email,
-        floor: "dumy",
-        state: "dumy",
-      },
+          headers: {
+            Authorization: `Token ${process.env.SECRET_KEY}`,
+          },
+        }
+      );
+      const PAYMENT_URL = `https://accept.paymob.com/api/acceptance/iframes/${process.env.IFRAME_ID}?payment_token=${response.data.payment_keys[0].key}`;
 
-      extras: {
-        ee: 22,
-      },
-      special_reference: `${payment.payment_id}`,
-
-      notification_url: `${process.env.BASE_URL}/payment/webhook`,
-      redirection_url: "http://localhost:5173/#/ticket-summary",
-      //Notification and redirection URL are working only with Cards and they overlap the transaction processed and response callbacks sent per Integration ID
-    };
-
-    ///// the paymob api call
-    const response = await axios.post(
-      "https://accept.paymob.com/v1/intention/",
-      body,
-      {
-        headers: {
-          Authorization: `Token ${process.env.SECRET_KEY}`,
-        },
-      }
-    );
-    const PAYMENT_URL = `https://accept.paymob.com/api/acceptance/iframes/${process.env.IFRAME_ID}?payment_token=${response.data.payment_keys[0].key}`;
-
-    return res.status(200).json({ PAYMENT_URL });
-  }
+      return res.status(200).json({ PAYMENT_URL });
+    }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
