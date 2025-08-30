@@ -186,3 +186,10 @@
 .modal-btn.cancel:hover {
   background: #ddd;
 }
+/* Pending booking modal */
+.pending-msg {
+  color: red;
+  font-weight: 500;
+  margin: 1rem 0;
+  text-align: center;
+}
