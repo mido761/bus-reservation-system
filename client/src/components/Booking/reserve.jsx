@@ -109,10 +109,15 @@ const Reserve = () => {
                   }`}
                   tabIndex={0}
                 >
-                  <span className="stop-icon" role="img" aria-label="stop">🚌</span>
+                  <span className="stop-icon" role="img" aria-label="stop">
+                    🚌
+                  </span>
                   <span>
-                    <span style={{fontWeight:600}}>{stop.stop_name}</span>
-                    <span style={{color:'#888', fontWeight:400}}> – {stop.location}</span>
+                    <span style={{ fontWeight: 600 }}>{stop.stop_name}</span>
+                    <span style={{ color: "#888", fontWeight: 400 }}>
+                      {" "}
+                      – {stop.location}
+                    </span>
                   </span>
                 </button>
               ))}
@@ -137,10 +142,7 @@ const Reserve = () => {
               </div>
             )}
           </div>
-          <button
-            className="confirm-btn"
-            onClick={handleConfiremreserve}
-          >
+          <button className="confirm-btn" onClick={handleConfiremreserve}>
             Confirm Reservation
           </button>
           {showPendingModal.show && (
@@ -190,10 +192,12 @@ const Reserve = () => {
                     <strong>Date:</strong> {trip.date}
                   </p>
                   <p>
-                    <strong>Departure:</strong> {formatDateTime(trip.departure_time)}
+                    <strong>Departure:</strong>{" "}
+                    {formatDateTime(trip.departure_time)}
                   </p>
                   <p>
-                    <strong>Arrival:</strong> {formatDateTime(trip.arrival_time)}
+                    <strong>Arrival:</strong>{" "}
+                    {formatDateTime(trip.arrival_time)}
                   </p>
                   <p>
                     <strong>Selected Stop:</strong> {selectedStop?.stop_name} –{" "}

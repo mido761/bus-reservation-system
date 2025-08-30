@@ -4,9 +4,12 @@ import session from "express-session";
 import dotenv from "dotenv";
 import pool from "./db.js";
 import pgSession from "connect-pg-simple";
+import { reconcilePaymob } from "./cron jobs/reconcilePaymob.js";
+
 // import fs from "fs";
 // import https from "https";
 
+// import "./cron jobs/reconcileJob.js";
 import userModel from "./models/user.js";
 import userRouter from "./routers/userRoutes.js";
 import busRouter from "./routers/busRouter.js";
@@ -208,12 +211,23 @@ app.get("/auth", (req, res) => {
   }
 });
 
+app.get("/reconcile", async (req, res) => {
+  try{
+    const response = await reconcilePaymob();
+    return res.status(500).json({message: response})
+  }catch(err){
+    return res.status(500).json({Error: "Error reconciling!", message: err.message})
+  }
+});
+
 // if (process.env.NODE_ENV === "production") {
 app.use(express.static(path.join(__dirname, "../client/dist")));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
 });
 // }
+
+
 
 /**
  * @server
@@ -226,6 +240,8 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)
 );
+
+
 
 // const options = {
 //   key: fs.readFileSync("certs/server.key"),
