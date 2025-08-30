@@ -148,6 +148,9 @@ const Reserve = () => {
     <div className="modal-content">
       <h2>Pending Booking Found</h2>
       <p className="pending-msg">{bookingError}</p>
+      <p className="pending">Stop Name in pending: {showPendingModal.booking.stop_name}</p>
+      <p className="pending">Stop location in pending: {showPendingModal.booking.location}</p>
+      
       <div className="modal-btns">
         <button
           className="modal-btn confirm"
