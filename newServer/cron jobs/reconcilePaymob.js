@@ -2,16 +2,22 @@ import pool from "../db.js";
 import { fetchPaymobAuthToken } from "../utils/fetchPaymobAuthToken.js";
 import axios from "axios";
 
-export async function reconcilePaymob() {
+export async function reconcilePaymob(payment_id=undefined) {
   const client = await pool.connect();
   let tx = {};
 
-  const pending = await client.query(
-    "SELECT * FROM payment WHERE payment_status = 'pending'"
-  );
+  if (!payment_id) {
+    const pending = await client.query(
+      "SELECT * FROM payment WHERE payment_status = 'pending'"
+    );
+  }else {
+    const pending = await client.query(
+      "SELECT * FROM payment WHERE payment_id = $1", [payment_id]
+    );
+  }
 
   // console.log(pending.rows);
-  for (const p of pending.rows) {
+  for (const p of pending.rows ) {
     // app.post("/api/transaction_inquiry", async (req, res) => {
 
     try {
@@ -61,7 +67,7 @@ export async function reconcilePaymob() {
     }
   }
 
-  return "No payments to update!"
+  return "No payments to update!";
 }
 
 export default { reconcilePaymob };
