@@ -12,7 +12,7 @@ const Payment = () => {
   const { selectedSeats } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { booking, trip, route, selectedStop, payment } = location.state || {};
+  const { booking, trip, route, payment } = location.state || {};
   const [paymentDetails, setPaymentDetails] = useState({
     paymentMethod: "cash", // Default to Visa
   });
@@ -107,10 +107,8 @@ const Payment = () => {
         `${backEndUrl}/payment/stand-alone-payment`,
         {
           booking: booking,
-          payment: payment,
           trip: trip,
           route: route,
-          stop: selectedStop,
         },
         { withCredentials: true }
       );

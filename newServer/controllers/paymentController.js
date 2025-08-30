@@ -37,6 +37,27 @@ const standAlonePayment = async (req, res) => {
   const { booking, payment, trip, route, stop } = req.body;
   console.log(trip);
   try {
+    const searchPaymentQ = `select * from payment where payment_id = $1 limit 1`
+    const {rows} = await pool.query(searchPaymentQ,[payment.payment_id]);
+    const paymentindb = rows[0]
+    console.log(paymentindb)
+if (!paymentindb) {
+   return res.status(404).send("Invalid payment session");
+}
+
+
+if (paymentindb.payment_status === "paid") {
+   return res.status(400).send("This payment is already completed.");
+}
+
+if (paymentindb.payment_status === "failed" || payment.status === "expired") {
+   return res.status(400).send("This payment session is no longer valid.");
+}
+
+// only allow if pending
+  if (paymentindb.payment_status === "pending") {
+   // continue payment flow
+
     const userId = req.session.userId;
     const getUser = `SELECT username, email, phone_number FROM users WHERE user_id = $1`;
     const { rows } = await pool.query(getUser, [userId]);
@@ -95,6 +116,7 @@ const standAlonePayment = async (req, res) => {
     const PAYMENT_URL = `https://accept.paymob.com/api/acceptance/iframes/${process.env.IFRAME_ID}?payment_token=${response.data.payment_keys[0].key}`;
 
     return res.status(200).json({ PAYMENT_URL });
+  }
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error.message });

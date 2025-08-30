@@ -50,16 +50,28 @@ const Reserve = () => {
       }, 
     {withCredentials: true});
       const booking = res.data.booked;
-      const payment = res.data.payment;
+      if(res.status === 400){
+        //give it that this is an exsiting booking and the user have two options one to compelete it and the other to cancel it
+        
+        setShowModal(false);
+        navigate("/payment", {
+          state: {
+            booking,
+            trip,
+            route
+          },
+      });
+      }
+      else if(res.status === 201){}
+      // const booking = res.data.booked;
+      // const payment = res.data.payment;
 
       setShowModal(false);
       navigate("/payment", {
         state: {
           booking,
-          payment,
           trip,
-          route,
-          selectedStop,
+          route
         },
       });
     } catch (err) {
