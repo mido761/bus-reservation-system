@@ -112,17 +112,26 @@ function Navbar() {
             Profile
           </button>
         )}
-        {!(location.pathname === "/my-trips") && (
-          <button className="nav-link" onClick={() => navigate("/my-trips")}>
-            My Trips
+          {!(location.pathname === "/my-account") && isAuthorized && (
+          <button
+            className="nav-link"
+            onClick={() => navigate("/my-account")}
+          >
+            My Account
           </button>
         )}
 
-        {!(location.pathname === "/my-payments") && (
+        {/* {!(location.pathname === "/my-trips") && (
+          <button className="nav-link" onClick={() => navigate("/my-trips")}>
+            My Trips
+          </button>
+        )} */}
+
+        {/* {!(location.pathname === "/my-payments") && (
           <button className="nav-link" onClick={() => navigate("/my-payments")}>
             My Payments
           </button>
-        )}
+        )} */}
 
         {!(location.pathname === "/admin-dashboard") && isAuthorized && (
           <button
@@ -150,11 +159,11 @@ function Navbar() {
           </button>
         )} */}
 
-        {!(location.pathname === "/my-bookings") && isAuthenticated && (
+        {/* {!(location.pathname === "/my-bookings") && isAuthenticated && (
           <button className="nav-link" onClick={() => navigate("/my-bookings")}>
             My Bookings
           </button>
-        )}
+        )} */}
 
         {/* {!(location.pathname === "/black-list") && isAuthorized && (
           <button className="nav-link" onClick={() => navigate("/black-list")}>

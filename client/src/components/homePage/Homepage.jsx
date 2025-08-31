@@ -40,7 +40,6 @@ const Homepage = () => {
       );
       console.log(route)
       if(!route){
-        console.log("a7a")
       }
       setroute(route)
 
@@ -97,7 +96,7 @@ const Homepage = () => {
         onSearch={handleSearch}
         setAllRoutes={setAllRoutes} 
       />
-      <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} />
+      {/* <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} /> */}
       <Trips
   trips={filteredTrips}
   isLoading={isLoading}

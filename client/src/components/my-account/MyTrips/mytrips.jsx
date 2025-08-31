@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./myBookings.css";
-import formatDateAndTime from "../../formatDateAndTime";
+import "./mytrips.css";
+import { format } from "date-fns";
+import formatDateAndTime from "../../../formatDateAndTime";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const MyTrips = () => {
   const [loading, setLoading] = useState(true);
-  const [bookings, setBookings] = useState([]);
+  const [trips, setTrips] = useState([]);
   const [userId, setUserId] = useState("");
 
-  const getUserBookings = async () => {
-    console.log("fetching Bookings...");
+  const getUserTrips = async () => {
+    console.log("fetching history...");
     try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
@@ -20,11 +21,11 @@ const MyTrips = () => {
       setUserId(req_user.data.userId);
 
       const user_bookings = await axios.get(
-        `${backEndUrl}/booking/get-user-bookings`,
+        `${backEndUrl}/trip/get-user-trips`,
         { withCredentials: true }
       );
 
-      setBookings(user_bookings.data.userBookings);
+      setTrips(user_bookings.data);
     } catch (err) {
       console.error("Error Fetching user history!", err);
     } finally {
@@ -33,21 +34,21 @@ const MyTrips = () => {
   };
 
   useEffect(() => {
-    getUserBookings();
+    getUserTrips();
   }, []);
 
   return (
     <div className="mytrips-container">
-      <h2>My Bookings</h2>
+      <h2>My Trips</h2>
       {loading ? (
         <div className="mytrips-loading">Loading your trips...</div>
-      ) : !Array.isArray(bookings) ? (
+      ) : !Array.isArray(trips) ? (
         <div className="mytrips-empty">You have no trip history yet.</div>
       ) : (
         <div className="mytrips-list">
-          {Array.isArray(bookings) &&
-            bookings.map((booking, idx) => (
-              <div className="mytrips-card" key={booking.booking_id || idx}>
+          {Array.isArray(trips) &&
+            trips.map((trip, idx) => (
+              <div className="mytrips-card" key={trip.trip_id || idx}>
                 <div className="mytrips-card-header">
                   {/* <span className="mytrips-date-professional">
                     {(() => {
@@ -61,8 +62,7 @@ const MyTrips = () => {
                     })()}
                   </span> */}
                   <span className="mytrips-reserved-at">
-                    <strong>Trip Date: </strong>
-                    {formatDateAndTime(booking.date, "date")}
+                    Date: {formatDateAndTime(trip.date, 'date')}
                     {/* {(() => {
                       const reservedDate = trip.createdAt;
                       if (!reservedDate) return "-";
@@ -77,31 +77,30 @@ const MyTrips = () => {
                 <div className="mytrips-card-route">
                   <div className="mytrips-route-line">
                     <span className="mytrips-dot green"></span>
-                    {booking.source}
+                    {trip.source}
                   </div>
                   <div className="mytrips-route-line">
                     <span className="mytrips-dot orange"></span>
-                    {booking.destination}
+                    {trip.destination}
                   </div>
                 </div>
                 <div className="mytrips-card-extra">
-                  <strong>Stop: </strong>
-                  {booking.stop_name}
+                  {formatDateAndTime(trip.departure_time)} ---{" "}
+                  {formatDateAndTime(trip.arrival_time)}
                 </div>
 
                 <div className="mytrips-card-extra">
                   <strong>Status: </strong>
-                  <p style={{ color: `${booking.status === 'confirmed' ? "green" : "red"}`, display:"inline" }}>{booking.status}</p>
+                  <p
+                    style={{
+                      color: `${trip.status === "confirmed" ? "green" : "red"}`,
+                      display: "inline",
+                    }}
+                  >
+                    {trip.status}
+                  </p>
                 </div>
 
-                <div className="mytrips-card-extra">
-                  <strong>Booked At: </strong>
-                  {formatDateAndTime(booking.booked_at, "dateTime")}
-                </div>
-                <div className="mytrips-card-extra">
-                  <strong>Last Update: </strong>
-                  {formatDateAndTime(booking.updated_at, "dateTime")}
-                </div>
                 {/* <div className="mytrips-card-extra">Stop: {trip.stop_name}</div> */}
                 {/* <div className="mytrips-card-extra">Price: {trip.price}</div> */}
               </div>

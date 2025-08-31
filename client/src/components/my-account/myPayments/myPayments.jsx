@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import "./mytrips.css";
-import { format } from "date-fns";
-import formatDateAndTime from "../../formatDateAndTime";
+import "./myPayments.css";
+import formatDateAndTime from "../../../formatDateAndTime";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-const MyTrips = () => {
+const MyPayments = () => {
   const [loading, setLoading] = useState(true);
-  const [trips, setTrips] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [userId, setUserId] = useState("");
 
-  const getUserTrips = async () => {
-    console.log("fetching history...");
+  const getUserPayments = async () => {
+    console.log("fetching Payments...");
     try {
       const req_user = await axios.get(`${backEndUrl}/auth`, {
         withCredentials: true,
@@ -20,35 +19,35 @@ const MyTrips = () => {
 
       setUserId(req_user.data.userId);
 
-      const user_bookings = await axios.get(
-        `${backEndUrl}/trip/get-user-trips`,
+      const user_payments = await axios.get(
+        `${backEndUrl}/payment/get-user-payments`,
         { withCredentials: true }
       );
 
-      setTrips(user_bookings.data);
+      setPayments(user_payments.data.user_payments);
     } catch (err) {
-      console.error("Error Fetching user history!", err);
+      console.error("Error Fetching user payments!", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getUserTrips();
+    getUserPayments();
   }, []);
 
   return (
     <div className="mytrips-container">
-      <h2>My Trips</h2>
+      <h2>My Payments</h2>
       {loading ? (
-        <div className="mytrips-loading">Loading your trips...</div>
-      ) : !Array.isArray(trips) ? (
-        <div className="mytrips-empty">You have no trip history yet.</div>
+        <div className="mytrips-loading">Loading your payments...</div>
+      ) : !Array.isArray(payments) ? (
+        <div className="mytrips-empty">You have no payments history yet.</div>
       ) : (
         <div className="mytrips-list">
-          {Array.isArray(trips) &&
-            trips.map((trip, idx) => (
-              <div className="mytrips-card" key={trip.trip_id || idx}>
+          {Array.isArray(payments) &&
+            payments.map((payment, idx) => (
+              <div className="mytrips-card" key={payment.payment_id || idx}>
                 <div className="mytrips-card-header">
                   {/* <span className="mytrips-date-professional">
                     {(() => {
@@ -62,7 +61,8 @@ const MyTrips = () => {
                     })()}
                   </span> */}
                   <span className="mytrips-reserved-at">
-                    Date: {formatDateAndTime(trip.date, 'date')}
+                    <strong>Trip Date: </strong>
+                    {formatDateAndTime(payment.created_at, "dateTime")}
                     {/* {(() => {
                       const reservedDate = trip.createdAt;
                       if (!reservedDate) return "-";
@@ -77,30 +77,38 @@ const MyTrips = () => {
                 <div className="mytrips-card-route">
                   <div className="mytrips-route-line">
                     <span className="mytrips-dot green"></span>
-                    {trip.source}
+                    {payment.amount}
                   </div>
                   <div className="mytrips-route-line">
                     <span className="mytrips-dot orange"></span>
-                    {trip.destination}
+                    {payment.payment_method}
                   </div>
                 </div>
-                <div className="mytrips-card-extra">
-                  {formatDateAndTime(trip.departure_time)} ---{" "}
-                  {formatDateAndTime(trip.arrival_time)}
-                </div>
+    
 
                 <div className="mytrips-card-extra">
                   <strong>Status: </strong>
                   <p
                     style={{
-                      color: `${trip.status === "confirmed" ? "green" : "red"}`,
+                      color: `${
+                        payment.payment_status === "paid"
+                          ? "green"
+                          : payment.payment_status === "pending"
+                          ? "blue"
+                          : "red"
+                      }`,
                       display: "inline",
                     }}
                   >
-                    {trip.status}
+                    {payment.payment_status}
                   </p>
                 </div>
 
+  
+                <div className="mytrips-card-extra">
+                  <strong>Last Update: </strong>
+                  {formatDateAndTime(payment.updated_at, "dateTime")}
+                </div>
                 {/* <div className="mytrips-card-extra">Stop: {trip.stop_name}</div> */}
                 {/* <div className="mytrips-card-extra">Price: {trip.price}</div> */}
               </div>
@@ -111,4 +119,4 @@ const MyTrips = () => {
   );
 };
 
-export default MyTrips;
+export default MyPayments;

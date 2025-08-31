@@ -22,9 +22,9 @@ import Footer from "./components/footer/footer.jsx";
 import EditBus from "./components/editBus/editBus.jsx";
 import Passengers from "./components/Passengers/Passengers";
 import BlacklistPage from "./components/admin-dashboard/blacklist/Blacklist.jsx";
-import MyPayments from "./components/myPayments/myPayments.jsx";
-import MyTrips from "./components/MyTrips/mytrips.jsx";
-import MyBookings from "./components/myBookings/myBookings.jsx";
+import MyPayments from "./components/my-account/myPayments/myPayments.jsx";
+import MyTrips from "./components/my-account/MyTrips/mytrips.jsx";
+import MyBookings from "./components/my-account/myBookings/myBookings.jsx";
 import History from "./components/admin-dashboard/history/history.jsx";
 // import Schedule from "./components/admin-dashboard/Schedule/Schedule.jsx";
 import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
@@ -35,6 +35,8 @@ import LandingPage from "./components/LandingPage/landingpage.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Reserve from "./components/Booking/reserve.jsx";
+import UserAccount from "./components/my-account/user-account.jsx";
+
 function App() {
   return (
     <HashRouter basename="/">
@@ -49,6 +51,16 @@ function App() {
         <Route path="/" element={<LandingPage />} />
 
         {/* Protected Routes */}
+        <Route
+          path="/my-account"
+          element={
+            <Auth>
+              <Navbar />
+              <UserAccount />
+              <Footer />
+            </Auth>
+          }
+        />
         <Route
           path="/home"
           element={
