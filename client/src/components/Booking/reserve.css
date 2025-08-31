@@ -2,6 +2,7 @@
 
 /* reserve.css */
 .reserve-page {
+  min-height: 81vh;
   max-width: 700px;
   margin: 2rem auto;
   padding: 2rem;
@@ -193,3 +194,36 @@
   margin: 1rem 0;
   text-align: center;
 }
+
+/* Pending stop card styling */
+.pending-stop-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #f6fafd;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  padding: 0.8rem 1.2rem;
+  margin: 1.2rem auto 1.5rem auto;
+  max-width: 350px;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+}
+.pending-stop-icon {
+  font-size: 1.5rem;
+  color: #007bff;
+}
+.pending-stop-details {
+  display: flex;
+  flex-direction: column;
+}
+.pending-stop-name {
+  font-weight: 700;
+  font-size: 1.13rem;
+  color: #0c2340;
+}
+.pending-stop-location {
+  font-size: 0.98rem;
+  color: #4f8cff;
+  margin-top: 2px;
+}
+
