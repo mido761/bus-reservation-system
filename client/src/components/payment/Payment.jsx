@@ -158,7 +158,7 @@ const Payment = () => {
         setAlertFlag(true);
         setTimeout(() => {
            setAlertFlag(false);
-           navigate('/home')
+          //  navigate('/home')
         }, 3500);
       }
     }

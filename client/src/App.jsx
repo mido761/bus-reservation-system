@@ -264,6 +264,17 @@ function App() {
         />
 
         <Route
+          path="/edit-trip"
+          element={
+            <Auth requireAdmin={true}>
+              <Navbar />
+              <EditBus />
+              <Footer />
+            </Auth>
+          }
+        />
+
+        <Route
           path="/profile"
           element={
             <Auth>

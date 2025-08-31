@@ -3,8 +3,11 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
-import formatDateTime from "../../../formatDateAndTime";
+import TripForm from "../../../UI/trips/tripForm";
+import { handleDel } from "../../../handlers/handleDel";
+import { handleEdit } from "../../../handlers/handleEdit";
 import "../formPage.css";
+import TripList from "../../../UI/trips/TripList";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -107,77 +110,24 @@ const AddTrip = () => {
 
   return (
     <div className="form-page-container">
-      <form action="" onSubmit={handleSubmit} className="add-form">
-        <h2>Add Trip</h2>
-
-        {/* <label htmlFor="buses">
-          Available Buses
-          <select name="busIds" id="buses" multiple onChange={handleChange}>
-            {Array.isArray(availableBuses) && availableBuses.map((bus) => (
-              <option key={bus._id} value={bus._id}>
-                {bus.plateNumber}
-              </option>
-            ))}
-          </select>
-        </label> */}
-
-        <label htmlFor="routes">
-          Routes
-          <select
-            name="routeId"
-            id="routes"
-            onChange={(e) => {
-              handleChange(e);
-            }}
-          >
-            <option value="default">Choose Route</option>
-            {Array.isArray(routes) &&
-              routes.map((route) => (
-                <option key={route.route_id} value={route.route_id}>
-                  {route.source} ---- {route.destination}
-                </option>
-              ))}
-          </select>
-        </label>
-
-        <label>
-          Departure Date
-          <input type="date" name="date" onChange={handleChange} />
-        </label>
-
-        <label>
-          Departure Time
-          <input type="time" name="departureTime" onChange={handleChange} />
-        </label>
-
-        <label>
-          Arrival Time
-          <input type="time" name="arrivalTime" onChange={handleChange} />
-        </label>
-
-        <button type="submit">Add Trip</button>
-      </form>
+      <TripForm
+        formData={formData}
+        routes={routes}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+      />
 
       {/* Trips List */}
-      <div className="list-container">
-        <h2>Trip List</h2>
-        <ul className="list">
-          {Array.isArray(trips) &&
-            trips.map((trip) => (
-              <li key={trip.trip_id}>
-                {formatDateTime(trip.date, "date")}
-                <br />
-                {formatDateTime(trip.departure_time)} ----{" "}
-                {formatDateTime(trip.arrival_time)}
-                <br />
-                {
-                  routes.find((route) => route.route_id === trip.route_id)
-                    ?.source
-                }
-              </li>
-            ))}
-        </ul>
-      </div>
+      <TripList
+        trips={trips}
+        routes={routes}
+        handleDel={handleDel}
+        handleEdit={handleEdit}
+        setTrips={setTrips}
+        setIsLoading={setIsLoading}
+        setAlertMessage={setAlertMessage}
+        setAlertFlag={setAlertFlag}
+      />
 
       {isLoading && <LoadingScreen />}
       <Overlay
