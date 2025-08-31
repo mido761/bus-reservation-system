@@ -5,13 +5,13 @@ import axios from "axios";
 export async function reconcilePaymob(payment_id=undefined) {
   const client = await pool.connect();
   let tx = {};
-
+  let pending = [];
   if (!payment_id) {
-    const pending = await client.query(
+     pending = await client.query(
       "SELECT * FROM payment WHERE payment_status = 'pending'"
     );
   }else {
-    const pending = await client.query(
+     pending = await client.query(
       "SELECT * FROM payment WHERE payment_id = $1", [payment_id]
     );
   }
@@ -34,8 +34,12 @@ export async function reconcilePaymob(payment_id=undefined) {
       tx = inquiryResponse.data;
       console.log(inquiryResponse.data.success);
     } catch (err) {
-      console.error(err.message);
+      // console.error(err.status);
+      if(pending.rows.length===1){
+        return err.status
+      }
       if (err.status === 404) continue;
+
 
       throw new Error("Error fetching transaction details from paymob!");
     }

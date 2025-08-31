@@ -2,6 +2,7 @@ import session from "express-session";
 import axios from "axios";
 import pool from "../db.js";
 import hmacVerifier from "../utils/hmacVerifier.js";
+import {reconcilePaymob} from "../cron jobs/reconcilePaymob.js";
 
 const getUserPayments = async (req, res) => {
   try {
@@ -115,12 +116,39 @@ const standAlonePayment = async (req, res) => {
     );
 
     const PAYMENT_URL = `https://accept.paymob.com/api/acceptance/iframes/${process.env.IFRAME_ID}?payment_token=${response.data.payment_keys[0].key}`;
-
+    
     return res.status(200).json({ PAYMENT_URL });
 
   } catch (error) {
+     if (error.response) {
+        const msg = error.response.data.merchant_order_id;
+        // console.log("Error msg:", msg);
+
+        // if you want just the order_id (UUID) inside the string:
+        const match = msg.match(/ref:\s*([a-f0-9-]+)/i);
+        if (match) {
+          const existingOrderId = match[1];
+          console.log("Existing merchant_order_id:", existingOrderId);
+          const inPaymob =await reconcilePaymob(existingOrderId)
+          if(inPaymob === 404){
+            await pool.query(
+            "UPDATE payment SET payment_status = $1 WHERE payment_id = $2",
+            ['failed', existingOrderId]
+            ); 
+            return res.status(400).json({ message: `This payment expiard please try again you have now tries (3-)`})
+          }
+        }
+        // console.log(match[1])
+
+        
+        // console.log(inPaymob)
+      } else {
+        console.error("Unexpected error:", error);
+      
+    
     console.error(error.response?.data || error.message);
     return res.status(500).json({ message: error.message });
+  }
   }
 };
 
