@@ -148,16 +148,18 @@ const Payment = () => {
         }, 1000);
       } else {
         console.error("An error occurred:", error);
+        setIsLoading(false);
+        setAlertMessage(
+          <div className="payment-success-container">
+            <h1>⚠️ Payment Failed</h1>
+            <p>{error.response.data.message}</p>
+          </div>
+        );
+        setAlertFlag(true);
         setTimeout(() => {
-          setIsLoading(false);
-          setAlertMessage(
-            <div className="payment-success-container">
-              <h1>⚠️ Payment Failed</h1>
-              <p>An error occurred while booking, please try again.</p>
-            </div>
-          );
-          setAlertFlag(true);
-        }, 1000);
+           setAlertFlag(false);
+           navigate('/home')
+        }, 3500);
       }
     }
   };
@@ -262,7 +264,7 @@ const Payment = () => {
             setAlertFlag={setAlertFlag}
           />
 
-          <button type="submit" className="cta-button">
+          <button type="submit" className="cta-button" >
             Book Now
           </button>
         </form>

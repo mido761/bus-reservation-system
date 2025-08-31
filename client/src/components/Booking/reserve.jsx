@@ -13,7 +13,10 @@ const Reserve = () => {
   const [showModal, setShowModal] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState("");
-  const [showPendingModal, setShowPendingModal] = useState({ show: false, booking: null });
+  const [showPendingModal, setShowPendingModal] = useState({
+    show: false,
+    booking: null,
+  });
   useEffect(() => {
     const fetchStops = async () => {
       try {
@@ -39,44 +42,61 @@ const Reserve = () => {
     setShowModal(true);
   };
 
-
   const handleModalConfirm = async () => {
-  setIsBooking(true);
-  setBookingError("");
-  try {
-    const res = await axios.post(
-      `${backEndUrl}/booking/book`,
-      {
-        tripId: trip.trip_id,
-        stopId: selectedStop.stop_id,
-      },
-      { withCredentials: true }
-    );
+    setIsBooking(true);
+    setBookingError("");
+    try {
+      const checkRes = await axios.post(
+        `${backEndUrl}/booking/filter-user-bookings`,
+        {
+          tripId: trip.trip_id,
+        },
+        { withCredentials: true }
+      );
 
-    const booking = res.data.booked;
+      console.log(checkRes);
 
-    setShowModal(false);
-    navigate("/payment", {
-      state: { booking, trip, route },
-    });
+      const confirmMultiBookings = checkRes.data.userBookings.length > 0
+        ? window.confirm(
+            `You already have ${checkRes.data.userBookings.length} booking/s for the same trip, do you want to book again?`
+          )
+        : true;
 
-  } catch (err) {
-    if (err.response && err.response.status === 400) {
-      // Pending booking case
-      const booking = err.response.data.booking;
-      setBookingError(err.response.data.message);
+      if (confirmMultiBookings) {
+        const res = await axios.post(
+          `${backEndUrl}/booking/book`,
+          {
+            tripId: trip.trip_id,
+            stopId: selectedStop.stop_id,
+          },
+          { withCredentials: true }
+        );
 
-      // Show special modal with two options
-      setShowModal(false);
-      setShowPendingModal({ show: true, booking });
-    } else {
-      setBookingError("Booking failed. Please try again.");
+        const booking = res.data.booked;
+        
+        setShowModal(false);
+        navigate("/payment", {
+          state: { booking, trip, route },
+        });
+      }
+
+    } catch (err) {
+      console.log(err)
+      if (err.response && err.response.status === 400) {
+        // Pending booking case
+        const booking = err.response.data.booking;
+        setBookingError(err.response.data.message);
+
+        // Show special modal with two options
+        setShowModal(false);
+        setShowPendingModal({ show: true, booking });
+      } else {
+        setBookingError("Booking failed. Please try again.");
+      }
+    } finally {
+      setIsBooking(false);
     }
-  } finally {
-    setIsBooking(false);
-  }
-};
-
+  };
 
   return (
     <div className="reserve-page">
@@ -146,44 +166,53 @@ const Reserve = () => {
             Confirm Reservation
           </button>
           {showPendingModal.show && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <h2>Pending Booking Found</h2>
-      <p className="pending-msg">{bookingError}</p>
-      <div className="pending-stop-card">
-        <span className="pending-stop-icon" role="img" aria-label="stop">🚌</span>
-        <div className="pending-stop-details">
-          <span className="pending-stop-name">{showPendingModal.booking.stop_name}</span>
-          <span className="pending-stop-location">{showPendingModal.booking.location}</span>
-        </div>
-      </div>
-      
-      <div className="modal-btns">
-        <button
-          className="modal-btn confirm"
-          onClick={() => {
-            navigate("/payment", {
-              state: {
-                booking: showPendingModal.booking,
-                trip,
-                route,
-              },
-            });
-          }}
-        >
-          Complete Reservation
-        </button>
-        <button
-          className="modal-btn cancel"
-          onClick={() => navigate("/home")}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2>Pending Booking Found</h2>
+                <p className="pending-msg">{bookingError}</p>
+                <div className="pending-stop-card">
+                  <span
+                    className="pending-stop-icon"
+                    role="img"
+                    aria-label="stop"
+                  >
+                    🚌
+                  </span>
+                  <div className="pending-stop-details">
+                    <span className="pending-stop-name">
+                      {showPendingModal.booking.stop_name}
+                    </span>
+                    <span className="pending-stop-location">
+                      {showPendingModal.booking.location}
+                    </span>
+                  </div>
+                </div>
 
+                <div className="modal-btns">
+                  <button
+                    className="modal-btn confirm"
+                    onClick={() => {
+                      navigate("/payment", {
+                        state: {
+                          booking: showPendingModal.booking,
+                          trip,
+                          route,
+                        },
+                      });
+                    }}
+                  >
+                    Complete Reservation
+                  </button>
+                  <button
+                    className="modal-btn cancel"
+                    onClick={() => navigate("/home")}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {showModal && (
             <div className="modal-overlay">

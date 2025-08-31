@@ -107,6 +107,55 @@ async function getUserBookings(req, res) {
   }
 }
 
+async function filterUserBookings(req, res) {
+  // TODO: Fetch bookings for a specific user
+  const userId = req.session.userId;
+  const { tripId } = req.body;
+  try {
+    //Query
+    // SELECT *
+    // FROM booking
+    // WHERE passenger_id = $1
+    // ORDER BY priority ASC, booked_at DESC
+
+    const getBookingInfo = `
+    SELECT 
+      booking.booking_id,
+      trips.date,
+      trips.price,
+      route.source,
+      route.destination,
+      stop.stop_name,
+      seat.seat_number,
+      booking.status,
+      booking.booked_at,
+      booking.updated_at
+    FROM booking
+    JOIN trips 
+      ON booking.trip_id = trips.trip_id 
+    LEFT JOIN route 
+      ON trips.route_id = route.route_id
+    LEFT JOIN stop 
+      ON booking.stop_id = stop.stop_id
+    LEFT JOIN seat 
+      ON booking.seat_id = seat.seat_id
+    WHERE booking.passenger_id = $1 AND booking.trip_id = $2
+    ORDER BY booking.booked_at DESC
+    `;
+
+    const { rows: userBookings } = await pool.query(getBookingInfo, [userId, tripId]);
+    
+    return res.status(200).json({
+      message: "Successfully fetched bookings",
+      userBookings: userBookings,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching bookings", error: err.message });
+  }
+}
+
 async function getTripBookings(req, res) {
   // TODO: Fetch bookings for a specific trip
   const tripId = req.params.tripId;
@@ -175,7 +224,7 @@ async function book(req, res) {
     // await client.query("BEGIN");
 
     // Check if user already has pending booking
-  const checkQuery = `
+    const checkQuery = `
     SELECT b.*, s.stop_name, s.location
     FROM booking b
     JOIN stop s ON b.stop_id = s.stop_id
@@ -184,27 +233,30 @@ async function book(req, res) {
       AND b.trip_id = $3 
   `;
 
-    const {rows} = await pool.query(checkQuery, [
+    const { rows } = await pool.query(checkQuery, [
       "pending",
       req.session.userId,
       tripId,
     ]);
-    console.log(rows)
-    const checkBooking = rows[0]
+    console.log(rows);
+    const checkBooking = rows[0];
 
     if (checkBooking) {
       // await client.query("ROLLBACK");
-      return res.status(400).json(
-        {message: "You have a pending booking. Complete it before booking another seat!", booking: checkBooking}
-      );
+      return res
+        .status(400)
+        .json({
+          message:
+            "You have a pending booking. Complete it before booking another seat!",
+          booking: checkBooking,
+        });
     }
-    if(!checkBooking){
+    if (!checkBooking) {
+      const passengerId = req.session.userId;
+      console.log("Passenger:", passengerId);
 
-    const passengerId = req.session.userId;
-    console.log("Passenger:", passengerId);
-
-    // Insert into booking
-    const addQuery = `
+      // Insert into booking
+      const addQuery = `
       WITH inserted AS (
         INSERT INTO booking (trip_id, passenger_id, stop_id, status)
         VALUES ($1, $2, $3, 'pending')
@@ -215,26 +267,30 @@ async function book(req, res) {
       JOIN stop s ON i.stop_id = s.stop_id
     `;
 
-    const { rows } = await pool.query(addQuery, [tripId, passengerId, stopId]);
-    const addBook = rows[0];
-    console.log(addBook)
-    // // Insert into payment linked to booking
-    // const addPaymentQ = `
-    //   INSERT INTO payment (booking_id, payment_status)
-    //   VALUES ($1, 'pending')
-    //   RETURNING *`;
-    // const addPayment = await client.query(addPaymentQ, [
-    //   addBook.rows[0].booking_id,
-    // ]);
+      const { rows } = await pool.query(addQuery, [
+        tripId,
+        passengerId,
+        stopId,
+      ]);
+      const addBook = rows[0];
+      console.log(addBook);
+      // // Insert into payment linked to booking
+      // const addPaymentQ = `
+      //   INSERT INTO payment (booking_id, payment_status)
+      //   VALUES ($1, 'pending')
+      //   RETURNING *`;
+      // const addPayment = await client.query(addPaymentQ, [
+      //   addBook.rows[0].booking_id,
+      // ]);
 
-    // await client.query("COMMIT");
+      // await client.query("COMMIT");
 
-    return res.status(201).json({
-      message: "Booked successfully!",
-      booked: addBook,
-      // payment: addPayment.rows[0],
-    });
-  };
+      return res.status(201).json({
+        message: "Booked successfully!",
+        booked: addBook,
+        // payment: addPayment.rows[0],
+      });
+    }
   } catch (error) {
     // await client.query("ROLLBACK");
     console.error("Booking transaction failed:", error);
@@ -287,6 +343,7 @@ export {
   getBookings,
   getBookingInfo,
   getUserBookings,
+  filterUserBookings,
   getTripBookings,
   getBusBookings,
   book,

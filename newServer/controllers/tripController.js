@@ -100,46 +100,28 @@ const addTrip = async (req, res) => {
     // Convert date to ISO format (YYYY-MM-DD)
     const formattedDate = new Date(date).toISOString().split("T")[0];
 
-    // Check if trip already exists
-    const checkTrip = `
-      SELECT * 
-      FROM trips
-      WHERE (route_id, date, departure_time) = ($1, $2, $3)
+    const query = `
+      INSERT INTO trips (route_id, date, departure_time, arrival_time, price)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (route_id, date, departure_time) DO NOTHING
+      RETURNING *;
     `;
-    const { rows } = await pool.query(checkTrip, [
-      routeId,
-      formattedDate,
-      departureTime,
-    ]);
-    const trip = rows[0];
 
-    if (trip) {
-      return res
-        .status(400)
-        .json({ message: "A trip is already scheduled at the same time!" });
+    const values = [routeId, formattedDate, departureTime, arrivalTime, 200];
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      // conflict happened → trip already exists
+      return res.status(409).json({ message: "Trip already exists" });
     }
 
-    // Insert new trip
-    const addTrip = `
-      INSERT INTO trips(
-        route_id, date, departure_time, arrival_time
-      )
-      VALUES ($1, $2, $3, $4)
-      RETURNING trip_id, date, departure_time, arrival_time
-    `;
-    const { rows: newTrip } = await pool.query(addTrip, [
-      routeId,
-      formattedDate,
-      departureTime,
-      arrivalTime,
-    ]);
-
-    return res
-      .status(200)
-      .json({ message: "Trip added successfully!", trip: newTrip[0] });
-  } catch (error) {
-    console.error("Error adding schedule:", error);
-    return res.status(500).json({ message: error.message || "Server error" });
+    return res.status(201).json({
+      message: "Trip added successfully",
+      trip: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Error inserting trip:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

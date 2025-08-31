@@ -1,29 +1,28 @@
 import pool from "../db.js";
-import { fetchPaymobAuthToken } from "../utils/fetchPaymobAuthToken.js";
+import {fetchPaymobAuthToken} from "../helperfunctions/paymob/fetchPaymobAuthToken.js";
 import axios from "axios";
 
-export async function reconcilePaymob(payment_id=undefined) {
+export async function reconcilePaymob(payment_id = undefined) {
   const client = await pool.connect();
   let tx = {};
   let pending = [];
+
   if (!payment_id) {
-     pending = await client.query(
+    pending = await client.query(
       "SELECT * FROM payment WHERE payment_status = 'pending'"
     );
-  }else {
-     pending = await client.query(
-      "SELECT * FROM payment WHERE payment_id = $1", [payment_id]
+  } else {
+    pending = await client.query(
+      "SELECT * FROM payment WHERE payment_id = $1",
+      [payment_id]
     );
   }
 
-  // console.log(pending.rows);
-  for (const p of pending.rows ) {
-    // app.post("/api/transaction_inquiry", async (req, res) => {
+  const results = [];
 
+  for (const p of pending.rows) {
     try {
       const token = await fetchPaymobAuthToken();
-
-      // console.log("Token: ", token);
 
       const inquiryResponse = await axios.post(
         "https://accept.paymob.com/api/ecommerce/orders/transaction_inquiry",
@@ -32,18 +31,10 @@ export async function reconcilePaymob(payment_id=undefined) {
       );
 
       tx = inquiryResponse.data;
-      console.log(inquiryResponse.data.success);
     } catch (err) {
-      // console.error(err.status);
-      if(pending.rows.length===1){
-        return err.status
-      }
-      if (err.status === 404) continue;
-
-
-      throw new Error("Error fetching transaction details from paymob!");
+      // if (err?.response?.status === 404) continue;
+      throw new Error(err);
     }
-    // });
 
     const newPaymentStatus = tx.success ? "paid" : "failed";
     const newBookingStatus = tx.success ? "confirmed" : "failed";
@@ -62,16 +53,12 @@ export async function reconcilePaymob(payment_id=undefined) {
       );
 
       await client.query("COMMIT");
-      console.log(`Reconciled booking ${p.booking_id} → ${newBookingStatus}`);
-
-      return `Reconciled booking ${p.booking_id} → ${newBookingStatus}`;
+      results.push(`Reconciled booking ${p.booking_id} → ${newBookingStatus}`);
     } catch (err) {
       await client.query("ROLLBACK");
       throw new Error(err);
     }
   }
 
-  return "No payments to update!";
+  return results.length > 0 ? results : "No payments to update!";
 }
-
-export default { reconcilePaymob };

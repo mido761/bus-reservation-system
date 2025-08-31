@@ -3,6 +3,7 @@ import {
   getBookings,
   getBookingInfo,
   getUserBookings,
+  filterUserBookings,
   getTripBookings,
   getBusBookings,
   book,
@@ -16,6 +17,7 @@ const router = express.Router();
 router.get("/get-all-bookings", getBookings);
 router.get("/booking-info/:bookingId", getBookingInfo);
 router.get("/get-user-bookings", getUserBookings);
+router.post("/filter-user-bookings", filterUserBookings);
 router.get("/get-trip-bookings/:tripId", getTripBookings);
 router.get("/get-bus-bookings/:busId", getBusBookings);
 router.post("/book", book);
