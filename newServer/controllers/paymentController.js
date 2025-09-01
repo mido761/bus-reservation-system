@@ -6,6 +6,7 @@ import { findOrCreatePayment } from "../helperfunctions/paymob/findOrCreatePayme
 import { handlePaymobError } from "../helperfunctions/paymob/handlePaymobError.js";
 import { limitPaymentRetries } from "../helperfunctions/paymob/countPaymentRetries.js";
 import { sendMail } from "../utils/nodeMailer.js";
+import { sendTicketEmail } from "../utils/sendTicketMail.js";
 
 const getUserPayments = async (req, res) => {
   try {
@@ -85,7 +86,7 @@ const standAlonePayment = async (req, res) => {
   } catch (error) {
     try {
       await handlePaymobError(error);
-      return res.status(400).json({message: "Payment already succeeded."});
+      return res.status(400).json({ message: "Payment already succeeded." });
     } catch (err) {
       return res.status(400).json({ message: err.message });
     }
@@ -93,6 +94,8 @@ const standAlonePayment = async (req, res) => {
 };
 
 const webhookUpdate = async (req, res) => {
+  console.log("POST /payment/webhook called");
+
   const client = await pool.connect();
   try {
     const payload = req.body;
@@ -152,10 +155,54 @@ const webhookUpdate = async (req, res) => {
       );
 
       // Create and send ticket email
-      const userEmail = obj.order.shipping_data.email
-      const emailSubject = `Trip Ticket Confirmation`
-      const emailBody = obj?.order?.items[0]
-      await sendMail(userEmail, emailSubject, emailBody);
+      try {
+        const getTicketQ = `
+          SELECT 
+            booking.booking_id,
+            tickets.ticket_id,
+            users.username,
+            tickets.seat_number,
+            trips.date,
+            trips.departure_time,
+            trips.price,
+            route.source,
+            route.destination,
+            stop.stop_name
+          FROM booking
+          JOIN trips 
+            ON booking.trip_id = trips.trip_id 
+          JOIN users 
+            ON booking.passenger_id = users.user_id
+          JOIN tickets 
+            ON booking.booking_id = tickets.booking_id 
+          LEFT JOIN route 
+            ON trips.route_id = route.route_id
+          LEFT JOIN stop 
+            ON booking.stop_id = stop.stop_id
+          LEFT JOIN seat 
+            ON booking.seat_id = seat.seat_id
+          WHERE booking.booking_id = $1
+          LIMIT 1
+          `;
+
+        const { rows: userTicket } = await pool.query(getTicketQ, [
+          bookingId,
+        ]);
+
+        const ticket = userTicket[0]
+
+        const userEmail = obj.order.shipping_data.email;
+        await sendTicketEmail(userEmail,ticket);
+        await client.query(
+          "UPDATE tickets SET email_status = 'sent', email_sent_at = NOW(), updated_at = NOW(), status = 'issued' WHERE booking_id = $1",
+          [bookingId]
+        );
+      } catch (err) {
+        await client.query(
+          "UPDATE tickets SET email_status = 'failed' WHERE booking_id = $1",
+          [bookingId]
+        );
+      }
     }
 
     await client.query("COMMIT");
