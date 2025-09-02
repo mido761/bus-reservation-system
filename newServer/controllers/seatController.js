@@ -30,6 +30,9 @@ const getBusSeats = async (req, res) => {
 
     const { rows: busSeats } = await pool.query(getBusSeatsQ, [busId]);
 
+    if (busSeats.length === 0) {
+      return res.status(400).json({ message: "No seats found for this bus!" });
+    }
     return res.status(200).json({ bus: busId, seats: busSeats });
   } catch (error) {
     return res.status(500).json({ message: error.message });
