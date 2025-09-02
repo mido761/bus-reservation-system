@@ -1,158 +1,84 @@
-import React, { useEffect, useState } from "react";
-import QRCode from "qrcode.react"; 
+import React, { useState } from "react";
 import "./checkin.css";
 
-const backendUrl = import.meta.env.VITE_BACK_END_URL;
-
-const seatLayout = [
-  ["driver", "1", "2", null],
-  ["3", "4", "5", null],
-  ["6", "7", null, "8"],
-  ["9", "10", null, "11"],
-  ["12", "13", "14", "15"],
-];
-
 export default function Checkin() {
-  const [buses, setBuses] = useState([]);
-  const [selectedBus, setSelectedBus] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null);
-  const [confirming, setConfirming] = useState(false);
-  const [confirmedSeat, setConfirmedSeat] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
 
-  // Fetch buses
-  useEffect(() => {
-    fetch(`${backendUrl}/bus`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.buses) {
-          const busesWithQr = data.buses.map((bus) => ({
-            ...bus,
-            qrUrl: `http://localhost:5173/#/checkin?bus_id=${bus.bus_id}`,
-          }));
-          setBuses(busesWithQr);
-        }
-      })
-      .catch((err) => console.error("Error fetching buses:", err));
-  }, []);
+  const seatLayout = [
+    ["DRIVER", 1, 2],  // 1st row
+    [3, 4, 5, null],         // 2nd row
+    [6, 7, null, 8],         // 3rd row
+    [9, 10, null, 11],       // 4th row
+    [12, 13, 14, 15],        // 5th row
+  ];
 
-  // Seat handling
   const handleSeatClick = (seat) => {
-    if (seat && seat !== "driver") {
+    if (seat && seat !== "DRIVER") {
       setSelectedSeat(seat);
-      setConfirming(true);
     }
   };
 
-  const handleConfirm = () => {
-    setConfirmedSeat(selectedSeat);
-    setConfirming(false);
+  const handleConfirmClick = () => {
+    if (!selectedSeat) {
+      alert("⚠️ Please select a seat before confirming.");
+      return;
+    }
+    setShowPopup(true);
   };
 
-  const handleCancel = () => {
-    setSelectedSeat(null);
-    setConfirming(false);
+  const handlePopupConfirm = () => {
+    setShowPopup(false);
+    alert(`✅ Seat ${selectedSeat} has been successfully reserved for you.`);
+  };
+
+  const handlePopupCancel = () => {
+    setShowPopup(false);
   };
 
   return (
     <div className="checkin-container">
-      {!selectedBus ? (
-        <>
-          <h2>Bus Dashboard</h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-            {buses.map((bus) => (
+      <h2 className="checkin-title">Bus Seat Selection</h2>
+
+      <div className="bus-diagram">
+        {seatLayout.map((row, rowIndex) => (
+          <div key={rowIndex} className="seat-row">
+            {row.map((seat, seatIndex) => (
               <div
-                key={bus.bus_id}
-                style={{
-                  border: "1px solid #ccc",
-                  borderRadius: "10px",
-                  padding: "15px",
-                  textAlign: "center",
-                  cursor: "pointer",
-                }}
-                onClick={() => setSelectedBus(bus)}
+                key={seatIndex}
+                className={`seat 
+                  ${seat === "DRIVER" ? "driver" : ""} 
+                  ${seat === null ? "empty" : ""} 
+                  ${selectedSeat === seat ? "selected" : ""}`}
+                onClick={() => handleSeatClick(seat)}
               >
-                <h4>{bus.plate_number}</h4>
-                <QRCode value={bus.qrUrl} size={120} />
-                <p style={{ fontSize: "12px", wordBreak: "break-all" }}>
-                  {bus.qrUrl}
-                </p>
-                <button style={{ marginTop: "10px" }}>Check-in</button>
+                {seat === "DRIVER" ? "🚍 Driver" : seat}
               </div>
             ))}
           </div>
-        </>
-      ) : (
-        <>
-          <h2 className="checkin-title">
-            Seat Check-In for Bus {selectedBus.plate_number}
-          </h2>
-          <div className="seat-diagram">
-            {seatLayout.map((row, rowIdx) => (
-              <div className="seat-row" key={rowIdx}>
-                {row.map((seat, colIdx) => {
-                  if (seat === null) {
-                    return <div className="seat-empty" key={colIdx}></div>;
-                  }
-                  if (seat === "driver") {
-                    return (
-                      <div className="seat-driver" key={colIdx}>
-                        <span role="img" aria-label="driver">
-                          🧑‍✈️
-                        </span>
-                        <div className="driver-label">Driver</div>
-                      </div>
-                    );
-                  }
-                  return (
-                    <button
-                      className={`seat-btn${
-                        selectedSeat === seat ? " selected" : ""
-                      }${confirmedSeat === seat ? " confirmed" : ""}`}
-                      key={colIdx}
-                      onClick={() => handleSeatClick(seat)}
-                      disabled={confirmedSeat === seat}
-                    >
-                      {seat}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+        ))}
+      </div>
+
+      <button className="confirm-btn" onClick={handleConfirmClick}>
+        Confirm Selection
+      </button>
+
+      {/* Popup Modal */}
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup">
+            <h3>Confirm Seat</h3>
+            <p>Are you sure you want to select <b>Seat {selectedSeat}</b>?</p>
+            <div className="popup-actions">
+              <button className="popup-btn confirm" onClick={handlePopupConfirm}>
+                Yes, Confirm
+              </button>
+              <button className="popup-btn cancel" onClick={handlePopupCancel}>
+                Cancel
+              </button>
+            </div>
           </div>
-
-          {confirming && (
-            <div className="confirm-modal">
-              <div className="confirm-box">
-                <p>
-                  Confirm seat <b>{selectedSeat}</b>?
-                </p>
-                <button className="confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-
-          {confirmedSeat && (
-            <div className="confirmed-message">
-              Seat <b>{confirmedSeat}</b> confirmed!
-            </div>
-          )}
-
-          <button
-            style={{ marginTop: "20px" }}
-            onClick={() => {
-              setSelectedBus(null);
-              setSelectedSeat(null);
-              setConfirmedSeat(null);
-            }}
-          >
-            Back to Buses
-          </button>
-        </>
+        </div>
       )}
     </div>
   );
