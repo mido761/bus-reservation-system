@@ -36,6 +36,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Reserve from "./components/Booking/reserve.jsx";
 import UserAccount from "./components/my-account/user-account.jsx";
+import Checkin from "./components/check-in/checkin.jsx";
 
 function App() {
   return (
@@ -98,6 +99,16 @@ function App() {
             <Auth>
               <Navbar />
               <Payment />
+              <Footer />
+            </Auth>
+          }
+        />
+        <Route
+          path="/checkin"
+          element={
+            <Auth>
+              <Navbar />
+              <Checkin />
               <Footer />
             </Auth>
           }
