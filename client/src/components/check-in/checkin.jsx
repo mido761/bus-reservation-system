@@ -3,12 +3,17 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./checkin.css";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
+import SeatLegend from "./seatlegend.jsx";
 
 export default function Checkin() {
   const [seats, setSeats] = useState([]);
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [selectedSeatId, setSelectedSeatId] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [confirmationMsg, setConfirmationMsg] = useState("");
+
+  // Example booked seats
+  const bookedSeats = [8, 12];
   const { busId } = useParams();
 
   const fetchBusSeats = async () => {
@@ -38,7 +43,7 @@ export default function Checkin() {
   ];
 
   const handleSeatClick = (seat) => {
-    if (seat && seat !== "DRIVER") {
+    if (seat && seat !== "DRIVER" && !bookedSeats.includes(seat)) {
       setSelectedSeat(seat);
       setSelectedSeatId(seats[seat - 1].seat_id);
     }
@@ -48,7 +53,7 @@ export default function Checkin() {
 
   const handleConfirmClick = () => {
     if (!selectedSeat) {
-      alert("⚠️ Please select a seat before confirming.");
+      setConfirmationMsg("⚠️ Please select a seat before confirming.");
       return;
     }
     setShowPopup(true);
@@ -118,31 +123,37 @@ export default function Checkin() {
     setShowPopup(false);
   };
 
+  const handleReset = () => {
+    setSelectedSeat(null);
+    setConfirmationMsg("");
+  };
+
   return (
     <div className="checkin-container">
       <h2 className="checkin-title">Bus Seat Selection</h2>
+
+      <SeatLegend /> {/* ✅ Seat legend */}
 
       <div className="bus-diagram">
         {seatLayout.map((row, rowIndex) => (
           <div key={rowIndex} className="seat-row">
             {row.map((seat, seatIndex) => {
-              const isBooked =
-                seat !== null &&
-                seat !== "DRIVER" &&
-                seats[seat - 1]?.status === "booked";
+              const seatClass =
+                seat === "DRIVER"
+                  ? "driver"
+                  : seat === null
+                  ? "empty"
+                  : bookedSeats.includes(seat)
+                  ? "booked"
+                  : selectedSeat === seat
+                  ? "selected"
+                  : "available";
+
               return (
                 <div
                   key={seatIndex}
-                  className={`seat 
-              ${seat === "DRIVER" ? "driver" : ""} 
-              ${seat === null ? "empty" : ""} 
-              ${isBooked ? "booked" : ""} 
-              ${selectedSeat === seat ? "selected" : ""}`}
-                  onClick={() => {
-                    if (seat !== null && seat !== "DRIVER") {
-                      handleSeatClick(seat);
-                    }
-                  }}
+                  className={`seat ${seatClass}`}
+                  onClick={() => handleSeatClick(seat)}
                 >
                   {seat === "DRIVER" ? "🚍 Driver" : seat}
                 </div>
@@ -152,9 +163,19 @@ export default function Checkin() {
         ))}
       </div>
 
-      <button className="confirm-btn" onClick={handleConfirmClick}>
-        Confirm Selection
-      </button>
+      <div className="actions">
+        <button className="confirm-btn" onClick={handleConfirmClick}>
+          Confirm Selection
+        </button>
+        <button className="reset-btn" onClick={handleReset}>
+          Reset
+        </button>
+      </div>
+
+      {/* Confirmation message */}
+      {confirmationMsg && (
+        <div className="confirmation-message">{confirmationMsg}</div>
+      )}
 
       {/* Popup Modal */}
       {showPopup && (

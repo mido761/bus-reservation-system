@@ -1,0 +1,18 @@
+/* Legend */
+.seat-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 12px 0 24px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+.seat.sample {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
