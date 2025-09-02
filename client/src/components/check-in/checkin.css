@@ -1,121 +1,153 @@
-
 .checkin-container {
   padding-top: 64px;
   min-height: 85vh;
-	max-width: 500px;
-	margin: 40px auto;
-	background: #fff;
-	border-radius: 16px;
-	box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-	padding: 32px 24px;
+  max-width: 500px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+  padding: 32px 24px;
+  text-align: center;
 }
 
 .checkin-title {
-	text-align: center;
-	font-size: 2rem;
-	margin-bottom: 32px;
-	color: #2d3e50;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #333;
 }
 
-.seat-diagram {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	margin-bottom: 32px;
+.bus-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 auto 20px;
+  width: max-content;
 }
 
 .seat-row {
-	display: flex;
-	gap: 16px;
-	justify-content: center;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
-.seat-btn {
-	width: 48px;
-	height: 48px;
-	background: #e9ecef;
-	border: 2px solid #b0b0b0;
-	border-radius: 10px;
-	font-size: 1.2rem;
-	cursor: pointer;
-	transition: background 0.2s, border 0.2s;
-}
-.seat-btn.selected {
-	background: #ffe066;
-	border-color: #ffd700;
-}
-.seat-btn.confirmed {
-	background: #51cf66;
-	border-color: #38b000;
-	color: #fff;
-	cursor: not-allowed;
-}
-.seat-btn:disabled {
-	opacity: 0.7;
-	cursor: not-allowed;
+.seat {
+  width: 50px;
+  height: 50px;
+  background: #f4f4f4;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
 }
 
-.seat-empty {
-	width: 48px;
-	height: 48px;
-	background: transparent;
+.seat:hover {
+  border-color: #007bff;
 }
 
-.seat-driver {
-	width: 48px;
-	height: 48px;
-	background: #dee2e6;
-	border-radius: 50%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.5rem;
-	color: #495057;
-}
-.driver-label {
-	font-size: 0.7rem;
-	margin-top: 2px;
+.seat.selected {
+  background: #007bff;
+  color: #fff;
+  border-color: #0056b3;
 }
 
-.confirm-modal {
-	position: fixed;
-	top: 0; left: 0; right: 0; bottom: 0;
-	background: rgba(0,0,0,0.2);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 100;
+.seat.driver {
+  width: 110px;
+  background: #444;
+  color: #fff;
+  cursor: default;
+  justify-content: center;
+  font-size: 0.9rem;
 }
-.confirm-box {
-	background: #fff;
-	padding: 24px 32px;
-	border-radius: 12px;
-	box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-	text-align: center;
+
+.seat.empty {
+  visibility: hidden;
 }
+
 .confirm-btn {
-	background: #51cf66;
-	color: #fff;
-	border: none;
-	padding: 8px 20px;
-	border-radius: 6px;
-	margin-right: 12px;
-	font-size: 1rem;
-	cursor: pointer;
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-.cancel-btn {
-	background: #ff6b6b;
-	color: #fff;
-	border: none;
-	padding: 8px 20px;
-	border-radius: 6px;
-	font-size: 1rem;
-	cursor: pointer;
+
+.confirm-btn:hover {
+  background: #0056b3;
 }
-.confirmed-message {
-	text-align: center;
-	color: #38b000;
-	font-size: 1.1rem;
-	margin-top: 18px;
+
+/* Popup Modal */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background: #fff;
+  padding: 24px 20px;
+  border-radius: 16px;
+  text-align: center;
+  width: 320px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+
+.popup h3 {
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.popup p {
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.popup-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.popup-btn.confirm {
+  background: #007bff;
+  color: #fff;
+}
+
+.popup-btn.confirm:hover {
+  background: #0056b3;
+}
+
+.popup-btn.cancel {
+  background: #eee;
+  color: #333;
+}
+
+.popup-btn.cancel:hover {
+  background: #ddd;
 }
