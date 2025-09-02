@@ -11,6 +11,19 @@ async function getCheckedInBooking(client, seatId) {
   return rows ? rows[0] : false;
 }
 
+// Helper: Get checked in booking
+async function getBookingStatus(client, seatId) {
+  const alreadyCheckedInTestQ = `
+      SELECT booking_id, passenger_id, status
+      FROM booking
+      WHERE seat_id = $1
+      LIMIT 1
+    `;
+
+  const { rows } = await client.query(alreadyCheckedInTestQ, [seatId]);
+  return rows[0];
+}
+
 // Helper: Get active trip for a bus
 async function getActiveTrip(client, busId) {
   const getTripIdQ = `

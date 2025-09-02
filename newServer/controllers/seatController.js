@@ -71,17 +71,19 @@ const checkIn = async (req, res) => {
 
     // Count user's bookings for this trip
     const bookingCount = await getBookingCount(client, tripId, userId);
+    console.log(bookingCount);
 
     // Count seats already checked in by this user for this trip
-    const checkedInCount = getCheckedInCount(client, tripId, userId);
+    const checkedInCount = await getCheckedInCount(client, tripId, userId);
+    console.log(checkedInCount);
 
-    if (checkedInCount >= bookingCount) {
-      await client.query("ROLLBACK");
-      return res.status(400).json({
-        message:
-          "You cannot check in for more seats than you have bookings for this trip.",
-      });
-    }
+    // if (checkedInCount >= bookingCount) {
+    //   await client.query("ROLLBACK");
+    //   return res.status(400).json({
+    //     message:
+    //       "Exceeded number of allowed seats.",
+    //   });
+    // }
 
     // Update seat and booking status
     const updateBookingAndSeat = await updateBookingStatus(
@@ -115,10 +117,19 @@ const cancelCheckIn = async (req, res) => {
     // Check if the seat is already checked in
     const alreadyCheckedInBooking = await getCheckedInBooking(client, seatId);
     const currentPassenger = alreadyCheckedInBooking?.passenger_id;
-    if (!alreadyCheckedInBooking) {
+    console.log("Checked In: ", alreadyCheckedInBooking)
+    if (!alreadyCheckedInBooking || alreadyCheckedInBooking.booking_id) {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "Seat is not checked in already!",
+        message: "Seat is already Available!",
+        passengerId: currentPassenger,
+        currentUser: userId,
+      });
+    }
+
+    if (currentPassenger !== userId) {
+      return res.status(400).json({
+        message: "Can't Cancel other's seats!",
         passengerId: currentPassenger,
         currentUser: userId,
       });
@@ -155,8 +166,8 @@ const cancelCheckIn = async (req, res) => {
       seatId,
       tripId,
       userId,
-      "booked",
-      "checked_in"
+      "Available",
+      "not_checked_in"
     );
 
     await client.query("COMMIT");
@@ -171,4 +182,4 @@ const cancelCheckIn = async (req, res) => {
   }
 };
 
-export { getSeats, getBusSeats, checkIn };
+export { getSeats, getBusSeats, checkIn, cancelCheckIn };
