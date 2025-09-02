@@ -81,11 +81,10 @@ const addBus = async (req, res) => {
 };
 
 
-
-
 const editBus = async (req, res) => {
 
 };
+
 
 const delBus = async (req, res) => {
 
