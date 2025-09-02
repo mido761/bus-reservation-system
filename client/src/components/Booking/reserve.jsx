@@ -107,7 +107,7 @@ const Reserve = () => {
             <strong>Route:</strong> {route.source} → {route.destination}
           </p>
           <p>
-            <strong>Date:</strong> {trip.date}
+            <strong>Date:</strong> {formatDateTime(trip.date, "date")}
           </p>
           <p>
             <strong>Departure:</strong> {formatDateTime(trip.departure_time)}

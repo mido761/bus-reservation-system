@@ -11,8 +11,8 @@ async function getCheckedInBooking(client, seatId) {
   return rows ? rows[0] : false;
 }
 
-// Helper: Get checked in booking
-async function getBookingStatus(client, seatId) {
+// Helper: Get booking
+async function getBooking(client, seatId) {
   const alreadyCheckedInTestQ = `
       SELECT booking_id, passenger_id, status
       FROM booking
@@ -21,7 +21,20 @@ async function getBookingStatus(client, seatId) {
     `;
 
   const { rows } = await client.query(alreadyCheckedInTestQ, [seatId]);
-  return rows[0];
+  return rows ? rows[0] : false;
+}
+
+// Helper: Get Seat
+async function getSeat(client, seatId) {
+  const alreadyCheckedInTestQ = `
+      SELECT seat_id, status
+      FROM seat
+      WHERE seat_id = $1
+      LIMIT 1
+    `;
+
+  const { rows } = await client.query(alreadyCheckedInTestQ, [seatId]);
+  return rows ? rows[0] : [];
 }
 
 // Helper: Get active trip for a bus
@@ -30,10 +43,10 @@ async function getActiveTrip(client, busId) {
     SELECT trip_bus.trip_id, trips.date, trips.departure_time
     FROM trip_bus
     JOIN trips ON trips.trip_id = trip_bus.trip_id
-    WHERE bus_id = $1
-      AND (trips.date + trips.departure_time) >= NOW() - interval '12 hour'
-      AND (trips.date + trips.departure_time) <= (NOW() + interval '12 hour')
-    LIMIT 1
+    WHERE bus_id = $1  -- Replace $1 with the bus ID parameter
+      AND (trips.date + trips.departure_time) BETWEEN NOW() - interval '30 minutes' AND NOW() + interval '30 minutes'
+    ORDER BY (trips.date + trips.departure_time) ASC  -- Sort by nearest time
+    LIMIT 1;  -- Only return one trip
   `;
   const { rows } = await client.query(getTripIdQ, [busId]);
   return rows;
@@ -64,43 +77,50 @@ async function getCheckedInCount(client, tripId, userId) {
 // Helper: Update booking and seat status
 async function updateBookingStatus(
   client,
+  cancel,
   seatId,
   tripId,
   userId,
   seatStatus,
-  bookingStatus
+  bookingStatus,
+  currentSeatStatus,
+  currentBookingStatus
 ) {
   const updateSeatQ = `
     UPDATE seat 
     SET status = $1
-    WHERE seat_id = $2
+    WHERE seat_id = $2 AND status = $3
     RETURNING seat_number, status, bus_id
   `;
   const { rows: seatRows } = await client.query(updateSeatQ, [
     seatStatus,
     seatId,
+    currentSeatStatus,
   ]);
   if (seatRows.length === 0) throw new Error("Seat not found");
 
   const updateBookingQ = `
     UPDATE booking 
     SET seat_id = $1, status = $2
-    WHERE trip_id = $3 AND passenger_id = $4
+    WHERE trip_id = $3 AND passenger_id = $4 AND status = $5
     RETURNING booking_id, passenger_id, trip_id, seat_id, status
   `;
   const { rows: bookingRows } = await client.query(updateBookingQ, [
-    seatId,
+    cancel ? null : seatId,
     bookingStatus,
     tripId,
     userId,
+    currentBookingStatus,
   ]);
-  if (bookingRows.length === 0) throw new Error("Error updating booking!");
+  if (bookingRows.length === 0) throw new Error(`Error updating booking!}`);
 
   return { seat: seatRows[0], booking: bookingRows[0] };
 }
 
 export {
   getCheckedInBooking,
+  getBooking,
+  getSeat,
   getActiveTrip,
   getBookingCount,
   getCheckedInCount,

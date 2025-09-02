@@ -112,7 +112,7 @@ function Navbar() {
             Profile
           </button>
         )}
-          {!(location.pathname === "/my-account") && isAuthorized && (
+          {!(location.pathname === "/my-account") && isAuthenticated && (
           <button
             className="nav-link"
             onClick={() => navigate("/my-account")}

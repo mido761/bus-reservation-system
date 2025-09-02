@@ -7,13 +7,13 @@ import SeatLegend from "./seatlegend.jsx";
 
 export default function Checkin() {
   const [seats, setSeats] = useState([]);
+  const [bookedSeats, setBookedSeats] = useState([]);
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [selectedSeatId, setSelectedSeatId] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
 
   // Example booked seats
-  const bookedSeats = [8, 12];
   const { busId } = useParams();
 
   const fetchBusSeats = async () => {
@@ -22,7 +22,11 @@ export default function Checkin() {
         `${backEndUrl}/seat/get-bus-seats/${busId}`
       );
       const busSeats = seatsRes.data.seats;
-      console.log(seatsRes);
+      const bookedSeats = busSeats
+        .filter((seat) => seat.status !== "Available")
+        .map((seat) => seat.seat_number);
+
+      setBookedSeats(bookedSeats);
       setSeats(busSeats);
     } catch (err) {
       console.error("Error fetching bus seats: ", err);
@@ -43,7 +47,7 @@ export default function Checkin() {
   ];
 
   const handleSeatClick = (seat) => {
-    if (seat && seat !== "DRIVER" && !bookedSeats.includes(seat)) {
+    if (seat && seat !== "DRIVER") {
       setSelectedSeat(seat);
       setSelectedSeatId(seats[seat - 1].seat_id);
     }
@@ -78,8 +82,9 @@ export default function Checkin() {
           idx === selectedSeat - 1 ? { ...seatObj, status: "booked" } : seatObj
         )
       );
-      setSelectedSeat(null)
-      setSelectedSeatId("")
+      setBookedSeats([...bookedSeats, selectedSeat]);
+      setSelectedSeat(null);
+      setSelectedSeatId("");
       alert(`✅ Seat ${selectedSeat} has been successfully reserved for you.`);
     } catch (err) {
       console.error("Error checking user in: ", err);
@@ -100,7 +105,9 @@ export default function Checkin() {
           withCredentials: true,
         }
       );
-      console.log(cancelRes)
+      console.log(cancelRes);
+
+      // Optimistic update for seat status
       setSeats((prevSeats) =>
         prevSeats.map((seatObj, idx) =>
           idx === selectedSeat - 1
@@ -108,6 +115,14 @@ export default function Checkin() {
             : seatObj
         )
       );
+
+      // Optimistic update for booked seats
+      const newBookedSeats = bookedSeats.filter(
+        (seat) => seat !== selectedSeat
+      );
+      setBookedSeats(newBookedSeats);
+
+      // Reset selections 
       setSelectedSeat(null);
       setSelectedSeatId("");
       alert(`❌ Seat ${selectedSeat} reservation cancelled.`);
@@ -131,9 +146,7 @@ export default function Checkin() {
   return (
     <div className="checkin-container">
       <h2 className="checkin-title">Bus Seat Selection</h2>
-
       <SeatLegend /> {/* ✅ Seat legend */}
-
       <div className="bus-diagram">
         {seatLayout.map((row, rowIndex) => (
           <div key={rowIndex} className="seat-row">
@@ -143,10 +156,10 @@ export default function Checkin() {
                   ? "driver"
                   : seat === null
                   ? "empty"
-                  : bookedSeats.includes(seat)
-                  ? "booked"
                   : selectedSeat === seat
                   ? "selected"
+                  : bookedSeats.includes(seat)
+                  ? "booked"
                   : "available";
 
               return (
@@ -162,7 +175,6 @@ export default function Checkin() {
           </div>
         ))}
       </div>
-
       <div className="actions">
         <button className="confirm-btn" onClick={handleConfirmClick}>
           Confirm Selection
@@ -171,12 +183,10 @@ export default function Checkin() {
           Reset
         </button>
       </div>
-
       {/* Confirmation message */}
       {confirmationMsg && (
         <div className="confirmation-message">{confirmationMsg}</div>
       )}
-
       {/* Popup Modal */}
       {showPopup && (
         <div className="popup-overlay">
@@ -198,10 +208,7 @@ export default function Checkin() {
                   Yes, Confirm
                 </button>
               ) : (
-                <button
-                  className="popup-btn cancel"
-                  onClick={handleCancelSeat}
-                >
+                <button className="popup-btn cancel" onClick={handleCancelSeat}>
                   Cancel Seat
                 </button>
               )}

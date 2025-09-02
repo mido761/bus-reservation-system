@@ -1,6 +1,8 @@
 import pool from "../db.js";
 import {
   getCheckedInBooking,
+  getSeat,
+  getBooking,
   getActiveTrip,
   getBookingCount,
   getCheckedInCount,
@@ -68,6 +70,7 @@ const checkIn = async (req, res) => {
       });
     }
     const tripId = trip[0].trip_id;
+    console.log("Trip: ", tripId);
 
     // Count user's bookings for this trip
     const bookingCount = await getBookingCount(client, tripId, userId);
@@ -77,22 +80,24 @@ const checkIn = async (req, res) => {
     const checkedInCount = await getCheckedInCount(client, tripId, userId);
     console.log(checkedInCount);
 
-    // if (checkedInCount >= bookingCount) {
-    //   await client.query("ROLLBACK");
-    //   return res.status(400).json({
-    //     message:
-    //       "Exceeded number of allowed seats.",
-    //   });
-    // }
+    if (checkedInCount >= bookingCount) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Exceeded number of allowed seats for current trip.",
+      });
+    }
 
     // Update seat and booking status
     const updateBookingAndSeat = await updateBookingStatus(
       client,
+      false,
       seatId,
       tripId,
       userId,
       "booked",
-      "checked_in"
+      "checked_in",
+      "Available",
+      "confirmed"
     );
 
     await client.query("COMMIT");
@@ -115,10 +120,9 @@ const cancelCheckIn = async (req, res) => {
     await client.query("BEGIN");
 
     // Check if the seat is already checked in
-    const alreadyCheckedInBooking = await getCheckedInBooking(client, seatId);
-    const currentPassenger = alreadyCheckedInBooking?.passenger_id;
-    console.log("Checked In: ", alreadyCheckedInBooking)
-    if (!alreadyCheckedInBooking || alreadyCheckedInBooking.booking_id) {
+    const seat = await getSeat(client, seatId);
+    console.log("Seat: ", seat);
+    if (seat?.status === "Available") {
       await client.query("ROLLBACK");
       return res.status(400).json({
         message: "Seat is already Available!",
@@ -127,6 +131,9 @@ const cancelCheckIn = async (req, res) => {
       });
     }
 
+    const booking = await getBooking(client, seatId);
+    console.log("Booking: ", booking);
+    const currentPassenger = booking?.passenger_id;
     if (currentPassenger !== userId) {
       return res.status(400).json({
         message: "Can't Cancel other's seats!",
@@ -163,11 +170,14 @@ const cancelCheckIn = async (req, res) => {
     // Update seat and booking status
     const updateBookingAndSeat = await updateBookingStatus(
       client,
+      true,
       seatId,
       tripId,
       userId,
       "Available",
-      "not_checked_in"
+      "confirmed",
+      "booked",
+      "checked_in"
     );
 
     await client.query("COMMIT");
