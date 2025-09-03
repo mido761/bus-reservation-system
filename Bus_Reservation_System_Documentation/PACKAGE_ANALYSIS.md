@@ -1,401 +1,131 @@
-# Package.json Analysis & Dependencies
+# Package Analysis & Dependencies
 
 ## Overview
-This document provides a comprehensive analysis of the Bus Reservation System's package.json file, explaining each dependency, script, and configuration option.
+This document provides a detailed analysis of the `package.json` files for both the backend (`newServer`) and frontend (`client`) of the Bus Reservation System. It clarifies the role of each dependency and script and provides recommendations for cleanup and optimization.
 
-## Package.json Structure
+**Note:** The project's dependency management is currently disorganized. The root `package.json` serves the backend but contains frontend libraries, while `client/package.json` contains backend libraries. This analysis categorizes packages by their actual use, not their location, and recommends corrections.
 
-```json
-{
-  "name": "server",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run build --prefix client && nodemon server/index.js",
-    "build": "npm install && npm install --prefix client && npm run build --prefix client",
-    "start": "node server/index.js",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "bcryptjs": "^3.0.2",
-    "connect-mongo": "^5.1.0",
-    "cors": "^2.8.5",
-    "date-fns": "^4.1.0",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "express-session": "^1.18.1",
-    "jsonwebtoken": "^9.0.2",
-    "jwt-decode": "^4.0.0",
-    "lucide-react": "^0.510.0",
-    "luxon": "^3.6.1",
-    "mongod": "^2.0.0",
-    "mongoose": "^8.9.2",
-    "nodemailer": "^6.10.0",
-    "nodemon": "^3.1.10",
-    "pusher": "^5.2.0",
-    "pusher-js": "^8.4.0",
-    "react-icons": "^5.4.0"
-  }
-}
-```
+---
 
-## Scripts Analysis
+## 1. Backend Package Analysis (`/package.json`)
 
-### `"start": "node server/index.js"`
-**Purpose**: Production server startup
-**Usage**: `npm start`
-**Description**: Starts the server using Node.js directly without auto-reload
-**When to use**: Production deployment, final testing
+The root `package.json` is responsible for running the backend server located in the `newServer/` directory.
 
-### `"dev": "npm run build --prefix client && nodemon server/index.js"`
-**Purpose**: Development server with auto-reload
-**Usage**: `npm run dev`
-**Description**: 
-- First builds the client application
-- Then starts the server with nodemon for automatic restarts
-**When to use**: Development, testing changes
+### Backend Scripts
 
-### `"build": "npm install && npm install --prefix client && npm run build --prefix client"`
-**Purpose**: Full project build
-**Usage**: `npm run build`
-**Description**:
-- Installs server dependencies
-- Installs client dependencies
-- Builds client for production
-**When to use**: Deployment preparation, CI/CD pipelines
+-   `"newServer": "nodemon newServer/index.js"`
+    -   **Purpose**: Runs the backend server in development mode using `nodemon`, which automatically restarts the server on file changes.
+    -   **Usage**: `npm run newServer`
 
-### `"lint": "eslint ."`
-**Purpose**: Code quality checking
-**Usage**: `npm run lint`
-**Description**: Runs ESLint to check code style and catch errors
-**When to use**: Before commits, code reviews
+-   `"start": "node newServer/index.js"`
+    -   **Purpose**: Starts the backend server for production.
+    -   **Usage**: `npm start`
 
-### `"preview": "vite preview"`
-**Purpose**: Preview built client application
-**Usage**: `npm run preview`
-**Description**: Serves the built client application
-**When to use**: Testing production build locally
+-   `"dev": "npm run build --prefix client && nodemon newServer/index.js"`
+    -   **Purpose**: A convenience script that first builds the production version of the frontend and then starts the backend development server.
+    -   **Usage**: `npm run dev`
 
-### `"test": "echo \"Error: no test specified\" && exit 1"`
-**Purpose**: Placeholder for testing
-**Status**: Not implemented
-**Recommendation**: Add testing framework like Jest or Mocha
+-   `"test": "jest --verbose"`
+    -   **Purpose**: Runs backend tests using the Jest testing framework.
+    -   **Usage**: `npm test`
 
-## Dependencies Analysis
+### Core Backend Dependencies (`dependencies`)
 
-### Core Server Dependencies
+| Package             | Version   | Description                                                                                             |
+| ------------------- | --------- | ------------------------------------------------------------------------------------------------------- |
+| `express`           | `^4.21.2` | The core web server framework for Node.js, used to build the REST API, handle routes, and middleware.     |
+| `pg`                | `^8.16.3` | The PostgreSQL client for Node.js. Used to connect to and query the PostgreSQL database.                |
+| `express-session`   | `^1.18.1` | Middleware for managing user sessions and storing session data.                                         |
+| `connect-pg-simple` | `^10.0.0` | A session store for `express-session` that saves session data in the PostgreSQL database.                 |
+| `cors`              | `^2.8.5`  | Middleware to enable Cross-Origin Resource Sharing, allowing the frontend to make requests to the backend. |
+| `dotenv`            | `^16.4.7` | Loads environment variables from a `.env` file into `process.env`.                                      |
+| `bcrypt`            | `^5.1.1`  | A library for hashing passwords securely before storing them in the database.                           |
+| `joi`               | `^18.0.0` | A powerful schema description language and data validator for JavaScript. Used for validating request bodies. |
+| `nodemailer`        | `^6.10.0` | A module for sending emails, used for features like password reset and email verification.              |
+| `node-cron`         | `^4.2.1`  | A simple cron-like job scheduler for Node.js. Used for running scheduled tasks.                         |
+| `validator`         | `^13.15.15`| A library of string validators and sanitizers. Used for input validation.                               |
 
-#### `express: ^4.21.2`
-**Purpose**: Web application framework
-**Usage**: Main server framework for handling HTTP requests
-**Features Used**:
-- Routing
-- Middleware support
-- Session handling
-- JSON parsing
-**Documentation**: [Express.js](https://expressjs.com/)
+### Development Dependencies (`devDependencies`)
 
-#### `mongoose: ^8.9.2`
-**Purpose**: MongoDB object modeling
-**Usage**: Database operations and schema definition
-**Features Used**:
-- Schema definition
-- Data validation
-- Query building
-- Connection management
-**Documentation**: [Mongoose](https://mongoosejs.com/)
+| Package   | Version   | Description                                                              |
+| --------- | --------- | ------------------------------------------------------------------------ |
+| `jest`    | `^30.0.5` | A delightful JavaScript Testing Framework with a focus on simplicity.    |
+| `nodemon` | `^3.1.10` | A tool that helps develop Node.js based applications by automatically restarting the node application when file changes in the directory are detected. Found in `dependencies` but should be in `devDependencies`. |
 
-#### `express-session: ^1.18.1`
-**Purpose**: Session middleware for Express
-**Usage**: User session management
-**Features Used**:
-- Session storage
-- Cookie configuration
-- Session regeneration
-**Configuration**: MongoDB store integration
+---
 
-#### `connect-mongo: ^5.1.0`
-**Purpose**: MongoDB session store
-**Usage**: Store Express sessions in MongoDB
-**Integration**: Works with express-session
-**Benefits**: Persistent sessions across server restarts
+## 2. Frontend Package Analysis (`/client/package.json`)
 
-### Security Dependencies
+The `client/package.json` file is responsible for the React frontend application.
 
-#### `bcrypt: ^5.1.1`
-**Purpose**: Password hashing
-**Usage**: Secure password storage and verification
-**Features**:
-- Salt generation
-- Hash generation
-- Password comparison
-**Security**: Industry standard for password hashing
+### Frontend Scripts
 
-#### `bcryptjs: ^3.0.2`
-**Purpose**: JavaScript implementation of bcrypt
-**Usage**: Alternative to native bcrypt
-**Note**: Consider removing if using bcrypt
-**Recommendation**: Use either bcrypt OR bcryptjs, not both
+-   `"dev": "vite"`
+    -   **Purpose**: Starts the Vite development server for a fast, modern frontend development experience with Hot Module Replacement (HMR).
+    -   **Usage**: `npm run dev --prefix client`
 
-#### `cors: ^2.8.5`
-**Purpose**: Cross-Origin Resource Sharing
-**Usage**: Enable cross-origin requests
-**Configuration**:
-- Allowed origins
-- Credentials support
-- Headers configuration
+-   `"build": "vite build"`
+    -   **Purpose**: Bundles the React application into static files for production deployment.
+    -   **Usage**: `npm run build --prefix client`
 
-#### `dotenv: ^16.4.7`
-**Purpose**: Environment variable management
-**Usage**: Load environment variables from .env file
-**Security**: Keep sensitive data out of code
-**Configuration**: Loads variables at application startup
+-   `"lint": "eslint ."`
+    -   **Purpose**: Runs ESLint to find and fix problems in the JavaScript code.
+    -   **Usage**: `npm run lint --prefix client`
 
-### Authentication Dependencies
+### Core Frontend Dependencies
 
-#### `jsonwebtoken: ^9.0.2`
-**Purpose**: JSON Web Token implementation
-**Usage**: Token-based authentication (alternative to sessions)
-**Status**: Included but not actively used
-**Note**: Current system uses session-based auth
+| Package              | Version    | Description                                                                                             |
+| -------------------- | ---------- | ------------------------------------------------------------------------------------------------------- |
+| `react`              | `^18.3.1`  | A JavaScript library for building user interfaces.                                                      |
+| `react-dom`          | `^18.3.1`  | Serves as the entry point to the DOM and server renderers for React.                                    |
+| `vite`               | `^6.0.11`  | A next-generation frontend tooling that provides a faster and leaner development experience.            |
+| `@vitejs/plugin-react`| `^4.3.4`   | The official Vite plugin for React projects.                                                            |
+| `axios`              | `^1.7.9`   | A promise-based HTTP client for making requests from the browser to the backend API.                    |
+| `react-router-dom`   | `^7.8.2`   | The standard library for routing in React, enabling navigation and view composition.                    |
+| `bootstrap`          | `^5.3.3`   | A popular CSS framework for designing responsive and mobile-first websites.                             |
+| `react-bootstrap`    | `^2.10.7`  | A library that replaces Bootstrap's JavaScript with React components.                                   |
+| `react-toastify`     | `^11.0.5`  | A library for adding notifications (toasts) to the application.                                         |
+| `qrcode.react`       | `^4.2.0`   | A React component for generating QR codes.                                                              |
+| `jwt-decode`         | `^4.0.0`   | A small browser-friendly library that decodes JWTs.                                                     |
 
-#### `jwt-decode: ^4.0.0`
-**Purpose**: JWT token decoding
-**Usage**: Client-side token parsing
-**Note**: Primarily frontend library
-**Recommendation**: Move to client dependencies
+---
 
-### Email Service
+## 3. Dependency Cleanup Recommendations
 
-#### `nodemailer: ^6.10.0`
-**Purpose**: Email sending capabilities
-**Usage**: 
-- Password reset emails
-- User verification emails
-- Notifications
-**Configuration**: Gmail SMTP integration
-**Features**:
-- HTML email templates
-- Attachment support
-- Transport configuration
+The current dependency setup is confusing and can lead to larger-than-necessary build sizes and maintenance issues.
 
-### Real-time Communication
+### Step 1: Clean up Backend Dependencies (`/package.json`)
+The following packages are frontend-specific or redundant and should be **removed** from the root `package.json`. They belong in `client/package.json` if needed.
 
-#### `pusher: ^5.2.0`
-**Purpose**: Real-time messaging service (server-side)
-**Usage**: 
-- Seat availability updates
-- Booking notifications
-- System alerts
-**Integration**: WebSocket-based communication
+-   `axios`
+-   `bcryptjs` (Redundant, `bcrypt` is already in use)
+-   `connect-mongo` (Project uses PostgreSQL, not MongoDB)
+-   `date-fns` and `luxon` (Choose one if needed for server-side date logic, otherwise remove)
+-   `jwt-decode`
+-   `lucide-react`
+-   `mongoose` (Project uses PostgreSQL, not MongoDB)
+-   `pusher-js`
+-   `qrcode.react`
+-   `react-icons`
+-   `react-toastify`
 
-#### `pusher-js: ^8.4.0`
-**Purpose**: Pusher client library
-**Usage**: Frontend real-time communication
-**Note**: Should be in client dependencies
-**Recommendation**: Move to client package.json
+Also, move `nodemon` from `dependencies` to `devDependencies`.
 
-### Date and Time Handling
+### Step 2: Clean up Frontend Dependencies (`/client/package.json`)
+The following packages are backend-specific and should be **removed** from `client/package.json`. The `server: "file:.."` entry is unconventional and should also be removed in favor of running the client and server as separate processes that communicate over HTTP.
 
-#### `date-fns: ^4.1.0`
-**Purpose**: Date utility library
-**Usage**: Date formatting and manipulation
-**Features**:
-- Date parsing
-- Formatting
-- Calculations
-**Alternative**: Moment.js (deprecated)
+-   `@babel/core`, `@babel/preset-env`, `@babel/preset-react`, `babel-loader` (These are typically for Webpack setups; Vite handles this internally. They can likely be removed.)
+-   `bcrypt`
+-   `connect-mongo`
+-   `cors`
+-   `dotenv` (Vite uses its own system for `.env` files)
+-   `express`
+-   `express-session`
+-   `mongoose`
+-   `nodemon`
+-   `server: "file:.."`
 
-#### `luxon: ^3.6.1`
-**Purpose**: DateTime library
-**Usage**: Advanced date/time operations
-**Features**:
-- Timezone handling
-- Date arithmetic
-- Formatting
-**Note**: Consider using either date-fns OR luxon
-
-### Development Dependencies
-
-#### `nodemon: ^3.1.10`
-**Purpose**: Development server auto-restart
-**Usage**: Automatically restart server on file changes
-**Environment**: Development only
-**Recommendation**: Move to devDependencies
-
-### UI Dependencies (Misplaced)
-
-#### `lucide-react: ^0.510.0`
-**Purpose**: React icon library
-**Usage**: Frontend icons
-**Issue**: Should be in client dependencies
-**Recommendation**: Remove from server package.json
-
-#### `react-icons: ^5.4.0`
-**Purpose**: React icon components
-**Usage**: Frontend icons
-**Issue**: Should be in client dependencies
-**Recommendation**: Remove from server package.json
-
-### Database Testing
-
-#### `mongod: ^2.0.0`
-**Purpose**: MongoDB daemon for testing
-**Usage**: Local MongoDB instance for development
-**Note**: Consider using MongoDB Community Edition directly
-
-## Dependency Issues and Recommendations
-
-### 1. Duplicate Dependencies
-```json
-// Remove one of these:
-"bcrypt": "^5.1.1",        // Keep this (native, faster)
-"bcryptjs": "^3.0.2",      // Remove this
-
-// Remove one of these:
-"date-fns": "^4.1.0",      // Keep this (smaller, modular)
-"luxon": "^3.6.1",         // Remove this unless timezone features needed
-```
-
-### 2. Misplaced Frontend Dependencies
-```json
-// Move to client/package.json:
-"lucide-react": "^0.510.0",
-"react-icons": "^5.4.0",
-"pusher-js": "^8.4.0",
-"jwt-decode": "^4.0.0"
-```
-
-### 3. Development Dependencies
-```json
-// Move to devDependencies:
-"nodemon": "^3.1.10",
-"eslint": "^x.x.x"  // Add if needed
-```
-
-### 4. Missing Dependencies
-```json
-// Consider adding:
-"helmet": "^x.x.x",        // Security headers
-"compression": "^x.x.x",   // Response compression
-"morgan": "^x.x.x",        // HTTP request logger
-"joi": "^x.x.x",           // Input validation
-"jest": "^x.x.x",          // Testing framework
-"supertest": "^x.x.x"      // API testing
-```
-
-## Optimized Package.json
-
-```json
-{
-  "name": "bus-reservation-backend",
-  "version": "1.0.0",
-  "description": "Backend API for Bus Reservation System",
-  "main": "server/index.js",
-  "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js",
-    "build": "npm install",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "lint": "eslint server/",
-    "lint:fix": "eslint server/ --fix"
-  },
-  "keywords": ["bus", "reservation", "api", "nodejs", "express"],
-  "author": "Your Name",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "connect-mongo": "^5.1.0",
-    "cors": "^2.8.5",
-    "date-fns": "^4.1.0",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "express-session": "^1.18.1",
-    "helmet": "^7.1.0",
-    "mongoose": "^8.9.2",
-    "nodemailer": "^6.10.0",
-    "pusher": "^5.2.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10",
-    "eslint": "^8.57.0",
-    "jest": "^29.7.0",
-    "supertest": "^6.3.4"
-  },
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
-  }
-}
-```
-
-## Security Considerations
-
-### Dependency Vulnerabilities
-```bash
-# Check for vulnerabilities
-npm audit
-
-# Fix vulnerabilities
-npm audit fix
-
-# Update dependencies
-npm update
-```
-
-### Version Pinning
-- Use exact versions for critical dependencies in production
-- Regular security updates
-- Monitor security advisories
-
-### Environment-Specific Dependencies
-- Keep production dependencies minimal
-- Use devDependencies for development tools
-- Consider peer dependencies for optional features
-
-## Performance Impact
-
-### Bundle Size Analysis
-- Core server dependencies: ~50MB
-- Development dependencies: ~200MB
-- Consider dependency tree optimization
-
-### Load Time Impact
-- Express + Mongoose: Fast startup
-- Heavy dependencies: Pusher, bcrypt
-- Optimization: Lazy loading for non-critical features
-
-## Maintenance Strategy
-
-### Regular Updates
-```bash
-# Check outdated packages
-npm outdated
-
-# Update specific package
-npm install package@latest
-
-# Update all packages
-npm update
-```
-
-### Security Updates
-- Monitor security advisories
-- Update vulnerable packages immediately
-- Use tools like `npm audit` regularly
-
-### Dependency Review
-- Quarterly dependency audit
-- Remove unused dependencies
-- Evaluate alternatives for heavy packages
+By cleaning up these files, you will have a much clearer and more maintainable project structure, with a distinct separation between backend and frontend concerns.
 
 ---
 *Last updated: $(Get-Date)*

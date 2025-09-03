@@ -1,520 +1,129 @@
 # System Architecture Documentation
 
 ## Overview
-The Bus Reservation System follows a traditional three-tier architecture with a clear separation between presentation, business logic, and data layers. This document outlines the complete system architecture, data flow, and design patterns used.
+The Bus Reservation System follows a modular, layered architecture. This document outlines the current system architecture for both the backend (`newServer`) and frontend (`client`), data flow, and key design patterns.
 
 ## High-Level Architecture
 
 ```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Client Tier   │    │ Application     │    │   Data Tier     │
-│  (Frontend)     │◄──►│ Tier (Backend)  │◄──►│   (Database)    │
-│                 │    │                 │    │                 │
-│ - React.js      │    │ - Node.js       │    │ - MongoDB       │
-│ - Vite          │    │ - Express.js    │    │ - Mongoose ODM  │
-│ - Real-time UI  │    │ - Session Mgmt  │    │ - Session Store │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                        │                        │
-         └────────────────────────┼────────────────────────┘
-                                  │
-                    ┌─────────────────┐
-                    │ External Services│
-                    │                 │
-                    │ - Pusher (WS)   │
-                    │ - Email (SMTP)  │
-                    │ - File Storage  │
-                    └─────────────────┘
+┌─────────────────┐      ┌─────────────────┐      ┌─────────────────┐
+│   Client Tier   │      │ Application     │      │   Data Tier     │
+│  (Frontend)     │◄───► │ Tier (Backend)  │◄───► │   (Database)    │
+│                 │      │                 │      │                 │
+│ - React.js      │      │ - Node.js       │      │ - PostgreSQL    │
+│ - Vite          │      │ - Express.js    │      │ - pg (node-pg)  │
+│ - Axios         │      │ - Session Mgmt  │      │ - Session Store │
+└─────────────────┘      └─────────────────┘      └─────────────────┘
 ```
 
-## Backend Architecture Details
+## Backend Architecture (`newServer`)
 
-### 1. Application Structure (MVC Pattern)
+### 1. Application Structure (Layered Pattern)
+
+The `newServer` directory follows a feature-based layered architecture, which improves modularity and separation of concerns.
 
 ```
-server/
+newServer/
 ├── index.js                 # Application entry point
+├── db.js                    # Database connection setup (PostgreSQL)
 ├── controllers/             # Business Logic Layer
-│   ├── authentication/      # Auth-specific controllers
-│   │   ├── loginController.js
-│   │   └── logoutController.js
-│   ├── userController.js    # User management logic
-│   ├── forgotPasswordController.js
-│   └── middleware.js        # Cross-cutting concerns
-├── routes/                  # Presentation Layer (API)
+│   ├── userController.js    # Handles user-related logic
+│   ├── tripController.js    # Manages trips and scheduling
+│   ├── seatController.js    # Handles seat status and check-in
+│   └── ...                  # Other controllers for each feature
+├── middleware/              # Cross-cutting concerns
+│   └── authentication.js    # Session and role-based auth
+├── models/                  # Data Access Layer (interacts with DB)
+│   ├── user.js              # User data operations
+│   ├── trip.js              # Trip data operations
+│   └── ...                  # Other models for each DB table
+├── routers/                 # API Layer (Endpoints)
 │   ├── authRouter.js        # Authentication endpoints
-│   ├── userRoutes.js        # User management endpoints
-│   ├── bookingHistory.js    # Booking-related endpoints
-│   └── ...                  # Other route modules
-├── models/                  # Data Access Layer
-│   ├── user.js             # User schema & model
-│   ├── busModel.js         # Bus schema & model
-│   └── bookingHistory.js   # Booking schema & model
-└── utils/                  # Utility Layer
-    ├── session.js          # Session management utilities
-    └── nodeMailer.js       # Email service utilities
+│   ├── tripRouter.js        # Trip-related endpoints
+│   └── ...                  # Other routers for each feature
+└── utils/                   # Shared utility functions
+    ├── nodeMailer.js        # Email sending service
+    └── session.js           # Session configuration
 ```
 
-### 2. Layered Architecture
+### 2. Request Flow Architecture
 
-#### **Presentation Layer (Routes)**
-- **Responsibility**: Handle HTTP requests/responses
-- **Components**: Express routers, request validation, response formatting
-- **Pattern**: RESTful API design
+A typical request to the backend follows these steps:
 
-```javascript
-// Example: Route handles HTTP concerns only
-router.post('/login', loginController);
-router.get('/users', middleware.isAuthenticated, getAllUsers);
-```
+1.  **Client Request**: An HTTP request is sent from the frontend to a specific endpoint.
+2.  **Express Router (`routers/`)**: The router matches the request path to a controller function.
+3.  **Middleware (`middleware/`)**: The request passes through middleware for authentication, session handling, and input validation.
+4.  **Controller (`controllers/`)**: The controller executes the core business logic, calling model functions to interact with the database.
+5.  **Model (`models/`)**: The model function executes the corresponding SQL query against the PostgreSQL database.
+6.  **Response**: The controller sends back an HTTP response (e.g., JSON data or an error message) to the client.
 
-#### **Business Logic Layer (Controllers)**
-- **Responsibility**: Application logic, validation, coordination
-- **Components**: Controllers, middleware, business rules
-- **Pattern**: Service layer pattern
+### 3. Key Architectural Patterns
+- **Layered Architecture**: Separates concerns into API (routers), business logic (controllers), and data access (models).
+- **Dependency Injection**: The database client (`pool`) is imported and used in controllers, decoupling them from the direct database connection setup.
+- **Asynchronous Operations**: Extensive use of `async/await` for non-blocking database I/O.
 
-```javascript
-// Example: Controller handles business logic
-const login = async (req, res) => {
-  // 1. Validate input
-  // 2. Business logic (authentication)
-  // 3. Coordinate with data layer
-  // 4. Return appropriate response
-};
-```
+## Frontend Architecture (`client`)
 
-#### **Data Access Layer (Models)**
-- **Responsibility**: Data persistence, queries, relationships
-- **Components**: Mongoose models, schemas, database operations
-- **Pattern**: Active Record pattern (via Mongoose)
+### 1. Application Structure
 
-```javascript
-// Example: Model defines data structure and operations
-const userSchema = new mongoose.Schema({
-  email: { type: String, required: true, unique: true }
-});
-userSchema.methods.checkPassword = function(password) { /* ... */ };
-```
-
-#### **Utility Layer**
-- **Responsibility**: Cross-cutting concerns, shared functionality
-- **Components**: Session management, email services, helpers
-- **Pattern**: Utility/Helper pattern
-
-## Request Flow Architecture
-
-### 1. Typical Request Flow
+The `client` directory is a modern React application built with Vite.
 
 ```
-1. Client Request
-   │
-   ▼
-2. Express.js Router
-   │
-   ▼
-3. Middleware Chain
-   ├── CORS Middleware
-   ├── Session Middleware
-   ├── Authentication Middleware
-   └── Authorization Middleware
-   │
-   ▼
-4. Route Handler
-   │
-   ▼
-5. Controller Logic
-   │
-   ▼
-6. Model Operations
-   │
-   ▼
-7. Database Query
-   │
-   ▼
-8. Response Formation
-   │
-   ▼
-9. Client Response
+client/
+├── src/
+│   ├── components/          # Reusable UI components
+│   │   ├── admin-dashboard/ # Components for the admin panel
+│   │   ├── check-in/        # Seat selection and check-in UI
+│   │   └── ...
+│   ├── App.jsx              # Main application component with routing
+│   ├── main.jsx             # Application entry point
+│   └── ...
+├── vite.config.js           # Vite build configuration
+└── package.json             # Project dependencies and scripts
 ```
 
-### 2. Authentication Flow
+### 2. Key Architectural Patterns
+- **Component-Based Architecture**: The UI is built from small, reusable React components.
+- **Client-Side Routing**: `react-router-dom` is used to handle navigation within the single-page application (SPA).
+- **State Management**: Primarily uses React Hooks (`useState`, `useEffect`) for managing component state.
+- **API Interaction**: `axios` is used for making HTTP requests to the backend API.
 
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Client    │    │   Server    │    │  Database   │
-└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
-       │                  │                  │
-       │ POST /login      │                  │
-       ├─────────────────►│                  │
-       │                  │ Find user        │
-       │                  ├─────────────────►│
-       │                  │ User data        │
-       │                  │◄─────────────────┤
-       │                  │ Verify password  │
-       │                  │ Create session   │
-       │                  ├─────────────────►│
-       │ Session cookie   │                  │
-       │◄─────────────────┤                  │
-       │                  │                  │
-```
+## Data Flow: User Check-in Example
 
-### 3. Real-time Communication Flow
+This example illustrates the full data flow for a user checking in for a seat.
 
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Client    │    │   Server    │    │   Pusher    │
-└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
-       │                  │                  │
-       │ Subscribe        │                  │
-       ├─────────────────►│                  │
-       │                  │ Channel setup    │
-       │                  ├─────────────────►│
-       │                  │                  │
-       │ Booking action   │                  │
-       ├─────────────────►│                  │
-       │                  │ Process booking  │
-       │                  │ Trigger event    │
-       │                  ├─────────────────►│
-       │                  │                  │
-       │ Real-time update │                  │
-       │◄─────────────────┼──────────────────┤
-       │                  │                  │
-```
+1.  **Frontend (`Checkin.jsx`)**:
+    - User selects a seat on the bus diagram.
+    - An `onClick` handler calls `handleConfirmClick`, which shows a confirmation popup.
+    - Upon confirmation, `handlePopupConfirm` sends a `PUT` request to `/api/seat/check-in` with the `seatId` and `busId`.
 
-## Database Architecture
+2.  **Backend (`seatRouter.js`)**:
+    - The router maps the `PUT /check-in` request to the `checkInOrCancel` function in `seatController.js`.
 
-### 1. Data Model Relationships
+3.  **Backend (`seatController.js` & `checkInHelper.js`)**:
+    - The controller begins a database transaction (`BEGIN`).
+    - It validates that the bus has an active trip (`getActiveTrip`).
+    - It verifies the user hasn't exceeded their booking limit (`getBookingCount`, `getCheckedInCount`).
+    - It updates the seat's status to "booked" and links the booking to the user (`updateBookingStatus`).
+    - If all steps succeed, it commits the transaction (`COMMIT`).
+    - If any step fails, it rolls back all changes (`ROLLBACK`).
 
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│    User     │    │    Bus      │    │ BookingHist │
-│             │    │             │    │             │
-│ _id         │◄──┐│ _id         │◄──┐│ _id         │
-│ name        │   ││ busNumber   │   ││ busId       │
-│ email       │   ││ route       │   ││ bookedBy    │
-│ password    │   ││ schedule    │   ││ seatsBooked │
-│ bookedBuses │───┘│ seats[]     │   ││ totalAmount │
-│ role        │    │ ├─bookedBy  │───┘│ bookingDate │
-│ ...         │    │ └─isBooked  │    │ ...         │
-└─────────────┘    └─────────────┘    └─────────────┘
-```
-
-### 2. Collection Design Patterns
-
-#### **User Collection**
-- **Pattern**: Single document per user
-- **Relationships**: References to booked buses
-- **Indexing**: Email, phone number
-- **Scaling**: Horizontal scaling friendly
-
-#### **Bus Collection**
-- **Pattern**: Embedded seat documents
-- **Relationships**: References to users in seats
-- **Indexing**: Route, departure time, bus number
-- **Trade-offs**: Read optimization over write consistency
-
-#### **Booking History Collection**
-- **Pattern**: Event sourcing pattern
-- **Relationships**: References to users and buses
-- **Indexing**: User ID, bus ID, booking date
-- **Purpose**: Audit trail and reporting
+4.  **Frontend (Optimistic Update)**:
+    - After the API call succeeds, the frontend immediately updates the local `seats` state to mark the seat as "booked".
+    - This provides instant visual feedback to the user without waiting for a full data refetch.
 
 ## Security Architecture
 
-### 1. Security Layers
+- **Authentication**: Session-based authentication using `express-session` with a server-side session store. Cookies are used to maintain the session.
+- **Authorization**: Middleware checks user roles (e.g., `admin`) to protect sensitive endpoints.
+- **Password Security**: Passwords are hashed using `bcrypt` before being stored.
+- **CORS**: The `cors` middleware is configured to allow requests only from the frontend's origin.
 
-```
-┌─────────────────────────────────────────────────────┐
-│                 Application Security                │
-├─────────────────────────────────────────────────────┤
-│ • Input Validation    • Authentication              │
-│ • Authorization       • Session Management          │
-│ • CORS Policy        • Rate Limiting (planned)      │
-└─────────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────────┐
-│                Transport Security                   │
-├─────────────────────────────────────────────────────┤
-│ • HTTPS/TLS          • Secure Cookies               │
-│ • Header Security    • Certificate Validation       │
-└─────────────────────────────────────────────────────┘
-┌─────────────────────────────────────────────────────┐
-│                  Data Security                      │
-├─────────────────────────────────────────────────────┤
-│ • Password Hashing   • Environment Variables        │
-│ • Database Auth      • Encryption at Rest           │
-└─────────────────────────────────────────────────────┘
-```
+## Scalability and Performance
 
-### 2. Authentication & Authorization Architecture
-
-```
-┌─────────────────┐
-│ Session Store   │
-│   (MongoDB)     │
-└─────────┬───────┘
-          │
-          ▼
-┌─────────────────┐    ┌─────────────────┐
-│ Session Middle- │    │ Auth Middleware │
-│ ware (Express)  │◄──►│   Functions     │
-└─────────┬───────┘    └─────────────────┘
-          │                      │
-          ▼                      ▼
-┌─────────────────┐    ┌─────────────────┐
-│ User Session    │    │ Role-based      │
-│ Management      │    │ Access Control  │
-└─────────────────┘    └─────────────────┘
-```
-
-## Scalability Architecture
-
-### 1. Current Architecture Limitations
-
-**Single Instance Limitations:**
-- Single point of failure
-- Limited concurrent users
-- No load distribution
-- Session store centralization
-
-### 2. Horizontal Scaling Strategy
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│Load Balancer│    │   Server    │    │  Database   │
-│   (Nginx)   │    │  Instance   │    │   Cluster   │
-└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
-       │                  │                  │
-       ├─────────────────►│ Server 1         │
-       │                  │                  │
-       ├─────────────────►│ Server 2         │
-       │                  │                  │
-       ├─────────────────►│ Server 3         │
-       │                  │                  │
-       │                  └─────────────────►│ MongoDB
-       │                                     │ Replica Set
-       │                                     │
-       │  ┌─────────────┐                   │
-       └─►│   CDN       │                   │
-          │ (Static)    │                   │
-          └─────────────┘                   │
-```
-
-### 3. Microservices Evolution Path
-
-**Current Monolith:**
-```
-┌─────────────────────────────────────┐
-│        Single Server Process       │
-├─────────────────────────────────────┤
-│ • Authentication                    │
-│ • User Management                   │
-│ • Bus Management                    │
-│ • Booking System                    │
-│ • Email Service                     │
-│ • File Serving                      │
-└─────────────────────────────────────┘
-```
-
-**Future Microservices:**
-```
-┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-│    Auth     │ │    User     │ │   Booking   │
-│  Service    │ │  Service    │ │  Service    │
-└─────────────┘ └─────────────┘ └─────────────┘
-┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-│    Bus      │ │   Email     │ │   Payment   │
-│  Service    │ │  Service    │ │  Service    │
-└─────────────┘ └─────────────┘ └─────────────┘
-```
-
-## Performance Architecture
-
-### 1. Caching Strategy
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Client    │    │   Server    │    │  Database   │
-│   Browser   │    │   Memory    │    │   MongoDB   │
-│   Cache     │    │   Cache     │    │             │
-└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
-       │                  │                  │
-       │ 1. Request       │                  │
-       ├─────────────────►│                  │
-       │                  │ 2. Check cache   │
-       │                  │                  │
-       │                  │ 3. DB Query      │
-       │                  ├─────────────────►│
-       │                  │ 4. Data          │
-       │                  │◄─────────────────┤
-       │                  │ 5. Cache data    │
-       │ 6. Response      │                  │
-       │◄─────────────────┤                  │
-```
-
-### 2. Database Optimization
-
-**Indexing Strategy:**
-```javascript
-// User collection indexes
-db.users.createIndex({ "email": 1 }, { unique: true })
-db.users.createIndex({ "phoneNumber": 1 }, { unique: true })
-
-// Bus collection indexes
-db.buses.createIndex({ "route.from": 1, "route.to": 1 })
-db.buses.createIndex({ "schedule.departureTime": 1 })
-db.buses.createIndex({ "status": 1 })
-
-// Booking history indexes
-db.bookinghistories.createIndex({ "bookedBy.Id": 1 })
-db.bookinghistories.createIndex({ "schedule": 1 })
-db.bookinghistories.createIndex({ "bookingDate": 1 })
-```
-
-**Query Optimization:**
-- Use projections to limit returned fields
-- Implement pagination for large datasets
-- Use aggregation pipelines for complex queries
-- Implement read preferences for replica sets
-
-## Deployment Architecture
-
-### 1. Development Environment
-
-```
-┌─────────────────┐
-│  Local Machine  │
-├─────────────────┤
-│ • Node.js       │
-│ • MongoDB       │
-│ • Nodemon       │
-│ • Hot Reload    │
-└─────────────────┘
-```
-
-### 2. Production Environment
-
-```
-┌─────────────────┐    ┌─────────────────┐
-│  Load Balancer  │    │   Web Server    │
-│    (Nginx)      │    │     (PM2)       │
-└─────────┬───────┘    └─────────┬───────┘
-          │                      │
-          ▼                      ▼
-┌─────────────────┐    ┌─────────────────┐
-│   SSL/TLS       │    │  Application    │
-│ Termination     │    │   Processes     │
-└─────────────────┘    └─────────┬───────┘
-                                 │
-                                 ▼
-                       ┌─────────────────┐
-                       │    Database     │
-                       │ (MongoDB Atlas) │
-                       └─────────────────┘
-```
-
-## Monitoring and Observability
-
-### 1. Logging Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐
-│ Application     │    │  Log Aggregator │
-│ Logs            │───►│  (Future: ELK)  │
-├─────────────────┤    └─────────────────┘
-│ • Request logs  │              │
-│ • Error logs    │              ▼
-│ • Debug logs    │    ┌─────────────────┐
-│ • Audit logs    │    │  Log Analysis   │
-└─────────────────┘    │ & Alerting      │
-                       └─────────────────┘
-```
-
-### 2. Health Monitoring
-
-```javascript
-// Health check endpoints
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    memory: process.memoryUsage(),
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
-  });
-});
-```
-
-## Error Handling Architecture
-
-### 1. Error Propagation
-
-```
-┌─────────────────┐
-│   Controller    │
-│   Try/Catch     │
-└─────────┬───────┘
-          │ Error
-          ▼
-┌─────────────────┐
-│ Error Handler   │
-│  Middleware     │
-└─────────┬───────┘
-          │ Formatted Error
-          ▼
-┌─────────────────┐
-│  Client         │
-│ Error Response  │
-└─────────────────┘
-```
-
-### 2. Error Categories
-
-- **Validation Errors**: 400 Bad Request
-- **Authentication Errors**: 401 Unauthorized
-- **Authorization Errors**: 403 Forbidden
-- **Not Found Errors**: 404 Not Found
-- **Server Errors**: 500 Internal Server Error
-
-## Future Architecture Considerations
-
-### 1. Event-Driven Architecture
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Service   │    │   Message   │    │   Service   │
-│      A      │───►│    Queue    │───►│      B      │
-└─────────────┘    │ (RabbitMQ/  │    └─────────────┘
-                   │  Apache     │
-                   │  Kafka)     │
-                   └─────────────┘
-```
-
-### 2. API Gateway Pattern
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   Client    │    │ API Gateway │    │ Microservice│
-│ Application │───►│             │───►│  Cluster    │
-└─────────────┘    │ • Routing   │    └─────────────┘
-                   │ • Auth      │
-                   │ • Rate Limit│
-                   │ • Logging   │
-                   └─────────────┘
-```
-
-### 3. CQRS Pattern
-
-```
-┌─────────────┐    ┌─────────────┐
-│   Command   │    │    Query    │
-│   Handler   │    │   Handler   │
-└──────┬──────┘    └──────┬──────┘
-       │                  │
-       ▼                  ▼
-┌─────────────┐    ┌─────────────┐
-│   Write     │    │    Read     │
-│  Database   │    │  Database   │
-└─────────────┘    └─────────────┘
-```
+- **Connection Pooling**: The `pg` library's connection pool is used to efficiently manage database connections.
+- **Stateless API**: The backend API is largely stateless, relying on the session store for user state, which allows for horizontal scaling.
+- **Frontend Build Optimization**: Vite provides fast development builds and optimized production bundles with code splitting.
 
 ---
 *Last updated: $(Get-Date)*

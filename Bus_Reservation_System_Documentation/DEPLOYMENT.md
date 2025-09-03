@@ -1,527 +1,155 @@
 # Deployment Documentation
 
 ## Overview
-This document provides comprehensive deployment instructions for the Bus Reservation System backend, covering various deployment scenarios from development to production.
+This document provides deployment instructions for the Bus Reservation System, which consists of a React frontend and a Node.js/Express backend. The primary deployment platform covered is Vercel, which is ideal for this stack.
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
-2. [Environment Setup](#environment-setup)
-3. [Local Development Deployment](#local-development-deployment)
-4. [Production Deployment](#production-deployment)
-5. [Cloud Deployment Options](#cloud-deployment-options)
+2. [Project Structure](#project-structure)
+3. [Environment Variables](#environment-variables)
+4. [Local Development](#local-development)
+5. [Production Deployment with Vercel](#production-deployment-with-vercel)
 6. [Database Deployment](#database-deployment)
-7. [Environment Variables](#environment-variables)
-8. [SSL/HTTPS Configuration](#sslhttps-configuration)
-9. [Monitoring and Logging](#monitoring-and-logging)
-10. [Backup Strategies](#backup-strategies)
+7. [Monitoring and Logging](#monitoring-and-logging)
 
 ## Prerequisites
+- **Node.js**: v18.0 or higher
+- **npm** or **yarn**
+- **PostgreSQL**: A running instance (local or cloud-based)
+- **Git**: For version control and deployment
+- **Vercel Account**: For production deployment
 
-### System Requirements
-- **Node.js**: v16.0 or higher
-- **npm**: v8.0 or higher
-- **MongoDB**: v5.0 or higher
-- **Memory**: Minimum 512MB RAM (2GB+ recommended for production)
-- **Storage**: Minimum 1GB free space
-
-### Required Services
-- MongoDB database (local or cloud)
-- Email service (Gmail or SMTP)
-- Pusher account (for real-time features)
-- SSL certificate (for production)
-
-## Environment Setup
-
-### 1. Clone and Install
-```bash
-git clone <repository-url>
-cd bus-reservation-system
-npm install
-```
-
-### 2. Environment Configuration
-Create `.env` file in root directory:
-```env
-# Database
-MONGO_URI=mongodb://localhost:27017/bus_reservation_system
-
-# Session
-SESSION_SECRET=your_super_secure_session_secret_key_here
-
-# Pusher (Real-time)
-PUSHER_APP_ID=your_pusher_app_id
-PUSHER_KEY=your_pusher_key
-PUSHER_SECRET=your_pusher_secret
-PUSHER_CLUSTER=your_pusher_cluster
-
-# Email
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_specific_password
-
-# Server
-PORT=5000
-NODE_ENV=production
-BACK_END_URL=https://yourdomain.com
-```
-
-## Local Development Deployment
-
-### Quick Start
-```bash
-# Install dependencies
-npm install
-
-# Start development server with auto-reload
-npm run dev
-
-# Or start production server
-npm start
-```
-
-### Development Environment Variables
-```env
-NODE_ENV=development
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/bus_reservation_dev
-```
-
-### Local MongoDB Setup
-```bash
-# Install MongoDB Community Edition
-# Windows: Download from MongoDB website
-# macOS: brew install mongodb-community
-# Ubuntu: sudo apt install mongodb
-
-# Start MongoDB service
-# Windows: net start MongoDB
-# macOS/Linux: sudo systemctl start mongod
-
-# Access MongoDB shell
-mongosh
-```
-
-## Production Deployment
-
-### 1. Server Preparation
-```bash
-# Update system packages
-sudo apt update && sudo apt upgrade -y
-
-# Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install PM2 (Process Manager)
-sudo npm install -g pm2
-
-# Create application user
-sudo adduser busapp
-sudo usermod -aG sudo busapp
-```
-
-### 2. Application Deployment
-```bash
-# Switch to application user
-su - busapp
-
-# Clone repository
-git clone <repository-url> /home/busapp/bus-reservation
-cd /home/busapp/bus-reservation
-
-# Install dependencies
-npm ci --only=production
-
-# Build client (if included)
-npm run build
-
-# Set file permissions
-chmod +x server/index.js
-```
-
-### 3. PM2 Configuration
-Create `ecosystem.config.js`:
-```javascript
-module.exports = {
-  apps: [{
-    name: 'bus-reservation-backend',
-    script: 'server/index.js',
-    instances: 'max',
-    exec_mode: 'cluster',
-    env: {
-      NODE_ENV: 'development',
-      PORT: 5000
-    },
-    env_production: {
-      NODE_ENV: 'production',
-      PORT: 5000
-    },
-    error_file: './logs/err.log',
-    out_file: './logs/out.log',
-    log_file: './logs/combined.log',
-    time: true
-  }]
-};
-```
-
-### 4. Start Production Server
-```bash
-# Create logs directory
-mkdir logs
-
-# Start with PM2
-pm2 start ecosystem.config.js --env production
-
-# Save PM2 configuration
-pm2 save
-
-# Setup PM2 startup script
-pm2 startup
-```
-
-## Cloud Deployment Options
-
-### 1. Heroku Deployment
-
-#### Preparation
-```bash
-# Install Heroku CLI
-npm install -g heroku
-
-# Login to Heroku
-heroku login
-
-# Create Heroku app
-heroku create your-bus-reservation-app
-```
-
-#### Configuration
-```bash
-# Set environment variables
-heroku config:set NODE_ENV=production
-heroku config:set SESSION_SECRET=your_session_secret
-heroku config:set MONGO_URI=your_mongodb_uri
-heroku config:set PUSHER_APP_ID=your_pusher_app_id
-heroku config:set PUSHER_KEY=your_pusher_key
-heroku config:set PUSHER_SECRET=your_pusher_secret
-heroku config:set PUSHER_CLUSTER=your_pusher_cluster
-heroku config:set EMAIL_USER=your_email
-heroku config:set EMAIL_PASS=your_email_password
-```
-
-#### Deploy
-```bash
-# Deploy to Heroku
-git push heroku main
-
-# Scale dynos
-heroku ps:scale web=1
-```
-
-### 2. AWS EC2 Deployment
-
-#### EC2 Instance Setup
-```bash
-# Connect to EC2 instance
-ssh -i your-key.pem ubuntu@your-ec2-ip
-
-# Install Node.js and dependencies
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs nginx
-
-# Clone and setup application
-git clone <repository-url>
-cd bus-reservation-system
-npm install
-```
-
-#### Nginx Configuration
-Create `/etc/nginx/sites-available/bus-reservation`:
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-#### Enable Nginx Site
-```bash
-sudo ln -s /etc/nginx/sites-available/bus-reservation /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-### 3. DigitalOcean Droplet
-
-#### Droplet Setup
-```bash
-# Create droplet with Ubuntu 20.04
-# Connect via SSH
-ssh root@your-droplet-ip
-
-# Setup firewall
-ufw allow OpenSSH
-ufw allow 'Nginx Full'
-ufw enable
-
-# Install dependencies
-apt update
-apt install nodejs npm nginx mongodb
-```
-
-## Database Deployment
-
-### MongoDB Atlas (Cloud)
-1. Create MongoDB Atlas account
-2. Create cluster
-3. Create database user
-4. Whitelist IP addresses
-5. Get connection string
-6. Update MONGO_URI in environment
-
-### Local MongoDB Production
-```bash
-# Install MongoDB
-sudo apt-get install -y mongodb-org
-
-# Start MongoDB service
-sudo systemctl start mongod
-sudo systemctl enable mongod
-
-# Secure MongoDB
-mongo
-> use admin
-> db.createUser({
-    user: "busadmin",
-    pwd: "secure_password",
-    roles: ["userAdminAnyDatabase"]
-  })
-
-# Enable authentication in /etc/mongod.conf
-security:
-  authorization: enabled
-```
+## Project Structure
+The project is a monorepo with two main parts:
+- `client/`: The React frontend application built with Vite.
+- `newServer/`: The Node.js/Express backend API.
 
 ## Environment Variables
 
-### Production Environment Variables
+### Backend (`newServer/`)
+Create a `.env` file in the `newServer/` directory. This is crucial for both local development and as a reference for Vercel.
+
 ```env
-# Required for production
-NODE_ENV=production
+# Server Configuration
+NODE_ENV=development # 'production' on Vercel
 PORT=5000
-SESSION_SECRET=complex_random_string_min_32_chars
-MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/busdb
 
-# External Services
-PUSHER_APP_ID=your_pusher_app_id
-PUSHER_KEY=your_pusher_key
-PUSHER_SECRET=your_pusher_secret
-PUSHER_CLUSTER=your_pusher_cluster
+# Database Connection
+# Example for a local PostgreSQL instance
+DATABASE_URL="postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/bus_reservation"
 
-# Email Service
-EMAIL_USER=noreply@yourdomain.com
-EMAIL_PASS=your_app_password
+# Session Management
+SESSION_SECRET="your_super_secure_and_long_session_secret"
 
-# URLs
-BACK_END_URL=https://api.yourdomain.com
-FRONT_END_URL=https://yourdomain.com
+# Email Service (Nodemailer)
+EMAIL_USER="your_email@example.com"
+EMAIL_PASS="your_email_app_password"
+
+# Frontend URL for CORS
+FRONT_END_URL="http://localhost:5173" # Your frontend's local address
 ```
 
-### Security Considerations
-- Use environment-specific secrets
-- Rotate secrets regularly
-- Use secret management services in cloud
-- Never commit secrets to version control
+### Frontend (`client/`)
+Create a `.env.local` file in the `client/` directory.
 
-## SSL/HTTPS Configuration
+```env
+# The URL of your backend API
+VITE_API_URL="http://localhost:5000"
+```
 
-### Let's Encrypt (Free SSL)
+## Local Development
+
+### 1. Setup the Database
+- Install PostgreSQL on your local machine.
+- Create a new database (e.g., `bus_reservation`).
+- Run the `DBcreation.sql` script to create the necessary tables.
+  ```bash
+  psql -U YOUR_USER -d bus_reservation -f ../Bus_Reservation_System_Documentation/DBcreation.sql
+  ```
+
+### 2. Run the Backend Server
 ```bash
-# Install Certbot
-sudo apt install certbot python3-certbot-nginx
+# Navigate to the backend directory
+cd newServer
 
-# Obtain SSL certificate
-sudo certbot --nginx -d your-domain.com
+# Install dependencies
+npm install
 
-# Auto-renewal
-sudo crontab -e
-# Add: 0 12 * * * /usr/bin/certbot renew --quiet
+# Start the development server
+npm run dev
 ```
+The backend will be running at `http://localhost:5000`.
 
-### Nginx HTTPS Configuration
-```nginx
-server {
-    listen 443 ssl;
-    server_name your-domain.com;
+### 3. Run the Frontend Application
+```bash
+# Open a new terminal and navigate to the frontend directory
+cd client
 
-    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+# Install dependencies
+npm install
 
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-
-# Redirect HTTP to HTTPS
-server {
-    listen 80;
-    server_name your-domain.com;
-    return 301 https://$server_name$request_uri;
-}
+# Start the development server
+npm run dev
 ```
+The frontend will be running at `http://localhost:5173`.
+
+## Production Deployment with Vercel
+
+This project is configured for easy deployment on Vercel. You will deploy the frontend and backend as two separate Vercel projects connected via environment variables.
+
+### 1. Deploying the Backend (`newServer`)
+1.  **Create a New Vercel Project**: Link your Git repository to Vercel.
+2.  **Configure Project**:
+    - **Framework Preset**: Select `Express.js / Node.js`.
+    - **Root Directory**: Set to `newServer`.
+    - **Build & Development Settings**: Vercel will likely detect the settings from `package.json`. The `vercel.json` file in the root is configured to correctly handle the Express app.
+3.  **Add Environment Variables**: In the Vercel project settings, add all the environment variables from your `newServer/.env` file.
+    - `NODE_ENV`: Set to `production`.
+    - `DATABASE_URL`: Use the connection string from your cloud PostgreSQL provider (see [Database Deployment](#database-deployment)).
+    - `FRONT_END_URL`: Set to the URL of your deployed frontend (you'll get this after deploying the client).
+    - `SESSION_SECRET`: Use a strong, randomly generated string.
+4.  **Deploy**: Vercel will build and deploy your backend. Once complete, you will get a production URL (e.g., `your-backend.vercel.app`).
+
+### 2. Deploying the Frontend (`client`)
+1.  **Create Another Vercel Project**: Link the same Git repository.
+2.  **Configure Project**:
+    - **Framework Preset**: Select `Vite`.
+    - **Root Directory**: Set to `client`.
+    - **Build & Development Settings**:
+        - **Build Command**: `npm run build`
+        - **Output Directory**: `dist`
+3.  **Add Environment Variables**:
+    - `VITE_API_URL`: Set this to the production URL of your deployed backend (e.g., `https://your-backend.vercel.app`).
+4.  **Deploy**: Vercel will build and deploy your frontend.
+
+### 3. Final Configuration
+- Go back to your backend project's settings on Vercel.
+- Update the `FRONT_END_URL` environment variable with your final frontend production URL.
+- Redeploy the backend project to apply the change.
+
+## Database Deployment
+
+For production, it is highly recommended to use a managed cloud PostgreSQL provider.
+
+**Recommended Providers:**
+- **Vercel Postgres**
+- **Supabase**
+- **Neon**
+- **Railway**
+
+### General Steps:
+1.  **Create an Account**: Sign up for one of the providers.
+2.  **Create a New Project/Database**: Follow their instructions to spin up a new PostgreSQL database.
+3.  **Get the Connection String**: The provider will give you a `DATABASE_URL` (connection string) that looks something like this: `postgresql://user:password@host:port/database`.
+4.  **Run SQL Script**: Use a tool like `psql` or a GUI client (e.g., DBeaver, Postico) to connect to your cloud database and run the `DBcreation.sql` script to set up your schema.
+5.  **Update Environment Variables**: Use this `DATABASE_URL` for the `DATABASE_URL` environment variable in your backend Vercel project.
 
 ## Monitoring and Logging
 
-### PM2 Monitoring
-```bash
-# View logs
-pm2 logs
-
-# Monitor processes
-pm2 monit
-
-# View status
-pm2 status
-
-# Restart application
-pm2 restart bus-reservation-backend
-```
-
-### Log Management
-```bash
-# Create log rotation configuration
-sudo nano /etc/logrotate.d/bus-reservation
-
-/home/busapp/bus-reservation/logs/*.log {
-    daily
-    missingok
-    rotate 52
-    compress
-    delaycompress
-    notifempty
-    create 644 busapp busapp
-    postrotate
-        pm2 reloadLogs
-    endscript
-}
-```
-
-### Health Checks
-Add health check endpoint in server:
-```javascript
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
-```
-
-## Backup Strategies
-
-### Database Backup
-```bash
-# MongoDB backup script
-#!/bin/bash
-DATE=$(date +%Y%m%d_%H%M%S)
-mongodump --uri="$MONGO_URI" --out="/backups/mongo_$DATE"
-tar -czf "/backups/mongo_$DATE.tar.gz" "/backups/mongo_$DATE"
-rm -rf "/backups/mongo_$DATE"
-
-# Remove backups older than 30 days
-find /backups -name "mongo_*.tar.gz" -mtime +30 -delete
-```
-
-### Application Backup
-```bash
-# Code backup
-git archive --format=tar.gz --output="app_backup_$(date +%Y%m%d).tar.gz" HEAD
-
-# Environment backup (excluding secrets)
-cp .env.example .env.backup
-```
-
-### Automated Backup with Cron
-```bash
-# Add to crontab
-sudo crontab -e
-
-# Daily database backup at 2 AM
-0 2 * * * /home/busapp/scripts/backup_db.sh
-
-# Weekly application backup
-0 3 * * 0 /home/busapp/scripts/backup_app.sh
-```
-
-## Performance Optimization
-
-### PM2 Cluster Mode
-```javascript
-// ecosystem.config.js
-module.exports = {
-  apps: [{
-    name: 'bus-reservation-backend',
-    script: 'server/index.js',
-    instances: 'max', // Use all CPU cores
-    exec_mode: 'cluster',
-    max_memory_restart: '1G'
-  }]
-};
-```
-
-### Nginx Optimization
-```nginx
-# Add to nginx.conf
-gzip on;
-gzip_types text/plain text/css application/json application/javascript;
-
-# Enable caching for static files
-location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-}
-```
-
-## Troubleshooting Deployment
-
-### Common Issues
-1. **Port already in use**: Change PORT environment variable
-2. **Permission denied**: Check file permissions and user access
-3. **MongoDB connection failed**: Verify connection string and network access
-4. **SSL certificate issues**: Check domain configuration and DNS
-
-### Debug Commands
-```bash
-# Check process status
-pm2 status
-ps aux | grep node
-
-# Check ports
-sudo netstat -tlnp | grep :5000
-
-# Check logs
-tail -f logs/combined.log
-journalctl -u nginx -f
-
-# Test endpoints
-curl -I http://localhost:5000/health
-```
+Vercel provides powerful tools for monitoring and logging out-of-the-box.
+- **Logs**: In your Vercel project dashboard, navigate to the "Logs" tab to see real-time logs for your serverless functions (backend) or build logs (frontend).
+- **Analytics**: Vercel Analytics can be enabled to monitor traffic and performance.
+- **Health Checks**: The backend includes a `/health` endpoint that can be used for uptime monitoring services.
 
 ---
 *Last updated: $(Get-Date)*

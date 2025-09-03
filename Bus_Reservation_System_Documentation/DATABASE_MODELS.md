@@ -1,464 +1,214 @@
 # Database Models Documentation
 
 ## Overview
-The Bus Reservation System uses MongoDB with Mongoose ODM for data modeling. This document describes all database models, their schemas, relationships, and usage patterns.
+The Bus Reservation System uses MongoDB with Mongoose ODM for data modeling. This document describes the current database models as defined in the `newServer/models` directory.
+
+---
 
 ## User Model (`models/user.js`)
 
 ### Schema Definition
 ```javascript
 {
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  phoneNumber: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
-  bookedBuses: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Bus'
-  }],
-  checkInStatus: {
-    type: Boolean,
-    default: false
-  },
-  gender: {
-    type: String,
-    enum: ['male', 'female', 'other']
-  },
-  isVerified: {
-    type: Boolean,
-    default: false
-  },
-  verificationCode: {
-    type: String
-  },
+  name: { type: String, trim: true },
+  phoneNumber: { type: Number },
+  email: { type: String, trim: true, lowercase: true },
+  password: { type: String },
+  gender: { type: String, enum: ["Male", "Female"], default: "Male" },
+  role: { type: String, default: "user" },
+  verificationCode: { type: String },
   verificationCodeExpires: {
-    type: Date
-  },
-  resetPasswordCode: {
-    type: String
-  },
-  resetPasswordExpires: {
-    type: Date
+    type: Date,
+    default: () => new Date(Date.now() + 10 * 60 * 1000), // 10 minutes expiration
   }
 }
 ```
 
 ### Field Descriptions
-- **name**: User's full name (required, trimmed)
-- **email**: Unique email address (required, lowercase)
-- **password**: Hashed password (required, minimum 6 characters)
-- **phoneNumber**: Unique phone number (required)
-- **role**: User role - 'user' or 'admin' (default: 'user')
-- **bookedBuses**: Array of Bus ObjectIds (references)
-- **checkInStatus**: Whether user is currently checked in
-- **gender**: User's gender (optional)
-- **isVerified**: Email verification status
-- **verificationCode**: Email verification code
-- **verificationCodeExpires**: Verification code expiration date
-- **resetPasswordCode**: Password reset verification code
-- **resetPasswordExpires**: Reset code expiration date
+- **name**: User's full name.
+- **phoneNumber**: User's phone number.
+- **email**: User's email address.
+- **password**: Hashed password for the user.
+- **gender**: User's gender.
+- **role**: User's role in the system (e.g., 'user', 'admin').
+- **verificationCode**: Code sent for email verification or password reset.
+- **verificationCodeExpires**: Expiration timestamp for the verification code.
 
-### Indexes
-- email (unique)
-- phoneNumber (unique)
+---
 
-### Relationships
-- One-to-Many with Bus (through bookedBuses array)
-- One-to-Many with BookingHistory (through user reference)
-
-## Bus Model (`models/busModel.js`)
+## Bus Model (`models/bus.js`)
 
 ### Schema Definition
 ```javascript
 {
-  busNumber: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  route: {
-    from: {
-      type: String,
-      required: true
+    seatsId: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seat'
+    }],
+    plateNumber: { type: String, required: true },
+    busType: { type: String, default: "microBus" },
+    capacity: { type: Number },
+    features: { type: Array, default: ["aircondition"] },
+    IsActive: { type: Boolean, default: false }
+}
+```
+
+### Field Descriptions
+- **seatsId**: An array of ObjectIds referencing the seats associated with this bus.
+- **plateNumber**: The license plate number of the bus.
+- **busType**: The type of the bus (e.g., "microBus").
+- **capacity**: The total seating capacity of the bus.
+- **features**: An array of strings describing the bus's features (e.g., "AC", "WiFi").
+- **IsActive**: A boolean indicating if the bus is currently in service.
+
+### Relationships
+- **One-to-Many** with `Seat` (A bus has many seats).
+
+---
+
+## Seat Model (`models/seats.js`)
+
+### Schema Definition
+```javascript
+{
+    busId: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Bus' 
     },
-    to: {
-      type: String,
-      required: true
-    }
-  },
-  schedule: {
-    departureTime: {
-      type: Date,
-      required: true
-    },
-    arrivalTime: {
-      type: Date,
-      required: true
-    }
-  },
-  capacity: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  availableSeats: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  seats: [{
-    seatNumber: {
-      type: String,
-      required: true
-    },
-    isBooked: {
-      type: Boolean,
-      default: false
-    },
-    bookedBy: {
+    seatNumber: { type: Number, required: true },
+    seatType: { type: String, default: "microbusSeat" },
+    isAvalable: { type: Boolean, default: true }
+}
+```
+
+### Field Descriptions
+- **busId**: A reference to the `Bus` this seat belongs to.
+- **seatNumber**: The number of the seat.
+- **seatType**: The type of the seat.
+- **isAvalable**: A boolean indicating if the seat is available.
+
+### Relationships
+- **Many-to-One** with `Bus` (Many seats belong to one bus).
+
+---
+
+## Stop Model (`models/stop.js`)
+
+### Schema Definition
+```javascript
+{
+    stopName: { type: String, required: true },
+    location: { type: String }
+}
+```
+
+### Field Descriptions
+- **stopName**: The name of the stop (e.g., "Dandy Mall").
+- **location**: A string representing the location, could be a URL or coordinates.
+
+---
+
+## Route Model (`models/route.js`)
+
+### Schema Definition
+```javascript
+{
+    source: { type: String, required: true },
+    destination: { type: String, required: true },
+    distance: { type: Number, required: true },
+    estimatedDuration: { type: Number, required: true },
+    stops: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Stop'
+    }],
+    isActive: { type: Boolean, default: true }
+}
+```
+
+### Field Descriptions
+- **source**: The starting point of the route.
+- **destination**: The ending point of the route.
+- **distance**: The total distance of the route in kilometers.
+- **estimatedDuration**: The estimated time to complete the route in minutes.
+- **stops**: An array of ObjectIds referencing the `Stop` models along this route.
+- **isActive**: A boolean indicating if the route is currently active.
+
+### Relationships
+- **Many-to-Many** with `Stop` (A route can have many stops, and a stop can be on many routes).
+
+---
+
+## Trip (Schedule) Model (`models/schedule.js`)
+
+### Schema Definition
+```javascript
+{
+  busIds: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    bookedAt: {
-      type: Date
-    }
+      ref: "Bus"
   }],
-  price: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  driver: {
-    name: {
-      type: String,
-      required: true
-    },
-    licenseNumber: {
-      type: String,
-      required: true
-    },
-    phoneNumber: {
-      type: String,
-      required: true
-    }
-  },
-  status: {
+  routeIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Route",
+    required: true
+  }],
+  departure: { type: Date, required: true },
+  arrival: { type: Date, required: true },
+  avaibleSeats: { type: Number },
+  Status: {
     type: String,
-    enum: ['active', 'cancelled', 'completed'],
-    default: 'active'
+    enum: ["accepted", "cancelled", "completed", "pending", "failed"],
+    default: "pending",
   }
 }
 ```
 
 ### Field Descriptions
-- **busNumber**: Unique bus identifier
-- **route**: Origin and destination information
-- **schedule**: Departure and arrival times
-- **capacity**: Total number of seats
-- **availableSeats**: Currently available seats
-- **seats**: Array of seat objects with booking information
-- **price**: Ticket price
-- **driver**: Driver information object
-- **status**: Bus trip status
-
-### Indexes
-- busNumber (unique)
-- route.from + route.to (compound)
-- schedule.departureTime
+- **busIds**: An array of `Bus` ObjectIds assigned to this trip.
+- **routeIds**: An array of `Route` ObjectIds for this trip.
+- **departure**: The departure date and time.
+- **arrival**: The arrival date and time.
+- **avaibleSeats**: The number of available seats for this trip.
+- **Status**: The current status of the trip.
 
 ### Relationships
-- Many-to-Many with User (through seats.bookedBy)
+- **Many-to-Many** with `Bus`.
+- **Many-to-Many** with `Route`.
 
-## Booking History Model (`models/bookingHistory.js`)
+---
+
+## Booking Model (`models/booking.js`)
 
 ### Schema Definition
 ```javascript
 {
-  busId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Bus',
-    required: true
-  },
-  bookedBy: {
-    Id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
+    scheduleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Schedule' },
+    passangerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    stopId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stop' },
+    seatId: { type: mongoose.Schema.Types.ObjectId, ref: 'Seat' },
+    paymentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment' },
+    ticketId: { type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' },
+    Status: {
+        type: String,
+        enum: ["accepted", "cancelled", "completed", "pending", 'failed'],
+        default: "pending",
     },
-    name: {
-      type: String,
-      required: true
-    },
-    email: {
-      type: String,
-      required: true
-    }
-  },
-  seatsBooked: [{
-    seatNumber: {
-      type: String,
-      required: true
-    },
-    passengerName: {
-      type: String,
-      required: true
-    },
-    passengerAge: {
-      type: Number,
-      required: true
-    },
-    passengerGender: {
-      type: String,
-      enum: ['male', 'female', 'other'],
-      required: true
-    }
-  }],
-  bookingDate: {
-    type: Date,
-    default: Date.now
-  },
-  schedule: {
-    type: Date,
-    required: true
-  },
-  totalAmount: {
-    type: Number,
-    required: true
-  },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'completed', 'failed', 'refunded'],
-    default: 'pending'
-  },
-  bookingStatus: {
-    type: String,
-    enum: ['confirmed', 'cancelled', 'completed'],
-    default: 'confirmed'
-  }
+    createdAt: { type: Date, default: Date.now }
 }
 ```
 
 ### Field Descriptions
-- **busId**: Reference to the booked bus
-- **bookedBy**: User information who made the booking
-- **seatsBooked**: Array of booked seats with passenger details
-- **bookingDate**: When the booking was made
-- **schedule**: Bus departure date
-- **totalAmount**: Total payment amount
-- **paymentStatus**: Payment processing status
-- **bookingStatus**: Booking status
-
-### Indexes
-- busId
-- bookedBy.Id
-- schedule
-- bookingDate
+- **scheduleId**: Reference to the `Schedule` (trip) for the booking.
+- **passangerId**: Reference to the `User` who made the booking.
+- **stopId**: Reference to the `Stop` for pickup/dropoff.
+- **seatId**: Reference to the `Seat` that was booked.
+- **paymentId**: Reference to the `Payment` record.
+- **ticketId**: Reference to the generated `Ticket`.
+- **Status**: The status of the booking.
+- **createdAt**: Timestamp of when the booking was created.
 
 ### Relationships
-- Many-to-One with Bus (through busId)
-- Many-to-One with User (through bookedBy.Id)
-
-## Driver Model (Embedded in Bus)
-
-### Schema Definition
-```javascript
-{
-  name: {
-    type: String,
-    required: true
-  },
-  licenseNumber: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  phoneNumber: {
-    type: String,
-    required: true
-  },
-  experience: {
-    type: Number, // years of experience
-    min: 0
-  },
-  rating: {
-    type: Number,
-    min: 1,
-    max: 5,
-    default: 5
-  }
-}
-```
-
-## Contact Message Model
-
-### Schema Definition
-```javascript
-{
-  name: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  subject: {
-    type: String,
-    required: true
-  },
-  message: {
-    type: String,
-    required: true
-  },
-  submittedAt: {
-    type: Date,
-    default: Date.now
-  },
-  status: {
-    type: String,
-    enum: ['new', 'read', 'responded'],
-    default: 'new'
-  },
-  response: {
-    type: String
-  },
-  respondedAt: {
-    type: Date
-  }
-}
-```
-
-## Blacklist Model
-
-### Schema Definition
-```javascript
-{
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  reason: {
-    type: String,
-    required: true
-  },
-  blacklistedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  blacklistedAt: {
-    type: Date,
-    default: Date.now
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  }
-}
-```
-
-## Data Relationships
-
-### User ↔ Bus Relationship
-- Users can book multiple buses (One-to-Many)
-- Buses can have multiple users (Many-to-One)
-- Relationship managed through Bus.seats.bookedBy array
-
-### User ↔ BookingHistory Relationship
-- Users can have multiple booking records (One-to-Many)
-- Each booking belongs to one user (Many-to-One)
-
-### Bus ↔ BookingHistory Relationship
-- Buses can have multiple booking records (One-to-Many)
-- Each booking is for one bus (Many-to-One)
-
-## Database Operations
-
-### Common Queries
-
-#### Find Available Buses
-```javascript
-Bus.find({
-  'route.from': sourceCity,
-  'route.to': destinationCity,
-  'schedule.departureTime': { $gte: selectedDate },
-  availableSeats: { $gt: 0 },
-  status: 'active'
-});
-```
-
-#### Book a Seat
-```javascript
-// Update bus seats
-Bus.findByIdAndUpdate(busId, {
-  $set: {
-    'seats.$.isBooked': true,
-    'seats.$.bookedBy': userId,
-    'seats.$.bookedAt': new Date()
-  },
-  $inc: { availableSeats: -1 }
-});
-
-// Create booking history
-BookingHistory.create({
-  busId,
-  bookedBy: { Id: userId, name, email },
-  seatsBooked: [...],
-  schedule: busSchedule,
-  totalAmount
-});
-```
-
-#### User Authentication
-```javascript
-// Find user by email
-User.findOne({ email: userEmail });
-
-// Update password reset code
-User.findByIdAndUpdate(userId, {
-  resetPasswordCode: code,
-  resetPasswordExpires: expirationTime
-});
-```
-
-## Performance Considerations
-
-### Indexing Strategy
-1. **User Model**: Index on email and phoneNumber for fast lookups
-2. **Bus Model**: Compound index on route and departure time
-3. **BookingHistory**: Index on busId, userId, and schedule
-
-### Query Optimization
-1. Use projection to limit returned fields
-2. Populate references only when necessary
-3. Use aggregation pipeline for complex queries
-4. Implement pagination for large result sets
-
-### Data Archiving
-Consider archiving completed bookings older than 1 year to maintain performance.
+- **Many-to-One** with `Schedule`, `User`, `Stop`, `Seat`, `Payment`, `Ticket`.
 
 ---
 *Last updated: $(Get-Date)*

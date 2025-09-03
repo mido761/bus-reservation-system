@@ -275,171 +275,298 @@ http://localhost:5000
 
 ###
 
-## Schedule
+## Trip Management Endpoints
 
-### POST /schedule/add-schedule
+### GET /trip/get-trips
 
-**Description** : Add a new schedule with connected buses and its route
+**Description**: Retrieves a list of all scheduled trips.
+**Access**: Public
+**Response**:
+Status(200)
+```json
+[
+  {
+    "trip_id": "c7e89484-9808-433b-abcb-32bc5a01c577",
+    "route_id": "some-route-id",
+    "departure": "2025-09-03T10:00:00.000Z",
+    "arrival": "2025-09-03T14:00:00.000Z",
+    "busIds": ["bus-id-1", "bus-id-2"]
+  }
+]
+```
+
+### POST /trip/add-trip
+
+**Description**: Add a new trip schedule.
 **Access**: Admin
 **Request Body**:
-
 ```json
 {
-  {
-    "busIds": ["64f98d1b2a5e1c1a2a6d8f01", "64f98d1b2a5e1c1a2a6d8f02"],
-    "routeIds": ["64f990b12a5e1c1a2a6d8f03"],
-    "departureDate": "2025-08-12",
-    "departureTime": "08:30",
-    "arrivalTime": "12:45"
-  }
+  "routeId": "64f990b12a5e1c1a2a6d8f03",
+  "departureDate": "2025-09-10",
+  "departureTime": "09:00",
+  "arrivalTime": "13:00",
+  "busIds": ["64f98d1b2a5e1c1a2a6d8f01"]
 }
 ```
-
-**Response Body**:
+**Response**:
 Status(200)
-
 ```json
 {
-  "message": "Schedule added successfully!"
+  "message": "Trip added successfully!"
 }
 ```
-
 Status(400)
-
 ```json
 {
-  "message": "A trip is already scheduled at the same time!"
+  "message": "A trip is already scheduled at the same time for one of the buses!"
 }
 ```
 
-## Route
+## Seat Management Endpoints
+
+### GET /seat/get-bus-seats/:busId
+
+**Description**: Get all seats for a specific bus, including their status.
+**Access**: Public
+**Parameters**:
+- `busId`: The ID of the bus.
+**Response**:
+Status(200)
+```json
+{
+  "bus": "bus-id-123",
+  "seats": [
+    {
+      "seat_id": "seat-1",
+      "seat_number": 1,
+      "status": "available"
+    },
+    {
+      "seat_id": "seat-2",
+      "seat_number": 2,
+      "status": "booked"
+    }
+  ]
+}
+```
+
+### PUT /seat/check-in
+
+**Description**: Allows a logged-in user to check in and book a seat for an active trip.
+**Access**: Protected (User)
+**Request Body**:
+```json
+{
+  "seatId": "seat-id-to-book",
+  "busId": "bus-id-of-the-trip"
+}
+```
+**Response**:
+Status(200)
+```json
+{
+  "booking": { ... },
+  "seat": { ... }
+}
+```
+Status(400)
+```json
+{ "message": "You cannot check in for more seats than you have bookings for this trip." }
+```
+Status(404)
+```json
+{ "message": "This bus is not assigned to a trip in the given time window!" }
+```
+
+### PUT /seat/cancel-check-in
+
+**Description**: Allows a logged-in user to cancel their check-in for a seat.
+**Access**: Protected (User)
+**Request Body**:
+```json
+{
+  "seatId": "seat-id-to-cancel",
+  "busId": "bus-id-of-the-trip"
+}
+```
+**Response**:
+Status(200)
+```json
+{
+  "message": "Check-in cancelled successfully."
+}
+```
+
+## Route Management Endpoints
 
 ### POST /route/add-route
 
-**Description** : Add a new route with the exisited Stops
+**Description**: Add a new route with its associated stops.
 **Access**: Admin
 **Request Body**:
-
 ```json
 {
-  "source": "cairo",
-  "destination": "ejust",
-  "distance": 333.3,
-  "estimatedDuration": 33,
-  "stops": ["6899b26657d09aa1f4f7b7b2", "6899b24157d09aa1f4f7b7ae"],
+  "source": "Cairo",
+  "destination": "Alexandria",
+  "distance": 220.5,
+  "estimatedDuration": 180,
+  "stops": ["stop-id-1", "stop-id-2"],
   "isActive": true
 }
 ```
-
-**Response Body**:
+**Response**:
 Status(200)
-
 ```json
 {
   "message": "Route added successfully!"
 }
 ```
 
-### GET /route/route-stops/:routeId
+### GET /route/get-routes
 
-**Description** : Get all stops linked to a specific route
-**Access**: public
-**Request params**:
-routeId in the URL:
-`/route/get-route-stops/c7e89484-9808-433b-abcb-32bc5a01c577`
-
-**Response Body**:
+**Description**: Retrieves a list of all available routes.
+**Access**: Public
+**Response**:
 Status(200)
+```json
+[
+    {
+        "route_id": "c7e89484-9808-433b-abcb-32bc5a01c577",
+        "source": "Cairo",
+        "destination": "E-JUST",
+        "distance": "333.30",
+        "estimated_duration": 33,
+        "is_active": true
+    }
+]
+```
 
+### GET /route/get-route-stops/:routeId
+
+**Description**: Get all stops for a specific route.
+**Access**: Public
+**Parameters**:
+- `routeId`: The ID of the route.
+**Response**:
+Status(200)
 ```json
 {
-    "stops": {
-        "stop_id": "3c68282f-7da6-4a70-90fe-c6a89cb857c7",
-        "position": 1,
-        "stop_name": "dandy",
-        "location": "ajdgfkjahgjdfa",
-        "distance_from_source": 120,
-        "is_active": null
-    }
+    "stops": [
+        {
+            "stop_id": "3c68282f-7da6-4a70-90fe-c6a89cb857c7",
+            "position": 1,
+            "stop_name": "Dandy Mall",
+            ...
+        }
+    ]
 }
 ```
 
-## Bus
+## Bus Management Endpoints
 
 ### POST /bus/add-bus
 
-**Description** : Add a new bus with the seats that are connected to it in the array seats
+**Description**: Add a new bus to the system.
 **Access**: Admin
 **Request Body**:
-
 ```json
 {
-  "plateNumber": "12345gjkl",
-  "capacity": 12,
-  "features": ["no"]
+  "plateNumber": "EGY-1234",
+  "capacity": 50,
+  "features": ["AC", "WiFi"]
 }
 ```
-
-**Response Body**:
+**Response**:
 Status(200)
-
 ```json
 {
-  "message": "bus added successfully!"
+  "message": "Bus added successfully!"
 }
 ```
 
-## Stops
+### GET /bus/get-buses
+
+**Description**: Retrieves a list of all buses.
+**Access**: Public
+**Response**:
+Status(200)
+```json
+[
+    {
+        "bus_id": "a1b2c3d4-...",
+        "plate_number": "EGY-1234",
+        "capacity": 50,
+        "features": ["AC", "WiFi"]
+    }
+]
+```
+
+### GET /bus/get-available-buses
+
+**Description**: Retrieves buses that are not currently assigned to an active trip.
+**Access**: Public
+**Response**:
+Status(200)
+```json
+[
+    {
+        "bus_id": "a1b2c3d4-...",
+        "plate_number": "EGY-5678",
+        ...
+    }
+]
+```
+
+## Stop Management Endpoints
 
 ### POST /stop/add-stop
 
-**Description** : Add a new stop
+**Description**: Add a new stop point.
 **Access**: Admin
 **Request Body**:
-
 ```json
 {
-  "stopName": "Dandy",
-  "location": "https://share.google/dEA3PwzHeUtzUO3Po"
+  "stopName": "Dandy Mall",
+  "location": "https://maps.google.com/..."
 }
 ```
-
-**Response Body**:
+**Response**:
 Status(200)
-
 ```json
 {
-  "message": "bus added successfully!"
+  "message": "Stop added successfully!"
 }
 ```
 
-## Bus and Seat Management
+### GET /stop/get-stops
 
-### GET /form
+**Description**: Retrieves a list of all stops.
+**Access**: Public
+**Response**:
+Status(200)
+```json
+[
+    {
+        "stop_id": "3c68282f-7da6-4a70-90fe-c6a89cb857c7",
+        "stop_name": "Dandy Mall",
+        ...
+    }
+]
+```
 
-**Description**: Get bus forms
-**Access**: Protected
-
-### POST /formselection
-
-**Description**: Submit booking form
-**Access**: Protected
-
-### GET /seats
-
-**Description**: Get seat information
-**Access**: Protected
+## Payment Endpoints
 
 ### POST /payment
 
-**Description**: Process bus reservation payment
+**Description**: Process bus reservation payment. (Note: This endpoint seems to be a placeholder in the old docs and may need implementation details).
 **Access**: Protected
 **Request Body**:
-
 ```json
 {
   "userId": "user_id",
-  "busId": "bus_id"
+  "busId": "bus_id",
+  "amount": 100.00
 }
 ```
 
@@ -447,48 +574,32 @@ Status(200)
 
 ### GET /driver-list
 
-**Description**: Get list of drivers
+**Description**: Get list of drivers.
 **Access**: Admin only
 
 ### GET /blacklist
 
-**Description**: Get blacklisted users
+**Description**: Get blacklisted users.
 **Access**: Admin only
 
 ### POST /blacklist
 
-**Description**: Add user to blacklist
+**Description**: Add user to blacklist.
 **Access**: Admin only
 
 ## Contact and Support
 
 ### POST /contact
 
-**Description**: Submit contact form
+**Description**: Submit contact form.
 **Access**: Protected
 **Request Body**:
-
 ```json
 {
   "name": "User Name",
   "email": "user@example.com",
   "subject": "Support Request",
   "message": "Message content"
-}
-```
-
-## Real-time Notifications
-
-### POST /notifications
-
-**Description**: Send real-time notifications via Pusher
-**Access**: Public
-**Request Body**:
-
-```json
-{
-  "message": "Notification message",
-  "recepient": "target_user_id"
 }
 ```
 
