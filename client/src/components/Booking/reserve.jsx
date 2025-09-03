@@ -56,11 +56,12 @@ const Reserve = () => {
 
       console.log(checkRes);
 
-      const confirmMultiBookings = checkRes.data.userBookings.length > 0
-        ? window.confirm(
-            `You already have ${checkRes.data.userBookings.length} booking/s for the same trip, do you want to book again?`
-          )
-        : true;
+      const confirmMultiBookings =
+        checkRes.data.userBookings.length > 0
+          ? window.confirm(
+              `You already have ${checkRes.data.userBookings.length} booking/s for the same trip, do you want to book again?`
+            )
+          : true;
 
       if (confirmMultiBookings) {
         const res = await axios.post(
@@ -73,15 +74,14 @@ const Reserve = () => {
         );
 
         const booking = res.data.booked;
-        
+
         setShowModal(false);
         navigate("/payment", {
           state: { booking, trip, route },
         });
       }
-
     } catch (err) {
-      console.log(err)
+      console.log(err);
       if (err.response && err.response.status === 400) {
         // Pending booking case
         const booking = err.response.data.booking;
@@ -115,7 +115,7 @@ const Reserve = () => {
           <p>
             <strong>Arrival:</strong> {formatDateTime(trip.arrival_time)}
           </p>
-          <div>
+          <div className="stops-container">
             <p>
               <strong>Select a stop:</strong>
             </p>
@@ -136,7 +136,7 @@ const Reserve = () => {
                     <span style={{ fontWeight: 600 }}>{stop.stop_name}</span>
                     <span style={{ color: "#888", fontWeight: 400 }}>
                       {" "}
-                      – {stop.location}
+                      {/* – {stop.location} */}
                     </span>
                   </span>
                 </button>
@@ -151,15 +151,15 @@ const Reserve = () => {
               </div>
             )}
             {bookingError && (
-              <div
+              <pre
                 style={{
                   color: "red",
                   marginTop: "1rem",
-                  fontWeight: 500,
+                  fontWeight: 300,
                 }}
               >
                 {bookingError}
-              </div>
+              </pre>
             )}
           </div>
           <button className="confirm-btn" onClick={handleConfiremreserve}>

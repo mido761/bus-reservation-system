@@ -1,203 +1,208 @@
-
 .popup-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(44, 62, 80, 0.18);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 9999;
-	transition: background 0.2s;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(44, 62, 80, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: background 0.2s;
 }
 
 .payment-container {
-	min-height: 92vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-family: 'Segoe UI', Arial, sans-serif;
+  margin-top: var(--page-top-margin);
+  min-height: var(--page-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 .payment-box-container {
-	background: #fff;
-	border-radius: 18px;
-	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-	padding: 40px 32px 32px 32px;
-	width: 420px;
-	max-width: 95vw;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  padding: 1rem;
+  margin: auto;
+  width: 320px;
+  max-width: 95vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .payment-box-container h1 {
-	font-size: 2rem;
-	margin-bottom: 24px;
-	color: #2d3a4a;
-	font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 24px;
+  color: #2d3a4a;
+  font-weight: 700;
 }
 
 .payment-form {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 28px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
 .payment-method {
-	display: flex;
-	flex-direction: column;
-	gap: 22px;
-	margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 10px;
 }
 
 .method-option {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	background: #f7fafd;
-	border-radius: 10px;
-	padding: 16px 18px;
-	box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
-	transition: box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7fafd;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+  transition: box-shadow 0.2s;
 }
 
 .method-option:hover {
-	box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.13);
 }
 
 .method-title {
-	font-size: 1.1rem;
-	font-weight: 600;
-	margin-left: 10px;
-	color: #2d3a4a;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-left: 10px;
+  color: #2d3a4a;
 }
 
 .policy-btn {
-	background: #e3eafc;
-	color: #2d3a4a;
-	border: none;
-	border-radius: 6px;
-	padding: 7px 18px;
-	font-size: 0.98rem;
-	font-weight: 500;
-	cursor: pointer;
-	transition: background 0.2s, color 0.2s;
-	margin-left: 18px;
+  background: #e3eafc;
+  color: #2d3a4a;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 18px;
+  font-size: 0.98rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-left: 18px;
 }
 
 .policy-btn:hover {
-	background: var(--primary-color);
-	color: #fff;
+  background: var(--primary-color);
+  color: #fff;
 }
 
 .cta-button {
-	background: var(--primary-color);
-	color: #fff;
-	border: none;
-	border-radius: 8px;
-	padding: 13px 0;
-	font-size: 1.1rem;
-	font-weight: 700;
-	cursor: pointer;
-	margin-top: 18px;
-	box-shadow: 0 2px 8px rgba(44, 62, 80, 0.09);
-	transition: background 0.2s;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 18px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.09);
+  transition: background 0.2s;
 }
 
 .cta-button:hover {
-	background: blue;
+  background: blue;
 }
 
 .payment-success-container {
-	text-align: center;
-	color: #2d3a4a;
+  text-align: center;
+  color: #2d3a4a;
 }
 
-
 .policy-popup {
-	padding: 28px 24px 20px 24px;
-	background: #fff;
-	border-radius: 18px;
-	color: #2d3a4a;
-	font-size: 1.08rem;
-	max-width: 400px;
-	min-width: 320px;
-	box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-	border: 1.5px solid #e3eafc;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	animation: popup-fade-in 0.25s cubic-bezier(.4,2,.6,1) both;
+  padding: 28px 24px 20px 24px;
+  background: #fff;
+  border-radius: 18px;
+  color: #2d3a4a;
+  font-size: 1.08rem;
+  max-width: 400px;
+  min-width: 320px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  border: 1.5px solid #e3eafc;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: popup-fade-in 0.25s cubic-bezier(0.4, 2, 0.6, 1) both;
 }
 
 @keyframes popup-fade-in {
-	0% { opacity: 0; transform: scale(0.95); }
-	100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .policy-popup h2 {
-	font-size: 1.35rem;
-	margin-bottom: 14px;
-	color: #2355e6;
-	font-weight: 700;
-	text-align: center;
+  font-size: 1.35rem;
+  margin-bottom: 14px;
+  color: #2355e6;
+  font-weight: 700;
+  text-align: center;
 }
 .policy-popup ul {
-	padding-left: 20px;
-	margin: 0 0 10px 0;
-	text-align: left;
+  padding-left: 20px;
+  margin: 0 0 10px 0;
+  text-align: left;
 }
 .policy-popup li {
-	margin-bottom: 8px;
-	line-height: 1.6;
-	font-size: 1.05rem;
+  margin-bottom: 8px;
+  line-height: 1.6;
+  font-size: 1.05rem;
 }
 .policy-popup p {
-	margin: 0 0 10px 0;
-	text-align: center;
-	font-size: 1.08rem;
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-size: 1.08rem;
 }
 
-
 .popup-btn-row {
-	display: flex;
-	gap: 18px;
-	justify-content: center;
-	margin-top: 18px;
-	width: 100%;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  margin-top: 18px;
+  width: 100%;
 }
 
 .popup-btn {
-	width: 120px;
-	margin: 0;
-	font-size: 1rem;
-	padding: 10px 0;
-	border-radius: 7px;
-	box-shadow: 0 1px 4px rgba(44, 62, 80, 0.07);
-	border: none;
-	cursor: pointer;
-	font-weight: 600;
-	transition: background 0.2s, color 0.2s;
+  width: 120px;
+  margin: 0;
+  font-size: 1rem;
+  padding: 10px 0;
+  border-radius: 7px;
+  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.07);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
 }
 
 .popup-btn.confirm {
-	background: linear-gradient(90deg, #4f8cff 0%, #2355e6 100%);
-	color: #fff;
+  background: linear-gradient(90deg, #4f8cff 0%, #2355e6 100%);
+  color: #fff;
 }
 .popup-btn.confirm:hover {
-	background: linear-gradient(90deg, #2355e6 0%, #4f8cff 100%);
+  background: linear-gradient(90deg, #2355e6 0%, #4f8cff 100%);
 }
 
 .popup-btn.cancel {
-	background: #e3eafc;
-	color: #2d3a4a;
+  background: #e3eafc;
+  color: #2d3a4a;
 }
 .popup-btn.cancel:hover {
-	background: #4f8cff;
-	color: #fff;
+  background: #4f8cff;
+  color: #fff;
 }

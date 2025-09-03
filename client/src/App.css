@@ -21,6 +21,7 @@
   --total-header-height: calc(
     var(--nav-bar-height) + var(--elements-bar-height)
   );
+  --page-top-margin: calc(var(--nav-bar-height) + 5px);
   --page-height: calc(100vh - var(--total-header-height));
   --page-width: calc(98vw - var(--elements-bar-width));
 

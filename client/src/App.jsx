@@ -104,7 +104,7 @@ function App() {
           }
         />
         <Route
-          path="/checkin/:busId"
+          path="/checkin"
           element={
             <Auth>
               <Navbar />

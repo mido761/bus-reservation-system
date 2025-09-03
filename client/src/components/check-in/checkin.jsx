@@ -1,20 +1,32 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import "./checkin.css";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 import SeatLegend from "./seatlegend.jsx";
 
 export default function Checkin() {
+  const [bus, setBus] = useState(null);
   const [seats, setSeats] = useState([]);
   const [bookedSeats, setBookedSeats] = useState([]);
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [selectedSeatId, setSelectedSeatId] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const busId = queryParams.get("bus_id");
 
-  // Example booked seats
-  const { busId } = useParams();
+  const fetchBusDetails = async () => {
+    try {
+      const busRes = await axios.get(`${backEndUrl}/bus/get-bus/${busId}`);
+      const bus = busRes.data.bus;
+      console.log(bus);
+      setBus(bus);
+    } catch (err) {
+      console.error("Error fetching bus: ", err);
+    }
+  };
 
   const fetchBusSeats = async () => {
     try {
@@ -35,6 +47,7 @@ export default function Checkin() {
 
   // Fetch buses
   useEffect(() => {
+    fetchBusDetails();
     fetchBusSeats();
   }, []);
 
@@ -122,7 +135,7 @@ export default function Checkin() {
       );
       setBookedSeats(newBookedSeats);
 
-      // Reset selections 
+      // Reset selections
       setSelectedSeat(null);
       setSelectedSeatId("");
       alert(`❌ Seat ${selectedSeat} reservation cancelled.`);
@@ -143,6 +156,7 @@ export default function Checkin() {
     setConfirmationMsg("");
   };
 
+  if (!bus) return <p>Bus Not found!</p>;
   return (
     <div className="checkin-container">
       <h2 className="checkin-title">Bus Seat Selection</h2>

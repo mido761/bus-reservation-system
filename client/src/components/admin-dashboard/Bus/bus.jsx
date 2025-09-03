@@ -98,6 +98,8 @@ const Bus = () => {
             buses.map((bus) => (
               <li key={bus.bus_id}>
                 {bus.plate_number} — {bus.capacity} seats
+                <img src={bus.qr_code} alt="Bus QR Code" />
+                <a href={bus.check_in_link}>Check In Link</a>
               </li>
             ))}
         </ul>

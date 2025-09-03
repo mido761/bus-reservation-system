@@ -2,15 +2,15 @@
    Container & Layout
 ================================ */
 .checkin-container {
-  padding: 64px 24px 32px;
-  min-height: 85vh;
+  /* min-height: var(--phone-height); */
   max-width: 500px;
   margin: 40px auto;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
-  padding: 32px 24px;
+  padding: 20px 14px;
+  margin-top: var(--page-top-margin);
+  /* border: #000 solid 1px; */
   text-align: center;
 }
 
