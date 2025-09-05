@@ -6,6 +6,12 @@ import Verification from "./verification";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
 
+// shadcn/ui imports
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 function Signup() {
@@ -19,59 +25,37 @@ function Signup() {
   const [verificationFlag, setVerificationFlag] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
-  // Validation Functions
-  const validatePhoneNumber = (number) => {
-    // Ensure phone number starts with "01" and is exactly 11 digits long
-    return /^\d{11}$/.test(number) && number.startsWith("01");
-  };
-
+  // --- Validation functions ---
+  const validatePhoneNumber = (number) =>
+    /^\d{11}$/.test(number) && number.startsWith("01");
   const validateEmail = (email) =>
     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$/.test(email);
-
-  // const validatePassword = (password) =>
-  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#])[A-Za-z\d@$!%*?&.#]{8,}$/.test(password);
-
-  // const passwordErrorMessage =
-  //   "Password must meet the following requirements:\n" +
-  //   "- At least 8 characters long\n" +
-  //   "- Include at least one uppercase\n" +
-  //   "- Include at least one lowercase letter\n" +
-  //   "- Include at least one number\n" +
-  //   "- Include at least one special character (@$!%*?&.#)";
-
   const validatePassword = (password) => {
     let errors = [];
-
     if (password.length < 8) errors.push("At least 8 characters long");
-    if (!/[A-Z]/.test(password))
-      errors.push("Include at least one uppercase letter");
-    if (!/[a-z]/.test(password))
-      errors.push("Include at least one lowercase letter");
+    if (!/[A-Z]/.test(password)) errors.push("Include at least one uppercase");
+    if (!/[a-z]/.test(password)) errors.push("Include at least one lowercase");
     if (!/\d/.test(password)) errors.push("Include at least one number");
     if (!/[@$!%*?&.#]/.test(password))
-      errors.push("Include at least one special character \n(@$!%*?&.#)");
-
+      errors.push("Include at least one special character (@$!%*?&.#)");
     return errors;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
 
-    // Validate Inputs
     let validationErrors = {};
     if (!validatePhoneNumber(phoneNumber))
       validationErrors.phoneNumber = "Please enter a valid phone number.";
     if (!validateEmail(email))
-      validationErrors.email =
-        "Enter a valid email address (e.g., example@example.com).";
-    if (!validatePassword(password))
+      validationErrors.email = "Enter a valid email address.";
+    if (!validatePassword(password).length === 0)
       validationErrors.password = validatePassword(password).join("\n");
 
     if (Object.keys(validationErrors).length > 0) {
@@ -86,7 +70,7 @@ function Signup() {
         phoneNumber,
         email,
         password,
-        gender, // Send gender to backend
+        gender,
       });
 
       if (result.status === 201) {
@@ -94,8 +78,8 @@ function Signup() {
           setIsLoading(false);
           setAlertMessage(
             <p>
-              <strong>Registered successfully</strong> <br />
-              <br /> Check your email for verification.
+              <strong>Registered successfully</strong> <br /> Check your email
+              for verification.
             </p>
           );
           setAlertFlag(true);
@@ -114,9 +98,7 @@ function Signup() {
         setAlertFlag(true);
       }, 1000);
 
-      setTimeout(() => {
-        setAlertFlag(false);
-      }, 2200);
+      setTimeout(() => setAlertFlag(false), 2200);
     }
   };
 
@@ -125,103 +107,120 @@ function Signup() {
     if (!validatePhoneNumber(phoneNumber))
       validationErrors.phoneNumber = "Please enter a valid phone number.";
     if (!validateEmail(email))
-      validationErrors.email =
-        "Enter a valid email address (e.g., example@example.com).";
+      validationErrors.email = "Enter a valid email address.";
     validationErrors.password = validatePassword(password).join("\n");
     setErrors(validationErrors);
   }, [email, password, phoneNumber]);
 
-
-
   return (
-    <div className="register-page">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
       {!verificationFlag ? (
-        <div className="register-container">
-          <h2>Register</h2>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-
-            <label htmlFor="phoneNumber">Phone Number</label>
-            <input
-              type="tel"
-              id="phoneNumber"
-              name="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, "");
-                setPhoneNumber(value);
-              }}
-              onInput={(e) =>
-                (e.target.value = e.target.value.replace(/\D/g, ""))
-              }
-              maxLength="11"
-              required
-            />
-            {errors.phoneNumber && phoneNumber.length > 0 &&(
-              <p className="error"> {errors.phoneNumber}</p>
-            )}
-
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            {errors.email && email.length > 0 && <p className="error"> {errors.email}</p>}
-
-            <label htmlFor="password">Password</label>
-            <div className="password-container">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? "👁️" : "👁️‍🗨️"}
-              </span>
-            </div>
-            {errors.password && password.length > 0 &&(
-              <pre className="error" style={{ whiteSpace: "pre-line" }}>
-                {" "}
-                {errors.password}
-              </pre>
-            )}
-
-            {/* Gender Selection */}
-            <div className="gender-container">
-              {/* <label className="gender-label">Select Gender:</label> */}
-              <div className="gender-options">
-                <div
-                  className={`gender-option Male ${gender === "Male" ? "selected" : ""}`}
-                  onClick={() => setGender("Male")}
-                >
-                  Male
-                </div>
-                <div
-                  className={`gender-option Female ${gender === "Female" ? "selected" : ""}`}
-                  onClick={() => setGender("Female")}
-                >
-                  Female
-                </div>
+        <Card className="w-full max-w-md shadow-lg rounded-2xl">
+          <CardHeader>
+            <CardTitle className="text-center text-2xl font-bold">
+              Register
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  type="text"
+                  id="username"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
-            </div>
-            {errors.gender && <p className="error">⚠️ {errors.gender}</p>}
 
-            <button type="submit">Register</button>
-          <Link to="/login">Login</Link>
+              <div>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  type="tel"
+                  id="phoneNumber"
+                  value={phoneNumber}
+                  onChange={(e) =>
+                    setPhoneNumber(e.target.value.replace(/\D/g, ""))
+                  }
+                  maxLength="11"
+                  required
+                />
+                {errors.phoneNumber && phoneNumber.length > 0 && (
+                  <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
+                )}
+              </div>
 
-          </form>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                {errors.email && email.length > 0 && (
+                  <p className="text-red-500 text-sm">{errors.email}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <span
+                    className="absolute right-2 top-2 cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? "👁️" : "👁️‍🗨️"}
+                  </span>
+                </div>
+                {errors.password && password.length > 0 && (
+                  <pre className="text-red-500 text-sm whitespace-pre-line">
+                    {errors.password}
+                  </pre>
+                )}
+              </div>
+
+              {/* Gender Selection */}
+              <div>
+                <Label>Select Gender</Label>
+                <div className="flex gap-3 mt-2">
+                  <Button
+                    type="button"
+                    variant={gender === "Male" ? "default" : "outline"}
+                    onClick={() => setGender("Male")}
+                  >
+                    Male
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={gender === "Female" ? "default" : "outline"}
+                    onClick={() => setGender("Female")}
+                  >
+                    Female
+                  </Button>
+                </div>
+                {errors.gender && (
+                  <p className="text-red-500 text-sm">{errors.gender}</p>
+                )}
+              </div>
+
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
+              <p className="text-center text-sm">
+                Already have an account?{" "}
+                <Link to="/login" className="text-blue-600 hover:underline">
+                  Login
+                </Link>
+              </p>
+            </form>
+          </CardContent>
           {isLoading && <LoadingScreen />}
           {alertFlag && (
             <Overlay
@@ -230,12 +229,12 @@ function Signup() {
               setAlertFlag={setAlertFlag}
             />
           )}
-        </div>
+        </Card>
       ) : (
         <Verification setVerificationFlag={setVerificationFlag} />
       )}
     </div>
   );
 }
+
 export default Signup;
-    

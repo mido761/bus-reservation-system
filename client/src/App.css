@@ -44,7 +44,7 @@
   height: 40vmin;
   pointer-events: none;
 }
-
+/* 
 button {
   background-color: var(--primary-color);
   color: white;
@@ -57,7 +57,7 @@ button {
 button:hover {
   background-color: var(--primary-hover);
   transform: scale(1.05);
-}
+} */
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {

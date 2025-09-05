@@ -1,27 +1,32 @@
 import React from "react";
-import { CSSTransition } from "react-transition-group";
-import './overlay.css'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
-
-
-function Overlay({alertFlag, alertMessage, setAlertFlag}){
-    // const {alertFlag, alertMessage} = this.props
-    return(
-            <CSSTransition
-                in={alertFlag}
-                timeout={300}
-                classNames="confirm-btn-transition"
-                unmountOnExit
-                >
-                    <div className="alert-overlay">
-                        <div className="overlay-content">
-                            {alertMessage}
-                            <button onClick={() => setAlertFlag(false)}>Close</button>
-                        </div>
-                    </div>
-                    
-            </CSSTransition>
-    )
+function Overlay({ alertFlag, alertMessage, setAlertFlag }) {
+  return (
+    <Dialog open={alertFlag} onOpenChange={setAlertFlag}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Notice</DialogTitle>
+          <DialogDescription asChild>
+            <div>{alertMessage}</div>
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="default" onClick={() => setAlertFlag(false)}>
+            Close
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export default Overlay;

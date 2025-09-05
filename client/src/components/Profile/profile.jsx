@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaEnvelope, FaPhone } from "react-icons/fa";
+// import { FaEnvelope, FaPhone } from "react-icons/fa6";
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
 import LoadingPage from "../loadingPage/loadingPage";

@@ -5,7 +5,7 @@ import Overlay from "../overlayScreen/overlay";
 import Loading from "../loadingScreen/loadingScreen";
 import "./verification.css";
 import ResetPassword from "../reset-password/reset-password";
-import { HiEye, HiEyeOff } from "react-icons/hi"; // Import eye icons from react-icons
+// import { HiEye, HiEyeOff } from "react-icons/hi"; // Import eye icons from react-icons
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 

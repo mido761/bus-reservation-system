@@ -5,7 +5,7 @@ import Overlay from "../overlayScreen/overlay";
 import "../signup/Signup.css";
 import "../login/login.css";
 import LoadingScreen from "../loadingScreen/loadingScreen";
-import { HiEye, HiEyeOff } from "react-icons/hi"; // Import eye icons from react-icons
+// import { HiEye, HiEyeOff } from "react-icons/hi2";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 

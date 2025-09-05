@@ -1,0 +1,90 @@
+/* Define a unified color palette */
+:root {
+  --primary-color: #d4af37;
+  --primary-hover: #b8860b;
+  --secondary-color: #a87c0b; /* Rich Gold for accents */
+  --secondary-hover: #d4af37; /* Brighter Gold for emphasis */
+  --text-color: #000000; /* Black for strong contrast */
+  --secondary-text-color: #000000a6; /* Grey for soft contrast */
+  --background-color: #ffffff; /* Clean white background */
+  --card-background: #d4af37;
+  --card-hover: #b8860b;
+  --button-text: #000000; /* Black text for bold contrast */
+  --input-border: #b8860b; /* Gold border for elegance */
+  --form-background: #ffffff; /* White form background */
+  --shadow-color: rgba(0, 0, 0, 0.2); /* Subtle black shadow for depth */
+  --selected-btn: #2ecc71;
+  
+  --nav-bar-height: 8vh;
+  --elements-bar-height: 6vh;
+  --elements-bar-width: 20vw;
+  --total-header-height: calc(
+    var(--nav-bar-height) + var(--elements-bar-height)
+  );
+  --page-top-margin: calc(var(--nav-bar-height) + 5px);
+  --page-height: calc(100vh - var(--total-header-height));
+  --page-width: calc(98vw - var(--elements-bar-width));
+
+  --phone-height: calc(100vh - var(--nav-bar-height));
+  --phone-width: calc(98vw - var(--elements-bar-width));
+
+  --footer-height: 8vh;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  justify-items: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

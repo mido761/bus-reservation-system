@@ -1,5 +1,5 @@
-import "./App.css";
-// import React from "react";
+// import "./App.css";
+import React from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Auth from "./Auth.jsx";
 
