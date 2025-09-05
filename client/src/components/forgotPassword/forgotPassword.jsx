@@ -3,9 +3,14 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import Overlay from "../overlayScreen/overlay";
 import "../login/login.css";
-import LoadingScreen from "../loadingScreen/loadingScreen";
-// import { HiEye, HiEyeOff } from "react-icons/hi2";
 import Verification from "./verification";
+import CardForm from "@/components/ui/card-form"; // Reusable Card + Form wrapper
+import { Loader2 } from "lucide-react";
+import ResetPassword from "./resetPassword";
+// shadcn/ui imports
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -14,7 +19,7 @@ function ForgotPassword() {
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [verificationFlag, setVerificationFlag] = useState(false);
+  const [verificationFlag, setVerificationFlag] = useState(true);
 
   const navigate = useNavigate();
 
@@ -93,37 +98,40 @@ function ForgotPassword() {
     }
   };
 
-  return (
-    <div className="login-container">
-      {!verificationFlag ? (
-        <div className="login-form">
-          <h2>Forgot Password</h2>
-          <p style={{ fontSize: "10px", margin: "auto", marginBottom: "25px" }}>
-            Please enter your email to reset the password
-          </p>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="email">Your Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              onChange={(e) => setEmail(e.target.value)}
-            />
+  if (verificationFlag)
+    return <ResetPassword verFalag={verificationFlag} />;
 
-            <button type="submit">Reset password</button>
-          </form>
-          <br />
-          <Link to="/login">
-            <pre>Already registerd? Login</pre>
+  return (
+    <div className="w-full flex items-center justify-center min-h-screen bg-background">
+      <CardForm title="Forgot Password" onSubmit={handleSubmit}>
+        <div>
+          <Label htmlFor="email">Your Email</Label>
+          <Input
+            type="email"
+            id="email"
+            name="email"
+            required
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            "Reset password"
+          )}
+        </Button>
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <p className="text-center text-sm"> Already have an account?</p>
+
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login
           </Link>
         </div>
-      ) : (
-        <Verification setVerificationFlag={setVerificationFlag} email={email}/>
-      )}
+      </CardForm>
 
-      {isLoading && <LoadingScreen />}
-
+      {/* Dialog for alert messages */}
       <Overlay
         alertFlag={alertFlag}
         alertMessage={alertMessage}

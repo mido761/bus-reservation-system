@@ -223,12 +223,12 @@ function Verification({ setVerificationFlag, email }) {
                 className="password-toggle"
                 onClick={() => setPasswordVisible(!passwordVisible)} // Toggle password visibility
               >
-                {passwordVisible ? <HiEyeOff /> : <HiEye />}{" "}
+                {/* {passwordVisible ? <HiEyeOff /> : <HiEye />}{" "} */}
                 {/* Eye icons from react-icons */}
               </span>
             </div>
 
-            <label htmlFor="password">Confirm password</label>
+            <label htmlFor="confirm-password">Confirm password</label>
             <div className="password-container">
               <input
                 type={confirmPasswordVisible ? "text" : "password"} // Toggle between text and password type
@@ -248,7 +248,7 @@ function Verification({ setVerificationFlag, email }) {
                   setConfirmPasswordVisible(!confirmPasswordVisible)
                 } // Toggle password visibility
               >
-                {confirmPasswordVisible ? <HiEyeOff /> : <HiEye />}{" "}
+                {/* {confirmPasswordVisible ? <HiEyeOff /> : <HiEye />}{" "} */}
                 {/* Eye icons from react-icons */}
               </span>
             </div>

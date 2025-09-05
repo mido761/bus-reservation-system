@@ -3,50 +3,24 @@ import axios from "axios";
 // import { FaEnvelope, FaPhone } from "react-icons/fa6";
 import "./UserProfile.css";
 import Dashboard from "../dashboard/Dashboard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import LoadingPage from "../loadingPage/loadingPage";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const UserProfile = () => {
-  const [busDetails, setBusDetails] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [userId, setUserId] = useState(null);
   const [userDetails, setUserDetails] = useState({});
 
   useEffect(() => {
-    const fetchData = async () => {
-      let busIds = [];
+    const fetchUserProfile = async () => {
       try {
         // Fetch authenticated user
-        // const req_user = await axios.get(`${backEndUrl}/auth`, {
-        //   withCredentials: true,
-        // });
-        // setUserId(req_user.data.userId);
-        // const userId = req_user.data.userId;
-
-        // Fetch user profile
         const res = await axios.get(`${backEndUrl}/user/profile`, {
           withCredentials: true,
         });
         setUserDetails(res.data);
-        const userDetails = res.data;
-
-        // Fetch user's buses
-        // busIds = userDetails.bookedBuses?.buses || [];
-
-        // if (busIds.length > 0) {
-        //   const response = await axios.get(`${backEndUrl}/buses/userBuses`, {
-        //     params: { ids: busIds.join(",") },
-        //   });
-        const userBusesResponse = await axios.get(
-          `${backEndUrl}/user/form-based-bus/${userId}`
-        );
-        console.log(userBusesResponse);
-        setBusDetails(userBusesResponse.data);
-        // } else {
-        //   setError("No booked buses found.");
-        // }
       } catch (err) {
         console.error("Error fetching user or buses:", err);
         setError("Failed to fetch user details or buses.");
@@ -57,7 +31,7 @@ const UserProfile = () => {
       }
     };
 
-    fetchData();
+    fetchUserProfile();
   }, []);
 
   // Get initials for avatar
@@ -73,32 +47,40 @@ const UserProfile = () => {
   if (loading) return <LoadingPage />;
 
   return (
-    <div className="profile-page">
-      <div className="profile-container">
-        <div className="card">
+    <div className="flex justify-center items-center min-h-screen bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Profile</CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex flex-col items-center gap-4">
           {/* Avatar */}
-          <div className="avatar">
+          <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-bold">
             {userDetails?.username ? getInitials(userDetails.username) : "?"}
           </div>
 
           {/* User Info */}
-          <div className="info">
-            <span className="info-1">{userDetails?.username || "No Name"}</span>
-            <span className="info-2">{userDetails?.email || "No Email"}</span>
+          <div className="text-center">
+            <p className="font-semibold">
+              {userDetails?.username || "No Name"}
+            </p>
+            <p className="text-muted-foreground">
+              {userDetails?.email || "No Email"}
+            </p>
           </div>
 
           {/* Contact Info */}
-          <div className="content-1">
-            <FaPhone className="icon" />{" "}
-            {userDetails?.phone_number || "No Phone"}
+          <div className="text-center">
+            <p>{userDetails?.phone_number || "No Phone"}</p>
           </div>
 
           {/* Dashboard Section */}
-          <div className="content-2">
-            <Dashboard error={error} busDetails={busDetails} userId={userId} />
+          <div className="w-full mt-4">
+            {/* You can render a Dashboard component here */}
+            {/* <Dashboard error={error} busDetails={busDetails} userId={userId} /> */}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

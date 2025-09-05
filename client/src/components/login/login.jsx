@@ -2,26 +2,27 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import Overlay from "../overlayScreen/overlay";
-import "../signup/Signup.css";
-import "../login/login.css";
-import LoadingScreen from "../loadingScreen/loadingScreen";
-// import { HiEye, HiEyeOff } from "react-icons/hi"; // Import eye icons from react-icons
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import CardForm from "@/components/ui/card-form"; // Reusable Card + Form wrapper
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false); // State for password visibility
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
       const response = await axios.post(
         `${backEndUrl}/api/auth/login`,
@@ -35,90 +36,78 @@ function Login() {
 
         setTimeout(() => {
           setIsLoading(false);
-          setAlertMessage("Login successful");
+          setAlertMessage("✅ Login successful");
           setAlertFlag(true);
-        }, 1000);
+        }, 500);
 
         setTimeout(() => {
           setAlertFlag(false);
           navigate("/home");
-        }, 2200);
+        }, 2000);
       }
     } catch (error) {
-      if (error.status === 404) {
-        setAlertMessage("User not found");
-      } else if (error.status === 401) {
-        setAlertMessage("Password is incorrect");
-      } else {
-        setAlertMessage("There was an error during login");
-      }
+      let message = "There was an error during login";
+      if (error.response?.status === 404) message = "User not found";
+      else if (error.response?.status === 401)
+        message = "Password is incorrect";
 
       setTimeout(() => {
         setIsLoading(false);
+        setAlertMessage(`❌ ${message}`);
         setAlertFlag(true);
-      }, 1000);
+      }, 500);
 
       setTimeout(() => {
         setAlertFlag(false);
-      }, 2200);
+      }, 2000);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form">
-        <h2>Login</h2>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <CardForm title="Login" onSubmit={handleSubmit}>
+        <Input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
+        <div className="relative">
+          <Input
+            type={passwordVisible ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
-            onChange={(e) => setEmail(e.target.value)}
           />
-
-          <label htmlFor="password">Password</label>
-          <div className="password-container">
-            <input
-              type={passwordVisible ? "text" : "password"} // Toggle between text and password type
-              id="password"
-              name="password"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <span
-              className="password-toggle"
-              onClick={() => setPasswordVisible(!passwordVisible)} // Toggle password visibility
-            >
-              {passwordVisible ? <HiEyeOff /> : <HiEye />}{" "}
-              {/* Eye icons from react-icons */}
-            </span>
-          </div>
-
-          <button type="submit">Login</button>
-        </form>
-        <div className="actions-container">
-          <Link to="/forgot-password" >
-            Forgot Password?
-          </Link>
-
-          <Link to="/register" >
-            Doesn't not have an account? Sign up
-          </Link>
+          <span
+            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer select-none"
+            onClick={() => setPasswordVisible(!passwordVisible)}
+          >
+            {/* {passwordVisible ? "👁️" : "👁️‍🗨️"} */}
+          </span>
         </div>
-      </div>
 
-      {isLoading && <LoadingScreen />}
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Login"}
+        </Button>
 
-      <Overlay
-        alertFlag={alertFlag}
-        alertMessage={alertMessage}
-        setAlertFlag={setAlertFlag}
-      />
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link to="/register">Sign up</Link>
+        </div>
+      </CardForm>
+
+      {/* Dialog for alert messages */}
+      {alertFlag && (
+        <Overlay
+          alertFlag={alertFlag}
+          alertMessage={alertMessage}
+          setAlertFlag={setAlertFlag}
+        />
+      )}
     </div>
   );
 }
-
-export default Login;

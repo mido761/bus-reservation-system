@@ -291,7 +291,7 @@ function App() {
             <Auth>
               <Navbar />
               <Profile />
-              {/* <Footer /> */}
+              <Footer />
             </Auth>
           }
         />

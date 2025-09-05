@@ -3,7 +3,12 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import Overlay from "../overlayScreen/overlay";
 import Loading from "../loadingScreen/loadingScreen";
+import { Loader2 } from "lucide-react";
 import "./verification.css";
+
+// shadcn/ui imports
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -56,9 +61,7 @@ function Verification({ setVerificationFlag }) {
       setTimeout(() => {
         setAlertFlag(false);
       }, 2000);
-      console.error(
-        err || "Invalid verification code."
-      );
+      console.error(err || "Invalid verification code.");
     }
   };
 
@@ -89,7 +92,6 @@ function Verification({ setVerificationFlag }) {
     if (e.key === "Enter") {
       e.preventDefault(); // Prevents form submission
     }
-
   };
 
   const handleResendCode = async () => {
@@ -126,8 +128,8 @@ function Verification({ setVerificationFlag }) {
   };
 
   return (
-    <div className="verification-page">
-      <div className="verification-container">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-background w-auto">
         {/* <h2>Verify Your Email</h2>
         <form onSubmit={handleVerify}>
           <input
@@ -147,45 +149,60 @@ function Verification({ setVerificationFlag }) {
             Resend Verification Code
           </button>
         </form> */}
-        <form className="otp-Form" onSubmit={handleVerify} >
-          <span className="mainHeading">Enter OTP</span>
-          <p className="otpSubheading">
+        <form
+          onSubmit={handleVerify}
+          className="flex flex-col items-center gap-4 p-6 bg-card rounded-2xl shadow-lg w-full max-w-md"
+        >
+          <h2 className="text-xl font-semibold">Enter OTP</h2>
+          <p className="text-sm text-muted-foreground text-center">
             We have sent a verification code to your email
           </p>
-          <div className="inputContainer">
+
+          <div className="flex gap-1">
             {otp.map((digit, index) => (
-              <input
+              <Input
                 key={index}
                 type="text"
-                className="otp-input"
                 maxLength="1"
                 value={digit}
                 onChange={(e) => handleChange(index, e)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 ref={(el) => (inputRefs.current[index] = el)}
+                className="w-9 h-9 text-center text-lg"
               />
             ))}
           </div>
-          <button className="verifyButton" type="submit">
-            Verify
-          </button>
-          <button
-            id="exitBtn"
-            type="button"
-            onClick={() => setVerificationFlag(false)}
-          >
-            ×
-          </button>
-          <p className="resendNote">
-            Didn't receive the code?{" "}
-            <button className="resendBtn" type="button" onClick={handleResendCode}>
+
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Verify"
+            )}
+          </Button>
+
+          <p className="text-sm text-muted-foreground">
+            Didn’t receive the code?{" "}
+            <Button
+              variant="link"
+              type="button"
+              onClick={handleResendCode}
+              disabled={isLoading}
+            >
               Resend Code
-            </button>
+            </Button>
           </p>
+
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => setVerificationFlag(true)}
+          >
+            Cancel
+          </Button>
         </form>
       </div>
-      {isLoading && <Loading />}
-
+      {/* {isLoading && <Loading />} */}
 
       {alertFlag && (
         <Overlay

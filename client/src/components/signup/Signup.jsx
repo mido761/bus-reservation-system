@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 import Verification from "./verification";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import Overlay from "../overlayScreen/overlay";
+import CardForm from "@/components/ui/card-form"; // Reusable Card + Form wrapper
+import { Loader2 } from "lucide-react";
 
 // shadcn/ui imports
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -58,6 +59,10 @@ function Signup() {
     if (!validatePassword(password).length === 0)
       validationErrors.password = validatePassword(password).join("\n");
 
+    if (!gender) {
+      validationErrors.gender = "You need to select gender!";
+    }
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setIsLoading(false);
@@ -92,13 +97,9 @@ function Signup() {
         }, 2500);
       }
     } catch (err) {
-      setTimeout(() => {
-        setIsLoading(false);
-        setAlertMessage(err.response?.data?.message || "An error occurred.");
-        setAlertFlag(true);
-      }, 1000);
-
-      setTimeout(() => setAlertFlag(false), 2200);
+      setIsLoading(false);
+      setAlertMessage(err.response?.data?.message || "An error occurred.");
+      setAlertFlag(true);
     }
   };
 
@@ -112,126 +113,117 @@ function Signup() {
     setErrors(validationErrors);
   }, [email, password, phoneNumber]);
 
+  // if (isLoading) return <LoadingScreen />;
+
+  if (!verificationFlag)
+    return <Verification setVerificationFlag={setVerificationFlag} />;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      {!verificationFlag ? (
-        <Card className="w-full max-w-md shadow-lg rounded-2xl">
-          <CardHeader>
-            <CardTitle className="text-center text-2xl font-bold">
-              Register
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  type="text"
-                  id="username"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
+    <div className="w-full flex items-center justify-center min-h-screen bg-background">
+      <CardForm title="Sign Up" onSubmit={handleSubmit}>
+        <div>
+          <Label htmlFor="username">Username</Label>
+          <Input
+            type="text"
+            id="username"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
 
-              <div>
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <Input
-                  type="tel"
-                  id="phoneNumber"
-                  value={phoneNumber}
-                  onChange={(e) =>
-                    setPhoneNumber(e.target.value.replace(/\D/g, ""))
-                  }
-                  maxLength="11"
-                  required
-                />
-                {errors.phoneNumber && phoneNumber.length > 0 && (
-                  <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                {errors.email && email.length > 0 && (
-                  <p className="text-red-500 text-sm">{errors.email}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <span
-                    className="absolute right-2 top-2 cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? "👁️" : "👁️‍🗨️"}
-                  </span>
-                </div>
-                {errors.password && password.length > 0 && (
-                  <pre className="text-red-500 text-sm whitespace-pre-line">
-                    {errors.password}
-                  </pre>
-                )}
-              </div>
-
-              {/* Gender Selection */}
-              <div>
-                <Label>Select Gender</Label>
-                <div className="flex gap-3 mt-2">
-                  <Button
-                    type="button"
-                    variant={gender === "Male" ? "default" : "outline"}
-                    onClick={() => setGender("Male")}
-                  >
-                    Male
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={gender === "Female" ? "default" : "outline"}
-                    onClick={() => setGender("Female")}
-                  >
-                    Female
-                  </Button>
-                </div>
-                {errors.gender && (
-                  <p className="text-red-500 text-sm">{errors.gender}</p>
-                )}
-              </div>
-
-              <Button type="submit" className="w-full">
-                Register
-              </Button>
-              <p className="text-center text-sm">
-                Already have an account?{" "}
-                <Link to="/login" className="text-blue-600 hover:underline">
-                  Login
-                </Link>
-              </p>
-            </form>
-          </CardContent>
-          {isLoading && <LoadingScreen />}
-          {alertFlag && (
-            <Overlay
-              alertFlag={alertFlag}
-              alertMessage={alertMessage}
-              setAlertFlag={setAlertFlag}
-            />
+        <div>
+          <Label htmlFor="phoneNumber">Phone Number</Label>
+          <Input
+            type="tel"
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
+            maxLength="11"
+            required
+          />
+          {errors.phoneNumber && phoneNumber.length > 0 && (
+            <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
           )}
-        </Card>
-      ) : (
-        <Verification setVerificationFlag={setVerificationFlag} />
+        </div>
+
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {errors.email && email.length > 0 && (
+            <p className="text-red-500 text-xs">{errors.email}</p>
+          )}
+        </div>
+
+        <div>
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <span
+              className="absolute right-2 top-2 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "👁️" : "👁️‍🗨️"}
+            </span>
+          </div>
+          {errors.password && password.length > 0 && (
+            <pre className="text-red-400 text-xs whitespace-pre-line">
+              {errors.password}
+            </pre>
+          )}
+        </div>
+
+        {/* Gender Selection */}
+        <div>
+          <Label>Select Gender</Label>
+          <div className="flex gap-3 mt-2">
+            <Button
+              type="button"
+              variant={gender === "Male" ? "default" : "outline"}
+              onClick={() => setGender("Male")}
+            >
+              Male
+            </Button>
+            <Button
+              type="button"
+              variant={gender === "Female" ? "default" : "outline"}
+              onClick={() => setGender("Female")}
+            >
+              Female
+            </Button>
+          </div>
+          {errors.gender && (
+            <p className="text-red-500 text-sm">{errors.gender}</p>
+          )}
+        </div>
+
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Login"}
+        </Button>
+        <p className="text-center text-sm">
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login
+          </Link>
+        </p>
+      </CardForm>
+
+      {/* Dialog for alert messages */}
+      {alertFlag && (
+        <Overlay
+          alertFlag={alertFlag}
+          alertMessage={alertMessage}
+          setAlertFlag={setAlertFlag}
+        />
       )}
     </div>
   );
