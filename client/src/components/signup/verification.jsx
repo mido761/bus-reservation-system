@@ -196,7 +196,7 @@ function Verification({ setVerificationFlag }) {
           <Button
             variant="outline"
             type="button"
-            onClick={() => setVerificationFlag(true)}
+            onClick={() => setVerificationFlag(false)}
           >
             Cancel
           </Button>

@@ -115,7 +115,7 @@ function Signup() {
 
   // if (isLoading) return <LoadingScreen />;
 
-  if (!verificationFlag)
+  if (verificationFlag)
     return <Verification setVerificationFlag={setVerificationFlag} />;
 
   return (
