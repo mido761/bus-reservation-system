@@ -1,31 +1,27 @@
-import React, { useEffect, useState, useRef } from "react";
-import Overlay from "../overlayScreen/overlay";
-import axios from "axios";
-import "../navbar/nav.css";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import LoadingScreen from "../loadingScreen/loadingScreen";
+import Overlay from "../overlayScreen/overlay";
 import InlineAuth from "../../InlineAuth";
+import axios from "axios";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-function Navbar() {
+export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
-  const [alertFlag, setAlertFlag] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const dropdownRef = useRef(null); // Reference to the nav menu (dropdown)
-  const navbarRef = useRef(null); // Reference to the navbar (optional if you need it for additional checks)
-  // const [isAuthenticated, setIsAuthenticated] = useState(null);
-  // const [isAuthorized, setIsLoading] = useState(null);
-
   const { isAuthenticated, isAuthorized } = InlineAuth();
-
-  // Function to toggle the menu
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [alertFlag, setAlertFlag] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   // Logout handler
   const handleLogout = async () => {
@@ -61,122 +57,82 @@ function Navbar() {
     }
   };
 
-  // Close the dropdown if clicked outside of it
-  const handleClickOutside = (event) => {
-    if (
-      dropdownRef.current &&
-      !dropdownRef.current.contains(event.target) &&
-      navbarRef.current &&
-      !navbarRef.current.contains(event.target)
-    ) {
-      setIsOpen(false); // Close the dropdown
-    }
-  };
+  if (location.pathname === "/login" || location.pathname === "/register")
+    return null;
 
-  // Add event listener to detect click outside when the component mounts
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-
-    // Cleanup event listener when the component unmounts
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
-  return location.pathname === "/login" ||
-    location.pathname === "/register" ? null : (
-    <nav ref={navbarRef} className="navbar">
-      <h1 className="company-title" onClick={() => navigate("/home")}>
+  return (
+    <nav className="flex justify-between items-center rounded-xl mt-2 p-4 bg-white shadow-lg">
+      {/* Logo */}
+      <h1
+        className="flex items-center gap-2 text-xl font-bold cursor-pointer"
+        onClick={() => navigate("/home")}
+      >
         <img
           src="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico"
-          href="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico"
-          className="logo"
+          alt="Logo"
+          className="w-8 h-8 rounded-full"
         />
         VIP Travel
       </h1>
-      <div
-        className={`ham-icon ${isOpen ? "active" : ""}`}
-        onClick={() => toggleMenu()}
-      >
-        <div className="line"></div>
-        <div className="line"></div>
-        <div className="line"></div>
-      </div>
-      <div ref={dropdownRef} className={`nav-menu ${isOpen ? "active" : ""}`}>
+
+      {/* Hamburger / Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="md:hidden">
+            <span className="hamburger-icon flex flex-col gap-1">
+              <span className="w-6 h-0.5 bg-black"></span>
+              <span className="w-6 h-0.5 bg-black"></span>
+              <span className="w-6 h-0.5 bg-black"></span>
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="flex flex-col min-w-[180px]"
+        >
+          {!(location.pathname === "/profile") && (
+            <DropdownMenuItem onClick={() => navigate("/profile")}>
+              Profile
+            </DropdownMenuItem>
+          )}
+          {isAuthenticated && !(location.pathname === "/my-account") && (
+            <DropdownMenuItem onClick={() => navigate("/my-account")}>
+              My Account
+            </DropdownMenuItem>
+          )}
+          {isAuthorized && !(location.pathname === "/admin-dashboard") && (
+            <DropdownMenuItem onClick={() => navigate("/admin-dashboard")}>
+              Admin Dashboard
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Desktop links */}
+      <div className="hidden md:flex gap-4 items-center">
         {!(location.pathname === "/profile") && (
-          <button
-            id="profile-btn"
-            className="nav-link"
-            onClick={() => navigate("/profile")}
-          >
+          <Button variant="ghost" onClick={() => navigate("/profile")}>
             Profile
-          </button>
+          </Button>
         )}
-          {!(location.pathname === "/my-account") && isAuthenticated && (
-          <button
-            className="nav-link"
-            onClick={() => navigate("/my-account")}
-          >
+        {isAuthenticated && !(location.pathname === "/my-account") && (
+          <Button variant="ghost" onClick={() => navigate("/my-account")}>
             My Account
-          </button>
+          </Button>
         )}
-
-        {/* {!(location.pathname === "/my-trips") && (
-          <button className="nav-link" onClick={() => navigate("/my-trips")}>
-            My Trips
-          </button>
-        )} */}
-
-        {/* {!(location.pathname === "/my-payments") && (
-          <button className="nav-link" onClick={() => navigate("/my-payments")}>
-            My Payments
-          </button>
-        )} */}
-
-        {!(location.pathname === "/admin-dashboard") && isAuthorized && (
-          <button
-            className="nav-link"
-            onClick={() => navigate("/admin-dashboard")}
-          >
+        {isAuthorized && !(location.pathname === "/admin-dashboard") && (
+          <Button variant="ghost" onClick={() => navigate("/admin-dashboard")}>
             Admin Dashboard
-          </button>
+          </Button>
         )}
-        {/* {!(location.pathname === "/history") && isAuthorized && (
-          <button className="nav-link" onClick={() => navigate("/history")}>
-            History
-          </button>
-        )} */}
-
-        {/* {!(location.pathname === "/form") && isAuthorized && (
-          <button className="nav-link" onClick={() => navigate("/form")}>
-            Forms
-          </button>
-        )} */}
-        {/* 
-        {!(location.pathname === "/add-bus") && isAuthorized && (
-          <button className="nav-link" onClick={() => navigate("/add-bus")}>
-            Add bus
-          </button>
-        )} */}
-
-        {/* {!(location.pathname === "/my-bookings") && isAuthenticated && (
-          <button className="nav-link" onClick={() => navigate("/my-bookings")}>
-            My Bookings
-          </button>
-        )} */}
-
-        {/* {!(location.pathname === "/black-list") && isAuthorized && (
-          <button className="nav-link" onClick={() => navigate("/black-list")}>
-            Black-list
-          </button>
-        )} */}
-        <button id="logout-btn" className="nav-link" onClick={handleLogout}>
+        <Button variant="ghost" onClick={handleLogout}>
           Logout
-        </button>
+        </Button>
       </div>
 
       {isLoading && <LoadingScreen />}
-
       <Overlay
         alertFlag={alertFlag}
         alertMessage={alertMessage}
@@ -185,5 +141,3 @@ function Navbar() {
     </nav>
   );
 }
-
-export default Navbar;

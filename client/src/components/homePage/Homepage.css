@@ -22,7 +22,6 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 100vw;
-  margin-top: var(--page-top-margin);
   min-height: var(--page-height);
   flex-grow: 1;
   user-select: none;

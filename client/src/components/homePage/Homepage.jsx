@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Homepage.css";
@@ -20,9 +20,7 @@ const Homepage = () => {
   const [allRoutes, setAllRoutes] = useState([]);
   const [route, setroute] = useState({});
   const [hasSearched, setHasSearched] = useState(false);
-
-
-  
+  const tripRefs = useRef([]);
 
   const popularRoutes = [
     { id: 1, route: "Cairo to E-JUST" },
@@ -31,21 +29,24 @@ const Homepage = () => {
 
   const handleSearch = async () => {
     setIsLoading(true);
-  setFilteredTrips([]);
-  setHasSearched(true);
+    setFilteredTrips([]);
+    setHasSearched(true);
     try {
-      console.log(allRoutes)
+      console.log(allRoutes);
       const route = allRoutes.find(
-          r => r.source === pickupPoint && r.destination === arrivalPoint
+        (r) => r.source === pickupPoint && r.destination === arrivalPoint
       );
-      console.log(route)
-      if(!route){
+      console.log(route);
+      if (!route) {
       }
-      setroute(route)
+      setroute(route);
 
-      const res = await axios.post(`${backEndUrl}/trip/get-trip`, {routeId:route.route_id, date:date});
-      console.log(res.data.data)
-      
+      const res = await axios.post(`${backEndUrl}/trip/get-trip`, {
+        routeId: route.route_id,
+        date: date,
+      });
+      console.log(res.data.data);
+
       // if (Array.isArray(res.data.data)) {
       //   const filtered = res.data.data.filter(
       //     (trip) =>
@@ -55,9 +56,9 @@ const Homepage = () => {
       //   console.log(filtered)
       // setFilteredTrips(filtered);
       //   }
-    setFilteredTrips(res.data.data);
+      setFilteredTrips(res.data.data);
     } catch (error) {
-  setFilteredTrips([]);
+      setFilteredTrips([]);
     } finally {
       setIsLoading(false);
     }
@@ -83,37 +84,45 @@ const Homepage = () => {
     return `${hour12}:${minute} ${period}`;
   };
 
-  return (
-    <div className="home-page">
-      <Hero />
-      <SearchBar
-        pickupPoint={pickupPoint}
-        arrivalPoint={arrivalPoint}
-        date={date}
-        setPickupPoint={setPickupPoint}
-        setArrivalPoint={setArrivalPoint}
-        setDate={setDate}
-        onSearch={handleSearch}
-        setAllRoutes={setAllRoutes} 
-      />
-      {/* <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} /> */}
-      <Trips
-  trips={filteredTrips}
-  isLoading={isLoading}
-  onSeePassengers={() => {}}
-  onBook={(trip) => {
-    navigate("/reserve", {
-      state: {
-        trip,
-        route,
-      },
-    });
-  }}
-  convertTo12HourFormat={convertTo12HourFormat}
-  route={route}
-  hasSearched={hasSearched}
-/>
+  useEffect(() => {
+    if (filteredTrips.length > 0) {
+      tripRefs.current[0]?.scrollIntoView({ behavior: "smooth" }); // scroll to first trip
+    }
+  }, [filteredTrips]);
 
+  return (
+    <div className="flex flex-col items-center justify-start mt-10 gap-8 min-h-screen">
+      <Hero />
+      <div className="flex flex-col items-center justify-center gap-7">
+        <SearchBar
+          pickupPoint={pickupPoint}
+          arrivalPoint={arrivalPoint}
+          date={date}
+          setPickupPoint={setPickupPoint}
+          setArrivalPoint={setArrivalPoint}
+          setDate={setDate}
+          onSearch={handleSearch}
+          setAllRoutes={setAllRoutes}
+        />
+        {/* <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} /> */}
+        <Trips
+          trips={filteredTrips}
+          isLoading={isLoading}
+          onSeePassengers={() => {}}
+          onBook={(trip) => {
+            navigate("/reserve", {
+              state: {
+                trip,
+                route,
+              },
+            });
+          }}
+          convertTo12HourFormat={convertTo12HourFormat}
+          route={route}
+          hasSearched={hasSearched}
+          tripRefs={tripRefs}
+        />
+      </div>
     </div>
   );
 };
