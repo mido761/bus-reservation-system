@@ -2,7 +2,6 @@
 .dashboard-wrapper {
   min-height: 100vh;
   width: 100%;
-  padding-top: var(--nav-bar-height);
   display: flex;
   flex-direction: row;
   background-color: #f5f7fa;
