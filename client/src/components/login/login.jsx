@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import Overlay from "../overlayScreen/overlay";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -36,12 +37,18 @@ export default function Login() {
 
         setTimeout(() => {
           setIsLoading(false);
-          setAlertMessage("✅ Login successful");
-          setAlertFlag(true);
+          toast.success("Login successful", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }, 500);
 
         setTimeout(() => {
-          setAlertFlag(false);
           navigate("/home");
         }, 2000);
       }
@@ -53,19 +60,24 @@ export default function Login() {
 
       setTimeout(() => {
         setIsLoading(false);
-        setAlertMessage(`❌ ${message}`);
-        setAlertFlag(true);
+        toast.error(`${message}`, {
+          position: "top-center",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }, 500);
-
-      setTimeout(() => {
-        setAlertFlag(false);
-      }, 2000);
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
+      <ToastContainer position="top-center" autoClose={2500} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       <CardForm title="Login" onSubmit={handleSubmit}>
+        {/* ...existing code... */}
         <Input
           type="email"
           placeholder="Email"
@@ -100,14 +112,6 @@ export default function Login() {
         </div>
       </CardForm>
 
-      {/* Dialog for alert messages */}
-      {alertFlag && (
-        <Overlay
-          alertFlag={alertFlag}
-          alertMessage={alertMessage}
-          setAlertFlag={setAlertFlag}
-        />
-      )}
     </div>
   );
 }
