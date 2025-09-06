@@ -19,7 +19,7 @@ function ForgotPassword() {
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [verificationFlag, setVerificationFlag] = useState(false);
+  const [verificationFlag, setVerificationFlag] = useState(true);
 
   const navigate = useNavigate();
 

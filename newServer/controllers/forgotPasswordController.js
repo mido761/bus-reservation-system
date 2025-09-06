@@ -6,8 +6,8 @@
 
 import crypto from "crypto";
 import bcrypt from "bcrypt";
-import User from "../models/user.js";
-import nodemailer from "nodemailer";
+import pool from "../db.js";
+import { sendMail } from "../utils/nodeMailer.js";
 
 /**
  * @function generateVerificationCode
@@ -16,9 +16,8 @@ import nodemailer from "nodemailer";
  * @returns {number} Six digit verification code
  */
 function generateVerificationCode() {
-  return Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit code
+  return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit code
 }
-
 
 export async function forgotPassword(req, res) {
   const { email } = req.body;
@@ -54,36 +53,162 @@ export async function forgotPassword(req, res) {
     console.error("Forgot password error:", error);
     res.status(500).json({ message: "Server error" });
   }
-};
+}
 
-
-export async function resetPassword(req, res) {
-  const { email, otp, password } = req.body;
-  const verificationCode = otp.join("");
+// POST /auth/request-reset
+// app.post("/auth/request-reset", async (req, res) => {
+export async function requestReset(req, res) {
+  const { email } = req.body;
 
   try {
-    const user = await User.findOne({
+    // find user
+    const user = await pool.query(
+      "SELECT user_id FROM users WHERE email = $1",
+      [email]
+    );
+    if (user.rows.length === 0) {
+      return res.status(200).json({ message: "This email does not exist!" });
+    }
+
+    const userId = user.rows[0].user_id;
+
+    // generate 6-digit OTP
+    const otp = generateVerificationCode();
+    // hash OTP with SHA-256
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    // optional: delete old OTPs
+    await pool.query("DELETE FROM password_resets WHERE user_id = $1", [
+      userId,
+    ]);
+
+    // store OTP in DB (plain or hashed)
+    await pool.query(
+      "INSERT INTO password_resets (user_id, otp_code, expires_at) VALUES ($1, $2, $3)",
+      [userId, hashedOtp, expiresAt]
+    );
+
+    // send OTP
+    sendMail(
       email,
-      verificationCode,
-      verificationCodeExpires: { $gt: Date.now() },
-    });
+      "Your Password Reset OTP",
+      `Your OTP is ${otp}. It expires in 5 minutes.`
+    );
 
-    if (!user)
-      return res.status(400).json({ message: "Invalid or expired verification code" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await User.findByIdAndUpdate(user._id, {
-      $set: { password: hashedPassword },
-      $unset: { verificationCode: 1, verificationCodeExpires: 1 },
-    });
-
-    res.json({ message: "Password reset successfully" });
-  } catch (error) {
-    console.error("Reset password error:", error);
-    res.status(500).json({ message: "Server error" });
+    return res.status(200).json({ message: "OTP code has been sent" });
+  } catch (err) {
+    console.error("Error sending OTP!", err);
+    return res.status(500).json({ message: "Failed to send OTP code!" });
   }
-};
+}
+
+// POST /auth/reset-password
+export async function resetPassword(req, res) {
+  const { email, otp, newPassword } = req.body;
+  console.log(email, otp, newPassword )
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // find user
+    const user = await client.query("SELECT user_id FROM users WHERE email = $1", [
+      email,
+    ]);
+
+    if (user.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "Invalid request" });
+    }
+
+    const userId = user.rows[0].user_id;
+
+    // check OTP
+    const result = await client.query(
+      "SELECT otp_code, expires_at FROM password_resets WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1",
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "No OTP found" });
+    }
+
+    const entry = result.rows[0];
+
+    if (entry.expires_at < new Date()) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "OTP expired" });
+    }
+
+    if (entry.expires_at < new Date()) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "OTP expired" });
+    }
+
+    const hashedInputOtp = crypto
+      .createHash("sha256")
+      .update(otp)
+      .digest("hex");
+
+    if (entry.otp_code !== hashedInputOtp) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    // hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // update user password
+    await client.query("UPDATE users SET password = $1 WHERE user_id = $2", [
+      hashedPassword,
+      userId,
+    ]);
+
+    // delete used OTP
+    await client.query("DELETE FROM password_resets WHERE user_id = $1", [
+      userId,
+    ]);
+
+    await client.query("COMMIT");
+    return res.status(201).json({ message: "Password reset successfully" });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error updating password!", err);
+    return res.status(500).json({ message: "Failed to reset password!" });
+  }
+}
+
+// export async function resetPassword(req, res) {
+//   const { email, otp, password } = req.body;
+//   const verificationCode = otp.join("");
+
+//   try {
+//     const user = await User.findOne({
+//       email,
+//       verificationCode,
+//       verificationCodeExpires: { $gt: Date.now() },
+//     });
+
+//     if (!user)
+//       return res
+//         .status(400)
+//         .json({ message: "Invalid or expired verification code" });
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//     await User.findByIdAndUpdate(user._id, {
+//       $set: { password: hashedPassword },
+//       $unset: { verificationCode: 1, verificationCodeExpires: 1 },
+//     });
+
+//     res.json({ message: "Password reset successfully" });
+//   } catch (error) {
+//     console.error("Reset password error:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// }
 
 /**
  * @function resendVerificationCode
@@ -130,5 +255,4 @@ export async function resendVerificationCode(req, res) {
     console.error("Resend code error:", error);
     res.status(500).json({ message: "Server error" });
   }
-};
-
+}

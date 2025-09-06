@@ -5,7 +5,7 @@
  */
 
 import express from "express";
-import { forgotPassword, resetPassword, resendVerificationCode } from "../controllers/forgotPasswordController.js";
+import { forgotPassword, requestReset, resetPassword, resendVerificationCode } from "../controllers/forgotPasswordController.js";
 
 // ...existing code...
 
@@ -22,6 +22,7 @@ const router = express.Router();
  * @throws {500} For server errors
  */
 router.post("/forgot-password", forgotPassword);
+router.post("/request-reset", requestReset);
 
 /**
  * @route POST /api/reset-password

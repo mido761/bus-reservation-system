@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Overlay from "../overlayScreen/overlay";
 import Verification from "../signup/verification";
@@ -20,7 +20,7 @@ function ResetPassword({ email }) {
   // const email = state?.email || ""; // Get email from navigation state
   const [verificationFlag, setVerificationFlag] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  //   const inputRefs = useRef([]);
+  const inputRefs = useRef([]);
   const [alertFlag, setAlertFlag] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -54,6 +54,34 @@ function ResetPassword({ email }) {
       setError(""); // Clear the error if password is valid
     }
   };
+  const handleChange = (index, e) => {
+    const value = e.target.value.replace(/\D/, ""); // Allow only digits
+    if (!value) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Move to next input if not the last one
+    if (index < otp.length - 1 && value) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === "Backspace") {
+      const newOtp = [...otp];
+      if (!newOtp[index] && index > 0) {
+        inputRefs.current[index - 1].focus();
+      }
+      newOtp[index] = "";
+      setOtp(newOtp);
+    }
+
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevents form submission
+    }
+  };
 
   const handleSubmit = () => {};
 
@@ -62,14 +90,33 @@ function ResetPassword({ email }) {
     passwordValidation(password);
   }, [password]);
 
-  if (!verificationFlag)
-    return <Verification setVerificationFlag={setVerificationFlag} />;
+  // if (!verificationFlag)
+  //   return <Verification setVerificationFlag={setVerificationFlag} />;
 
   return (
-    <div className="w-full flex items-center justify-center min-h-screen bg-background">
+    <div className="w-full flex flex-col items-center justify-center min-h-screen bg-background">
       <CardForm title="Reset Password" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-medium">Enter OTP</p>
+          <div className="flex flex-row gap-2">
+            {otp.map((digit, index) => (
+              <Input
+                key={index}
+                type="text"
+                name="otp"
+                maxLength="1"
+                value={digit}
+                onChange={(e) => handleChange(index, e)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                ref={(el) => (inputRefs.current[index] = el)}
+                className="w-9 h-9 text-center text-lg"
+              />
+            ))}
+          </div>
+        </div>
+
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">New Password</Label>
           <Input
             type={passwordVisible ? "text" : "password"}
             id="password"
@@ -120,13 +167,23 @@ function ResetPassword({ email }) {
           )}
         </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            "Reset password"
-          )}
-        </Button>
+        <div className="flex gap-6">
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Save password"
+            )}
+          </Button>
+
+          <Button type="button" variant="outline" className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Resend code"
+            )}
+          </Button>
+        </div>
       </CardForm>
       <Overlay
         alertFlag={alertFlag}
