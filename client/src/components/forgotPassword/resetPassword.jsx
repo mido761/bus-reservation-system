@@ -85,6 +85,45 @@ function ResetPassword({ email }) {
       e.preventDefault(); // Prevents form submission
     }
   };
+
+  const handleResendCode = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${backEndUrl}/api//resend-otp`,
+        { email },
+        { withCredentials: true }
+      );
+
+      if (response.status === 201) {
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage(
+            <p>
+              <br /> New OTP code has been sent.
+            </p>
+          );
+          setAlertFlag(true);
+        }, 1000);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+          setIsLoading(false);
+
+          // localStorage.setItem("verificationToken", result.data.token);
+        }, 2500);
+      }
+    } catch (err) {
+      console.error(err);
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage(err.response?.data?.message || "An error occurred.");
+        setAlertFlag(true);
+      }, 1000);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -109,12 +148,12 @@ function ResetPassword({ email }) {
         setTimeout(() => {
           setAlertFlag(false);
           // localStorage.setItem("verificationToken", result.data.token);
-          navigate("/login")
+          navigate("/login");
           setVerificationFlag(false);
         }, 2500);
       }
     } catch (err) {
-      console.error(err)
+      console.error(err);
       setTimeout(() => {
         setIsLoading(false);
         setAlertMessage(err.response?.data?.message || "An error occurred.");
@@ -223,6 +262,7 @@ function ResetPassword({ email }) {
             variant="outline"
             className="w-full"
             disabled={isLoading}
+            onClick={handleResendCode}
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

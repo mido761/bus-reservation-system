@@ -16,7 +16,7 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [alertFlag, setAlertFlag] = useState(false);
+  const [alertFlag, setAlertFlag] = useState(true);
   const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [verificationFlag, setVerificationFlag] = useState(false);

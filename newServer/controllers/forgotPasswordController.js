@@ -188,6 +188,83 @@ export async function resetPassword(req, res) {
   }
 }
 
+// helper to hash OTP
+function hashOtp(otp) {
+  return crypto.createHash("sha256").update(otp).digest("hex");
+}
+
+export async function resendOtp(req, res) {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: "Email is required" });
+
+  try {
+    // check if there's already a reset entry for this email
+    const { rows: user } = await pool.query(
+      `SELECT user_id FROM users
+       WHERE email = $1`,
+      [email]
+    );
+    const userId = user[0].user_id;
+
+    const { rows } = await pool.query(
+      `SELECT * FROM password_resets 
+       WHERE user_id = $1 
+       ORDER BY created_at DESC 
+       LIMIT 1`,
+      [userId]
+    );
+    const entry = rows[0];
+
+    if (!entry) {
+      return res
+        .status(400)
+        .json({ error: "No reset request found for this email" });
+    }
+
+    const now = new Date();
+
+    // enforce cooldown (e.g., 60 seconds)
+    if (entry.last_sent_at && now - entry.last_sent_at < 60 * 1000) {
+      return res
+        .status(429)
+        .json({ error: "Please wait before requesting another OTP" });
+    }
+
+    // enforce max resends (e.g., 3 times)
+    if (entry.resend_count >= 3) {
+      return res.status(429).json({ error: "Maximum resend attempts reached" });
+    }
+
+    // generate new OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = hashOtp(otp);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // valid 5 mins
+
+    // update existing record
+    await pool.query(
+      `UPDATE password_resets
+       SET otp_code = $1,
+           expires_at = $2,
+           last_sent_at = NOW(),
+           resend_count = resend_count + 1
+       WHERE id = $3`,
+      [hashedOtp, expiresAt, entry.id]
+    );
+
+    // send OTP (plain) to user
+    await sendMail(
+      email,
+      "Your OTP Code",
+      `Your OTP is ${otp}. It expires in 5 minutes.`
+    );
+
+    return res.status(201).json({ message: "OTP resent successfully" });
+  } catch (err) {
+    console.error("Resend OTP error:", err);
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
 // export async function resetPassword(req, res) {
 //   const { email, otp, password } = req.body;
 //   const verificationCode = otp.join("");
@@ -230,37 +307,37 @@ export async function resetPassword(req, res) {
  * @throws {404} If user not found
  * @throws {500} If email sending fails or other server error
  */
-export async function resendVerificationCode(req, res) {
-  const { email } = req.body;
+// export async function resendVerificationCode(req, res) {
+//   const { email } = req.body;
 
-  try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+//   try {
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const newCode = generateVerificationCode();
-    user.verificationCode = newCode;
-    user.verificationCodeExpires = Date.now() + 3600000; // 1 hour validity
-    await user.save();
+//     const newCode = generateVerificationCode();
+//     user.verificationCode = newCode;
+//     user.verificationCodeExpires = Date.now() + 3600000; // 1 hour validity
+//     await user.save();
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//       },
+//     });
 
-    const mailOptions = {
-      to: user.email,
-      subject: "Your New Password Reset Verification Code",
-      html: `<p>Your new verification code is: <strong>${newCode}</strong></p>`,
-    };
+//     const mailOptions = {
+//       to: user.email,
+//       subject: "Your New Password Reset Verification Code",
+//       html: `<p>Your new verification code is: <strong>${newCode}</strong></p>`,
+//     };
 
-    await transporter.sendMail(mailOptions);
+//     await transporter.sendMail(mailOptions);
 
-    res.json({ message: "New verification code sent to email" });
-  } catch (error) {
-    console.error("Resend code error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-}
+//     res.json({ message: "New verification code sent to email" });
+//   } catch (error) {
+//     console.error("Resend code error:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// }
