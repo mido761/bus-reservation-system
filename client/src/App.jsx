@@ -37,6 +37,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Reserve from "./components/Booking/reserve.jsx";
 import UserAccount from "./components/my-account/user-account.jsx";
 import Checkin from "./components/check-in/checkin.jsx";
+import Paymentstatus from "./components/paymentstatus/Paymentstatus.jsx";
+
 
 function App() {
   return (
@@ -99,6 +101,16 @@ function App() {
             <Auth>
               <Navbar />
               <Payment />
+              <Footer />
+            </Auth>
+          }
+        />
+        <Route
+          path="/payment-status"
+          element={
+            <Auth>
+              <Navbar />
+              <Paymentstatus/>
               <Footer />
             </Auth>
           }
