@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import Overlay from "../overlayScreen/overlay";
 import Verification from "../signup/verification";
 import CardForm from "@/components/ui/card-form"; // Reusable Card + Form wrapper
@@ -9,6 +10,8 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 function ResetPassword({ email }) {
   // const { state } = useLocation();
@@ -82,8 +85,46 @@ function ResetPassword({ email }) {
       e.preventDefault(); // Prevents form submission
     }
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${backEndUrl}/api/reset-password`,
+        { email, otp, password },
+        { withCredentials: true }
+      );
 
-  const handleSubmit = () => {};
+      if (response.status === 201) {
+        setTimeout(() => {
+          setIsLoading(false);
+          setAlertMessage(
+            <p>
+              <br /> Password reset was successfull
+            </p>
+          );
+          setAlertFlag(true);
+        }, 1000);
+
+        setTimeout(() => {
+          setAlertFlag(false);
+          // localStorage.setItem("verificationToken", result.data.token);
+          setVerificationFlag(true);
+        }, 2500);
+      }
+    } catch (err) {
+      console.error(err)
+      setTimeout(() => {
+        setIsLoading(false);
+        setAlertMessage(err.response?.data?.message || "An error occurred.");
+        setAlertFlag(true);
+      }, 1000);
+
+      setTimeout(() => {
+        setAlertFlag(false);
+      }, 2200);
+    }
+  };
 
   useEffect(() => {
     setError("");
@@ -176,7 +217,12 @@ function ResetPassword({ email }) {
             )}
           </Button>
 
-          <Button type="button" variant="outline" className="w-full" disabled={isLoading}>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isLoading}
+          >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

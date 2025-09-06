@@ -62,15 +62,18 @@ export async function requestReset(req, res) {
 
   try {
     // find user
-    const user = await pool.query(
+    const { rows: user } = await pool.query(
       "SELECT user_id FROM users WHERE email = $1",
       [email]
     );
-    if (user.rows.length === 0) {
-      return res.status(200).json({ message: "This email does not exist!" });
+    console.log(user);
+
+    if (user.length === 0) {
+      console.log(user);
+      return res.status(400).json({ message: "This email does not exist!" });
     }
 
-    const userId = user.rows[0].user_id;
+    const userId = user[0].user_id;
 
     // generate 6-digit OTP
     const otp = generateVerificationCode();
@@ -106,16 +109,17 @@ export async function requestReset(req, res) {
 
 // POST /auth/reset-password
 export async function resetPassword(req, res) {
-  const { email, otp, newPassword } = req.body;
-  console.log(email, otp, newPassword )
+  const { email, otp, password } = req.body;
+  console.log(email, otp, password);
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
 
     // find user
-    const user = await client.query("SELECT user_id FROM users WHERE email = $1", [
-      email,
-    ]);
+    const user = await client.query(
+      "SELECT user_id FROM users WHERE email = $1",
+      [email]
+    );
 
     if (user.rows.length === 0) {
       await client.query("ROLLBACK");
@@ -147,10 +151,14 @@ export async function resetPassword(req, res) {
       return res.status(400).json({ error: "OTP expired" });
     }
 
+    const otp_string = otp.join("");
     const hashedInputOtp = crypto
       .createHash("sha256")
-      .update(otp)
+      .update(otp_string)
       .digest("hex");
+
+    // console.log(otp, otp.join(""));
+    // console.log(entry.otp_code, hashedInputOtp);
 
     if (entry.otp_code !== hashedInputOtp) {
       await client.query("ROLLBACK");
@@ -158,7 +166,7 @@ export async function resetPassword(req, res) {
     }
 
     // hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // update user password
     await client.query("UPDATE users SET password = $1 WHERE user_id = $2", [
