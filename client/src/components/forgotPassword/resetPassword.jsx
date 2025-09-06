@@ -109,7 +109,8 @@ function ResetPassword({ email }) {
         setTimeout(() => {
           setAlertFlag(false);
           // localStorage.setItem("verificationToken", result.data.token);
-          setVerificationFlag(true);
+          navigate("/login")
+          setVerificationFlag(false);
         }, 2500);
       }
     } catch (err) {
