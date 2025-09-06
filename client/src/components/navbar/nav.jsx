@@ -61,7 +61,7 @@ export default function Navbar() {
     return null;
 
   return (
-    <nav className="flex justify-between items-center rounded-xl mt-2 p-4 bg-white shadow-lg">
+    <nav className="flex justify-between items-center w-full rounded-xl mt-2 p-4 bg-white shadow-lg">
       {/* Logo */}
       <h1
         className="flex items-center gap-2 text-xl font-bold cursor-pointer"
