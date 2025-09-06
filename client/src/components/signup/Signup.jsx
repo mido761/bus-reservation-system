@@ -172,7 +172,7 @@ function Signup() {
               className="absolute right-2 top-2 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? "👁️" : "👁️‍🗨️"}
+              {/* {showPassword ? "👁️" : "👁️‍🗨️"} */}
             </span>
           </div>
           {errors.password && password.length > 0 && (
