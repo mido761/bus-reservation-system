@@ -9,9 +9,10 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import LoadingScreen from "../loadingScreen/loadingScreen";
-import Overlay from "../overlayScreen/overlay";
 import InlineAuth from "../../InlineAuth";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -20,8 +21,6 @@ export default function Navbar() {
   const location = useLocation();
   const { isAuthenticated, isAuthorized } = InlineAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [alertFlag, setAlertFlag] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
 
   // Logout handler
   const handleLogout = async () => {
@@ -30,29 +29,37 @@ export default function Navbar() {
       const response = await axios.post(`${backEndUrl}/api/auth/logout`, null, {
         withCredentials: true,
       });
-      console.log("Logout response:", response);
       if (response.status === 200) {
         setTimeout(() => {
           setIsLoading(false);
-          setAlertMessage("Logged out successfully");
-          setAlertFlag(true);
+          toast.success("Logged out successfully", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }, 1000);
 
         setTimeout(() => {
-          setAlertFlag(false);
           navigate("/login");
         }, 2200);
       }
     } catch (error) {
       setTimeout(() => {
         setIsLoading(false);
-        setAlertMessage("Failed to log out");
-        setAlertFlag(true);
+        toast.error("Failed to log out", {
+          position: "top-center",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }, 1000);
-
-      setTimeout(() => {
-        setAlertFlag(false);
-      }, 2200);
       console.error("Logout failed:", error);
     }
   };
@@ -137,12 +144,8 @@ export default function Navbar() {
         )}
       </div>
 
-      {isLoading && <LoadingScreen />}
-      <Overlay
-        alertFlag={alertFlag}
-        alertMessage={alertMessage}
-        setAlertFlag={setAlertFlag}
-      />
+  {isLoading && <LoadingScreen />}
+  <ToastContainer position="top-center" autoClose={2500} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     </nav>
   );
 }
