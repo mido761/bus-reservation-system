@@ -31,7 +31,7 @@ import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
 import Stops from "./components/admin-dashboard/Stops/stops.jsx";
 import Bus from "./components/admin-dashboard/Bus/bus.jsx";
 import AdminDashboard from "./components/admin-dashboard/admin-dashboard.jsx";
-import LandingPage from "./components/LandingPage/landingpage.jsx";
+import LandingPage from "./components/landingPageNew/LandingPageNew.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Reserve from "./components/Booking/reserve.jsx";

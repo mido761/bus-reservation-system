@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import Header from "../landingPageNew/Header";
 import LoadingScreen from "../loadingScreen/loadingScreen";
 import InlineAuth from "../../InlineAuth";
 import axios from "axios";
@@ -66,9 +67,12 @@ export default function Navbar() {
 
   if (location.pathname === "/login" || location.pathname === "/register")
     return null;
+
+  if (location.pathname === "/") return <Header />;
+
   <ToastContainer
     position="top-center"
-    autoClose={2500}    
+    autoClose={2500}
     hideProgressBar={false}
     newestOnTop={true}
     closeOnClick
@@ -78,7 +82,7 @@ export default function Navbar() {
     pauseOnHover
   />;
   return (
-    <nav className="sticky md:top-0 top-2 flex justify-between items-center h-[50px] w-[90%] md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none text-white bg-primary shadow-lg">
+    <nav className="sticky md:top-0 top-2 w-full flex flex-row items-center justify-between z-50 bg-white/95 backdrop-blur-sm shadow-lg md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none">
       {/* Logo */}
       <h1
         className="flex items-center gap-2 text-xlfont-bold cursor-pointer"
@@ -148,7 +152,7 @@ export default function Navbar() {
         )}
 
         {isAuthenticated && (
-          <Button variant="ghost" onClick={handleLogout}>
+          <Button onClick={handleLogout}>
             Logout
           </Button>
         )}

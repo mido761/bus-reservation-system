@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Homepage.css";
-import Hero from "./Hero";
+import Hero from "../landingPageNew/Hero";
 import SearchBar from "./SearchBar";
 
 import PopularRoutes from "./PopularRoutes";
@@ -91,10 +91,10 @@ const Homepage = () => {
   }, [filteredTrips]);
 
   return (
-    <div className="flex flex-col items-center justify-start mt-10 gap-8 min-h-screen">
+    <div className="flex flex-col items-center justify-start">
       <Hero />
       <div className="flex flex-col items-center justify-center gap-7">
-        <SearchBar
+        {/* <SearchBar
           pickupPoint={pickupPoint}
           arrivalPoint={arrivalPoint}
           date={date}
@@ -103,25 +103,27 @@ const Homepage = () => {
           setDate={setDate}
           onSearch={handleSearch}
           setAllRoutes={setAllRoutes}
-        />
+        /> */}
         {/* <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} /> */}
-        <Trips
-          trips={filteredTrips}
-          isLoading={isLoading}
-          onSeePassengers={() => {}}
-          onBook={(trip) => {
-            navigate("/reserve", {
-              state: {
-                trip,
-                route,
-              },
-            });
-          }}
-          convertTo12HourFormat={convertTo12HourFormat}
-          route={route}
-          hasSearched={hasSearched}
-          tripRefs={tripRefs}
-        />
+        {filteredTrips.length && (
+          <Trips
+            trips={filteredTrips}
+            isLoading={isLoading}
+            onSeePassengers={() => {}}
+            onBook={(trip) => {
+              navigate("/reserve", {
+                state: {
+                  trip,
+                  route,
+                },
+              });
+            }}
+            convertTo12HourFormat={convertTo12HourFormat}
+            route={route}
+            hasSearched={hasSearched}
+            tripRefs={tripRefs}
+          />
+        )}
       </div>
     </div>
   );
