@@ -123,7 +123,7 @@ const Payment = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
+    <div className="flex items-center justify-center m-auto">
       <Card className="w-full max-w-lg mx-auto p-2">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Confirm Your Booking</CardTitle>

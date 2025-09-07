@@ -1,13 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { CalendarDays, MapPin, Users } from "lucide-react";
+import { Loader2, CalendarDays, MapPin, Users } from "lucide-react";
 // import heroImage from "@/assets/hero-bus.jpg";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const Hero = () => {
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
+
+const Hero = ({
+  pickupPoint,
+  arrivalPoint,
+  date,
+  setPickupPoint,
+  setArrivalPoint,
+  setDate,
+  onSearch,
+  setAllRoutes,
+}) => {
+  const [pickupOptions, setPickupOptions] = useState([]);
+  const [arrivalOptions, setArrivalOptions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    axios
+      .get(`${backEndUrl}/route/get-routes`)
+      .then((res) => {
+        const routes = res.data || [];
+        console.log(res);
+        setPickupOptions([...new Set(routes.map((r) => r.source))]);
+        setArrivalOptions([...new Set(routes.map((r) => r.destination))]);
+        setAllRoutes(routes);
+      })
+      .catch(() => {
+        setPickupOptions([]);
+        setArrivalOptions([]);
+      })
+      .finally(setIsLoading(false));
+  }, []);
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-hero overflow-hidden">
+    <section className="relative flex items-center justify-center bg-gradient-hero overflow-hidden">
       {/* Background Image with Overlay */}
       {/* <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -15,7 +55,7 @@ const Hero = () => {
           backgroundImage: `linear-gradient(135deg, rgba(33, 150, 243, 0.8), rgba(25, 118, 210, 0.9)), url(${heroImage})`,
         }}
       /> */}
-      
+
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center bg-background">
         <div className="max-w-4xl mx-auto">
@@ -23,37 +63,65 @@ const Hero = () => {
             Travel Made <span className="text-primary-light">Simple</span>
           </h1>
           <p className="text-xl md:text-2xl text-primary/90 mb-12 leading-relaxed">
-            Book your bus tickets instantly with comfortable rides and reliable service
+            Book your bus tickets instantly with comfortable rides and reliable
+            service
           </p>
-          
+
           {/* Booking Form */}
           <Card className="bg-white/95 backdrop-blur-sm p-8 shadow-lg max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary" />
                   From
                 </label>
-                <Input placeholder="Enter departure city" className="h-12" />
+                <Select value={pickupPoint} onValueChange={setPickupPoint}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Enter departure city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pickupOptions.length > 0 && pickupOptions.map((pickup, idx) => (
+                      <SelectItem key={idx} value={pickup}>
+                        {pickup}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary" />
                   To
                 </label>
-                <Input placeholder="Enter destination" className="h-12" />
+                <Select value={arrivalPoint} onValueChange={setArrivalPoint}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Enter destination" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {arrivalOptions.length > 0 && arrivalOptions.map((arrival, idx) => (
+                      <SelectItem key={idx} value={arrival}>
+                        {arrival}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <CalendarDays className="w-4 h-4 text-primary" />
                   Date
                 </label>
-                <Input type="date" className="h-12" />
+                <Input
+                  type="date"
+                  className="w-full"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
               </div>
-              
-              <div className="space-y-2">
+
+              {/* <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
                   <Users className="w-4 h-4 text-primary" />
                   Passengers
@@ -64,11 +132,20 @@ const Hero = () => {
                   <option value="3">3 Passengers</option>
                   <option value="4">4+ Passengers</option>
                 </select>
-              </div>
+              </div> */}
             </div>
-            
-            <Button variant="default" className="w-full mt-8 h-14 text-lg font-semibold shadow-soft">
-              Search Buses
+
+            <Button
+              variant="default"
+              className="w-full mt-8 h-14 text-lg font-semibold shadow-soft"
+              onClick={onSearch}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Search Trips"
+              )}
             </Button>
           </Card>
         </div>

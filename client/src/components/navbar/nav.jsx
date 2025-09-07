@@ -82,7 +82,7 @@ export default function Navbar() {
     pauseOnHover
   />;
   return (
-    <nav className="sticky md:top-0 top-2 w-full flex flex-row items-center justify-between z-50 bg-white/95 backdrop-blur-sm shadow-lg md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none">
+    <nav className="sticky md:top-0 top-2 w-3/4 md:w-full flex flex-row items-center justify-between z-50 bg-white/95 backdrop-blur-sm shadow-lg md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none">
       {/* Logo */}
       <h1
         className="flex items-center gap-2 text-xlfont-bold cursor-pointer"
@@ -99,11 +99,11 @@ export default function Navbar() {
       {/* Hamburger / Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="md:hidden hover:bg-transparent">
-            <span className="group hamburger-icon flex flex-col gap-1">
-              <span className="w-6 h-0.5 bg-white group-hover:bg-black"></span>
-              <span className="w-6 h-0.5 bg-white group-hover:bg-black"></span>
-              <span className="w-6 h-0.5 bg-white group-hover:bg-black"></span>
+          <Button variant="ghost" className="group md:hidden hover:bg-primary">
+            <span className=" hamburger-icon flex flex-col gap-1">
+              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
+              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
+              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
             </span>
           </Button>
         </DropdownMenuTrigger>

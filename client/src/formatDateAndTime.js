@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 
-const formatDateTime = (time="00:00:00", type='time', timeZone = 'UTC') => {
+const formatDateTime = (time="00:00:00", type='time', timeZone = 'EET') => {
   // Get today's date in ISO format (YYYY-MM-DD)
   const today = DateTime.now().toISODate();
 

@@ -98,7 +98,7 @@ function App() {
             <Auth>
               <Navbar />
               <SeatSelection />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -109,7 +109,7 @@ function App() {
             <Auth>
               <Navbar />
               <Payment />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -119,7 +119,7 @@ function App() {
             <Auth>
               <Navbar />
               <Paymentstatus />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -139,7 +139,7 @@ function App() {
             <Auth>
               <Navbar />
               <Reserve />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -150,7 +150,7 @@ function App() {
             <Auth>
               <Navbar />
               <PaymentSuccess />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -161,12 +161,12 @@ function App() {
             <Auth>
               <Navbar />
               <TicketSummary />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
-        <Route path="/reserve" element={<Reserve />} />
-        <Route
+        {/* <Route path="/reserve" element={<Reserve />} /> */}
+        {/* <Route
           path="/add-bus"
           element={
             <Auth requireAdmin={true}>
@@ -175,7 +175,7 @@ function App() {
               <Footer />
             </Auth>
           }
-        />
+        /> */}
 
         <Route
           path="/my-trips"

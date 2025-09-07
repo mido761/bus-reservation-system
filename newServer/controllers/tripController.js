@@ -30,7 +30,9 @@ const getUserTrips = async (req, res) => {
     trips.status,
     trips.price,
     route.source,
-    route.destination
+    route.destination,
+    route.distance,
+    route.estimated_duration
   FROM trips
   JOIN booking 
     ON trips.trip_id = booking.trip_id
@@ -61,8 +63,11 @@ const getTrip = async (req, res) => {
     }
 
     const getTrips = `
-      SELECT * FROM trips 
-      WHERE route_id = $1 AND "date" = $2;
+      SELECT *
+      FROM trips t
+      JOIN route r
+        ON t.route_id = r.route_id 
+      WHERE t.route_id = $1 AND t.date = $2;
     `;
 
     // Format date to YYYY-MM-DD
