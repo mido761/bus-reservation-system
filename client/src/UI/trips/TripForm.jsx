@@ -1,57 +1,104 @@
 import React from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 const TripForm = ({ formData, routes, handleChange, handleSubmit }) => {
   return (
-    <form action="" onSubmit={handleSubmit} className="add-form">
-      <h2>Add Trip</h2>
-
-      {/* <label htmlFor="buses">
-          Available Buses
-          <select name="busIds" id="buses" multiple onChange={handleChange}>
-            {Array.isArray(availableBuses) && availableBuses.map((bus) => (
-              <option key={bus._id} value={bus._id}>
-                {bus.plateNumber}
-              </option>
-            ))}
-          </select>
-        </label> */}
-
-      <label htmlFor="routes">
-        Routes
-        <select
-          name="routeId"
-          id="routes"
-          onChange={(e) => {
-            handleChange(e);
-          }}
+    <Card className="shadow-lg rounded-xl border border-gray-200">
+      <CardHeader>
+        <CardTitle className="text-2xl font-semibold">Add Trip</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <option value="default">Choose Route</option>
-          {Array.isArray(routes) &&
-            routes.map((route) => (
-              <option key={route.route_id} value={route.route_id}>
-                {route.source} ---- {route.destination}
-              </option>
-            ))}
-        </select>
-      </label>
+          {/* Route Selection */}
+          <div className="flex flex-col">
+            <Label htmlFor="routeId">Route</Label>
+            <Select
+              value={formData.routeId}
+              onValueChange={(value) =>
+                handleChange({ target: { name: "routeId", value } })
+              }
+            >
+              <SelectTrigger className="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <SelectValue placeholder="Select Route" />
+              </SelectTrigger>
+              <SelectContent className="bg-white rounded-lg shadow-lg">
+                {Array.isArray(routes) &&
+                  routes.map((route) => (
+                    <SelectItem key={route.route_id} value={route.route_id}>
+                      {route.source} → {route.destination}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <label>
-        Departure Date
-        <input type="date" name="date" value={formData.date} onChange={handleChange} />
-      </label>
+          {/* Departure Date */}
+          <div className="flex flex-col">
+            <Label htmlFor="date">Departure Date</Label>
+            <Input
+              id="date"
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
 
-      <label>
-        Departure Time
-        <input type="time" name="departureTime" value={formData.departureTime} onChange={handleChange} />
-      </label>
+          {/* Departure Time */}
+          <div className="flex flex-col">
+            <Label htmlFor="departureTime">Departure Time</Label>
+            <Input
+              id="departureTime"
+              type="time"
+              name="departureTime"
+              value={formData.departureTime}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
 
-      <label>
-        Arrival Time
-        <input type="time" name="arrivalTime" value={formData.arrivalTime} onChange={handleChange} />
-      </label>
+          {/* Arrival Time */}
+          <div className="flex flex-col">
+            <Label htmlFor="arrivalTime">Arrival Time</Label>
+            <Input
+              id="arrivalTime"
+              type="time"
+              name="arrivalTime"
+              value={formData.arrivalTime}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
 
-      <button type="submit">Add Trip</button>
-    </form>
+          {/* Submit Button */}
+          <div className="col-span-full flex justify-end">
+            <Button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-6 py-2 shadow-md transition"
+            >
+              Add Trip
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 
