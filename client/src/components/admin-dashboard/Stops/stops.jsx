@@ -3,7 +3,8 @@ import axios from "axios"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { toast } from "react-toastify" // or use shadcn's toast if you prefer
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 import LoadingScreen from "../../loadingScreen/loadingScreen"
 import Overlay from "../../overlayScreen/overlay"
@@ -14,18 +15,21 @@ const Stops = () => {
   const [stops, setStops] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-  // new stop state
   const [newStop, setNewStop] = useState({
     stopName: "",
     location: "",
   })
 
-  // fetch stops
+  // Fetch stops
   const fetchStops = async () => {
     try {
       setIsLoading(true)
       const { data } = await axios.get(`${backEndUrl}/stop/get-stops`)
       setStops(data)
+
+      if (data.length === 0) {
+        toast.info("No stops available yet.")
+      }
     } catch (err) {
       toast.error(err?.response?.data?.message || "Error fetching stops!")
     } finally {
@@ -33,7 +37,7 @@ const Stops = () => {
     }
   }
 
-  // add stop
+  // Add stop
   const addStop = async (e) => {
     e.preventDefault()
     try {
@@ -55,6 +59,18 @@ const Stops = () => {
 
   return (
     <div className="space-y-6">
+      {/* Toast container */}
+      <ToastContainer
+      position="top-center"
+      autoClose={2000}
+      hideProgressBar={true}
+      newestOnTop={true}
+      closeOnClick
+      pauseOnHover
+      draggable
+      theme="light"
+    />
+
       {/* Add Stop Form */}
       <Card>
         <CardHeader>

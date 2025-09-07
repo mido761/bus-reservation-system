@@ -5,16 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import LoadingScreen from "../../loadingScreen/loadingScreen";
-import Overlay from "../../overlayScreen/overlay";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Route = () => {
   const [stops, setStops] = useState([]);
   const [routes, setRoutes] = useState([]);
-  const [alert, setAlert] = useState({ flag: false, message: "" });
   const [isLoading, setIsLoading] = useState(false);
 
   const [newRoute, setNewRoute] = useState({
@@ -31,25 +31,29 @@ const Route = () => {
     position: 0,
   });
 
-  // Fetch all stops
+  // Fetch stops
   const fetchStops = async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
       setStops(data);
     } catch (err) {
-      setAlert({ flag: true, message: err?.response?.data?.message || "Error fetching stops" });
+      toast.error(err?.response?.data?.message || "Error fetching stops", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fetch all routes with stops
+  // Fetch routes with stops
   const fetchRoutes = async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(`${backEndUrl}/route/get-routes-with-stops`);
 
+      // Group stops by route
       const groupedRoutes = data.routes.reduce((acc, curr) => {
         let route = acc.find((r) => r.route_id === curr.route_id);
         if (!route) {
@@ -72,7 +76,10 @@ const Route = () => {
 
       setRoutes(groupedRoutes);
     } catch (err) {
-      setAlert({ flag: true, message: err?.response?.data?.message || "Error fetching routes" });
+      toast.error(err?.response?.data?.message || "Error fetching routes", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -89,11 +96,11 @@ const Route = () => {
     try {
       setIsLoading(true);
       await axios.post(`${backEndUrl}/route/add-route`, newRoute);
-      setAlert({ flag: true, message: "Route added successfully!" });
+      toast.success("Route added successfully!", { position: "top-center", autoClose: 2000 });
       setNewRoute({ source: "", destination: "", distance: "", estimatedDuration: "", stops: [], isActive: true });
       fetchRoutes();
     } catch (err) {
-      setAlert({ flag: true, message: err?.response?.data?.message || "Error adding route!" });
+      toast.error(err?.response?.data?.message || "Error adding route!", { position: "top-center", autoClose: 2000 });
     } finally {
       setIsLoading(false);
     }
@@ -105,11 +112,11 @@ const Route = () => {
     try {
       setIsLoading(true);
       await axios.post(`${backEndUrl}/route/link-route-stop`, { routeId, ...linkData });
-      setAlert({ flag: true, message: "Stop linked successfully!" });
+      toast.success("Stop linked successfully!", { position: "top-center", autoClose: 2000 });
       setLinkData({ stopId: "", position: 0 });
       fetchRoutes();
     } catch (err) {
-      setAlert({ flag: true, message: err?.response?.data?.message || "Error linking stop!" });
+      toast.error(err?.response?.data?.message || "Error linking stop!", { position: "top-center", autoClose: 2000 });
     } finally {
       setIsLoading(false);
     }
@@ -222,12 +229,11 @@ const Route = () => {
         </CardContent>
       </Card>
 
+      {/* Loading */}
       {isLoading && <LoadingScreen />}
-      <Overlay
-        alertFlag={alert.flag}
-        alertMessage={alert.message}
-        setAlertFlag={(flag) => setAlert({ ...alert, flag })}
-      />
+
+      {/* Toastify container */}
+      <ToastContainer />
     </div>
   );
 };

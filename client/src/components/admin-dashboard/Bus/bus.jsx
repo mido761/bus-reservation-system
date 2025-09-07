@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { toast } from "react-toastify"
 
 import LoadingScreen from "../../loadingScreen/loadingScreen"
-import Overlay from "../../overlayScreen/overlay"
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
@@ -18,11 +17,12 @@ const Bus = () => {
     capacity: "",
   })
 
+  // Fetch all buses
   const fetchBuses = async () => {
     try {
       setIsLoading(true)
       const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`)
-      setBuses(data.buses)
+      setBuses(data.buses || [])
     } catch (err) {
       toast.error(err?.response?.data?.message || "Error fetching buses!")
     } finally {
@@ -30,12 +30,13 @@ const Bus = () => {
     }
   }
 
+  // Add a new bus
   const addBus = async (e) => {
     e.preventDefault()
     try {
       setIsLoading(true)
       await axios.post(`${backEndUrl}/bus/add-bus`, newBus)
-      toast.success("Bus added successfully!")
+      toast.success("✅ Bus added successfully!")
       setNewBus({ plateNumber: "", capacity: "" })
       fetchBuses()
     } catch (err) {
@@ -54,7 +55,7 @@ const Bus = () => {
       {/* Add Bus Form */}
       <Card className="shadow-lg rounded-xl">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">Add Bus</CardTitle>
+          <CardTitle className="text-xl font-semibold">➕ Add Bus</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={addBus} className="space-y-4">
@@ -94,7 +95,7 @@ const Bus = () => {
       {/* Bus List */}
       <Card className="shadow-lg rounded-xl">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">Bus List</CardTitle>
+          <CardTitle className="text-xl font-semibold">🚌 Bus List</CardTitle>
         </CardHeader>
         <CardContent>
           {buses.length === 0 ? (
@@ -104,7 +105,7 @@ const Bus = () => {
               {buses.map((bus) => (
                 <li
                   key={bus.bus_id}
-                  className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                  className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
                 >
                   <div className="font-medium">
                     {bus.plate_number} — {bus.capacity} seats
@@ -136,7 +137,6 @@ const Bus = () => {
       </Card>
 
       {isLoading && <LoadingScreen />}
-      <Overlay />
     </div>
   )
 }

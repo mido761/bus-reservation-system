@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 
 import Stop from "./Stops/stops";
@@ -19,15 +19,16 @@ const AdminDashboard = () => {
   const [buses, setBuses] = useState([]);
   const [trips, setTrips] = useState([]);
 
-  // Handlers
+  // Active page state
+  const [activePage, setActivePage] = useState("trip");
+
+  // Handlers for adding data
   const addStop = (stop) => setStops((prev) => [...prev, stop]);
   const addRoute = (route) => setRoutes((prev) => [...prev, route]);
   const addBus = (bus) => setBuses((prev) => [...prev, bus]);
   const addTrip = (trip) => setTrips((prev) => [...prev, trip]);
 
-  // Page state
-  const [activePage, setActivePage] = useState("trip");
-
+  // Render selected page
   const renderPage = () => {
     switch (activePage) {
       case "stop":
@@ -37,61 +38,58 @@ const AdminDashboard = () => {
       case "bus":
         return <Bus buses={buses} onAddBus={addBus} />;
       case "trip":
-        return (
-          <Schedule
-            buses={buses}
-            routes={routes}
-            trips={trips}
-            onAddTrip={addTrip}
-          />
-        );
+        return <Schedule buses={buses} routes={routes} trips={trips} onAddTrip={addTrip} />;
       default:
         return <div className="text-center py-6">Select a page from sidebar</div>;
     }
   };
 
-  const SidebarMenu = ({ isMobile = false }) => (
-    <nav className="space-y-2">
-      <Button
-        variant={activePage === "trip" ? "default" : "ghost"}
-        className="w-full justify-start"
-        onClick={() => setActivePage("trip")}
-      >
-        🚍 Trips
-      </Button>
-      <Button
-        variant={activePage === "route" ? "default" : "ghost"}
-        className="w-full justify-start"
-        onClick={() => setActivePage("route")}
-      >
-        🛣 Routes
-      </Button>
-      <Button
-        variant={activePage === "stop" ? "default" : "ghost"}
-        className="w-full justify-start"
-        onClick={() => setActivePage("stop")}
-      >
-        📍 Stops
-      </Button>
-      <Button
-        variant={activePage === "bus" ? "default" : "ghost"}
-        className="w-full justify-start"
-        onClick={() => setActivePage("bus")}
-      >
-        🚌 Buses
-      </Button>
-      {isMobile && (
-        <Button variant="destructive" className="w-full" onClick={() => navigate("/")}>⬅ Back Home</Button>
-      )}
-    </nav>
-  );
+  // Sidebar menu component
+  const SidebarMenu = ({ isMobile = false }) => {
+    const menuItems = [
+      { key: "trip", label: "🚍 Trips" },
+      { key: "route", label: "🛣 Routes" },
+      { key: "stop", label: "📍 Stops" },
+      { key: "bus", label: "🚌 Buses" },
+    ];
+
+    return (
+      <nav className="space-y-2">
+        {menuItems.map((item) =>
+          isMobile ? (
+            <SheetClose key={item.key} asChild>
+              <Button
+                variant={activePage === item.key ? "default" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActivePage(item.key)}
+              >
+                {item.label}
+              </Button>
+            </SheetClose>
+          ) : (
+            <Button
+              key={item.key}
+              variant={activePage === item.key ? "default" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => setActivePage(item.key)}
+            >
+              {item.label}
+            </Button>
+          )
+        )}
+      
+      </nav>
+    );
+  };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header */}
       <header className="w-full border-b bg-white shadow-sm px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={() => navigate("/")}>⬅ Home</Button>
+          <Button variant="ghost" onClick={() => navigate("/home")}>
+            ⬅ Home
+          </Button>
           <h1 className="text-lg font-bold">Admin Panel</h1>
         </div>
 
@@ -102,7 +100,7 @@ const AdminDashboard = () => {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-64">
+          <SheetContent side="left" className="w-64 p-4">
             <SidebarMenu isMobile />
           </SheetContent>
         </Sheet>
@@ -110,7 +108,7 @@ const AdminDashboard = () => {
 
       {/* Main Layout */}
       <div className="flex flex-1">
-        {/* Sidebar (hidden on mobile) */}
+        {/* Sidebar (desktop) */}
         <aside className="hidden lg:block w-64 border-r bg-gray-50 p-4">
           <SidebarMenu />
         </aside>
@@ -122,8 +120,6 @@ const AdminDashboard = () => {
           </Card>
         </main>
       </div>
-
-     
     </div>
   );
 };

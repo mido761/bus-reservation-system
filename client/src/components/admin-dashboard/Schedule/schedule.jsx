@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import LoadingScreen from "../../loadingScreen/loadingScreen";
-import Overlay from "../../overlayScreen/overlay";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import TripForm from "../../../UI/trips/tripForm";
 import TripList from "../../../UI/trips/TripList";
 import { handleDel } from "../../../handlers/handleDel";
 import { handleEdit } from "../../../handlers/handleEdit";
+import LoadingScreen from "../../loadingScreen/loadingScreen";
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const AddTrip = () => {
-  // State
   const [trips, setTrips] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [alert, setAlert] = useState({ flag: false, message: "" });
-
   const [formData, setFormData] = useState({
     routeId: "",
     date: "",
@@ -23,44 +23,52 @@ const AddTrip = () => {
     arrivalTime: "",
   });
 
-  // Handlers
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Fetch trips
   const fetchTrips = async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(`${backEndUrl}/trip/get-trips`);
       setTrips(data);
     } catch (err) {
-      setAlert({ flag: true, message: err?.response?.data?.message || "Error fetching trips" });
+      toast.error(err?.response?.data?.message || "Error fetching trips", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Fetch routes
   const fetchRoutes = async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(`${backEndUrl}/route/get-routes`);
       setRoutes(data);
     } catch (err) {
-      setAlert({ flag: true, message: err?.response?.data?.message || "Error fetching routes" });
+      toast.error(err?.response?.data?.message || "Error fetching routes", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Add a new trip
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       await axios.post(`${backEndUrl}/trip/add-trip`, formData);
       setTrips((prev) => [...prev, formData]);
-      setAlert({ flag: true, message: "Trip added successfully!" });
-      fetchTrips();
+      toast.success("Trip added successfully!", { position: "top-center", autoClose: 2000 });
       // Reset form
       setFormData({
         routeId: "",
@@ -68,15 +76,17 @@ const AddTrip = () => {
         departureTime: "",
         arrivalTime: "",
       });
+      fetchTrips();
     } catch (err) {
-      setAlert({ flag: true, message: err?.response?.data?.message || "Error adding trip" });
+      toast.error(err?.response?.data?.message || "Error adding trip", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     } finally {
       setIsLoading(false);
-      setTimeout(() => setAlert({ flag: false, message: "" }), 2200);
     }
   };
 
-  // Fetch data on mount
   useEffect(() => {
     fetchRoutes();
     fetchTrips();
@@ -116,19 +126,20 @@ const AddTrip = () => {
             handleEdit={handleEdit}
             setTrips={setTrips}
             setIsLoading={setIsLoading}
-            setAlertMessage={(msg) => setAlert({ flag: true, message: msg })}
-            setAlertFlag={(flag) => setAlert((prev) => ({ ...prev, flag }))}
+            showToast={(msg, type = "success") =>
+              type === "success"
+                ? toast.success(msg, { position: "top-center", autoClose: 2000 })
+                : toast.error(msg, { position: "top-center", autoClose: 2000 })
+            }
           />
         </CardContent>
       </Card>
 
-      {/* Loading & Alerts */}
+      {/* Loading Overlay */}
       {isLoading && <LoadingScreen />}
-      <Overlay
-        alertFlag={alert.flag}
-        alertMessage={alert.message}
-        setAlertFlag={(flag) => setAlert((prev) => ({ ...prev, flag }))}
-      />
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 };
