@@ -248,7 +248,7 @@ async function book(req, res) {
       await client.query("ROLLBACK");
       return res.status(400).json({
         message:
-          "You have a pending booking. Complete it before booking another seat!",
+          "Complete pending booking first!",
         booking: checkBooking,
       });
     }

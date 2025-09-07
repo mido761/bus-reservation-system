@@ -66,7 +66,17 @@ export default function Navbar() {
 
   if (location.pathname === "/login" || location.pathname === "/register")
     return null;
-
+  <ToastContainer
+    position="top-center"
+    autoClose={2500}    
+    hideProgressBar={false}
+    newestOnTop={true}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+  />;
   return (
     <nav className="sticky md:top-0 top-2 flex justify-between items-center h-[50px] w-[90%] md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none text-white bg-primary shadow-lg">
       {/* Logo */}
@@ -144,8 +154,7 @@ export default function Navbar() {
         )}
       </div>
 
-  {isLoading && <LoadingScreen />}
-  <ToastContainer position="top-center" autoClose={2500} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      {isLoading && <LoadingScreen />}
     </nav>
   );
 }

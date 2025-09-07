@@ -15,16 +15,25 @@ const Reserve = () => {
   const [showModal, setShowModal] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState("");
-  const [showPendingModal, setShowPendingModal] = useState({ show: false, booking: null });
+  const [showPendingModal, setShowPendingModal] = useState({
+    show: false,
+    booking: null,
+  });
   const { toast } = useToast();
   useEffect(() => {
     const fetchStops = async () => {
       try {
-        const res = await axios.get(`${backEndUrl}/stop/get-stops-route/${route?.route_id}`);
+        const res = await axios.get(
+          `${backEndUrl}/stop/get-stops-route/${route?.route_id}`
+        );
         setStops(res.data.stops);
       } catch (err) {
         setStops([]);
-        toast({ title: "Error", description: "Failed to fetch stops.", variant: "destructive" });
+        toast({
+          title: "Error",
+          description: "Failed to fetch stops.",
+          variant: "destructive",
+        });
       }
     };
     if (route?.route_id) fetchStops();
@@ -33,7 +42,11 @@ const Reserve = () => {
   const handleConfiremreserve = () => {
     if (!selectedStop) {
       setBookingError("");
-      toast({ title: "Select a stop", description: "Please select a stop before confirming.", variant: "destructive" });
+      toast({
+        title: "Select a stop",
+        description: "Please select a stop before confirming.",
+        variant: "destructive",
+      });
       return;
     }
     setBookingError("");
@@ -63,7 +76,10 @@ const Reserve = () => {
       );
       const booking = res.data.booked;
       setShowModal(false);
-      toast({ title: "Reservation Confirmed", description: "Your reservation was successful!" });
+      toast({
+        title: "Reservation Confirmed",
+        description: "Your reservation was successful!",
+      });
       navigate("/payment", { state: { booking, trip, route } });
     } catch (err) {
       if (err.response && err.response.status === 400) {
@@ -72,10 +88,18 @@ const Reserve = () => {
         setBookingError(err.response.data.message);
         setShowModal(false);
         setShowPendingModal({ show: true, booking });
-        toast({ title: "Pending Booking", description: err.response.data.message, variant: "destructive" });
+        toast({
+          title: "Pending Booking",
+          description: err.response.data.message,
+          variant: "destructive",
+        });
       } else {
         setBookingError("Booking failed. Please try again.");
-        toast({ title: "Error", description: "Booking failed. Please try again.", variant: "destructive" });
+        toast({
+          title: "Error",
+          description: "Booking failed. Please try again.",
+          variant: "destructive",
+        });
       }
     } finally {
       setIsBooking(false);
@@ -83,19 +107,30 @@ const Reserve = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
+    <div className="flex items-center justify-center m-auto">
       <Card className="w-full max-w-lg mx-auto p-2">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">Reserve Your Trip</CardTitle>
+          <CardTitle className="text-center text-2xl">
+            Reserve Your Trip
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {trip ? (
             <>
               <div className="mb-4 space-y-1">
-                <div><strong>Route:</strong> {route.source} → {route.destination}</div>
-                <div><strong>Date:</strong> {formatDateTime(trip.date, "date")}</div>
-                <div><strong>Departure:</strong> {formatDateTime(trip.departure_time)}</div>
-                <div><strong>Arrival:</strong> {formatDateTime(trip.arrival_time)}</div>
+                <div>
+                  <strong>Route:</strong> {route.source} → {route.destination}
+                </div>
+                <div>
+                  <strong>Date:</strong> {formatDateTime(trip.date, "date")}
+                </div>
+                <div>
+                  <strong>Departure:</strong>{" "}
+                  {formatDateTime(trip.departure_time)}
+                </div>
+                <div>
+                  <strong>Arrival:</strong> {formatDateTime(trip.arrival_time)}
+                </div>
               </div>
               <div className="mb-4">
                 <div className="font-semibold mb-2">Select a stop:</div>
@@ -103,58 +138,98 @@ const Reserve = () => {
                   {stops.map((stop) => (
                     <Button
                       key={stop.stop_id}
-                      variant={selectedStop?.stop_id === stop.stop_id ? "secondary" : "outline"}
+                      variant={
+                        selectedStop?.stop_id === stop.stop_id
+                          ? "secondary"
+                          : "outline"
+                      }
                       className="w-full flex items-center gap-2"
                       onClick={() => {
                         setSelectedStop(stop);
-                        toast({ title: "Stop Selected", description: stop.stop_name });
+                        toast({
+                          title: "Stop Selected",
+                          description: stop.stop_name,
+                        });
                       }}
                     >
-                      <span role="img" aria-label="stop">🚌</span>
+                      <span role="img" aria-label="stop">
+                        🚌
+                      </span>
                       <span className="font-semibold">{stop.stop_name}</span>
                     </Button>
                   ))}
                 </div>
                 {selectedStop && (
-                  <div className="mt-2 text-green-600 flex items-center gap-2">
-                    <span role="img" aria-label="selected">✅</span>
-                    You selected: <strong>{selectedStop.stop_name}</strong>
+                  <div className="mt-2 flex items-center gap-2 text-center">
+                    <span role="img" aria-label="selected">
+                      ✅
+                    </span>
+                    <pre>
+                      You selected: <strong className="text-blue-400">{selectedStop.stop_name}</strong>
+                    </pre>
                   </div>
                 )}
               </div>
-              <Button className="w-full mt-2" onClick={handleConfiremreserve} disabled={isBooking}>
+              <Button
+                className="w-full mt-2"
+                onClick={handleConfiremreserve}
+                disabled={isBooking}
+              >
                 {isBooking ? "Processing..." : "Confirm Reservation"}
               </Button>
               {/* Pending Booking Modal */}
               {showPendingModal.show && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-                  <Card className="max-w-md w-full p-4">
+                  <Card className="max-w-xs w-full p-4 text-center">
                     <CardHeader>
-                      <CardTitle className="text-lg">Pending Booking Found</CardTitle>
+                      <CardTitle className="text-lg text-center">
+                        Error While Booking
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="mb-2 text-destructive">{bookingError}</div>
-                      <div className="flex items-center gap-2 mb-4">
-                        <span role="img" aria-label="stop">🚌</span>
-                        <span className="font-semibold">{showPendingModal.booking.stop_name}</span>
-                        <span className="text-muted-foreground">{showPendingModal.booking.location}</span>
+                      <div className="mb-2 text-destructive">
+                        {bookingError}
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <span role="img" aria-label="stop">
+                          🚌
+                        </span>
+                        <span className="font-semibold">
+                          {showPendingModal.booking.stop_name}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {showPendingModal.booking.location}
+                        </span>
+                      </div>
+                      <div className="flex justify-center gap-2">
                         <Button
                           variant="default"
                           onClick={() => {
-                            toast({ title: "Reservation Completed", description: "Proceeding to payment." });
+                            toast({
+                              title: "Reservation Completed",
+                              description: "Proceeding to payment.",
+                            });
                             navigate("/payment", {
-                              state: { booking: showPendingModal.booking, trip, route },
+                              state: {
+                                booking: showPendingModal.booking,
+                                trip,
+                                route,
+                              },
                             });
                           }}
                         >
                           Complete Reservation
                         </Button>
-                        <Button variant="outline" onClick={() => {
-                          toast({ title: "Reservation Cancelled", description: "You cancelled the reservation." });
-                          navigate("/home");
-                        }}>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            toast({
+                              title: "Reservation Cancelled",
+                              description: "You cancelled the reservation.",
+                            });
+                            navigate("/home");
+                          }}
+                        >
                           Cancel
                         </Button>
                       </div>
@@ -167,26 +242,52 @@ const Reserve = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
                   <Card className="max-w-md w-full p-4">
                     <CardHeader>
-                      <CardTitle className="text-lg">Confirm Your Reservation</CardTitle>
+                      <CardTitle className="text-lg text-left">
+                        Confirm Your Reservation
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="mb-2">
-                        <div><strong>Route:</strong> {route.source} → {route.destination}</div>
-                        <div><strong>Date:</strong> {trip.date}</div>
-                        <div><strong>Departure:</strong> {formatDateTime(trip.departure_time)}</div>
-                        <div><strong>Arrival:</strong> {formatDateTime(trip.arrival_time)}</div>
-                        <div><strong>Selected Stop:</strong> {selectedStop?.stop_name} – {selectedStop?.location}</div>
+                        <div>
+                          <strong>Route:</strong> {route.source} →{" "}
+                          {route.destination}
+                        </div>
+                        <div>
+                          <strong>Date:</strong> {trip.date}
+                        </div>
+                        <div>
+                          <strong>Departure:</strong>{" "}
+                          {formatDateTime(trip.departure_time)}
+                        </div>
+                        <div>
+                          <strong>Arrival:</strong>{" "}
+                          {formatDateTime(trip.arrival_time)}
+                        </div>
+                        <div>
+                          <strong>Selected Stop:</strong>{" "}
+                          {selectedStop?.stop_name} – {selectedStop?.location}
+                        </div>
                       </div>
                       <div className="flex gap-2 mt-2">
-                        <Button variant="default" onClick={handleModalConfirm} disabled={isBooking}>
+                        <Button
+                          variant="default"
+                          onClick={handleModalConfirm}
+                          disabled={isBooking}
+                        >
                           {isBooking ? "Processing..." : "Confirm"}
                         </Button>
-                        <Button variant="outline" onClick={() => setShowModal(false)} disabled={isBooking}>
+                        <Button
+                          variant="outline"
+                          onClick={() => setShowModal(false)}
+                          disabled={isBooking}
+                        >
                           Cancel
                         </Button>
                       </div>
                       {bookingError && (
-                        <div className="text-destructive mt-2 font-medium">{bookingError}</div>
+                        <div className="text-destructive mt-2 font-medium">
+                          {bookingError}
+                        </div>
                       )}
                     </CardContent>
                   </Card>
@@ -194,7 +295,9 @@ const Reserve = () => {
               )}
             </>
           ) : (
-            <div className="text-center text-destructive">No trip selected.</div>
+            <div className="text-center text-destructive">
+              No trip selected.
+            </div>
           )}
         </CardContent>
       </Card>
