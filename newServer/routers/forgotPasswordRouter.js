@@ -5,7 +5,7 @@
  */
 
 import express from "express";
-import { forgotPassword, resetPassword, resendVerificationCode } from "../controllers/forgotPasswordController.js";
+import { requestReset, resetPassword, resendOtp } from "../controllers/forgotPasswordController.js";
 
 // ...existing code...
 
@@ -21,7 +21,8 @@ const router = express.Router();
  * @throws {404} If user email not found
  * @throws {500} For server errors
  */
-router.post("/forgot-password", forgotPassword);
+// router.post("/forgot-password", forgotPassword);
+router.post("/request-reset", requestReset);
 
 /**
  * @route POST /api/reset-password
@@ -49,6 +50,7 @@ router.post("/reset-password", resetPassword);
  * @throws {429} If too many resend attempts
  * @throws {500} For server errors
  */
-router.post("/resend-code", resendVerificationCode);
+// router.post("/resend-code", resendVerificationCode);
+router.post("/resend-otp", resendOtp);
 
 export default router;

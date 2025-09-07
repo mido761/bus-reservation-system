@@ -8,10 +8,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import Header from "../landingPageNew/Header";
 import LoadingScreen from "../loadingScreen/loadingScreen";
-import Overlay from "../overlayScreen/overlay";
 import InlineAuth from "../../InlineAuth";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -20,8 +22,6 @@ export default function Navbar() {
   const location = useLocation();
   const { isAuthenticated, isAuthorized } = InlineAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [alertFlag, setAlertFlag] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
 
   // Logout handler
   const handleLogout = async () => {
@@ -30,29 +30,37 @@ export default function Navbar() {
       const response = await axios.post(`${backEndUrl}/api/auth/logout`, null, {
         withCredentials: true,
       });
-      console.log("Logout response:", response);
       if (response.status === 200) {
         setTimeout(() => {
           setIsLoading(false);
-          setAlertMessage("Logged out successfully");
-          setAlertFlag(true);
+          toast.success("Logged out successfully", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }, 1000);
 
         setTimeout(() => {
-          setAlertFlag(false);
           navigate("/login");
         }, 2200);
       }
     } catch (error) {
       setTimeout(() => {
         setIsLoading(false);
-        setAlertMessage("Failed to log out");
-        setAlertFlag(true);
+        toast.error("Failed to log out", {
+          position: "top-center",
+          autoClose: 2500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }, 1000);
-
-      setTimeout(() => {
-        setAlertFlag(false);
-      }, 2200);
       console.error("Logout failed:", error);
     }
   };
@@ -60,11 +68,24 @@ export default function Navbar() {
   if (location.pathname === "/login" || location.pathname === "/register")
     return null;
 
+  if (location.pathname === "/") return <Header />;
+
+  <ToastContainer
+    position="top-center"
+    autoClose={2500}
+    hideProgressBar={false}
+    newestOnTop={true}
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss
+    draggable
+    pauseOnHover
+  />;
   return (
-    <nav className="flex justify-between items-center rounded-xl mt-2 p-4 bg-white shadow-lg">
+    <nav className="sticky md:top-0 top-2 w-3/4 md:w-full flex flex-row items-center justify-between z-50 bg-white/95 backdrop-blur-sm shadow-lg md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none">
       {/* Logo */}
       <h1
-        className="flex items-center gap-2 text-xl font-bold cursor-pointer"
+        className="flex items-center gap-2 text-xlfont-bold cursor-pointer"
         onClick={() => navigate("/home")}
       >
         <img
@@ -78,11 +99,11 @@ export default function Navbar() {
       {/* Hamburger / Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="md:hidden">
-            <span className="hamburger-icon flex flex-col gap-1">
-              <span className="w-6 h-0.5 bg-black"></span>
-              <span className="w-6 h-0.5 bg-black"></span>
-              <span className="w-6 h-0.5 bg-black"></span>
+          <Button variant="ghost" className="group md:hidden hover:bg-primary">
+            <span className=" hamburger-icon flex flex-col gap-1">
+              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
+              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
+              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
             </span>
           </Button>
         </DropdownMenuTrigger>
@@ -90,7 +111,7 @@ export default function Navbar() {
           align="end"
           className="flex flex-col min-w-[180px]"
         >
-          {!(location.pathname === "/profile") && (
+          {isAuthenticated && !(location.pathname === "/profile") && (
             <DropdownMenuItem onClick={() => navigate("/profile")}>
               Profile
             </DropdownMenuItem>
@@ -106,13 +127,15 @@ export default function Navbar() {
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          {isAuthenticated && (
+            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
       {/* Desktop links */}
       <div className="hidden md:flex gap-4 items-center">
-        {!(location.pathname === "/profile") && (
+        {isAuthenticated && !(location.pathname === "/profile") && (
           <Button variant="ghost" onClick={() => navigate("/profile")}>
             Profile
           </Button>
@@ -127,17 +150,15 @@ export default function Navbar() {
             Admin Dashboard
           </Button>
         )}
-        <Button variant="ghost" onClick={handleLogout}>
-          Logout
-        </Button>
+
+        {isAuthenticated && (
+          <Button onClick={handleLogout}>
+            Logout
+          </Button>
+        )}
       </div>
 
       {isLoading && <LoadingScreen />}
-      <Overlay
-        alertFlag={alertFlag}
-        alertMessage={alertMessage}
-        setAlertFlag={setAlertFlag}
-      />
     </nav>
   );
 }

@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Homepage.css";
-import Hero from "./Hero";
+import Hero from "../landingPageNew/Hero";
 import SearchBar from "./SearchBar";
-
 import PopularRoutes from "./PopularRoutes";
 import Trips from "./Trips";
+import AdditionalInfo from "./AdditionalInfo";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -32,7 +32,6 @@ const Homepage = () => {
     setFilteredTrips([]);
     setHasSearched(true);
     try {
-      console.log(allRoutes);
       const route = allRoutes.find(
         (r) => r.source === pickupPoint && r.destination === arrivalPoint
       );
@@ -45,8 +44,6 @@ const Homepage = () => {
         routeId: route.route_id,
         date: date,
       });
-      console.log(res.data.data);
-
       // if (Array.isArray(res.data.data)) {
       //   const filtered = res.data.data.filter(
       //     (trip) =>
@@ -91,10 +88,19 @@ const Homepage = () => {
   }, [filteredTrips]);
 
   return (
-    <div className="flex flex-col items-center justify-start mt-10 gap-8 min-h-screen">
-      <Hero />
-      <div className="flex flex-col items-center justify-center gap-7">
-        <SearchBar
+    <div className="flex flex-col items-center justify-start gap-8">
+      <Hero
+        pickupPoint={pickupPoint}
+        arrivalPoint={arrivalPoint}
+        date={date}
+        setPickupPoint={setPickupPoint}
+        setArrivalPoint={setArrivalPoint}
+        setDate={setDate}
+        onSearch={handleSearch}
+        setAllRoutes={setAllRoutes}
+      />
+      {/* <div className="flex flex-col items-center justify-center gap-7 m-4"> */}
+        {/* <SearchBar
           pickupPoint={pickupPoint}
           arrivalPoint={arrivalPoint}
           date={date}
@@ -103,26 +109,31 @@ const Homepage = () => {
           setDate={setDate}
           onSearch={handleSearch}
           setAllRoutes={setAllRoutes}
-        />
+        /> */}
         {/* <PopularRoutes routes={popularRoutes} onSelect={handleRouteSelect} /> */}
-        <Trips
-          trips={filteredTrips}
-          isLoading={isLoading}
-          onSeePassengers={() => {}}
-          onBook={(trip) => {
-            navigate("/reserve", {
-              state: {
-                trip,
-                route,
-              },
-            });
-          }}
-          convertTo12HourFormat={convertTo12HourFormat}
-          route={route}
-          hasSearched={hasSearched}
-          tripRefs={tripRefs}
-        />
-      </div>
+        {filteredTrips.length > 0 && (
+          <Trips
+            trips={filteredTrips}
+            isLoading={isLoading}
+            onSeePassengers={() => {}}
+            onBook={(trip) => {
+              navigate("/reserve", {
+                state: {
+                  trip,
+                  route,
+                },
+              });
+            }}
+            convertTo12HourFormat={convertTo12HourFormat}
+            route={route}
+            hasSearched={hasSearched}
+            tripRefs={tripRefs}
+          />
+        )}
+      {/* </div> */}
+
+      {/* Additional Information */}
+      <AdditionalInfo />
     </div>
   );
 };

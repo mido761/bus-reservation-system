@@ -31,12 +31,13 @@ import AdminRoute from "./components/admin-dashboard/Route/route.jsx";
 import Stops from "./components/admin-dashboard/Stops/stops.jsx";
 import Bus from "./components/admin-dashboard/Bus/bus.jsx";
 import AdminDashboard from "./components/admin-dashboard/admin-dashboard.jsx";
-import LandingPage from "./components/LandingPage/landingpage.jsx";
+import LandingPage from "./components/landingPageNew/LandingPageNew.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Reserve from "./components/Booking/reserve.jsx";
 import UserAccount from "./components/my-account/user-account.jsx";
 import Checkin from "./components/check-in/checkin.jsx";
+import Paymentstatus from "./components/paymentstatus/Paymentstatus.jsx";
 
 function App() {
   return (
@@ -49,7 +50,16 @@ function App() {
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/driver-list" element={<DriverList />} />
-        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Navbar />
+              <LandingPage />
+              <Footer />
+            </>
+          }
+        />
 
         {/* Protected Routes */}
         <Route
@@ -88,7 +98,7 @@ function App() {
             <Auth>
               <Navbar />
               <SeatSelection />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -99,7 +109,17 @@ function App() {
             <Auth>
               <Navbar />
               <Payment />
-              <Footer />
+              {/* <Footer /> */}
+            </Auth>
+          }
+        />
+        <Route
+          path="/payment-status"
+          element={
+            <Auth>
+              <Navbar />
+              <Paymentstatus />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -119,7 +139,7 @@ function App() {
             <Auth>
               <Navbar />
               <Reserve />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -130,7 +150,7 @@ function App() {
             <Auth>
               <Navbar />
               <PaymentSuccess />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
@@ -141,12 +161,12 @@ function App() {
             <Auth>
               <Navbar />
               <TicketSummary />
-              <Footer />
+              {/* <Footer /> */}
             </Auth>
           }
         />
-        <Route path="/reserve" element={<Reserve />} />
-        <Route
+        {/* <Route path="/reserve" element={<Reserve />} /> */}
+        {/* <Route
           path="/add-bus"
           element={
             <Auth requireAdmin={true}>
@@ -155,7 +175,7 @@ function App() {
               <Footer />
             </Auth>
           }
-        />
+        /> */}
 
         <Route
           path="/my-trips"

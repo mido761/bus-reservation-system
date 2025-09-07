@@ -8,6 +8,9 @@ import Overlay from "../overlayScreen/overlay";
 import CardForm from "@/components/ui/card-form"; // Reusable Card + Form wrapper
 import { Loader2 } from "lucide-react";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 // shadcn/ui imports
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,25 +84,33 @@ function Signup() {
       if (result.status === 201) {
         setTimeout(() => {
           setIsLoading(false);
-          setAlertMessage(
-            <p>
-              <strong>Registered successfully</strong> <br /> Check your email
-              for verification.
-            </p>
-          );
-          setAlertFlag(true);
+          toast.success("Registered successfully! Check your email for verification.", {
+            position: "top-center",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }, 1000);
 
         setTimeout(() => {
-          setAlertFlag(false);
           localStorage.setItem("verificationToken", result.data.token);
           setVerificationFlag(true);
         }, 2500);
       }
     } catch (err) {
       setIsLoading(false);
-      setAlertMessage(err.response?.data?.message || "An error occurred.");
-      setAlertFlag(true);
+      toast.error(err.response?.data?.message || "An error occurred.", {
+        position: "top-center",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
@@ -120,7 +131,9 @@ function Signup() {
 
   return (
     <div className="w-full flex items-center justify-center min-h-screen bg-background">
+      <ToastContainer position="top-center" autoClose={2500} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       <CardForm title="Sign Up" onSubmit={handleSubmit}>
+        {/* ...existing code... */}
         <div>
           <Label htmlFor="username">Username</Label>
           <Input
@@ -130,7 +143,7 @@ function Signup() {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-
+        {/* ...existing code... */}
         <div>
           <Label htmlFor="phoneNumber">Phone Number</Label>
           <Input
@@ -145,7 +158,7 @@ function Signup() {
             <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
           )}
         </div>
-
+        {/* ...existing code... */}
         <div>
           <Label htmlFor="email">Email</Label>
           <Input
@@ -158,7 +171,7 @@ function Signup() {
             <p className="text-red-500 text-xs">{errors.email}</p>
           )}
         </div>
-
+        {/* ...existing code... */}
         <div>
           <Label htmlFor="password">Password</Label>
           <div className="relative">
@@ -172,7 +185,7 @@ function Signup() {
               className="absolute right-2 top-2 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? "👁️" : "👁️‍🗨️"}
+              {/* {showPassword ? "👁️" : "👁️‍🗨️"} */}
             </span>
           </div>
           {errors.password && password.length > 0 && (
@@ -181,7 +194,7 @@ function Signup() {
             </pre>
           )}
         </div>
-
+        {/* ...existing code... */}
         {/* Gender Selection */}
         <div>
           <Label>Select Gender</Label>
@@ -205,9 +218,9 @@ function Signup() {
             <p className="text-red-500 text-sm">{errors.gender}</p>
           )}
         </div>
-
+        {/* ...existing code... */}
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Login"}
+          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign Up"}
         </Button>
         <p className="text-center text-sm">
           Already have an account?{" "}
@@ -216,15 +229,8 @@ function Signup() {
           </Link>
         </p>
       </CardForm>
-
-      {/* Dialog for alert messages */}
-      {alertFlag && (
-        <Overlay
-          alertFlag={alertFlag}
-          alertMessage={alertMessage}
-          setAlertFlag={setAlertFlag}
-        />
-      )}
+      {/* ...existing code... */}
+  {/* Overlay for alerts removed, errors now shown in toastify */}
     </div>
   );
 }

@@ -62,8 +62,9 @@ function ForgotPassword() {
     e.preventDefault();
     setIsLoading(true);
     try {
+      console.log(email)
       const response = await axios.post(
-        `${backEndUrl}/api/forgot-password`,
+        `${backEndUrl}/api/request-reset`,
         { email },
         { withCredentials: true }
       );
@@ -99,7 +100,7 @@ function ForgotPassword() {
   };
 
   if (verificationFlag)
-    return <ResetPassword verFalag={verificationFlag} />;
+    return <ResetPassword verFalag={verificationFlag} email={email} />;
 
   return (
     <div className="w-full flex items-center justify-center min-h-screen bg-background">
@@ -111,7 +112,7 @@ function ForgotPassword() {
             id="email"
             name="email"
             required
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 

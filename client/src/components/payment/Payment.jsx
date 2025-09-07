@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import PaymentType from "./paymenttype";
 import PaymentValid from "./paymentvalid";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import "./Payment.css";
 import axios from "axios";
-import LoadingScreen from "../loadingScreen/loadingScreen";
-import Overlay from "../overlayScreen/overlay";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Payment = () => {
@@ -60,49 +60,28 @@ const Payment = () => {
     capture: "Capture (Authorize + Capture)",
   };
 
+  // Step 1: User clicks Book Now, show confirmation modal
   const handlePaymentSubmit = (e) => {
     e.preventDefault();
-    setPendingEvent(e);
     setAlertMessage(
-      <div className="policy-popup">
-        <h2>Confirm Payment Method</h2>
-        <p>
-          You have selected:{" "}
-          <b>{paymentMethodLabels[paymentDetails.paymentMethod]}</b>
-        </p>
-        <div className="popup-btn-row">
-          <button className="popup-btn confirm" onClick={proceedPayment}>
-            Confirm
-          </button>
-          <button className="popup-btn cancel" onClick={cancelConfirm}>
-            Cancel
-          </button>
-        </div>
-      </div>
+      <PaymentValid
+        paymentMethodLabel={paymentMethodLabels[paymentDetails.paymentMethod]}
+        onConfirm={proceedPayment}
+        onClose={cancelConfirm}
+      />
     );
     setAlertFlag(true);
     setShowConfirm(true);
   };
 
   // Proceed with payment after confirmation
+  // Step 2: User confirms, button loads, toastify shows backend message, redirect to Paymob
   const proceedPayment = async (e) => {
     if (e) e.preventDefault();
     setShowConfirm(false);
     setAlertFlag(false);
-    setPaymentSuccess(true);
     setIsLoading(true);
     try {
-      // const req_user = await axios.get(`${backEndUrl}/auth`, {
-      //   withCredentials: true,
-      // });
-
-      // const userId = req_user.data.userId;
-      // const busId = req_user.data.busId;
-      console.log(booking);
-      console.log(payment);
-      console.log(trip);
-
-      // if(e === "standalone"){
       const res = await axios.post(
         `${backEndUrl}/payment/stand-alone-payment`,
         {
@@ -112,55 +91,27 @@ const Payment = () => {
         },
         { withCredentials: true }
       );
-      console.log(res.data);
-      // }
-
-      setTimeout(() => {
-        setIsLoading(false);
-        setAlertMessage(
-          <div className="payment-success-container">
-            <h1>✅ Successful Payment</h1>
-            <p>
-              Thank you for booking with us. <br /> <br />
-              You will receive a confirmation message shortly.
-            </p>
-          </div>
-        );
-        setAlertFlag(true);
-      }, 1000);
-
-      setTimeout(() => {
-        setAlertFlag(false);
-        // navigate(res.data.PAYMENT_URL);
-        window.location.href = res.data.PAYMENT_URL;
-      }, 2200);
+      // Show success toast immediately with backend message
+      toast.success("Redirecting to payment page", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setIsLoading(false);
+      window.location.href = res.data.PAYMENT_URL;
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        setTimeout(() => {
-          setIsLoading(false);
-          setAlertMessage(
-            <div className="payment-success-container">
-              <h1>⚠️ Payment Failed</h1>
-              <p>{error.response.data.message}</p>
-            </div>
-          );
-          setAlertFlag(true);
-        }, 1000);
-      } else {
-        console.error("An error occurred:", error);
-        setIsLoading(false);
-        setAlertMessage(
-          <div className="payment-success-container">
-            <h1>⚠️ Payment Failed</h1>
-            <p>{error.response.data.message}</p>
-          </div>
-        );
-        setAlertFlag(true);
-        setTimeout(() => {
-           setAlertFlag(false);
-          //  navigate('/home')
-        }, 3500);
-      }
+      setIsLoading(false);
+      toast.error((error.response?.data?.message || "An error occurred."), {
+        position: "top-center",
+        autoClose: 3500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -172,118 +123,32 @@ const Payment = () => {
   };
 
   return (
-    <div
-      className={`payment-container ${
-        paymentDetails.paymentMethod === "cash" ? "cash" : ""
-      }`}
-    >
-      <div className="payment-box-container">
-        <h1>Confirm Your Booking</h1>
-        <form className="payment-form" onSubmit={handlePaymentSubmit}>
-          {/* <div className="payment-method">
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="visa"
-                checked={paymentDetails.paymentMethod === "visa"}
-                onChange={(e) =>
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    paymentMethod: e.target.value,
-                  })
-                }
-              />
-              Visa
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="paymentMethod"
-                value="cash"
-                checked={paymentDetails.paymentMethod === "cash"}
-                onChange={(e) =>
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    paymentMethod: e.target.value,
-                  })
-                }
-              />
-              Cash
-            </label>
-          </div>
-
-          {paymentDetails.paymentMethod === "visa" && (
-            <>
-              <input
-                type="text"
-                placeholder="Card Number"
-                value={paymentDetails.cardNumber}
-                onChange={(e) =>
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    cardNumber: formatCardNumber(e.target.value),
-                  })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="Expiry Date (MM/YY)"
-                value={paymentDetails.cardExpiry}
-                onChange={(e) =>
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    cardExpiry: formatExpiryDate(e.target.value),
-                  })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="CVV"
-                value={paymentDetails.cardCvv}
-                onChange={(e) =>
-                  setPaymentDetails({
-                    ...paymentDetails,
-                    cardCvv: formatCvc(e.target.value),
-                  })
-                }
-                required
-                maxLength="3" // Limit to 3 characters
-                pattern="\d{3}" // Regex to validate exactly 3 digits
-                title="CVV must be exactly 3 numeric characters"
-              />
-            </>
-          )} */}
-
-          <PaymentType
-            paymentDetails={paymentDetails}
-            setPaymentDetails={setPaymentDetails}
-            setAlertMessage={setAlertMessage}
-            setAlertFlag={setAlertFlag}
-          />
-
-          <button type="submit" className="cta-button" >
-            Book Now
-          </button>
-        </form>
-        {isLoading && <LoadingScreen />}
-
-        {alertFlag && (
-          <div className="popup-overlay">
-            {typeof alertMessage === "string" ? (
-              <Overlay
-                alertFlag={alertFlag}
-                alertMessage={alertMessage}
-                setAlertFlag={setAlertFlag}
-              />
-            ) : (
-              alertMessage
-            )}
-          </div>
-        )}
-      </div>
+    <div className="flex items-center justify-center m-auto">
+      <Card className="w-full max-w-lg mx-auto p-2">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Confirm Your Booking</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" onSubmit={handlePaymentSubmit}>
+            <PaymentType
+              paymentDetails={paymentDetails}
+              setPaymentDetails={setPaymentDetails}
+              setAlertMessage={setAlertMessage}
+              setAlertFlag={setAlertFlag}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Processing..." : "Book Now"}
+            </Button>
+          </form>
+          {isLoading && <div className="text-center mt-4">Processing payment...</div>}
+          {/* Confirmation modal for payment method */}
+          {alertFlag && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+              {alertMessage}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
