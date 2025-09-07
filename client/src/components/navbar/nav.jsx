@@ -61,10 +61,10 @@ export default function Navbar() {
     return null;
 
   return (
-    <nav className="flex justify-between items-center w-full rounded-xl mt-2 p-4 bg-white shadow-lg">
+    <nav className="sticky md:top-0 top-2 flex justify-between items-center h-[50px] w-[90%] md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none text-white bg-primary shadow-lg">
       {/* Logo */}
       <h1
-        className="flex items-center gap-2 text-xl font-bold cursor-pointer"
+        className="flex items-center gap-2 text-xlfont-bold cursor-pointer"
         onClick={() => navigate("/home")}
       >
         <img
@@ -78,11 +78,11 @@ export default function Navbar() {
       {/* Hamburger / Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="md:hidden">
-            <span className="hamburger-icon flex flex-col gap-1">
-              <span className="w-6 h-0.5 bg-black"></span>
-              <span className="w-6 h-0.5 bg-black"></span>
-              <span className="w-6 h-0.5 bg-black"></span>
+          <Button variant="ghost" className="md:hidden hover:bg-transparent">
+            <span className="group hamburger-icon flex flex-col gap-1">
+              <span className="w-6 h-0.5 bg-white group-hover:bg-black"></span>
+              <span className="w-6 h-0.5 bg-white group-hover:bg-black"></span>
+              <span className="w-6 h-0.5 bg-white group-hover:bg-black"></span>
             </span>
           </Button>
         </DropdownMenuTrigger>
@@ -90,7 +90,7 @@ export default function Navbar() {
           align="end"
           className="flex flex-col min-w-[180px]"
         >
-          {!(location.pathname === "/profile") && (
+          {isAuthenticated && !(location.pathname === "/profile") && (
             <DropdownMenuItem onClick={() => navigate("/profile")}>
               Profile
             </DropdownMenuItem>
@@ -106,13 +106,15 @@ export default function Navbar() {
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          {isAuthenticated && (
+            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
       {/* Desktop links */}
       <div className="hidden md:flex gap-4 items-center">
-        {!(location.pathname === "/profile") && (
+        {isAuthenticated && !(location.pathname === "/profile") && (
           <Button variant="ghost" onClick={() => navigate("/profile")}>
             Profile
           </Button>
@@ -127,9 +129,12 @@ export default function Navbar() {
             Admin Dashboard
           </Button>
         )}
-        <Button variant="ghost" onClick={handleLogout}>
-          Logout
-        </Button>
+
+        {isAuthenticated && (
+          <Button variant="ghost" onClick={handleLogout}>
+            Logout
+          </Button>
+        )}
       </div>
 
       {isLoading && <LoadingScreen />}

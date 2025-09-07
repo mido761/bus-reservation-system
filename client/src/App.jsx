@@ -39,7 +39,6 @@ import UserAccount from "./components/my-account/user-account.jsx";
 import Checkin from "./components/check-in/checkin.jsx";
 import Paymentstatus from "./components/paymentstatus/Paymentstatus.jsx";
 
-
 function App() {
   return (
     <HashRouter basename="/">
@@ -51,7 +50,16 @@ function App() {
         <Route path="/register" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/driver-list" element={<DriverList />} />
-        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <Navbar />
+              <LandingPage />
+              <Footer />
+            </>
+          }
+        />
 
         {/* Protected Routes */}
         <Route
@@ -110,7 +118,7 @@ function App() {
           element={
             <Auth>
               <Navbar />
-              <Paymentstatus/>
+              <Paymentstatus />
               <Footer />
             </Auth>
           }

@@ -43,7 +43,7 @@ export default function SearchBar({
   }, []);
 
   return (
-    <div className="flex flex-col items-center max-w-md w-64 h-[fit-content] gap-7  justify-center p-4 bg-white shadow-md rounded-xl">
+    <div className="flex flex-col items-center max-w-md w-64 h-[fit-content] gap-4 justify-center p-4 bg-white shadow-lg rounded-xl">
       {/* Pickup Point */}
       <Select value={pickupPoint} onValueChange={setPickupPoint}>
         <SelectTrigger className="w-full">
