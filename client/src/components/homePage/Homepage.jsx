@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Homepage.css";
 import Hero from "../landingPageNew/Hero";
-import SearchBar from "./SearchBar";
-import PopularRoutes from "./PopularRoutes";
+// import SearchBar from "./SearchBar";
+// import PopularRoutes from "./PopularRoutes";
 import Trips from "./Trips";
 import AdditionalInfo from "./AdditionalInfo";
 
@@ -88,7 +88,7 @@ const Homepage = () => {
   }, [filteredTrips]);
 
   return (
-    <div className="flex flex-col items-center justify-start gap-8">
+    <div className="flex flex-col items-center justify-start gap-6">
       <Hero
         pickupPoint={pickupPoint}
         arrivalPoint={arrivalPoint}

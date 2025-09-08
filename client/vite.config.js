@@ -4,6 +4,8 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
+    host: "0.0.0.0", // allow access from other devices
+    port: 5173, // or whatever your dev port is
   },
   plugins: [],
   resolve: {

@@ -28,7 +28,6 @@ const Header = () => {
             />
             VIP Travel
           </h1>
-
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <a href="#home" className="hover:text-primary font-medium">
@@ -45,24 +44,23 @@ const Header = () => {
             </a>
           </nav>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" onClick={() => navigate("/login")}>
-              Sign In
-            </Button>
-            <Button onClick={() => navigate("/home")}>Book Now</Button>
-          </div>
 
-          {/* Mobile Menu */}
-          <div className="flex items-center gap-2 md:hidden">
-            {/* Always visible buttons */}
-            <Button size="sm" variant="outline" onClick={() => navigate("/login")}>
+          {/* CTA Button */}
+          <div className="flex flex-row items-center space-x-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/login")}
+            >
               Sign In
             </Button>
             <Button size="sm" onClick={() => navigate("/home")}>
               Book Now
             </Button>
+          </div>
 
+          {/* Mobile Menu */}
+          <div className="flex items-center gap-2 md:hidden">
             {/* Dropdown for links */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
