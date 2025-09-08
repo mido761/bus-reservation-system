@@ -23,6 +23,6 @@ router.get("/get-bus-bookings/:busId", getBusBookings);
 router.post("/book", book);
 router.post("/webhook", confirmBooking);
 router.put("/update-booking", updateBooking);
-router.delete("/cancel-booking", cancel);
+router.delete("/cancel-booking/:bookingId", cancel);
 
 export default router;
