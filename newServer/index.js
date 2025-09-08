@@ -246,15 +246,6 @@ const server = app.listen(PORT, () =>
 );
 
 
-// const options = {
-//   key: fs.readFileSync("certs/server.key"),
-//   cert: fs.readFileSync("certs/server.cert"),
-// };
-
-// https.createServer(options, app).listen(3000, () => {
-//   console.log("HTTPS server running at https://localhost:3000");
-// });
-
 // process.on("SIGINT", () => {
 //   console.log("Shutting down server...");
 //   server.close(() => {
