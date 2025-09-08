@@ -69,7 +69,10 @@ const Checkin = lazy(() => import("./components/check-in/checkin.jsx"));
 const Paymentstatus = lazy(() =>
   import("./components/paymentstatus/Paymentstatus.jsx")
 );
+const TermsOfService = lazy(() => import ("./components/policies/TermsOfService.jsx"));
+const PrivacyPolicy = lazy(() => import ("./components/policies/PrivacyPolicy.jsx"));
 
+const HelpSupport = lazy(() => import ("./components/policies/help_support.jsx"))
 function App() {
   return (
     <HashRouter basename="/">
@@ -84,6 +87,7 @@ function App() {
           <Route path="/register" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/driver-list" element={<DriverList />} />
+          
           <Route
             path="/"
             element={
@@ -96,6 +100,37 @@ function App() {
           />
 
           {/* Protected Routes */}
+
+          <Route
+            path="/help"
+            element={
+              <Auth>
+                <Navbar />
+                <HelpSupport />
+              </Auth>
+            }
+          />
+
+           <Route
+            path="/terms"
+            element={
+              <Auth>
+                <Navbar />
+                <TermsOfService />
+              </Auth>
+            }
+          />
+
+           <Route
+            path="/privacy"
+            element={
+              <Auth>
+                <Navbar />
+                <PrivacyPolicy />
+              </Auth>
+            }
+          />
+       
           <Route
             path="/my-account"
             element={

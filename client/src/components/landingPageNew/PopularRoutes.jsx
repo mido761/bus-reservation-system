@@ -1,7 +1,8 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, DollarSign } from "lucide-react";
+import { MapPin, Clock, Wallet } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const routes = [
   {
@@ -18,23 +19,11 @@ const routes = [
     price: "120 EGP",
     frequency: "2 times weekly",
   },
-    {
-      from: "Chicago",
-      to: "Detroit",
-      duration: "5h 45m",
-      price: "$38",
-      frequency: "4 times daily"
-    },
-    {
-      from: "Miami",
-      to: "Orlando",
-      duration: "3h 20m",
-      price: "$32",
-      frequency: "Every hour"
-    }
 ];
 
 const PopularRoutes = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -72,7 +61,7 @@ const PopularRoutes = () => {
                     {route.duration}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <DollarSign className="w-4 h-4" />
+                    <Wallet className="w-4 h-4" />
                     Starting from {route.price}
                   </div>
                 </div>
@@ -81,7 +70,11 @@ const PopularRoutes = () => {
                   <p className="text-xs text-muted-foreground mb-3">
                     {route.frequency}
                   </p>
-                  <Button variant="outline" className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => navigate("/home")}
+                  >
                     Book Now
                   </Button>
                 </div>
