@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 
 import MyTrips from "./MyTrips/mytrips";
 import MyPayments from "./myPayments/myPayments";
-import MyBookings from "./MyBookings/myBookings";
+import MyBookings from "./myBookings/myBookings";
 import Hero from "./Hero/hero";
 import Footer from "../footer/footer";
 
