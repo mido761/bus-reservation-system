@@ -7,6 +7,7 @@ import Auth from "./Auth.jsx";
 // Direct imports (shared across pages, should stay non-lazy)
 import Navbar from "./components/navbar/nav.jsx";
 import Footer from "./components/footer/footer.jsx";
+import Header from "./components/landingPageNew/Header.jsx";
 
 // Lazy-loaded components
 const DriverList = lazy(() => import("./components/driverlist/driverlist.jsx"));
@@ -73,6 +74,8 @@ const TermsOfService = lazy(() => import ("./components/policies/TermsOfService.
 const PrivacyPolicy = lazy(() => import ("./components/policies/PrivacyPolicy.jsx"));
 
 const HelpSupport = lazy(() => import ("./components/policies/help_support.jsx"))
+
+const About = lazy (() => import("./components/policies/about.jsx"))
 function App() {
   return (
     <HashRouter basename="/">
@@ -98,39 +101,47 @@ function App() {
               </>
             }
           />
-
-          {/* Protected Routes */}
-
           <Route
             path="/help"
             element={
-              <Auth>
-                <Navbar />
+              <>
+                <Header />
                 <HelpSupport />
-              </Auth>
+              </>
             }
           />
 
-           <Route
+          <Route
+            path="/about"
+            element={
+              <>
+                <Header />
+                <About />
+              </>
+            }
+          />
+
+          <Route
             path="/terms"
             element={
-              <Auth>
-                <Navbar />
+              <>
+                <Header />
                 <TermsOfService />
-              </Auth>
+              </>
             }
           />
 
-           <Route
+          <Route
             path="/privacy"
             element={
-              <Auth>
-                <Navbar />
+              <>
+                <Header />
                 <PrivacyPolicy />
-              </Auth>
+              </>
             }
           />
-       
+          {/* Protected Routes */}
+
           <Route
             path="/my-account"
             element={
