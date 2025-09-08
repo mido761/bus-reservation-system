@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button"; // ✅ Import Button
 import formatDateAndTime from "../../../formatDateAndTime";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -9,12 +10,12 @@ const statusStyles = {
   confirmed: "bg-green-100 text-green-800",
   cancelled: "bg-red-100 text-red-800",
   pending: "bg-blue-100 text-blue-800",
-  
 };
 
 const MyBookings = () => {
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
+  const [deletingId, setDeletingId] = useState(null); // ✅ Added state
 
   const fetchBookings = async () => {
     try {
@@ -27,6 +28,23 @@ const MyBookings = () => {
       console.error("Error fetching user bookings:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to delete this booking?")) return;
+
+    try {
+      setDeletingId(bookingId);
+      await axios.delete(`${backEndUrl}/booking/delete/${bookingId}`, {
+        withCredentials: true,
+      });
+      setBookings((prev) => prev.filter((b) => b.booking_id !== bookingId));
+    } catch (err) {
+      console.error("Error deleting booking:", err);
+      alert("Failed to delete booking. Please try again.");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -58,13 +76,15 @@ const MyBookings = () => {
             key={booking.booking_id || idx}
             className="shadow-sm hover:shadow-md transition p-4 rounded-lg"
           >
-           <CardHeader className="pb-2">
-  <CardTitle className="text-lg font-medium">{booking.source} → {booking.destination}</CardTitle>
-  <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-    <span>📅</span>
-    <span>{formatDateAndTime(booking.date, "date")}</span>
-  </div>
-</CardHeader>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-medium">
+                {booking.source} → {booking.destination}
+              </CardTitle>
+              <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                <span>📅</span>
+                <span>{formatDateAndTime(booking.date, "date")}</span>
+              </div>
+            </CardHeader>
 
             <CardContent className="space-y-2 text-sm text-gray-600">
               <div>
@@ -90,6 +110,18 @@ const MyBookings = () => {
               <div>
                 <strong>Last Update: </strong>
                 {formatDateAndTime(booking.updated_at, "dateTime")}
+              </div>
+
+              {/* Delete Button */}
+              <div className="pt-10 flex justify-center">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDelete(booking.booking_id)}
+                  disabled={deletingId === booking.booking_id}
+                >
+                  {deletingId === booking.booking_id ? "Deleting..." : "Delete"}
+                </Button>
               </div>
             </CardContent>
           </Card>
