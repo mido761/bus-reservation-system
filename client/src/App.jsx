@@ -7,6 +7,7 @@ import Auth from "./Auth.jsx";
 // Direct imports (shared across pages, should stay non-lazy)
 import Navbar from "./components/navbar/nav.jsx";
 import Footer from "./components/footer/footer.jsx";
+import Header from "./components/landingPageNew/Header.jsx";
 
 // Lazy-loaded components
 const DriverList = lazy(() => import("./components/driverlist/driverlist.jsx"));
@@ -107,7 +108,7 @@ function App() {
             path="/help"
             element={
               <Auth>
-                <Navbar />
+                <Header />
                 <HelpSupport />
               </Auth>
             }
@@ -117,7 +118,7 @@ function App() {
             path="/about"
             element={
               <Auth>
-                <Navbar />
+                <Header />
                 <About />
               </Auth>
             }
@@ -127,7 +128,7 @@ function App() {
             path="/terms"
             element={
               <Auth>
-                <Navbar />
+                <Header />
                 <TermsOfService />
               </Auth>
             }
@@ -137,7 +138,7 @@ function App() {
             path="/privacy"
             element={
               <Auth>
-                <Navbar />
+                <Header />
                 <PrivacyPolicy />
               </Auth>
             }
