@@ -1,5 +1,7 @@
 import { DateTime } from "luxon";
 import pool from "../db.js";
+import axios from "axios";
+
 
 // Booking Controller Template
 // Implement each function as needed for your business logic
@@ -338,7 +340,59 @@ async function updateBooking(req, res) {
 
 async function cancel(req, res) {
   // TODO: Cancel a booking
-  res.status(501).json({ message: "Not implemented" });
+ const bookingId = req.params.bookingId;
+  try {
+    //Query
+    const getBookingInfo = `
+    SELECT b.*, p.*
+    FROM booking b
+    JOIN payment p ON b.booking_id = p.booking_id
+    WHERE b.booking_id = $1;
+    `;
+
+    const { rows: booking } = await pool.query(getBookingInfo, [bookingId]);
+    console.log(booking)
+    console.log(booking[0].amount)
+
+    if (!booking) {
+      return res
+        .status(200)
+        .json({ message: "No booking found with this ID", booking: booking });
+    }
+    if(booking[0].captured_status === 'capture'){
+    const body = {
+      transaction_id: booking[0].transaction_id,
+      amount_cents: booking[0].amount * 100,  // still need the calculation for the fee
+      extras: { ee: 22 },
+      special_reference: `${booking[0].payment_id}`,
+      notification_url: `${process.env.BASE_URL}/payment/webhook`,
+      redirection_url: "http://localhost:5173/#/success",
+    };
+    const response = await axios.post(
+      "https://accept.paymob.com/api/acceptance/void_refund/refund",
+      body,
+      { headers: { Authorization: `Token ${process.env.SECRET_KEY}` } }
+    );
+
+    return res.status(200).json({
+      message: "refund sendsuccsfully!"
+    });
+    }
+    //if(booking.captured_status === "auth"){
+
+    // }
+     
+    return res
+      .status(400)
+      .json({ message: "Error cancel bookings"});
+    // const cancelBookingStatus = `
+    
+    // `;
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error cancel bookings", error: err });
+  }
 }
 
 export {
