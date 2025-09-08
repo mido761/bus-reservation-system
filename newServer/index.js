@@ -49,6 +49,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://e6ea88d0f989.ngrok-free.app",
+  process.env.BACK_END_URL, // ensure set on Railway
   process.env.FRONT_END_URL, // ensure set on Railway
 ];
 
