@@ -45,9 +45,10 @@ const app = express();
  * @description CORS configuration for allowed origins
  */
 const allowedOrigins = [
+  "https://e6ea88d0f989.ngrok-free.app",
   "http://localhost:5173",
-  "http://192.168.1.7:5173/",
-  "http://localhost:3000",
+  "http://192.168.1.3:5173/",
+  "197.58.31.212",
   "http://localhost:5000"
 ];
 

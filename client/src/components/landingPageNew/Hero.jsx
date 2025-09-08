@@ -47,7 +47,7 @@ const Hero = ({
   }, []);
 
   return (
-    <section className="relative flex items-center justify-center bg-gradient-hero overflow-hidden">
+    <section className="mt-16 relative flex items-center justify-center bg-gradient-hero overflow-hidden min-h-screen">
       {/* Background Image with Overlay */}
       {/* <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"

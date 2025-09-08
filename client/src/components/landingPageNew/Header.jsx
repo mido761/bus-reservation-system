@@ -52,7 +52,7 @@ const Header = () => {
           </nav>
 
           {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="md:flex items-center space-x-4">
             <Button variant="outline" onClick={() => navigate("/login")}>Sign In</Button>
             <Button onClick={() => navigate("/home")}>Book Now</Button>
           </div>

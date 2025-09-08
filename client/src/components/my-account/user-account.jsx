@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './user-account.css';
 import MyTrips from './MyTrips/mytrips';
 import MyPayments from './myPayments/myPayments';
-import MyBookings from './MyBookings/myBookings';
+import MyBookings from './myBookings/myBookings';
 import Hero from './Hero/hero';
 import Footer from '../footer/footer';
 const MENU = [
