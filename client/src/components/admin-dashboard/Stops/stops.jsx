@@ -1,114 +1,141 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import LoadingScreen from "../../loadingScreen/loadingScreen";
-import Overlay from "../../overlayScreen/overlay";
-// import "./stops.css";
-import "../formPage.css";
+import React, { useState, useEffect } from "react"
+import axios from "axios"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
-const backEndUrl = import.meta.env.VITE_BACK_END_URL;
+import LoadingScreen from "../../loadingScreen/loadingScreen"
+import Overlay from "../../overlayScreen/overlay"
+
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const Stops = () => {
-  const [stops, setStops] = useState([]);
-  const [alertFlag, setAlertFlag] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [stops, setStops] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  // New stop form state
   const [newStop, setNewStop] = useState({
     stopName: "",
     location: "",
-  });
+  })
 
-  // Fetch all stops
+  // Fetch stops
   const fetchStops = async () => {
     try {
-      setIsLoading(true);
-      const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
-      setStops(data);
-    } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error fetching stops!");
-      setAlertFlag(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      setIsLoading(true)
+      const { data } = await axios.get(`${backEndUrl}/stop/get-stops`)
+      setStops(data)
 
-  // Add new stop
-  const addStop = async (e) => {
-    e.preventDefault();
-    try {
-      setIsLoading(true);
-      await axios.post(`${backEndUrl}/stop/add-stop`, newStop);
-      setAlertMessage("Stop added successfully!");
-      setAlertFlag(true);
-      setNewStop({ stopName: "", location: "" });
-      fetchStops();
+      if (data.length === 0) {
+        toast.info("No stops available yet.")
+      }
     } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error adding stop!");
-      setAlertFlag(true);
+      toast.error(err?.response?.data?.message || "Error fetching stops!")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
+
+  // Add stop
+  const addStop = async (e) => {
+    e.preventDefault()
+    try {
+      setIsLoading(true)
+      await axios.post(`${backEndUrl}/stop/add-stop`, newStop)
+      toast.success("Stop added successfully!")
+      setNewStop({ stopName: "", location: "" })
+      fetchStops()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error adding stop!")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetchStops();
-  }, []);
+    fetchStops()
+  }, [])
 
   return (
-    <div className="form-page-container">
+    <div className="space-y-6">
+      {/* Toast container */}
+      <ToastContainer
+      position="top-center"
+      autoClose={2000}
+      hideProgressBar={true}
+      newestOnTop={true}
+      closeOnClick
+      pauseOnHover
+      draggable
+      theme="light"
+    />
+
       {/* Add Stop Form */}
-      <form className="add-form" onSubmit={addStop}>
-        <h2>Add Stop</h2>
-        <label htmlFor="StopName">
-          Stop Name
-          <input
-            type="text"
-            placeholder="Stop Name"
-            value={newStop.stopName}
-            onChange={(e) =>
-              setNewStop({ ...newStop, stopName: e.target.value })
-            }
-            required
-          />
-        </label>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">Add Stop</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={addStop} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Stop Name</label>
+              <Input
+                type="text"
+                placeholder="Enter stop name"
+                value={newStop.stopName}
+                onChange={(e) =>
+                  setNewStop({ ...newStop, stopName: e.target.value })
+                }
+                required
+              />
+            </div>
 
-        <label htmlFor="Location">
-          Location
-          <input
-            type="text"
-            placeholder="Location"
-            value={newStop.location}
-            onChange={(e) =>
-              setNewStop({ ...newStop, location: e.target.value })
-            }
-            required
-          />
-        </label>
+            <div>
+              <label className="block text-sm font-medium mb-1">Location</label>
+              <Input
+                type="text"
+                placeholder="Enter location"
+                value={newStop.location}
+                onChange={(e) =>
+                  setNewStop({ ...newStop, location: e.target.value })
+                }
+                required
+              />
+            </div>
 
-        <button type="submit">Add Stop</button>
-      </form>
+            <Button type="submit" className="w-full">
+              Add Stop
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       {/* Stops List */}
-      <div className="list-container">
-        <h2>Stops List</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">Stops List</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {stops.length === 0 ? (
+            <p className="text-sm text-gray-500">No stops available.</p>
+          ) : (
+            <ul className="divide-y divide-gray-200">
+              {stops.map((stop) => (
+                <li key={stop.stop_id} className="py-2">
+                  <span className="font-medium">{stop.stop_name}</span>
+                  <span className="text-gray-600"> — {stop.location}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
-        <ul className="list">
-          {Array.isArray(stops) && stops.map((stop) => (
-            <li key={stop.stop_id}>
-              {stop.stop_name} — {stop.location}
-            </li>
-          ))}
-        </ul>
-      </div>
       {isLoading && <LoadingScreen />}
-      <Overlay
-        alertFlag={alertFlag}
-        alertMessage={alertMessage}
-        setAlertFlag={setAlertFlag}
-      />
+      <Overlay />
     </div>
-  );
-};
+  )
+}
 
-export default Stops;
+export default Stops

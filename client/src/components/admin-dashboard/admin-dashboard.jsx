@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./admin-dashboard.css";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 import Stop from "./Stops/stops";
 import Route from "./Route/route";
@@ -14,21 +17,18 @@ const AdminDashboard = () => {
   const [stops, setStops] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [buses, setBuses] = useState([]);
-  const [trips, setTrips] = useState([]); // changed from schedules
+  const [trips, setTrips] = useState([]);
 
-  // Handlers to add data
+  // Active page state
+  const [activePage, setActivePage] = useState("trip");
+
+  // Handlers for adding data
   const addStop = (stop) => setStops((prev) => [...prev, stop]);
   const addRoute = (route) => setRoutes((prev) => [...prev, route]);
   const addBus = (bus) => setBuses((prev) => [...prev, bus]);
-  const addTrip = (trip) => setTrips((prev) => [...prev, trip]); // changed from addSchedule
+  const addTrip = (trip) => setTrips((prev) => [...prev, trip]);
 
-  // For demo: track which page to show (replace with React Router if you want)
-  const [activePage, setActivePage] = useState("stop");
-
-  // Sidebar navigation handler
-  const handleNavClick = (page) => setActivePage(page);
-
-  // Render selected page component with props
+  // Render selected page
   const renderPage = () => {
     switch (activePage) {
       case "stop":
@@ -38,57 +38,88 @@ const AdminDashboard = () => {
       case "bus":
         return <Bus buses={buses} onAddBus={addBus} />;
       case "trip":
-        return (
-          <Schedule
-            buses={buses}
-            routes={routes}
-            trips={trips} // changed from schedules
-            onAddTrip={addTrip} // changed from onAddSchedule
-          />
-        );
+        return <Schedule buses={buses} routes={routes} trips={trips} onAddTrip={addTrip} />;
       default:
-        return <div>Select a page from sidebar</div>;
+        return <div className="text-center py-6">Select a page from sidebar</div>;
     }
   };
 
+  // Sidebar menu component
+  const SidebarMenu = ({ isMobile = false }) => {
+    const menuItems = [
+      { key: "trip", label: "🚍 Trips" },
+      { key: "route", label: "🛣 Routes" },
+      { key: "stop", label: "📍 Stops" },
+      { key: "bus", label: "🚌 Buses" },
+    ];
+
+    return (
+      <nav className="space-y-2">
+        {menuItems.map((item) =>
+          isMobile ? (
+            <SheetClose key={item.key} asChild>
+              <Button
+                variant={activePage === item.key ? "default" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setActivePage(item.key)}
+              >
+                {item.label}
+              </Button>
+            </SheetClose>
+          ) : (
+            <Button
+              key={item.key}
+              variant={activePage === item.key ? "default" : "ghost"}
+              className="w-full justify-start"
+              onClick={() => setActivePage(item.key)}
+            >
+              {item.label}
+            </Button>
+          )
+        )}
+      
+      </nav>
+    );
+  };
+
   return (
-    <div className="dashboard-wrapper">
-      {/* <div className="dashboard-layout"> */}
-      {/* Sidebar */}
-      <aside className="dashboard-sidebar">
-        <div className="sidebar-logo">
-          <button
-            className="back-button"
-            onClick={() => navigate("/")}
-            aria-label="Go back to home"
-            title="Go back"
-            type="button"
-          >
-            ←
-          </button>
-          Admin Panel
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="w-full border-b bg-white shadow-sm px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" onClick={() => navigate("/home")}>
+            ⬅ Home
+          </Button>
+          <h1 className="text-lg font-bold">Admin Panel</h1>
         </div>
-        <ul className="sidebar-menu">
-          <li onClick={() => handleNavClick("trip")}>
-            <span className="icon">🚍</span>  trip
-          </li>
-          <li onClick={() => handleNavClick("route")}>
-            <span className="icon">🛣</span> Routes
-          </li>
-          <li onClick={() => handleNavClick("stop")}>
-            <span className="icon">📍</span> Stops
-          </li>
 
-          <li onClick={() => handleNavClick("bus")}>
-            <span className="icon">🚌</span> Buses
-          </li>
-        </ul>
-      </aside>
+        {/* Mobile Sidebar Trigger */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="lg:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-4">
+            <SidebarMenu isMobile />
+          </SheetContent>
+        </Sheet>
+      </header>
 
-      {/* Main Content */}
-      {/* {renderPage()} */}
-      <main className="dashboard-main">{renderPage()}</main>
-      {/* </div> */}
+      {/* Main Layout */}
+      <div className="flex flex-1">
+        {/* Sidebar (desktop) */}
+        <aside className="hidden lg:block w-64 border-r bg-gray-50 p-4">
+          <SidebarMenu />
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 p-6 bg-gray-100">
+          <Card className="shadow-md rounded-2xl">
+            <CardContent className="p-4">{renderPage()}</CardContent>
+          </Card>
+        </main>
+      </div>
     </div>
   );
 };

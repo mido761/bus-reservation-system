@@ -103,7 +103,7 @@ const webhookUpdate = async (req, res) => {
     const obj = payload.obj || {};
     const paymentId = obj.order?.merchant_order_id;
     const transactionId = obj.id;
-    const success = obj.success;
+    const success = obj.success === true || obj.success === "true";
 
     // Validate
     if (!paymentId || !transactionId) {
