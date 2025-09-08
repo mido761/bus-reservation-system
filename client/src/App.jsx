@@ -73,6 +73,8 @@ const TermsOfService = lazy(() => import ("./components/policies/TermsOfService.
 const PrivacyPolicy = lazy(() => import ("./components/policies/PrivacyPolicy.jsx"));
 
 const HelpSupport = lazy(() => import ("./components/policies/help_support.jsx"))
+
+const About = lazy (() => import("./components/policies/about.jsx"))
 function App() {
   return (
     <HashRouter basename="/">
@@ -107,6 +109,16 @@ function App() {
               <Auth>
                 <Navbar />
                 <HelpSupport />
+              </Auth>
+            }
+          />
+
+          <Route
+            path="/about"
+            element={
+              <Auth>
+                <Navbar />
+                <About />
               </Auth>
             }
           />
