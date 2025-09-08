@@ -68,12 +68,11 @@ const Hero = ({
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center py-16">
         <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-10 leading-tight">
             Travel Made <span className="text-primary-light">Simple</span>
           </h1>
           <p className="text-lg md:text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-2xl mx-auto">
-            Book your bus tickets instantly with comfortable rides and reliable
-            service
+            Book bus tickets instantly and travel with comfort and reliability every time
           </p>
         </div>
 
