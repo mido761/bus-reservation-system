@@ -7,7 +7,8 @@
 import crypto from "crypto";
 import bcrypt from "bcrypt";
 import pool from "../db.js";
-import { sendMail } from "../utils/nodeMailer.js";
+import { sendGridMail, nodeMailerMail } from "../utils/mailService.js";
+// import { sendMail } from "../utils/nodeMailer.js";
 
 /**
  * @function generateVerificationCode
@@ -93,12 +94,13 @@ export async function requestReset(req, res) {
       [userId, hashedOtp, expiresAt]
     );
 
-    // send OTP
-    sendMail(
-      email,
-      "Your Password Reset OTP",
-      `Your OTP is ${otp}. It expires in 5 minutes.`
-    );
+    const subject = "Your Password Reset OTP";
+    const body = `Your OTP is ${otp}. It expires in 5 minutes.`;
+    const mailRes =
+      process.env.NODE_ENV === "production"
+        ? await sendGridMail(email, subject, body)
+        : await nodeMailerMail(email, subject, body);
+    console.log("Mail res: ", mailRes);
 
     return res.status(200).json({ message: "OTP code has been sent" });
   } catch (err) {
@@ -251,12 +253,13 @@ export async function resendOtp(req, res) {
       [hashedOtp, expiresAt, entry.id]
     );
 
-    // send OTP (plain) to user
-    await sendMail(
-      email,
-      "Your OTP Code",
-      `Your OTP is ${otp}. It expires in 5 minutes.`
-    );
+    const subject = "Your OTP Code";
+    const body = `Your OTP is ${otp}. It expires in 5 minutes.`;
+    const mailRes =
+      process.env.NODE_ENV === "production"
+        ? await sendGridMail(email, subject, body)
+        : await nodeMailerMail(email, subject, body);
+    console.log("Mail res: ", mailRes);
 
     return res.status(201).json({ message: "OTP resent successfully" });
   } catch (err) {
