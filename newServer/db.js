@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 // Or use this if any error happened
 dotenv.config();
 
+
+
 const { Pool } = pg;
 
 const pool = new Pool({
