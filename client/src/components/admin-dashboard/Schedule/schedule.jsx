@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import TripForm from "../../../UI/trips/tripForm";
+import TripForm from "../../../UI/trips/TripForm";
 import TripList from "../../../UI/trips/TripList";
 import { handleDel } from "../../../handlers/handleDel";
 import { handleEdit } from "../../../handlers/handleEdit";
