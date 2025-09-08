@@ -1,4 +1,3 @@
-
 import express from "express";
 import { login } from "../controllers/authentication/loginController.js";
 import { logout } from "../controllers/authentication/logoutController.js";
