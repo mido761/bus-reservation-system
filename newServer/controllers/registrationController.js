@@ -138,9 +138,9 @@ export async function resendCode(req, res) {
     );
 
     // Respond with success message & return new token
-    res.json({ message: "New verification code sent!", newToken });
+    return res.json({ message: "New verification code sent!", token: newToken });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error sending new verification code",
       error: err.message,
     });
