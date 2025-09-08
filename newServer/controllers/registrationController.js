@@ -46,7 +46,7 @@ export async function sendCode(req, res) {
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
     const mailRes = await sendMail(email, subject, body);
-    console.log("Mail res: ", mailRes)
+    console.log("Mail res: ", mailRes);
 
     return res.status(201).json({
       message: "Registration successful! Check your email for verification.",
@@ -68,7 +68,7 @@ export async function verifyUser(req, res) {
 
     const code = tempUser.verificationCode;
 
-    console.log(enteredOtp, code, (Number(code) !== Number(enteredOtp)))
+    console.log(enteredOtp, code, Number(code) !== Number(enteredOtp));
 
     // Validate the verification code
     if (Number(code) !== Number(enteredOtp)) {
@@ -97,7 +97,6 @@ export async function verifyUser(req, res) {
       hashedPassword,
       tempUser.gender,
     ]);
-
 
     res.json({ message: "Email verified successfully! You can now log in." });
   } catch (error) {
@@ -138,7 +137,10 @@ export async function resendCode(req, res) {
     );
 
     // Respond with success message & return new token
-    return res.json({ message: "New verification code sent!", token: newToken });
+    return res.json({
+      message: "New verification code sent!",
+      newToken: newToken,
+    });
   } catch (err) {
     return res.status(500).json({
       message: "Error sending new verification code",
