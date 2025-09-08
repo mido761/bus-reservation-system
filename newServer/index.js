@@ -47,9 +47,8 @@ const app = express();
 const allowedOrigins = [
   "https://e6ea88d0f989.ngrok-free.app",
   "http://localhost:5173",
-  "http://192.168.1.3:5173/",
-  "197.58.31.212",
-  "http://localhost:5000"
+  process.env.BACK_END_URL,
+  process.env.FRONT_END_URL,
 ];
 
 app.use(
@@ -88,8 +87,7 @@ const PgSessionStore = pgSession(session);
 
 app.use(
   session({
-    secret:
-      process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: new PgSessionStore({
@@ -98,7 +96,7 @@ app.use(
     }),
     cookie: {
       httpOnly: true,
-      sameSite: 'lax', // good for localhost
+      sameSite: "lax", // good for localhost
       secure: false, // must be false in dev
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
@@ -216,11 +214,13 @@ app.get("/auth", (req, res) => {
 });
 
 app.get("/reconcile", async (req, res) => {
-  try{
+  try {
     const response = await reconcilePaymob();
-    return res.status(500).json({message: response})
-  }catch(err){
-    return res.status(500).json({Error: "Error reconciling!", message: err.message})
+    return res.status(500).json({ message: response });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ Error: "Error reconciling!", message: err.message });
   }
 });
 
@@ -230,8 +230,6 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
 });
 // }
-
-
 
 /**
  * @server
@@ -244,7 +242,6 @@ const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () =>
   console.log(`Server running on port ${PORT}`)
 );
-
 
 // process.on("SIGINT", () => {
 //   console.log("Shutting down server...");
