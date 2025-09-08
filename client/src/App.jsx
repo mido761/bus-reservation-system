@@ -101,49 +101,47 @@ function App() {
               </>
             }
           />
-
-          {/* Protected Routes */}
-
           <Route
             path="/help"
             element={
-              <Auth>
+              <>
                 <Header />
                 <HelpSupport />
-              </Auth>
+              </>
             }
           />
 
           <Route
             path="/about"
             element={
-              <Auth>
+              <>
                 <Header />
                 <About />
-              </Auth>
+              </>
             }
           />
 
-           <Route
+          <Route
             path="/terms"
             element={
-              <Auth>
+              <>
                 <Header />
                 <TermsOfService />
-              </Auth>
+              </>
             }
           />
 
-           <Route
+          <Route
             path="/privacy"
             element={
-              <Auth>
+              <>
                 <Header />
                 <PrivacyPolicy />
-              </Auth>
+              </>
             }
           />
-       
+          {/* Protected Routes */}
+
           <Route
             path="/my-account"
             element={
