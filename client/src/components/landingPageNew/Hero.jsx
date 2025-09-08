@@ -47,7 +47,7 @@ const Hero = ({
   }, []);
 
   return (
-    <section className="relative overflow-hidden min-h-[calc(85vh-4rem)] pt-16">
+    <section className="relative overflow-hidden pt-16">
       {/* Background Image with Overlay */}
       {/* <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
