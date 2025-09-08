@@ -5,13 +5,16 @@ import dotenv from "dotenv";
 // dotenv.config({path: '../.env'});
 
 // Or use this if any error happened
-dotenv.config();  
-
+dotenv.config();
 
 const { Pool } = pg;
+
 const pool = new Pool({
-  connectionString: process.env.NODE_ENV === "production" ? process.env.SUPABASE_URL : process.env.LOCAL_DATABASE_URL,
-//   ssl: { rejectUnauthorized: false },
+  connectionString:
+    process.env.NODE_ENV === "production"
+      ? process.env.SUPABASE_URL   // full Postgres connection string
+      : process.env.LOCAL_DATABASE_URL,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
 // Optional: test connection
@@ -23,3 +26,4 @@ pool.connect()
   .catch(err => console.error("❌ Postgres connection error", err.stack));
 
 export default pool;
+
