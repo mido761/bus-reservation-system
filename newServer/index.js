@@ -44,43 +44,34 @@ const app = express();
  * @const {Array<string>} allowedOrigins
  * @description CORS configuration for allowed origins
  */
+
+// Build whitelist dynamically
 const allowedOrigins = [
-  "https://e6ea88d0f989.ngrok-free.app",
   "http://localhost:5173",
-  process.env.BACK_END_URL,
-  process.env.FRONT_END_URL,
+  "https://e6ea88d0f989.ngrok-free.app",
+  process.env.FRONT_END_URL, // ensure set on Railway
 ];
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like Postman) or valid frontend origin
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Postman, mobile)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        return callback(new Error("Not allowed by CORS"));
       }
     },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   })
 );
 
-// Preflight (OPTIONS) handler — now returns a single origin string
-app.options("*", (req, res) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.sendStatus(200);
-});
+// Preflight handler is usually not needed, cors() handles OPTIONS automatically
+// You can remove app.options("*") unless you need custom behavior
 
 // Session config
 const PgSessionStore = pgSession(session);
@@ -96,8 +87,8 @@ app.use(
     }),
     cookie: {
       httpOnly: true,
-      sameSite: "lax", // good for localhost
-      secure: false, // must be false in dev
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: process.env.NODE_ENV === "production", // must be true in prod https
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
   })

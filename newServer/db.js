@@ -7,12 +7,14 @@ import dotenv from "dotenv";
 // Or use this if any error happened
 dotenv.config();
 
+
+
 const { Pool } = pg;
 
 const pool = new Pool({
   connectionString:
     process.env.NODE_ENV === "production"
-      ? process.env.SUPABASE_URL   // full Postgres connection string
+      ? process.env.RAILWAY_DATABASE_URI   // full Postgres connection string
       : process.env.LOCAL_DATABASE_URL,
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
