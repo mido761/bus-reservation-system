@@ -1,74 +1,61 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import LoadingScreen from "../../loadingScreen/loadingScreen";
-import Overlay from "../../overlayScreen/overlay";
-import "../formPage.css";
-import route from "../../../../../newServer/models/route";
-import "./route.css"
+
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Route = () => {
   const [stops, setStops] = useState([]);
-  const [linkedStops, setLinkedStops] = useState([]);
-  const [stopId, setStopId] = useState("");
-  const [position, setPosition] = useState(0);
   const [routes, setRoutes] = useState([]);
-  const [alertFlag, setAlertFlag] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // New state for adding a route
   const [newRoute, setNewRoute] = useState({
     source: "",
     destination: "",
-    distance: 0,
-    estimatedDuration: 0,
+    distance: "",
+    estimatedDuration: "",
     stops: [],
     isActive: true,
   });
 
+  const [linkData, setLinkData] = useState({
+    stopId: "",
+    position: 0,
+  });
+
+  // Fetch stops
   const fetchStops = async () => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
-      console.log(data);
       setStops(data);
     } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
-      setAlertFlag(true);
+      toast.error(err?.response?.data?.message || "Error fetching stops", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const fetchLinkedStops = async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await axios.get(
-        `${backEndUrl}/get-route-stops/${route.route_id}`
-      );
-      console.log(data);
-      setStops(data);
-    } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
-      setAlertFlag(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Fetch routes with stops
   const fetchRoutes = async () => {
-    setIsLoading(true);
     try {
-      const { data } = await axios.get(
-        `${backEndUrl}/route/get-routes-with-stops`
-      );
-      console.log(data);
+      setIsLoading(true);
+      const { data } = await axios.get(`${backEndUrl}/route/get-routes-with-stops`);
 
+      // Group stops by route
       const groupedRoutes = data.routes.reduce((acc, curr) => {
-        // check if we already added this route
         let route = acc.find((r) => r.route_id === curr.route_id);
-
         if (!route) {
           route = {
             route_id: curr.route_id,
@@ -78,147 +65,131 @@ const Route = () => {
           };
           acc.push(route);
         }
-
-        // push the stop into this route's stops
         route.stops.push({
           stop_id: curr.stop_id,
           stop_name: curr.stop_name,
           location: curr.location,
           position: curr.position,
-          distance_from_source: curr.distance_from_source,
-          is_active: curr.is_active,
         });
-
         return acc;
       }, []);
 
       setRoutes(groupedRoutes);
     } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error fetching routes!");
-      setAlertFlag(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const addRoute = async (e) => {
-    e.preventDefault();
-    try {
-      setIsLoading(true);
-      const { data } = await axios.post(
-        `${backEndUrl}/route/add-route`,
-        newRoute
-      );
-      setAlertMessage("Route added successfully!");
-      setAlertFlag(true);
-      setNewRoute({ name: "", start: "", end: "" });
-      fetchRoutes(); // Refresh list
-    } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error adding route!");
-      setAlertFlag(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLinkRouteStop = async (e, routeId) => {
-    e.preventDefault();
-    try {
-      setIsLoading(true);
-      const { data } = await axios.post(
-        `${backEndUrl}/route/link-route-stop`,
-        { routeId, stopId, position },
-        {
-          withCredentials: true,
-        }
-      );
-
-      setAlertMessage("Route linked successfully!");
-      setAlertFlag(true);
-      setNewRoute({ name: "", start: "", end: "" });
-      fetchRoutes(); // Refresh list
-    } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error adding route!");
-      setAlertFlag(true);
+      toast.error(err?.response?.data?.message || "Error fetching routes", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchRoutes();
     fetchStops();
+    fetchRoutes();
   }, []);
 
+  // Add new route
+  const addRoute = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      await axios.post(`${backEndUrl}/route/add-route`, newRoute);
+      toast.success("Route added successfully!", { position: "top-center", autoClose: 2000 });
+      setNewRoute({ source: "", destination: "", distance: "", estimatedDuration: "", stops: [], isActive: true });
+      fetchRoutes();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error adding route!", { position: "top-center", autoClose: 2000 });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Link stop to route
+  const handleLinkRouteStop = async (routeId) => {
+    if (!linkData.stopId) return;
+    try {
+      setIsLoading(true);
+      await axios.post(`${backEndUrl}/route/link-route-stop`, { routeId, ...linkData });
+      toast.success("Stop linked successfully!", { position: "top-center", autoClose: 2000 });
+      setLinkData({ stopId: "", position: 0 });
+      fetchRoutes();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error linking stop!", { position: "top-center", autoClose: 2000 });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="form-page-container">
-      <form className="add-form" onSubmit={addRoute}>
-        <h2>Add Route</h2>
-        <label htmlFor="Source">
-          Source
-          <input
-            type="text"
-            placeholder="Source"
-            value={newRoute.source}
-            onChange={(e) =>
-              setNewRoute({ ...newRoute, source: e.target.value })
-            }
-            required
-          />
-        </label>
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Add Route Form */}
+      <Card className="shadow-lg border border-gray-200">
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold">➕ Add New Route</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={addRoute}>
+            <div className="flex flex-col">
+              <Label>Source</Label>
+              <Input
+                placeholder="Source"
+                value={newRoute.source}
+                onChange={(e) => setNewRoute({ ...newRoute, source: e.target.value })}
+                required
+              />
+            </div>
+            <div className="flex flex-col">
+              <Label>Destination</Label>
+              <Input
+                placeholder="Destination"
+                value={newRoute.destination}
+                onChange={(e) => setNewRoute({ ...newRoute, destination: e.target.value })}
+                required
+              />
+            </div>
+            <div className="flex flex-col">
+              <Label>Distance (km)</Label>
+              <Input
+                type="number"
+                placeholder="Distance"
+                value={newRoute.distance}
+                onChange={(e) => setNewRoute({ ...newRoute, distance: e.target.value })}
+                required
+              />
+            </div>
+            <div className="flex flex-col">
+              <Label>Estimated Duration (mins)</Label>
+              <Input
+                type="number"
+                placeholder="Estimated Duration"
+                value={newRoute.estimatedDuration}
+                onChange={(e) => setNewRoute({ ...newRoute, estimatedDuration: e.target.value })}
+                required
+              />
+            </div>
+            <div className="col-span-full flex justify-end">
+              <Button type="submit">Add Route</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
 
-        <label htmlFor="Destination">
-          Destination{" "}
-          <input
-            type="text"
-            placeholder="Destination"
-            value={newRoute.destination}
-            onChange={(e) =>
-              setNewRoute({ ...newRoute, destination: e.target.value })
-            }
-            required
-          />
-        </label>
-
-        <label htmlFor="Distance">
-          Distance
-          <input
-            type="number"
-            placeholder="Distance"
-            value={newRoute.distance}
-            onChange={(e) =>
-              setNewRoute({ ...newRoute, distance: e.target.value })
-            }
-            required
-          />
-        </label>
-
-        <label htmlFor="EstimatedDuration">
-          Estimated Duration
-          <input
-            type="number"
-            placeholder="Estimated Duration"
-            value={newRoute.estimatedDuration}
-            onChange={(e) =>
-              setNewRoute({ ...newRoute, estimatedDuration: e.target.value })
-            }
-            required
-          />
-        </label>
-        <button type="submit">Add Route</button>
-      </form>
-      <div className="list-container">
-        <h2>Routes List</h2>
-        <ul className="list">
-          {Array.isArray(routes) &&
-            routes.map((route) => (
-              <li key={route._id}>
+      {/* Routes List */}
+      <Card className="shadow-lg border border-gray-200">
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold">🚌 Routes List</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {routes.map((route) => (
+            <Card key={route.route_id} className="p-4 border border-gray-100 shadow-sm">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 <div>
-                  ({route.source} → {route.destination}) <br />
-                  {/* {route.stop_name && route.stop_name} <br /> */}
-                  <ul>
+                  <p className="font-semibold">{route.source} → {route.destination}</p>
+                  <ul className="ml-4 list-disc text-gray-700">
                     {route.stops
-                      .sort((a, b) => a.position - b.position) // order by position
+                      .sort((a, b) => a.position - b.position)
                       .map((stop) => (
                         <li key={stop.stop_id}>
                           {stop.position}. {stop.stop_name} ({stop.location})
@@ -226,80 +197,45 @@ const Route = () => {
                       ))}
                   </ul>
                 </div>
-                <label htmlFor="">
-                  Position:
-                  <input
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                  <Input
                     type="number"
-                    name="position"
-                    id=""
-                    onChange={(e) => setPosition(e.target.value)}
+                    placeholder="Position"
+                    value={linkData.position}
+                    onChange={(e) => setLinkData({ ...linkData, position: Number(e.target.value) })}
                   />
-                </label>
-                <label htmlFor="stops">
-                  Link a route:
-                  <select
-                    name="stops"
-                    id="stops"
-                    onChange={(e) => setStopId(e.target.value)}
+                  <Select
+                    value={linkData.stopId}
+                    onValueChange={(value) => setLinkData({ ...linkData, stopId: value })}
                   >
-                    <option value="default">Choose stop</option>
-                    {Array.isArray(stops) &&
-                      stops
-                        .filter(
-                          (stop) =>
-                            !route.stops.some(
-                              (rs) => rs.stop_id === stop.stop_id
-                            )
-                        ) // exclude the route's stop
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose stop" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {stops
+                        .filter((stop) => !route.stops.some((rs) => rs.stop_id === stop.stop_id))
                         .map((stop) => (
-                          <option key={stop.stop_id} value={stop.stop_id}>
+                          <SelectItem key={stop.stop_id} value={stop.stop_id}>
                             {stop.stop_name}
-                          </option>
+                          </SelectItem>
                         ))}
-                  </select>
-                </label>
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={() => handleLinkRouteStop(route.route_id)}>Link</Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </CardContent>
+      </Card>
 
-                <button
-                  onClick={(e) =>
-                    handleLinkRouteStop(
-                      e,
-                      route.route_id,
-                      route.stop_id,
-                      position
-                    )
-                  }
-                >
-                  Link
-                </button>
-              </li>
-            ))}
-        </ul>
-      </div>
-
+      {/* Loading */}
       {isLoading && <LoadingScreen />}
-      <Overlay
-        alertFlag={alertFlag}
-        alertMessage={alertMessage}
-        setAlertFlag={setAlertFlag}
-      />
+
+      {/* Toastify container */}
+      <ToastContainer />
     </div>
   );
 };
 
 export default Route;
-
-//
-// <label htmlFor="stops">
-//   Stops{" "}
-//   <select name="stops" id="stops" multiple>
-//     {/* <option value='default'>
-//       Choose Stops
-//     </option> */}
-//     {Array.isArray(stops) &&
-//       stops.map((stop) => (
-//         <option value={stop.stop_name} key={stop.stop_id}>
-//           {stop.stop_name}
-//         </option>
-//       ))}
-//   </select>
-// </label>

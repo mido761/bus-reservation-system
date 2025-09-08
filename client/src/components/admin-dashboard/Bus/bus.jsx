@@ -1,118 +1,144 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import LoadingScreen from "../../loadingScreen/loadingScreen";
-import Overlay from "../../overlayScreen/overlay";
-// import "./bus.css";
-import "../formPage.css";
+import React, { useState, useEffect } from "react"
+import axios from "axios"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { toast } from "react-toastify"
 
-const backEndUrl = import.meta.env.VITE_BACK_END_URL;
+import LoadingScreen from "../../loadingScreen/loadingScreen"
+
+const backEndUrl = import.meta.env.VITE_BACK_END_URL
 
 const Bus = () => {
-  const [buses, setBuses] = useState([]);
-  const [alertFlag, setAlertFlag] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  // New bus form state
+  const [buses, setBuses] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
   const [newBus, setNewBus] = useState({
     plateNumber: "",
     capacity: "",
-  });
+  })
 
   // Fetch all buses
   const fetchBuses = async () => {
-    
     try {
-      setIsLoading(true);
-      const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`);
-      // console.log(data.buses)
-      setBuses(data.buses);
+      setIsLoading(true)
+      const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`)
+      setBuses(data.buses || [])
     } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error fetching buses!");
-      setAlertFlag(true);
+      toast.error(err?.response?.data?.message || "Error fetching buses!")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Add a new bus
   const addBus = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      setIsLoading(true);
-      await axios.post(`${backEndUrl}/bus/add-bus`, newBus);
-      setAlertMessage("Bus added successfully!");
-      setAlertFlag(true);
-      setNewBus({ plateNumber: "", capacity: "" });
-      fetchBuses();
+      setIsLoading(true)
+      await axios.post(`${backEndUrl}/bus/add-bus`, newBus)
+      toast.success("✅ Bus added successfully!")
+      setNewBus({ plateNumber: "", capacity: "" })
+      fetchBuses()
     } catch (err) {
-      setAlertMessage(err?.response?.data?.message || "Error adding bus!");
-      setAlertFlag(true);
+      toast.error(err?.response?.data?.message || "Error adding bus!")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchBuses();
-  }, []);
+    fetchBuses()
+  }, [])
 
   return (
-    <div className="form-page-container">
+    <div className="max-w-5xl mx-auto p-4 space-y-6">
       {/* Add Bus Form */}
-      <form className="add-form" onSubmit={addBus}>
-        <h2>Add Bus</h2>
+      <Card className="shadow-lg rounded-xl">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">➕ Add Bus</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={addBus} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Bus Number</label>
+              <Input
+                type="text"
+                placeholder="Enter bus number"
+                value={newBus.plateNumber}
+                onChange={(e) =>
+                  setNewBus({ ...newBus, plateNumber: e.target.value })
+                }
+                required
+              />
+            </div>
 
-        <label htmlFor="BusNumber">
-          Bus Number
-          <input
-            type="text"
-            placeholder="Bus Number"
-            value={newBus.plateNumber}
-            onChange={(e) =>
-              setNewBus({ ...newBus, plateNumber: e.target.value })
-            }
-            required
-          />
-        </label>
+            <div>
+              <label className="block text-sm font-medium mb-1">Capacity</label>
+              <Input
+                type="number"
+                placeholder="Enter capacity"
+                value={newBus.capacity}
+                onChange={(e) =>
+                  setNewBus({ ...newBus, capacity: e.target.value })
+                }
+                required
+              />
+            </div>
 
-        <label htmlFor="Capacity">
-          Capacity
-          <input
-            type="number"
-            placeholder="Capacity"
-            value={newBus.capacity}
-            onChange={(e) => setNewBus({ ...newBus, capacity: e.target.value })}
-            required
-          />
-        </label>
- 
-        <button type="submit">Add Bus</button>
-      </form>
+            <Button type="submit" className="w-full">
+              Add Bus
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       {/* Bus List */}
-      <div className="list-container">
-        <h2>Bus list</h2>
-        <ul className="list">
-          {Array.isArray(buses) &&
-            buses.map((bus) => (
-              <li key={bus.bus_id}>
-                {bus.plate_number} — {bus.capacity} seats
-                <img src={bus.qr_code} alt="Bus QR Code" />
-                <a href={bus.check_in_link}>Check In Link</a>
-              </li>
-            ))}
-        </ul>
-      </div>
+      <Card className="shadow-lg rounded-xl">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">🚌 Bus List</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {buses.length === 0 ? (
+            <p className="text-gray-500">No buses available.</p>
+          ) : (
+            <ul className="divide-y divide-gray-200">
+              {buses.map((bus) => (
+                <li
+                  key={bus.bus_id}
+                  className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                >
+                  <div className="font-medium">
+                    {bus.plate_number} — {bus.capacity} seats
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {bus.qr_code && (
+                      <img
+                        src={bus.qr_code}
+                        alt="Bus QR Code"
+                        className="w-16 h-16 object-contain rounded"
+                      />
+                    )}
+                    {bus.check_in_link && (
+                      <a
+                        href={bus.check_in_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Check In Link
+                      </a>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
       {isLoading && <LoadingScreen />}
-      <Overlay
-        alertFlag={alertFlag}
-        alertMessage={alertMessage}
-        setAlertFlag={setAlertFlag}
-      />
     </div>
-  );
-};
+  )
+}
 
-export default Bus;
+export default Bus

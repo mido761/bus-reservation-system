@@ -55,24 +55,33 @@ const Hero = ({
           backgroundImage: `linear-gradient(135deg, rgba(33, 150, 243, 0.8), rgba(25, 118, 210, 0.9)), url(${heroImage})`,
         }}
       /> */}
+      {/* ✅ Top Section with Background (only for text) */}
+    <div className="relative w-full">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-no-repeat bg-contain md:bg-cover"
+        style={{ backgroundImage: "url('/van.jpg')" }}
+      />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/60" />
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center bg-background">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold text-primary mb-6 mt-6 leading-tight">
+      <div className="relative z-10 container mx-auto px-4 text-center py-16">
+        <div className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-10 leading-tight">
             Travel Made <span className="text-primary-light">Simple</span>
           </h1>
-          <p className="text-xl md:text-2xl text-primary/90 mb-12 leading-relaxed">
-            Book your bus tickets instantly with comfortable rides and reliable
-            service
+          <p className="text-lg md:text-xl lg:text-2xl text-gray-200 leading-relaxed max-w-2xl mx-auto">
+            Book bus tickets instantly and travel with comfort and reliability every time
           </p>
+        </div>
 
           {/* Booking Form */}
           <Card className="bg-white/95 backdrop-blur-sm p-8 shadow-lg max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary" />
+                  <MapPin className="w-4 h-4 text-red-500" />
                   From
                 </label>
                 <Select value={pickupPoint} onValueChange={setPickupPoint}>
@@ -91,7 +100,7 @@ const Hero = ({
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary" />
+                  <MapPin className="w-4 h-4 text-red-500" />
                   To
                 </label>
                 <Select value={arrivalPoint} onValueChange={setArrivalPoint}>
@@ -110,7 +119,7 @@ const Hero = ({
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <CalendarDays className="w-4 h-4 text-primary" />
+                  <CalendarDays className="w-4 h-4 text-red-500" />
                   Date
                 </label>
                 <Input
