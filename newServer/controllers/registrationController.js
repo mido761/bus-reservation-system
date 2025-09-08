@@ -45,7 +45,8 @@ export async function sendCode(req, res) {
 
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
-    sendMail(email, subject, body);
+    const mailRes = await sendMail(email, subject, body);
+    console.log("Mail res: ", mailRes)
 
     return res.status(201).json({
       message: "Registration successful! Check your email for verification.",
@@ -131,9 +132,9 @@ export async function resendCode(req, res) {
     );
 
     sendMail(
-      (recepient = tempUser.email),
-      (subject = "Verify Your Email"),
-      (body = `<p>Your new verification code is: <strong>${newVerificationCode}</strong></p>`)
+      tempUser.email,
+      "Verify Your Email",
+      `<p>Your new verification code is: <strong>${newVerificationCode}</strong></p>`
     );
 
     // Respond with success message & return new token
