@@ -8,8 +8,8 @@ import Overlay from "../overlayScreen/overlay";
 import CardForm from "@/components/ui/card-form"; // Reusable Card + Form wrapper
 import { Loader2 } from "lucide-react";
 
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 
 // shadcn/ui imports
 import { Button } from "@/components/ui/button";
@@ -84,15 +84,18 @@ function Signup() {
       if (result.status === 201) {
         setTimeout(() => {
           setIsLoading(false);
-          toast.success("Registered successfully! Check your email for verification.", {
-            position: "top-center",
-            autoClose: 2500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.success(
+            "Registered successfully! Check your email for verification.",
+            {
+              position: "top-center",
+              autoClose: 2500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            }
+          );
         }, 1000);
 
         setTimeout(() => {
@@ -131,7 +134,17 @@ function Signup() {
 
   return (
     <div className="w-full flex items-center justify-center min-h-screen bg-background">
-      <ToastContainer position="top-center" autoClose={2500} hideProgressBar={false} newestOnTop={true} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      {/* <ToastContainer
+        position="top-center"
+        autoClose={2500}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      /> */}
       <CardForm title="Sign Up" onSubmit={handleSubmit}>
         {/* ...existing code... */}
         <div>
@@ -230,7 +243,7 @@ function Signup() {
         </p>
       </CardForm>
       {/* ...existing code... */}
-  {/* Overlay for alerts removed, errors now shown in toastify */}
+      {/* Overlay for alerts removed, errors now shown in toastify */}
     </div>
   );
 }

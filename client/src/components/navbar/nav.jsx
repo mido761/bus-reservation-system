@@ -70,17 +70,6 @@ export default function Navbar() {
 
   if (location.pathname === "/") return <Header />;
 
-  <ToastContainer
-    position="top-center"
-    autoClose={2500}
-    hideProgressBar={false}
-    newestOnTop={true}
-    closeOnClick
-    rtl={false}
-    pauseOnFocusLoss
-    draggable
-    pauseOnHover
-  />;
   return (
     <nav className="sticky md:top-0 top-2 w-3/4 md:w-full flex flex-row items-center justify-between z-50 bg-white/95 backdrop-blur-sm shadow-lg md:w-full p-4 mt-4 md:mt-0 rounded-3xl md:rounded-none">
       {/* Logo */}
