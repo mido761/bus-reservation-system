@@ -76,6 +76,9 @@ const PrivacyPolicy = lazy(() => import ("./components/policies/PrivacyPolicy.js
 const HelpSupport = lazy(() => import ("./components/policies/help_support.jsx"))
 
 const About = lazy (() => import("./components/policies/about.jsx"))
+
+const RefundCancel = lazy (() =>import ("./components/policies/refund_cancel.jsx"))
+
 function App() {
   return (
     <HashRouter basename="/">
@@ -98,6 +101,15 @@ function App() {
                 <Navbar />
                 <LandingPage />
                 <Footer />
+              </>
+            }
+          />
+          <Route
+            path="/refund"
+            element={
+              <>
+                <Header />
+                <RefundCancel />
               </>
             }
           />

@@ -69,7 +69,7 @@ const Footer = () => {
               </li> */}
               <li>
                 <a
-                  href="/#/my-account"
+                  href="/#/refund"
                   className="text-white/80 hover:text-white transition-colors"
                 >
                   Cancel/Refund
