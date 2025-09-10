@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify"; 
+
 const PaymentType = ({ paymentDetails, setPaymentDetails, setAlertMessage, setAlertFlag }) => {
 	const policyPopup = (title, items) => (
 		<div className="rounded-lg bg-background p-6 shadow-md max-w-md mx-auto text-left">

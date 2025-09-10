@@ -1,6 +1,6 @@
 dotenv.config();
 import jwt from "jsonwebtoken";
-import { sendMail } from "../utils/nodeMailer.js";
+import { sendGridMail, nodeMailerMail } from "../utils/mailService.js";
 import bcrypt from "bcrypt";
 import pool from "../db.js";
 import dotenv from "dotenv";
@@ -45,7 +45,10 @@ export async function sendCode(req, res) {
 
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
-    const mailRes = await sendMail(email, subject, body);
+    const mailRes =
+      process.env.NODE_ENV === "production"
+        ? await sendGridMail(email, subject, body)
+        : await nodeMailerMail(email, subject, body);
     console.log("Mail res: ", mailRes);
 
     return res.status(201).json({
@@ -130,11 +133,15 @@ export async function resendCode(req, res) {
       { expiresIn: "10m" }
     );
 
-    sendMail(
-      tempUser.email,
-      "Verify Your Email",
-      `<p>Your new verification code is: <strong>${newVerificationCode}</strong></p>`
-    );
+    const email = tempUser.email;
+    const subject = "Verify Your Email";
+    const body = `<p>Your verification code is: <strong>${newVerificationCode}</strong></p>`;
+
+    const mailRes =
+      process.env.NODE_ENV === "production"
+        ? await sendGridMail(email, subject, body)
+        : await nodeMailerMail(email, subject, body);
+    console.log("Mail res: ", mailRes);
 
     // Respond with success message & return new token
     return res.json({

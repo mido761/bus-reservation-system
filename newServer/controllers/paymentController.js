@@ -5,7 +5,8 @@ import { buildPaymobBody } from "../helperfunctions/paymob/buildPaymobBody.js";
 import { findOrCreatePayment } from "../helperfunctions/paymob/findOrCreatePayment.js";
 import { handlePaymobError } from "../helperfunctions/paymob/handlePaymobError.js";
 import { limitPaymentRetries } from "../helperfunctions/paymob/countPaymentRetries.js";
-import { sendMail } from "../utils/nodeMailer.js";
+import { sendGridMail, nodeMailerMail } from "../utils/mailService.js";
+// import { sendMail } from "../utils/nodeMailer.js";
 import { sendTicketEmail } from "../utils/sendTicketMail.js";
 import {sendRefundEmail} from "../utils/sendRefundMail.js";
 

@@ -30,16 +30,16 @@ const Header = () => {
           </h1>
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="hover:text-primary font-medium">
+            <a href="/#/home" className="hover:text-primary font-medium">
               Home
             </a>
-            <a href="#routes" className="hover:text-primary font-medium">
+            <a href="/#/home" className="hover:text-primary font-medium">
               Routes
             </a>
-            <a href="#about" className="hover:text-primary font-medium">
+            <a href="/#/about" className="hover:text-primary font-medium">
               About
             </a>
-            <a href="#contact" className="hover:text-primary font-medium">
+            <a href="/#/help" className="hover:text-primary font-medium">
               Contact
             </a>
           </nav>
@@ -72,13 +72,13 @@ const Header = () => {
                 <DropdownMenuItem onClick={() => navigate("/home")}>
                   Home
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/routes")}>
+                <DropdownMenuItem onClick={() => navigate("/home")}>
                   Routes
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/about")}>
                   About
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/contact")}>
+                <DropdownMenuItem onClick={() => navigate("/help")}>
                   Contact
                 </DropdownMenuItem>
               </DropdownMenuContent>
