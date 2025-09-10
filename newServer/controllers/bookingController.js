@@ -365,8 +365,8 @@ async function cancel(req, res) {
       amount_cents: booking[0].amount * 100,  // still need the calculation for the fee
       extras: { ee: 22 },
       special_reference: `${booking[0].payment_id}`,
-      notification_url: `${process.env.BASE_URL}/payment/webhook`,
-      redirection_url: "http://localhost:5173/#/success",
+      notification_url: `${process.env.BASE_URL}/webhook/refund`,
+      redirection_url: process.env.WEBHOOK_REDIRECT_URL,
     };
     const response = await axios.post(
       "https://accept.paymob.com/api/acceptance/void_refund/refund",

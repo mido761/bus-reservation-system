@@ -29,7 +29,7 @@ export function buildPaymobBody(payment, user, booking, trip, route) {
 
     extras: { ee: 22 },
     special_reference: `${payment.payment_id}`,
-    notification_url: `${process.env.BASE_URL}/payment/webhook`,
-    redirection_url: "http://localhost:5173/#/payment-status",
+    notification_url: `${process.env.BASE_URL}/webhook/standalone`,
+    redirection_url: process.env.WEBHOOK_REDIRECT_URL,
   };
 }

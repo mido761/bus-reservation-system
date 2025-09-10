@@ -23,6 +23,7 @@ import authentication from "./middleware/authentication.js";
 import register from "./routers/registerRouter.js";
 import auth from "./routers/authRouter.js";
 import forgotPassword from "./routers/forgotPasswordRouter.js";
+import webhook from "./routers/webhookRouter.js"
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -164,6 +165,8 @@ app.use("/trip", tripRouter);
 app.use("/booking", bookingRouter);
 app.use("/user", userRouter);
 app.use("/payment", payment);
+app.use("/webhook", webhook);
+
 // app.use((req, res) => {
 //   return res.status(404).json({ message: "Not Found" });
 // });
