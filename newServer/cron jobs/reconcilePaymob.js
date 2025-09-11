@@ -1,6 +1,7 @@
 import pool from "../db.js";
 // import { fetchPaymobAuthToken } from "../helperfunctions/paymob/fetchPaymobAuthToken.js";
 import { PaymobClient } from "../helperfunctions/paymob/paymobClient.js";
+import { rules } from "../helperfunctions/webhookFun/rules.js";
 
 import axios from "axios";
 
@@ -49,6 +50,9 @@ export async function reconcilePaymob(payment_id = undefined) {
     const newPaymentStatus = tx.success ? "paid" : "failed";
     const newBookingStatus = tx.success ? "confirmed" : "failed";
     const newPriority = tx.success ? 1 : 3;
+
+    const rule = rules.find((r) => r.match(tx));
+    console.log(rule)
 
     const amountCents = Number(tx.amount_cents);
     if (isNaN(amountCents)) {

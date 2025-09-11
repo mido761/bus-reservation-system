@@ -347,6 +347,7 @@ const webhook = async (req, res) => {
     const amount_cents = obj.amount_cents;
     const userEmail = obj.order.shipping_data.email;
 
+    console.log(obj.is_refund, obj.is_standalone_payment )
     console.log(obj);
     const rule = rules.find((r) => r.match(obj));
     for (const r of rules) {
@@ -360,16 +361,6 @@ const webhook = async (req, res) => {
 
     console.log(rule);
     switch (rule.action) {
-      case "refund":
-        const refund = await refundUpdate(
-          client,
-          userEmail,
-          transactionId,
-          amount_cents,
-          paymentId
-        );
-        console.log(refund);
-        break;
       case "standAlone":
         const standalone = await standaloneUpdate(
           client,
@@ -381,11 +372,21 @@ const webhook = async (req, res) => {
         );
         console.log(standalone);
         break;
+      case "refund":
+        const refund = await refundUpdate(
+          client,
+          userEmail,
+          transactionId,
+          amount_cents,
+          paymentId
+        );
+        console.log(refund);
+        break;
+      case "auth":
+        break;
       case "capture":
         break;
       case "void":
-        break;
-      case "auth":
         break;
       default:
         console.log("No match");
@@ -534,16 +535,32 @@ const editPayment = async (req, res) => {};
 
 const refundPayment = async (req, res) => {
   const { paymentId } = req.body;
+  console.log(paymentId);
+  let transaction_id, amount, booking_id;
   try {
     const getPaymentQ = `
-    SELECT transaction_id, amount
+    SELECT transaction_id, amount, booking_id
     FROM payment
     WHERE payment_id = $1
     LIMIT 1
     `;
     const { rows: paymentRows } = await pool.query(getPaymentQ, [paymentId]);
 
-    const { transaction_id, amount } = paymentRows[0];
+    ({ transaction_id, amount, booking_id } = paymentRows[0]);
+
+    const getBookingQ = `
+    SELECT passenger_id
+    FROM booking
+    WHERE booking_id = $1
+    LIMIT 1
+    `;
+    const { rows: bookingRows } = await pool.query(getBookingQ, [booking_id]);
+    const passengerId = bookingRows[0].passenger_id;
+    const userId = req.session.userId;
+
+    if (userId !== passengerId) {
+      return res.status(403).json({ message: "Unauthorized action!" });
+    }
 
     // Paymob CLient
     const paymob = new PaymobClient({
@@ -553,27 +570,37 @@ const refundPayment = async (req, res) => {
     });
 
     const refundRes = await paymob.refund(transaction_id, amount);
+    // console.log(refundRes);
     return res
       .status(200)
       .json({ message: "Refund request sent successfully" });
   } catch (err) {
-    console.error("Error processing refund: ", err);
+    // console.error("Error processing refund: ", err);
     if (
       err.status === 400 &&
-      err.response.data.message === "Full Amount has been already refunded!"
+      err.response.data.message === "Full Amount has been already refunded"
     ) {
-      const paymentUpdate = await pool.query(
-        `UPDATE payment
-          SET payment_status = 'refunded',
-           updated_at = NOW()
-          WHERE payment_id = $1
-          AND payment_status = 'paid'
-          RETURNING booking_id`,
-        [paymentId]
+      // const paymentUpdate = await pool.query(
+      //   `UPDATE payment
+      //     SET payment_status = 'refunded',
+      //      updated_at = NOW()
+      //     WHERE payment_id = $1
+      //     AND payment_status = 'paid'
+      //     RETURNING booking_id`,
+      //   [paymentId]
+      // );
+      const client = await pool.connect();
+      const refund = await refundUpdate(
+        client,
+        null,
+        transaction_id,
+        amount * 1000,
+        paymentId
       );
 
-      if (paymentUpdate.rowCount)
-        return res.status(400).json({ message: "Payment already refunded!" });
+      console.log(refund);
+
+      return res.status(400).json({ message: "Payment already refunded!" });
     }
     return res
       .status(500)
