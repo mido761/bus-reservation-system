@@ -360,6 +360,16 @@ const webhook = async (req, res) => {
 
     console.log(rule);
     switch (rule.action) {
+      case "refund":
+        const refund = await refundUpdate(
+          client,
+          userEmail,
+          transactionId,
+          amount_cents,
+          paymentId
+        );
+        console.log(refund);
+        break;
       case "standAlone":
         const standalone = await standaloneUpdate(
           client,
@@ -370,15 +380,15 @@ const webhook = async (req, res) => {
           paymentId
         );
         console.log(standalone);
-      case "refund":
-        const refund = await refundUpdate(
-          client,
-          userEmail,
-          transactionId,
-          amount_cents,
-          paymentId
-        );
-        console.log(refund);
+        break;
+      case "capture":
+        break;
+      case "void":
+        break;
+      case "auth":
+        break;
+      default:
+        console.log("No match");
     }
 
     return res.status(200).json({ ok: true });
@@ -392,7 +402,9 @@ const webhook = async (req, res) => {
       return res.status(400).json({ error: "Invalid UUID format" });
     }
 
-    return res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+    return res
+      .status(err.status || 500)
+      .json({ error: err.message || "Internal server error" });
   } finally {
     client.release();
   }
@@ -546,6 +558,23 @@ const refundPayment = async (req, res) => {
       .json({ message: "Refund request sent successfully" });
   } catch (err) {
     console.error("Error processing refund: ", err);
+    if (
+      err.status === 400 &&
+      err.response.data.message === "Full Amount has been already refunded!"
+    ) {
+      const paymentUpdate = await pool.query(
+        `UPDATE payment
+          SET payment_status = 'refunded',
+           updated_at = NOW()
+          WHERE payment_id = $1
+          AND payment_status = 'paid'
+          RETURNING booking_id`,
+        [paymentId]
+      );
+
+      if (paymentUpdate.rowCount)
+        return res.status(400).json({ message: "Payment already refunded!" });
+    }
     return res
       .status(500)
       .json({ message: "Error processing refund!", error: err });

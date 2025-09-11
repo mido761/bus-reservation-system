@@ -11,14 +11,15 @@ export const refundTxn = async (secretKey, txnId, amount) => {
 
     return refundResponse.data; // ✅ return the response
   } catch (err) {
+    throw err
     // Enhance error handling
-    if (err.response) {
-      throw new Error(
-        `Paymob API error (${err.response.status}): ${JSON.stringify(
-          err.response.data
-        )}`
-      );
-    }
-    throw new Error(`Transaction Void failed: ${err.message}`);
+    // if (err.response) {
+    //   throw new Error(
+    //     `Paymob API error (${err.response.status}): ${JSON.stringify(
+    //       err.response.data
+    //     )}`
+    //   );
+    // }
+    // throw new Error(`Transaction Void failed: ${err.message}`);
   }
 };

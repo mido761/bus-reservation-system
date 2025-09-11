@@ -26,6 +26,8 @@ export const refundUpdate = async (
       [paymentId]
     );
 
+    const bookingId = paymentUpdate.rows[0].booking_id;
+
     if (paymentUpdate.rowCount === 0) {
       await client.query("ROLLBACK");
       return res
@@ -44,7 +46,7 @@ export const refundUpdate = async (
     const refundId = refundInsert.rows[0].refund_id;
 
     // Update booking
-    await client.query(
+    const { rows: bookingRows } = await client.query(
       `UPDATE booking
        SET status = 'cancelled',
            priority = NULL,
@@ -54,14 +56,11 @@ export const refundUpdate = async (
     );
 
     // Update tickets
-    await client.query(
-      `UPDATE tickets
+    const updateTicketQ = `UPDATE tickets
        SET status = 'cancelled',
            updated_at = NOW()
-       WHERE booking_id = $1`,
-      [bookingId]
-    );
-    const { rows: userTicket } = await client.query(getTicketQ, [bookingId]);
+       WHERE booking_id = $1`;
+    const { rows: userTicket } = await client.query(updateTicketQ, [bookingId]);
     const ticket = userTicket[0];
 
     // await sendTicketEmail(userEmail, ticket);
