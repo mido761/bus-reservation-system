@@ -1,11 +1,11 @@
 import formatDateAndTime from '../../../client/src/formatDateAndTime.js'
 
 // 🔹 Helper 2: Build Paymob request body
-export function buildPaymobBody(payment, user, booking, trip, route) {
+export function buildPaymobBody(integrationIds, payment, user, booking, trip, route) {
   return {
     amount: trip.price * 100,
     currency: "EGP",
-    payment_methods: [Number(process.env.INTEGRATION_ID)],
+    payment_methods: integrationIds,
 
     items: [
       {
@@ -29,7 +29,7 @@ export function buildPaymobBody(payment, user, booking, trip, route) {
 
     extras: { ee: 22 },
     special_reference: `${payment.payment_id}`,
-    notification_url: `${process.env.BASE_URL}/webhook/standalone`,
-    redirection_url: process.env.WEBHOOK_REDIRECT_URL,
+    notification_url: `${process.env.BASE_URL}/payment/webhook`,
+    redirection_url: `${process.env.FRONT_END_URL}/#/payment-status`,
   };
 }

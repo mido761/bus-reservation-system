@@ -1,5 +1,7 @@
 import pool from "../db.js";
-import {fetchPaymobAuthToken} from "../helperfunctions/paymob/fetchPaymobAuthToken.js";
+// import { fetchPaymobAuthToken } from "../helperfunctions/paymob/fetchPaymobAuthToken.js";
+import { PaymobClient } from "../helperfunctions/paymob/paymobClient.js";
+
 import axios from "axios";
 
 export async function reconcilePaymob(payment_id = undefined) {
@@ -22,15 +24,23 @@ export async function reconcilePaymob(payment_id = undefined) {
 
   for (const p of pending.rows) {
     try {
-      const token = await fetchPaymobAuthToken();
+      // Paymob CLient
+      const paymob = new PaymobClient({
+        publicKey: process.env.PUBLIC_KEY,
+        secretKey: process.env.SECRET_KEY,
+        apiKey: process.env.API_KEY,
+      });
 
-      const inquiryResponse = await axios.post(
-        "https://accept.paymob.com/api/ecommerce/orders/transaction_inquiry",
-        { merchant_order_id: p.payment_id },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const token = await paymob.fetchAuthToken();
+
+      const inquiryResponse = await paymob.getTxn(
+        token,
+        "merchant_order_id",
+        p.payment_id
       );
 
-      tx = inquiryResponse.data;
+      console.log(inquiryResponse)
+      tx = inquiryResponse;
     } catch (err) {
       // if (err?.response?.status === 404) continue;
       throw new Error(err);

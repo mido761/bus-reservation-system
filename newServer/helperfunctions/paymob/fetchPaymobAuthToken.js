@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 
 dotenv.config();
-export const fetchPaymobAuthToken = async () => {
+export const fetchPaymobAuthToken = async (apiKey) => {
   // var token = ''
   // const response = await axios.post('https://accept.paymob.com/api/auth/tokens', {api_key: process.env.API_KEY})
   // .then((res) => token = res?.data?.token)
@@ -12,7 +12,7 @@ export const fetchPaymobAuthToken = async () => {
   try {
     const response = await axios.post(
       "https://accept.paymob.com/api/auth/tokens",
-      { api_key: process.env.API_KEY }
+      { api_key: apiKey }
     );
 
     const token = response.data.token;
