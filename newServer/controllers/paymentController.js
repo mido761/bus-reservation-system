@@ -18,7 +18,7 @@ import { refundUpdate } from "../helperfunctions/webhookFun/refund.js";
 
 const getUserPayments = async (req, res) => {
   try {
-    const getUserPayments = `
+    const getUserPaymentsQ = `
     SELECT 
       payment.payment_id,
       payment.amount,
@@ -33,8 +33,37 @@ const getUserPayments = async (req, res) => {
     ORDER BY payment.created_at DESC, payment.updated_at DESC
     `;
 
-    const { rows } = await pool.query(getUserPayments, [req.session.userId]);
+    const { rows } = await pool.query(getUserPaymentsQ, [req.session.userId]);
     const payments = rows;
+
+    return res.status(200).json({ user_payments: payments });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getPaymentByBooking = async (req, res) => {
+  const { bookingId } = req.query;
+  console.log(bookingId)
+  try {
+    const getPaymentByBookingQ = `
+    SELECT 
+      payment.payment_id,
+      payment.amount,
+      payment.payment_method,
+      payment.payment_status,
+      payment.created_at,
+      payment.updated_at
+    FROM payment
+    JOIN booking ON booking.passenger_id === $1 
+    WHERE booking_id = $2
+    ORDER BY payment.payment.created_at DESC, payment.payment.updated_at DESC
+    LIMIT 1
+    `;
+
+    const { rows } = await pool.query(getPaymentByBookingQ, [req.session.userId, bookingId]);
+    const payments = rows;
+    console.log(rows)
 
     return res.status(200).json({ user_payments: payments });
   } catch (error) {
@@ -63,7 +92,7 @@ const standAlonePayment = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found." });
 
     // Step 2: Get pending payment or create a new one
-    const payment = await findOrCreatePayment(booking.booking_id);
+    const payment = await findOrCreatePayment(booking.booking_id, trip.price);
     if (payment.payment_status === "paid") {
       return res.status(400).json({ message: "Payment already completed." });
     }
@@ -348,8 +377,9 @@ const webhook = async (req, res) => {
     const userEmail = obj.order.shipping_data.email;
 
     console.log(obj.is_refund, obj.is_standalone_payment )
-    console.log(obj);
     const rule = rules.find((r) => r.match(obj));
+
+    console.log("Checking rule match in webhook...");
     for (const r of rules) {
       try {
         const didMatch = r.match(obj);
@@ -610,6 +640,7 @@ const refundPayment = async (req, res) => {
 
 export {
   getUserPayments,
+  getPaymentByBooking,
   addPayment,
   webhook,
   editPayment,

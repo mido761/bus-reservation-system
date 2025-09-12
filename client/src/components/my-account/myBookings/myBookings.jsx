@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"; // ✅ Import Button
+import { toast } from "react-toastify";
 import formatDateAndTime from "../../../formatDateAndTime";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -15,7 +16,7 @@ const statusStyles = {
 const MyBookings = () => {
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
-  const [deletingId, setDeletingId] = useState(null); // ✅ Added state
+  const [cancelledId, setCancelledId] = useState(null); // ✅ Added state
 
   const fetchBookings = async () => {
     try {
@@ -31,20 +32,43 @@ const MyBookings = () => {
     }
   };
 
-  const handleDelete = async (bookingId) => {
-    if (!window.confirm("Are you sure you want to delete this booking?")) return;
+  const handleCancel = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to cancel this booking?"))
+      return;
 
     try {
-      setDeletingId(bookingId);
-      await axios.delete(`${backEndUrl}/booking/delete/${bookingId}`, {
-        withCredentials: true,
-      });
-      setBookings((prev) => prev.filter((b) => b.booking_id !== bookingId));
+      setCancelledId(bookingId);
+      await axios.post(
+        `${backEndUrl}/booking/cancel-booking`,
+        { bookingId },
+        {
+          withCredentials: true,
+        }
+      );
+
+      await axios.post(
+        `${backEndUrl}/booking/cancel-booking`,
+        { bookingId },
+        {
+          withCredentials: true,
+        }
+      );
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking.booking_id === bookingId
+            ? { ...booking, status: "cancelled" }
+            : booking
+        )
+      );
+      toast.success(
+        "Booking cancelled successfully, check payment status for refund requests"
+      );
+      // setBookings((prev) => prev.filter((b) => b.booking_id !== bookingId));
     } catch (err) {
-      console.error("Error deleting booking:", err);
-      alert("Failed to delete booking. Please try again.");
+      console.error("Error cancelling booking:", err);
+      toast.error("Cancellation failed! Please try again.");
     } finally {
-      setDeletingId(null);
+      setCancelledId(null);
     }
   };
 
@@ -96,7 +120,8 @@ const MyBookings = () => {
                   <strong>Status: </strong>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      statusStyles[booking.status] || "bg-gray-100 text-gray-700"
+                      statusStyles[booking.status] ||
+                      "bg-gray-100 text-gray-700"
                     }`}
                   >
                     {booking.status.toUpperCase()}
@@ -113,15 +138,36 @@ const MyBookings = () => {
               </div>
 
               {/* Delete Button */}
-              <div className="pt-10 flex justify-center">
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(booking.booking_id)}
-                  disabled={deletingId === booking.booking_id}
-                >
-                  {deletingId === booking.booking_id ? "Deleting..." : "Delete"}
-                </Button>
+              <div className="pt-10 flex justify-center gap-4">
+                {booking.status === "pending" && (
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleComplete(booking.booking_id)}
+                    disabled={cancelledId === booking.booking_id}
+                  >
+                    {cancelledId === booking.booking_id
+                      ? "Complete..."
+                      : "Complete"}
+                  </Button>
+                )}
+
+                {!["cancelled", "failed", "expired"].includes(
+                  booking.status
+                ) && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleCancel(booking.booking_id)}
+                    disabled={cancelledId === booking.booking_id}
+                  >
+                    {cancelledId === booking.booking_id
+                      ? "Canceling..."
+                      : "Cancel"}
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>

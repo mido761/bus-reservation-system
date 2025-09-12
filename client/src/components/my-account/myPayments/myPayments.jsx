@@ -44,7 +44,7 @@ const MyPayments = () => {
           withCredentials: true,
         }
       );
-      
+
       toast.success(refundRes.data.message);
     } catch (error) {
       console.error("Error during refund: ", error);
@@ -120,17 +120,19 @@ const MyPayments = () => {
                 </div>
               </div>
 
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={(e) => handleRefundReq(e, payment.payment_id)}
-              >
-                {loadingId === payment.payment_id ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Refund"
-                )}
-              </Button>
+              {payment.payment_status === "paid" && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={(e) => handleRefundReq(e, payment.payment_id)}
+                >
+                  {loadingId === payment.payment_id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Refund"
+                  )}
+                </Button>
+              )}
             </CardContent>
           </Card>
         ))}
