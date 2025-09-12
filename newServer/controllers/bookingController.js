@@ -339,7 +339,7 @@ async function cancel(req, res) {
   // TODO: Cancel a booking
   const { bookingId } = req.body;
   const client = await pool.connect();
-  let paymob_payment_status, paymob_refund_status, amount;
+  let transactionId, paymob_payment_status, paymob_refund_status, amount;
   try {
     await client.query("BEGIN");
 
@@ -364,7 +364,7 @@ async function cancel(req, res) {
     const bookingStatus = booking[0]?.status;
     const paymentStatus = booking[0]?.payment_status;
     const paymentId = booking[0]?.payment_id;
-    const amount = booking[0]?.amount;
+    amount = booking[0]?.amount;
     console.log("paymentId: ", paymentId);
     console.log("Amount In payment: ", amount);
 
@@ -392,6 +392,7 @@ async function cancel(req, res) {
         paymentId
       );
 
+      transactionId = txnDetails.id || null;
       amount = txnDetails.amount_cents / 100 || null;
       paymob_payment_status = txnDetails.order.payment_status || null;
       paymob_refund_status = txnDetails.data.migs_order.status || null;
@@ -405,17 +406,17 @@ async function cancel(req, res) {
 
     // if (txnDetails.is_refunded)
 
-    // Refund the transaction if it's a paid standalone or captured
-    if (
-      paymob_payment_status === "PAID" &&
-      paymentStatus !== "refunded" &&
-      paymob_refund_status !== "REFUNDED"
-    ) {
-      const transactionId = txnDetails?.id || null;
-      // const amount = booking[0].amount;
-      const refundRes = await paymob.refund(transactionId, amount);
-      console.log("Refund res: ", refundRes);
-    }
+    // Automatic: Refund the transaction if it's a paid standalone or captured
+    // if (
+    //   paymob_payment_status === "PAID" &&
+    //   paymentStatus !== "refunded" &&
+    //   paymob_refund_status !== "REFUNDED"
+    // ) {
+    //   const transactionId = txnDetails?.id || null;
+    //   // const amount = booking[0].amount;
+    //   const refundRes = await paymob.refund(transactionId, amount);
+    //   console.log("Refund res: ", refundRes);
+    // }
 
     // Void the transaction if it is only authorized
     if (paymentStatus === "authorized") {
@@ -428,12 +429,12 @@ async function cancel(req, res) {
     if (bookingStatus !== "cancelled") {
       // Booking Query
       const cancelBookingQ = `
-      UPDATE booking
-      SET status = $1, updated_at = NOW(), priority = $2
-      WHERE booking_id = $3
-        AND (status = 'confirmed' OR status = 'pending' OR status = 'pending')
-      RETURNING booking_id, status
-    `;
+        UPDATE booking
+        SET status = $1, updated_at = NOW(), priority = $2
+        WHERE booking_id = $3
+          AND (status = 'confirmed' OR status = 'pending' OR status = 'pending')
+        RETURNING booking_id, status
+      `;
 
       const cancelledBooking = await client.query(cancelBookingQ, [
         "cancelled",
@@ -450,24 +451,29 @@ async function cancel(req, res) {
 
     if (booking[0].payment_id) {
       // Payment update Query
-      const cancelPaymentQ = `
+      const updatePaymentQ = `
         UPDATE payment
-        SET payment_status = $1, amount = $2, updated_at = NOW(), captured_status = $3
-        WHERE booking_id = $4
-          AND payment_status = $5
+        SET payment_status = $1, transaction_id = $2, amount = $3, updated_at = NOW(), captured_status = $4
+        WHERE booking_id = $5
+          AND payment_status = $6
         RETURNING payment_id, payment_status, amount
       `;
 
-      const cancelledPayment = await client.query(cancelPaymentQ, [
-        paymob_refund_status === "REFUNDED" ? "refunded" : "cancelled",
+      const updatedPayment = await client.query(updatePaymentQ, [
+        paymob_refund_status === "REFUNDED"
+          ? "refunded"
+          : paymob_payment_status === "PAID"
+          ? "paid"
+          : "cancelled",
+        transactionId,
         amount,
         null,
         bookingId,
         paymentStatus,
       ]);
 
-      console.log("Payment: ", cancelledPayment.rows);
-      if (!cancelledPayment.rowCount) {
+      console.log("Payment: ", updatedPayment.rows);
+      if (!updatedPayment.rowCount) {
         await client.query("ROLLBACK");
         throw new Error("Can't update payment!");
       }

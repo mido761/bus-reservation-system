@@ -11,6 +11,7 @@ export const refundTxn = async (secretKey, txnId, amount) => {
 
     return refundResponse.data; // ✅ return the response
   } catch (err) {
+    console.error("Error during refund: ", err)
     throw err
     // Enhance error handling
     // if (err.response) {
