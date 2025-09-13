@@ -93,6 +93,8 @@ export default function Navbar() {
               <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
               <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
               <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
+              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
+
             </span>
           </Button>
         </DropdownMenuTrigger>
@@ -100,6 +102,11 @@ export default function Navbar() {
           align="end"
           className="flex flex-col min-w-[180px]"
         >
+          {isAuthorized && !(location.pathname === "/home") && (
+            <DropdownMenuItem onClick={() => navigate("/home")}>
+              Home
+            </DropdownMenuItem>
+          )}
           {isAuthenticated && !(location.pathname === "/profile") && (
             <DropdownMenuItem onClick={() => navigate("/profile")}>
               Profile
@@ -115,6 +122,8 @@ export default function Navbar() {
               Admin Dashboard
             </DropdownMenuItem>
           )}
+          
+          
           <DropdownMenuSeparator />
           {isAuthenticated && (
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
@@ -124,6 +133,7 @@ export default function Navbar() {
 
       {/* Desktop links */}
       <div className="hidden md:flex gap-4 items-center">
+        
         {isAuthenticated && !(location.pathname === "/profile") && (
           <Button variant="ghost" onClick={() => navigate("/profile")}>
             Profile
@@ -137,6 +147,11 @@ export default function Navbar() {
         {isAuthorized && !(location.pathname === "/admin-dashboard") && (
           <Button variant="ghost" onClick={() => navigate("/admin-dashboard")}>
             Admin Dashboard
+          </Button>
+        )}
+         {isAuthorized && !(location.pathname === "/home") && (
+          <Button variant="ghost" onClick={() => navigate("/home")}>
+            Home
           </Button>
         )}
 

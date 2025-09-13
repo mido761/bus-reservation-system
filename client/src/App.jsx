@@ -160,7 +160,7 @@ function App() {
               <Auth>
                 <Navbar />
                 <UserAccount />
-                <Footer />
+                {/* <Footer /> */}
               </Auth>
             }
           />
@@ -291,7 +291,7 @@ function App() {
               <Auth requireAdmin={true}>
                 <Navbar />
                 <AdminDashboard />
-                <Footer />
+                {/* <Footer /> */}
               </Auth>
             }
           />
