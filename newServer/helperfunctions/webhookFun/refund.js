@@ -1,6 +1,6 @@
 export const refundUpdate = async (
   client,
-  userEmail,
+  userEmail = null,
   transactionId,
   amount_cents,
   paymentId
@@ -21,10 +21,15 @@ export const refundUpdate = async (
        SET payment_status = 'refunded',
            updated_at = NOW()
        WHERE payment_id = $1
-         AND payment_status = 'paid'
+            AND (payment_status = 'paid' OR payment_status = 'refunded')
        RETURNING booking_id`,
       [paymentId]
     );
+
+    console.log("Payment: ", paymentUpdate.rows);
+
+    const bookingId = paymentUpdate.rows[0].booking_id;
+    console.log("BookingId: ", bookingId)
 
     if (paymentUpdate.rowCount === 0) {
       await client.query("ROLLBACK");
@@ -40,11 +45,12 @@ export const refundUpdate = async (
        RETURNING refund_id`,
       [paymentId, transactionId, "bec I am", amount]
     );
+    console.log("Refund: ", refundInsert.rows);
 
     const refundId = refundInsert.rows[0].refund_id;
 
     // Update booking
-    await client.query(
+    const { rows: bookingRows } = await client.query(
       `UPDATE booking
        SET status = 'cancelled',
            priority = NULL,
@@ -52,17 +58,17 @@ export const refundUpdate = async (
        WHERE booking_id = $1`,
       [bookingId]
     );
+    console.log("Booking: ", bookingRows);
 
     // Update tickets
-    await client.query(
-      `UPDATE tickets
+    const updateTicketQ = `UPDATE tickets
        SET status = 'cancelled',
            updated_at = NOW()
-       WHERE booking_id = $1`,
-      [bookingId]
-    );
-    const { rows: userTicket } = await client.query(getTicketQ, [bookingId]);
+       WHERE booking_id = $1`;
+    const { rows: userTicket } = await client.query(updateTicketQ, [bookingId]);
     const ticket = userTicket[0];
+
+    console.log("Ticket: ", userTicket);
 
     // await sendTicketEmail(userEmail, ticket);
     // await client.query(

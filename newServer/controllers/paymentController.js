@@ -18,7 +18,7 @@ import { refundUpdate } from "../helperfunctions/webhookFun/refund.js";
 
 const getUserPayments = async (req, res) => {
   try {
-    const getUserPayments = `
+    const getUserPaymentsQ = `
     SELECT 
       payment.payment_id,
       payment.amount,
@@ -33,11 +33,65 @@ const getUserPayments = async (req, res) => {
     ORDER BY payment.created_at DESC, payment.updated_at DESC
     `;
 
-    const { rows } = await pool.query(getUserPayments, [req.session.userId]);
+    const { rows } = await pool.query(getUserPaymentsQ, [req.session.userId]);
     const payments = rows;
 
     return res.status(200).json({ user_payments: payments });
   } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getPaymentByBooking = async (req, res) => {
+  const { bookingId } = req.query;
+  console.log(bookingId);
+  try {
+    const getPaymentByBookingQ = `
+    SELECT 
+      p.payment_id,
+      p.amount,
+      p.payment_method,
+      p.payment_status,
+      p.created_at,
+      p.updated_at
+    FROM payment p
+    JOIN booking b ON b.passenger_id = $1 
+    WHERE b.booking_id = $2
+    ORDER BY p.created_at DESC, p.updated_at DESC
+    LIMIT 1
+    `;
+
+    const { rows } = await pool.query(getPaymentByBookingQ, [
+      req.session.userId,
+      bookingId,
+    ]);
+    const payment = rows[0];
+    console.log(rows[0]);
+
+    // Paymob CLient
+    const paymob = new PaymobClient({
+      publicKey: process.env.PUBLIC_KEY,
+      secretKey: process.env.SECRET_KEY,
+      apiKey: process.env.API_KEY,
+    });
+    [];
+
+    const token = await paymob.fetchAuthToken();
+    try {
+      const txnDetails = await paymob.getTxn(
+        token,
+        "merchant_order_id",
+        payment.payment_id
+      );
+
+      const paymob_payment_status = txnDetails.order.payment_status || null;
+    } catch (err) {
+      console.log("Txn Not Found!");
+    }
+
+    return res.status(200).json({ user_payment: payment });
+  } catch (error) {
+    console.error("Error getting payment: ", error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -63,7 +117,7 @@ const standAlonePayment = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found." });
 
     // Step 2: Get pending payment or create a new one
-    const payment = await findOrCreatePayment(booking.booking_id);
+    const payment = await findOrCreatePayment(booking.booking_id, trip.price);
     if (payment.payment_status === "paid") {
       return res.status(400).json({ message: "Payment already completed." });
     }
@@ -347,8 +401,10 @@ const webhook = async (req, res) => {
     const amount_cents = obj.amount_cents;
     const userEmail = obj.order.shipping_data.email;
 
-    console.log(obj);
+    console.log(obj.is_refund, obj.is_standalone_payment);
     const rule = rules.find((r) => r.match(obj));
+
+    console.log("Checking rule match in webhook...");
     for (const r of rules) {
       try {
         const didMatch = r.match(obj);
@@ -370,6 +426,7 @@ const webhook = async (req, res) => {
           paymentId
         );
         console.log(standalone);
+        break;
       case "refund":
         const refund = await refundUpdate(
           client,
@@ -379,6 +436,15 @@ const webhook = async (req, res) => {
           paymentId
         );
         console.log(refund);
+        break;
+      case "auth":
+        break;
+      case "capture":
+        break;
+      case "void":
+        break;
+      default:
+        console.log("No match");
     }
 
     return res.status(200).json({ ok: true });
@@ -392,7 +458,9 @@ const webhook = async (req, res) => {
       return res.status(400).json({ error: "Invalid UUID format" });
     }
 
-    return res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+    return res
+      .status(err.status || 500)
+      .json({ error: err.message || "Internal server error" });
   } finally {
     client.release();
   }
@@ -522,16 +590,38 @@ const editPayment = async (req, res) => {};
 
 const refundPayment = async (req, res) => {
   const { paymentId } = req.body;
+  let transaction_id,
+    amount,
+    booking_id,
+    paymob_payment_status,
+    paymob_refund_status;
   try {
     const getPaymentQ = `
-    SELECT transaction_id, amount
+    SELECT transaction_id, amount, booking_id, payment_status
     FROM payment
     WHERE payment_id = $1
     LIMIT 1
     `;
     const { rows: paymentRows } = await pool.query(getPaymentQ, [paymentId]);
 
-    const { transaction_id, amount } = paymentRows[0];
+    const paymentStatus = paymentRows[0].payment_status;
+    if (paymentStatus === "refunded") {
+      return res.status(400).json({ message: "Payment already refunded!" });
+    }
+    ({ transaction_id, amount, booking_id } = paymentRows[0]);
+
+    const getBookingQ = `
+    SELECT passenger_id
+    FROM booking
+    WHERE booking_id = $1
+    LIMIT 1
+    `;
+    const { rows: bookingRows } = await pool.query(getBookingQ, [booking_id]);
+    const passengerId = bookingRows[0].passenger_id;
+    const userId = req.session.userId;
+    if (userId !== passengerId) {
+      return res.status(403).json({ message: "Unauthorized action!" });
+    }
 
     // Paymob CLient
     const paymob = new PaymobClient({
@@ -540,12 +630,77 @@ const refundPayment = async (req, res) => {
       apiKey: process.env.API_KEY,
     });
 
+    if (!transaction_id) {
+      const token = await paymob.fetchAuthToken();
+
+      const txnDetails = await paymob.getTxn(
+        token,
+        "merchant_order_id",
+        paymentId
+      );
+
+      transaction_id = txnDetails.id || null;
+      amount = txnDetails.amount_cents / 100 || null;
+      paymob_payment_status = txnDetails.order.payment_status || null;
+      paymob_refund_status = txnDetails.data.migs_order.status || null;
+      // console.log("Transaction details: ", txnDetails);
+      // console.log("Payment status: ", paymob_payment_status);
+      // console.log("Refund status: ", paymob_refund_status);
+      // console.log("Amount: ", amount);
+    }
+    console.log("Txn ID: ", transaction_id);
+
+    if (paymob_refund_status === "REFUNDED") {
+      const client = await pool.connect();
+      const refund = await refundUpdate(
+        client,
+        null,
+        transaction_id,
+        amount,
+        paymentId
+      );
+      console.log(refund);
+      return res.status(400).json({ message: "Payment already refunded!" });
+    }
+
     const refundRes = await paymob.refund(transaction_id, amount);
+
+    console.log("Refund res: ", refundRes);
     return res
       .status(200)
       .json({ message: "Refund request sent successfully" });
   } catch (err) {
     console.error("Error processing refund: ", err);
+    if (
+      err.status === 400 &&
+      err.response.data.message === "Full Amount has been already refunded"
+    ) {
+      // const paymentUpdate = await pool.query(
+      //   `UPDATE payment
+      //     SET payment_status = 'refunded',
+      //      updated_at = NOW()
+      //     WHERE payment_id = $1
+      //     AND payment_status = 'paid'
+      //     RETURNING booking_id`,
+      //   [paymentId]
+      // );
+      const client = await pool.connect();
+
+      try {
+        const refund = await refundUpdate(
+          client,
+          null,
+          transaction_id,
+          amount * 1000,
+          paymentId
+        );
+        console.log(refund);
+      } catch (err) {
+        console.error("Error updating: ", err);
+      }
+
+      return res.status(400).json({ message: "Payment already refunded!" });
+    }
     return res
       .status(500)
       .json({ message: "Error processing refund!", error: err });
@@ -554,6 +709,7 @@ const refundPayment = async (req, res) => {
 
 export {
   getUserPayments,
+  getPaymentByBooking,
   addPayment,
   webhook,
   editPayment,

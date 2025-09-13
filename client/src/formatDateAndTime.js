@@ -14,7 +14,7 @@ const formatDateTime = (time="00:00:00", type='time', timeZone = 'EET') => {
 
   // Check if the datetime is valid
   if (!luxonDateTime.isValid) {
-    console.error("Invalid date-time string:", fullDateTime);
+    // console.error("Invalid date-time string:", fullDateTime);
     return null;  // Handle the invalid case (returning null here)
   }
 

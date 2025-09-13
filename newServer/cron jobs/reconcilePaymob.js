@@ -1,6 +1,7 @@
 import pool from "../db.js";
 // import { fetchPaymobAuthToken } from "../helperfunctions/paymob/fetchPaymobAuthToken.js";
 import { PaymobClient } from "../helperfunctions/paymob/paymobClient.js";
+import { rules } from "../helperfunctions/webhookFun/rules.js";
 
 import axios from "axios";
 
@@ -39,7 +40,7 @@ export async function reconcilePaymob(payment_id = undefined) {
         p.payment_id
       );
 
-      console.log(inquiryResponse)
+      console.log(inquiryResponse);
       tx = inquiryResponse;
     } catch (err) {
       // if (err?.response?.status === 404) continue;
@@ -50,11 +51,21 @@ export async function reconcilePaymob(payment_id = undefined) {
     const newBookingStatus = tx.success ? "confirmed" : "failed";
     const newPriority = tx.success ? 1 : 3;
 
+    const rule = rules.find((r) => r.match(tx));
+    console.log(rule)
+
+    const amountCents = Number(tx.amount_cents);
+    if (isNaN(amountCents)) {
+      throw new Error("Invalid amount in webhook payload");
+    }
+
+    const amount = Math.floor(amountCents / 100);
+
     await client.query("BEGIN");
     try {
       await client.query(
-        "UPDATE payment SET payment_status = $1, transaction_id = $2 WHERE payment_id = $3",
-        [newPaymentStatus, tx.id, p.payment_id]
+        "UPDATE payment SET payment_status = $1, transaction_id = $2, amount = $3 WHERE payment_id = $4",
+        [newPaymentStatus, tx.id, amount, p.payment_id]
       );
 
       await client.query(
