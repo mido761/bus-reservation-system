@@ -85,78 +85,73 @@ export default function Navbar() {
         VIP Travel
       </h1>
 
-      {/* Hamburger / Dropdown */}
+      {/* Mobile Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="group md:hidden hover:bg-primary">
-            <span className=" hamburger-icon flex flex-col gap-1">
-              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
-              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
-              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
-              <span className="w-6 h-0.5 bg-primary group-hover:bg-white"></span>
-
-            </span>
+          <Button variant="ghost" className="md:hidden p-2 flex flex-col gap-1">
+            {[...Array(3)].map((_, i) => (
+              <span key={i} className="w-6 h-0.5 bg-primary" />
+            ))}
           </Button>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent
           align="end"
           className="flex flex-col min-w-[180px]"
         >
-          {isAuthorized && !(location.pathname === "/home") && (
+          {isAuthorized && (
             <DropdownMenuItem onClick={() => navigate("/home")}>
               Home
             </DropdownMenuItem>
           )}
-          {isAuthenticated && !(location.pathname === "/profile") && (
+          {isAuthenticated && (
             <DropdownMenuItem onClick={() => navigate("/profile")}>
               Profile
             </DropdownMenuItem>
           )}
-          {isAuthenticated && !(location.pathname === "/my-account") && (
+          {isAuthenticated && (
             <DropdownMenuItem onClick={() => navigate("/my-account")}>
               My Account
             </DropdownMenuItem>
           )}
-          {isAuthorized && !(location.pathname === "/admin-dashboard") && (
+          {isAuthorized && (
             <DropdownMenuItem onClick={() => navigate("/admin-dashboard")}>
               Admin Dashboard
             </DropdownMenuItem>
           )}
-          
-          
-          <DropdownMenuSeparator />
           {isAuthenticated && (
-            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Desktop links */}
+      {/* Desktop Menu */}
       <div className="hidden md:flex gap-4 items-center">
-        
-        {isAuthenticated && !(location.pathname === "/profile") && (
-          <Button variant="ghost" onClick={() => navigate("/profile")}>
-            Profile
-          </Button>
-        )}
-        {isAuthenticated && !(location.pathname === "/my-account") && (
-          <Button variant="ghost" onClick={() => navigate("/my-account")}>
-            My Account
-          </Button>
-        )}
-        {isAuthorized && !(location.pathname === "/admin-dashboard") && (
-          <Button variant="ghost" onClick={() => navigate("/admin-dashboard")}>
-            Admin Dashboard
-          </Button>
-        )}
-         {isAuthorized && !(location.pathname === "/home") && (
+        {isAuthorized && (
           <Button variant="ghost" onClick={() => navigate("/home")}>
             Home
           </Button>
         )}
-
         {isAuthenticated && (
-          <Button onClick={handleLogout}>
+          <Button variant="ghost" onClick={() => navigate("/profile")}>
+            Profile
+          </Button>
+        )}
+        {isAuthenticated && (
+          <Button variant="ghost" onClick={() => navigate("/my-account")}>
+            My Account
+          </Button>
+        )}
+        {isAuthorized && (
+          <Button variant="ghost" onClick={() => navigate("/admin-dashboard")}>
+            Admin Dashboard
+          </Button>
+        )}
+        {isAuthenticated && (
+          <Button variant="destructive" onClick={handleLogout}>
             Logout
           </Button>
         )}
