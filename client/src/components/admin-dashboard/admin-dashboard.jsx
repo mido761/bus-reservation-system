@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import Stop from "./Stops/stops";
 import Route from "./Route/route";
 import Bus from "./Bus/bus";
@@ -12,7 +11,6 @@ const MENU = [
   { key: "stops", label: "Stops", icon: "🛑", component: Stop },
   { key: "routes", label: "Routes", icon: "🛣️", component: Route },
   { key: "bus", label: "Bus", icon: "🚌", component: Bus }
-  
 ];
 
 export default function AdminDashboard() {

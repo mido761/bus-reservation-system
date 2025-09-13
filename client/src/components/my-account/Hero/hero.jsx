@@ -8,8 +8,6 @@ export default function Hero() {
       </h2>
       <p className="text-gray-600 text-lg leading-relaxed">
         Here you can view your past trips, manage your bookings, and check your payment history.
-        <br />
-        Click the menu to get started!
       </p>
     </section>
   );
