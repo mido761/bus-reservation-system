@@ -1,8 +1,4 @@
-import Bus from "../models/bus.js";
-import Seat from "../models/seats.js";
-import mongoose from "mongoose";
 import pool from "../db.js";
-import { DateTime } from "luxon";
 import QRCode from "qrcode";
 
 const getAvailableBuses = async (req, res) => {

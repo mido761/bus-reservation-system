@@ -1,6 +1,6 @@
 import pool from "../db.js";
 // import { fetchPaymobAuthToken } from "../helperfunctions/paymob/fetchPaymobAuthToken.js";
-import { PaymobClient } from "../helperfunctions/paymob/paymobClient.js";
+import { PaymobClient } from "../paymob/paymobClient.js";
 import { rules } from "../helperfunctions/webhookFun/rules.js";
 
 import axios from "axios";

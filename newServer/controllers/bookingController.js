@@ -1,10 +1,7 @@
 import { DateTime } from "luxon";
 import pool from "../db.js";
 import axios from "axios";
-import { PaymobClient } from "../helperfunctions/paymob/paymobClient.js";
-
-// Booking Controller Template
-// Implement each function as needed for your business logic
+import { PaymobClient } from "../paymob/paymobClient.js";
 
 async function getBookings(req, res) {
   // TODO: Fetch all bookings
@@ -56,7 +53,6 @@ async function getBookingInfo(req, res) {
 }
 
 async function getUserBookings(req, res) {
-  // TODO: Fetch bookings for a specific user
   const userId = req.session.userId;
   try {
     //Query
@@ -110,16 +106,9 @@ async function getUserBookings(req, res) {
 }
 
 async function filterUserBookings(req, res) {
-  // TODO: Fetch bookings for a specific user
   const userId = req.session.userId;
   const { tripId } = req.body;
   try {
-    //Query
-    // SELECT *
-    // FROM booking
-    // WHERE passenger_id = $1
-    // ORDER BY priority ASC, booked_at DESC
-
     const getBookingInfo = `
     SELECT 
       booking.booking_id,
@@ -162,10 +151,8 @@ async function filterUserBookings(req, res) {
 }
 
 async function getTripBookings(req, res) {
-  // TODO: Fetch bookings for a specific trip
   const tripId = req.params.tripId;
   try {
-    //Query
     const checkTrip = `SELECT * FROM trips WHERE trip_id = $1`;
     const { rows: trip } = await pool.query(checkTrip, [tripId]);
     if (!trip) {
@@ -192,10 +179,8 @@ async function getTripBookings(req, res) {
 }
 
 async function getBusBookings(req, res) {
-  // TODO: Fetch bookings for a specific trip
   const busId = req.params.busId;
   try {
-    //Query
     const checkBus = `SELECT * FROM bus WHERE bus_id = $1`;
     const { rows: bus } = await pool.query(checkTrip, [busId]);
     if (!bus) {
@@ -230,13 +215,14 @@ async function book(req, res) {
 
     // Check if user already has pending booking
     const checkQuery = `
-    SELECT b.*, s.stop_name, s.location
-    FROM booking b
-    JOIN stop s ON b.stop_id = s.stop_id
-    WHERE b.status = $1 
-      AND b.passenger_id = $2 
-      AND b.trip_id = $3 
-  `;
+      SELECT b.*, s.stop_name, s.location
+      FROM booking b
+      JOIN stop s 
+        ON b.stop_id = s.stop_id
+      WHERE b.status = $1 
+        AND b.passenger_id = $2 
+        AND b.trip_id = $3 
+    `;
 
     const { rows } = await client.query(checkQuery, [
       "pending",
@@ -307,10 +293,8 @@ async function confirmBooking(req, res) {
 }
 
 async function updateBooking(req, res) {
-  // TODO: Update booking details
   const bookingId = req.params.bookingId;
   try {
-    //Query
     const getBookingInfo = `
     SELECT *
     FROM booking
@@ -336,14 +320,12 @@ async function updateBooking(req, res) {
 }
 
 async function cancel(req, res) {
-  // TODO: Cancel a booking
   const { bookingId } = req.body;
   const client = await pool.connect();
   let transactionId, paymob_payment_status, paymob_refund_status, amount;
   try {
     await client.query("BEGIN");
 
-    //Query
     const getBookingInfo = `
       SELECT b.*, p.*
       FROM booking b
@@ -426,8 +408,7 @@ async function cancel(req, res) {
     }
 
     // Only cancel pending or confirmed bookings
-    if (bookingStatus !== "cancelled") {
-      // Booking Query
+    if (!["failed", "expired", "cancelled"].includes(bookingStatus)) {
       const cancelBookingQ = `
         UPDATE booking
         SET status = $1, updated_at = NOW(), priority = $2

@@ -1,4 +1,4 @@
-import pool from "../../db.js";
+import pool from "../db.js";
 
 // 🔹 Helper 1: Find or create payment
 export async function limitPaymentRetries(bookingId) {

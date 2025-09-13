@@ -1,5 +1,5 @@
-import { reconcilePaymob } from "../../cron jobs/reconcilePaymob.js";
-import pool from "../../db.js";
+import { reconcilePaymob } from "../cron jobs/reconcilePaymob.js";
+import pool from "../db.js";
 
 // 🔹 Helper 3: Error reconciliation
 export async function handlePaymobError(error) {
