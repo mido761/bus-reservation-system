@@ -75,7 +75,7 @@ export default function Navbar() {
       {/* Logo */}
       <h1
         className="flex items-center gap-2 text-xlfont-bold cursor-pointer"
-        onClick={() => navigate("/home")}
+        onClick={() => navigate("/")}
       >
         <img
           src="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico"
