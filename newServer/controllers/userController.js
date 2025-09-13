@@ -1,8 +1,5 @@
-import User from "../models/user.js";
-// import BusForm from "../models/busForm.js";
 import validator from "validator";
 import pool from "../db.js";
-import Seat from "../models/seats.js";
 import mongoose from "mongoose";
 
 // Get all users in the system

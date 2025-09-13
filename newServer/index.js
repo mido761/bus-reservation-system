@@ -10,7 +10,6 @@ import { reconcilePaymob } from "./cron jobs/reconcilePaymob.js";
 // import https from "https";
 
 // import "./cron jobs/reconcileJob.js";
-import userModel from "./models/user.js";
 import userRouter from "./routers/userRoutes.js";
 import busRouter from "./routers/busRouter.js";
 import seatRouter from "./routers/seatRouter.js";

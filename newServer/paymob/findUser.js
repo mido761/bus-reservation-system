@@ -1,4 +1,4 @@
-import pool from "../../db.js";
+import pool from "../db.js";
 
 export const findUser = async (userId) => {
   const { rows: userRows } = await pool.query(

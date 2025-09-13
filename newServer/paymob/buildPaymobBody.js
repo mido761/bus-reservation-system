@@ -1,4 +1,4 @@
-import formatDateAndTime from '../../../client/src/formatDateAndTime.js'
+import formatDateAndTime from '../../client/src/formatDateAndTime.js'
 
 // 🔹 Helper 2: Build Paymob request body
 export function buildPaymobBody(integrationIds, payment, user, booking, trip, route) {

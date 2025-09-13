@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import userModel from "../../models/user.js";
 import { regenerate } from "../../utils/session.js";
 import pool from "../../db.js";
 /**

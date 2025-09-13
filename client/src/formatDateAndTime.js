@@ -1,38 +1,37 @@
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 
-const formatDateTime = (time="00:00:00", type='time', timeZone = 'EET') => {
-  // Get today's date in ISO format (YYYY-MM-DD)
-  const today = DateTime.now().toISODate();
+const formatDateTime = (time = "00:00:00", type = "time", timeZone = "EET") => {
+  let luxonDateTime;
 
-  // Ensure the `time` is in the correct format (e.g., "HH:mm:ss")
-  // If time is just a date (e.g., "2025-09-03"), add default time ("00:00:00")
-  const validTime = time.includes(":") ? time : "00:00:00"; 
-  const fullDateTime = `${today}T${validTime}`;
+  // Case 1: full datetime string (e.g. "2025-09-03T15:30:00")
+  if (time.includes("T")) {
+    luxonDateTime = DateTime.fromISO(time, { zone: timeZone });
+  } 
+  // Case 2: date only (e.g. "2025-09-03")
+  else if (time.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    luxonDateTime = DateTime.fromISO(`${time}T00:00:00`, { zone: timeZone });
+  } 
+  // Case 3: time only (e.g. "15:30:00")
+  else if (time.includes(":")) {
+    const today = DateTime.now().toISODate();
+    luxonDateTime = DateTime.fromISO(`${today}T${time}`, { zone: timeZone });
+  } 
+  // Default fallback
+  else {
+    luxonDateTime = DateTime.fromISO(time, { zone: timeZone });
+  }
 
-  // Parse the datetime string with Luxon
-  const luxonDateTime = DateTime.fromISO(fullDateTime, { zone: timeZone });
-
-  // Check if the datetime is valid
   if (!luxonDateTime.isValid) {
-    // console.error("Invalid date-time string:", fullDateTime);
-    return null;  // Handle the invalid case (returning null here)
+    return null;
   }
 
-  // Define the formatting options
-  const dateTimeFormat = luxonDateTime.toLocaleString(DateTime.DATETIME_MED); // e.g., "21 Aug 2025, 5:00 PM"
-  const dateOnlyFormat = luxonDateTime.toLocaleString(DateTime.DATE_MED); // e.g., "21 Aug 2025"
-  const timeOnlyFormat = luxonDateTime.toLocaleString(DateTime.TIME_SIMPLE); // e.g., "5:00 PM"
+  const formats = {
+    dateTime: luxonDateTime.toLocaleString(DateTime.DATETIME_MED),
+    date: luxonDateTime.toLocaleString(DateTime.DATE_MED),
+    time: luxonDateTime.toLocaleString(DateTime.TIME_SIMPLE),
+  };
 
-  // Return based on the requested type
-  if (type === "dateTime") {
-    return dateTimeFormat;
-  } else if (type === "date") {
-    return dateOnlyFormat;  // Return only the date in the "date" format
-  } else if (type === "time") {
-    return timeOnlyFormat;  // Return only the time (if requested)
-  } else {
-    return null;  // Fallback if type is not recognized
-  }
+  return formats[type] || null;
 };
 
 export default formatDateTime;
