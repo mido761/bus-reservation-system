@@ -123,11 +123,11 @@ const Route = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <>
       {/* Add Route Form */}
       <Card className="shadow-lg border border-gray-200">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold">➕ Add New Route</CardTitle>
+          <CardTitle className="text-2xl font-semibold flex items-center gap-2">➕ Add New Route</CardTitle>
         </CardHeader>
         <CardContent>
           <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={addRoute}>
@@ -234,7 +234,7 @@ const Route = () => {
 
       {/* Toastify container */}
       <ToastContainer />
-    </div>
+    </>
   );
 };
 

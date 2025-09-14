@@ -68,7 +68,10 @@ const AddTrip = () => {
     try {
       await axios.post(`${backEndUrl}/trip/add-trip`, formData);
       setTrips((prev) => [...prev, formData]);
-      toast.success("Trip added successfully!", { position: "top-center", autoClose: 2000 });
+      toast.success("Trip added successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
       // Reset form
       setFormData({
         routeId: "",
@@ -93,12 +96,12 @@ const AddTrip = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <>
       {/* Add Trip Form */}
-      <Card className="shadow-lg border border-gray-200">
+      <Card className=" border border-gray-200">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold flex items-center gap-2">
-            📍 Add New Trip
+            ➕ Add New Trip
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -114,7 +117,7 @@ const AddTrip = () => {
       {/* Trips List */}
       <Card className="shadow-lg border border-gray-200">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+          <CardTitle className="text-2xl font-semibold">
             🚌 Trips List
           </CardTitle>
         </CardHeader>
@@ -128,7 +131,10 @@ const AddTrip = () => {
             setIsLoading={setIsLoading}
             showToast={(msg, type = "success") =>
               type === "success"
-                ? toast.success(msg, { position: "top-center", autoClose: 2000 })
+                ? toast.success(msg, {
+                    position: "top-center",
+                    autoClose: 2000,
+                  })
                 : toast.error(msg, { position: "top-center", autoClose: 2000 })
             }
           />
@@ -140,7 +146,7 @@ const AddTrip = () => {
 
       {/* Toast Container */}
       <ToastContainer />
-    </div>
+    </>
   );
 };
 

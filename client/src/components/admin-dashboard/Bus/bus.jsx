@@ -1,66 +1,70 @@
-import React, { useState, useEffect } from "react"
-import axios from "axios"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { toast } from "react-toastify"
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 
-import LoadingScreen from "../../loadingScreen/loadingScreen"
+import LoadingScreen from "../../loadingScreen/loadingScreen";
 
-const backEndUrl = import.meta.env.VITE_BACK_END_URL
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Bus = () => {
-  const [buses, setBuses] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [buses, setBuses] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [newBus, setNewBus] = useState({
     plateNumber: "",
     capacity: "",
-  })
+  });
 
   // Fetch all buses
   const fetchBuses = async () => {
     try {
-      setIsLoading(true)
-      const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`)
-      setBuses(data.buses || [])
+      setIsLoading(true);
+      const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`);
+      setBuses(data.buses || []);
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Error fetching buses!")
+      toast.error(err?.response?.data?.message || "Error fetching buses!");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Add a new bus
   const addBus = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setIsLoading(true)
-      await axios.post(`${backEndUrl}/bus/add-bus`, newBus)
-      toast.success("✅ Bus added successfully!")
-      setNewBus({ plateNumber: "", capacity: "" })
-      fetchBuses()
+      setIsLoading(true);
+      await axios.post(`${backEndUrl}/bus/add-bus`, newBus);
+      toast.success("✅ Bus added successfully!");
+      setNewBus({ plateNumber: "", capacity: "" });
+      fetchBuses();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Error adding bus!")
+      toast.error(err?.response?.data?.message || "Error adding bus!");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchBuses()
-  }, [])
+    fetchBuses();
+  }, []);
 
   return (
-    <div className="max-w-5xl mx-auto p-4 space-y-6">
+    <>
       {/* Add Bus Form */}
       <Card className="shadow-lg rounded-xl">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">➕ Add Bus</CardTitle>
+          <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+            ➕ Add New Bus
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={addBus} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Bus Number</label>
+              <label className="block text-sm font-medium mb-1">
+                Bus Number
+              </label>
               <Input
                 type="text"
                 placeholder="Enter bus number"
@@ -137,8 +141,8 @@ const Bus = () => {
       </Card>
 
       {isLoading && <LoadingScreen />}
-    </div>
-  )
-}
+    </>
+  );
+};
 
-export default Bus
+export default Bus;

@@ -94,7 +94,7 @@ const MyPayments = () => {
               </CardTitle>
               <div className="flex items-center text-sm text-gray-500 mt-1 gap-1">
                 <span>📅</span>
-                {/* <span>{formatDateAndTime(payment.created_at, "dateTime")}</span> */}
+                <span>{formatDateAndTime(payment.created_at, "dateTime")}</span>
               </div>
             </CardHeader>
 
@@ -113,10 +113,15 @@ const MyPayments = () => {
                 </span>
               </div>
 
-              <div className="flex justify-between text-gray-600">
+              <div className="flex flex-col justify-between text-gray-600">
+                <div>
+                  <strong>Payed at: </strong>
+                  {formatDateAndTime(payment.updated_at, "dateTime")}
+                </div>
+
                 <div>
                   <strong>Last Update: </strong>
-                  {/* {formatDateAndTime(payment.updated_at, "dateTime")} */}
+                  {formatDateAndTime(payment.updated_at, "dateTime")}
                 </div>
               </div>
 

@@ -64,7 +64,9 @@ async function getUserBookings(req, res) {
     const getBookingInfo = `
     SELECT 
       booking.booking_id,
-      trips.date,
+      payment.payment_id,
+      payment.amount,
+      trips."date",
       trips.price,
       route.source,
       route.destination,
@@ -82,6 +84,8 @@ async function getUserBookings(req, res) {
       ON booking.stop_id = stop.stop_id
     LEFT JOIN seat 
       ON booking.seat_id = seat.seat_id
+    LEFT JOIN payment 
+      ON booking.booking_id = payment.booking_id
     WHERE booking.passenger_id = $1
     ORDER BY booking.booked_at DESC
     `;
@@ -322,7 +326,11 @@ async function updateBooking(req, res) {
 async function cancel(req, res) {
   const { bookingId } = req.body;
   const client = await pool.connect();
-  let transactionId, paymob_payment_status, paymob_refund_status, amount;
+  let txnDetails,
+    transactionId,
+    paymob_payment_status,
+    paymob_refund_status,
+    amount;
   try {
     await client.query("BEGIN");
 
@@ -330,6 +338,7 @@ async function cancel(req, res) {
       SELECT b.*, p.*
       FROM booking b
       LEFT JOIN payment p ON b.booking_id = p.booking_id
+          AND (p.payment_status = 'pending' OR p.payment_status = 'paid')
       WHERE b.booking_id = $1;
     `;
 
@@ -368,11 +377,7 @@ async function cancel(req, res) {
     const token = await paymob.fetchAuthToken();
 
     try {
-      const txnDetails = await paymob.getTxn(
-        token,
-        "merchant_order_id",
-        paymentId
-      );
+      txnDetails = await paymob.getTxn(token, "merchant_order_id", paymentId);
 
       transactionId = txnDetails.id || null;
       amount = txnDetails.amount_cents / 100 || null;
@@ -389,16 +394,16 @@ async function cancel(req, res) {
     // if (txnDetails.is_refunded)
 
     // Automatic: Refund the transaction if it's a paid standalone or captured
-    // if (
-    //   paymob_payment_status === "PAID" &&
-    //   paymentStatus !== "refunded" &&
-    //   paymob_refund_status !== "REFUNDED"
-    // ) {
-    //   const transactionId = txnDetails?.id || null;
-    //   // const amount = booking[0].amount;
-    //   const refundRes = await paymob.refund(transactionId, amount);
-    //   console.log("Refund res: ", refundRes);
-    // }
+    if (
+      paymob_payment_status === "PAID" &&
+      paymentStatus !== "refunded" &&
+      paymob_refund_status !== "REFUNDED"
+    ) {
+      const transactionId = txnDetails?.id || null;
+      // const amount = booking[0].amount;
+      const refundRes = await paymob.refund(transactionId, amount);
+      console.log("Refund res: ", refundRes);
+    }
 
     // Void the transaction if it is only authorized
     if (paymentStatus === "authorized") {
