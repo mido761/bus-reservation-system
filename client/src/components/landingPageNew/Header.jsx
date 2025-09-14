@@ -50,7 +50,7 @@ const Header = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/register")}
             >
               Sign In
             </Button>

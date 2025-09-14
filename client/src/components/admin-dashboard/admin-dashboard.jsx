@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import Stop from "./Stops/stops";
 import Route from "./Route/route";
 import Bus from "./Bus/bus";
