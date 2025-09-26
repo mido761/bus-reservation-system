@@ -34,7 +34,7 @@ const TicketSummary = lazy(() =>
 );
 const Profile = lazy(() => import("./components/Profile/profile.jsx"));
 const EditBus = lazy(() => import("./components/editBus/editBus.jsx"));
-const Passengers = lazy(() => import("./components/Passengers/Passengers"));
+const PassengersPage = lazy(() => import("./components/Passengers/Passengers.jsx"));
 const BlacklistPage = lazy(() =>
   import("./components/admin-dashboard/blacklist/Blacklist.jsx")
 );
@@ -191,7 +191,7 @@ function App() {
             element={
               <Auth>
                 <Navbar />
-                <Passengers />
+                <PassengersPage />
               </Auth>
             }
           />
@@ -229,7 +229,6 @@ function App() {
               <Auth>
                 <Navbar />
                 <Checkin />
-                <Footer />
               </Auth>
             }
           />
