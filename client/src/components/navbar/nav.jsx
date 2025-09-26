@@ -36,11 +36,6 @@ export default function Navbar() {
           toast.success("Logged out successfully", {
             position: "top-center",
             autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
           });
         }, 1000);
 
@@ -54,11 +49,6 @@ export default function Navbar() {
         toast.error("Failed to log out", {
           position: "top-center",
           autoClose: 2500,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
         });
       }, 1000);
       console.error("Logout failed:", error);
@@ -99,23 +89,31 @@ export default function Navbar() {
           align="end"
           className="flex flex-col min-w-[180px]"
         >
-          {isAuthorized && (
-            <DropdownMenuItem onClick={() => navigate("/home")}>
+          {isAuthorized && location.pathname !== "/home" && (
+            <DropdownMenuItem
+              onClick={() => navigate("/home", { replace: true })}
+            >
               Home
             </DropdownMenuItem>
           )}
-          {isAuthenticated && (
-            <DropdownMenuItem onClick={() => navigate("/profile")}>
+          {isAuthenticated && location.pathname !== "/profile" && (
+            <DropdownMenuItem
+              onClick={() => navigate("/profile", { replace: true })}
+            >
               Profile
             </DropdownMenuItem>
           )}
-          {isAuthenticated && (
-            <DropdownMenuItem onClick={() => navigate("/my-account")}>
+          {isAuthenticated && location.pathname !== "/my-account" && (
+            <DropdownMenuItem
+              onClick={() => navigate("/my-account", { replace: true })}
+            >
               My Account
             </DropdownMenuItem>
           )}
-          {isAuthorized && (
-            <DropdownMenuItem onClick={() => navigate("/admin-dashboard")}>
+          {isAuthorized && location.pathname !== "/admin-dashboard" && (
+            <DropdownMenuItem
+              onClick={() => navigate("/admin-dashboard", { replace: true })}
+            >
               Admin Dashboard
             </DropdownMenuItem>
           )}
@@ -130,23 +128,35 @@ export default function Navbar() {
 
       {/* Desktop Menu */}
       <div className="hidden md:flex gap-4 items-center">
-        {isAuthorized && (
-          <Button variant="ghost" onClick={() => navigate("/home")}>
+        {isAuthorized && location.pathname !== "/home" && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/home", { replace: true })}
+          >
             Home
           </Button>
         )}
-        {isAuthenticated && (
-          <Button variant="ghost" onClick={() => navigate("/profile")}>
+        {isAuthenticated && location.pathname !== "/profile" && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/profile", { replace: true })}
+          >
             Profile
           </Button>
         )}
-        {isAuthenticated && (
-          <Button variant="ghost" onClick={() => navigate("/my-account")}>
+        {isAuthenticated && location.pathname !== "/my-account" && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/my-account", { replace: true })}
+          >
             My Account
           </Button>
         )}
-        {isAuthorized && (
-          <Button variant="ghost" onClick={() => navigate("/admin-dashboard")}>
+        {isAuthorized && location.pathname !== "/admin-dashboard" && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/admin-dashboard", { replace: true })}
+          >
             Admin Dashboard
           </Button>
         )}

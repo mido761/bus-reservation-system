@@ -21,7 +21,7 @@ const TripList = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {trips.map((trip) => {
         const route = routes.find((r) => r.route_id === trip.route_id);
 
@@ -29,41 +29,58 @@ const TripList = ({
           <Card key={trip.trip_id} className="shadow-md border border-gray-200">
             <CardContent className="space-y-2">
               <p className="font-semibold text-lg">
-                {route ? `${route.source} → ${route.destination}` : "Unknown Route"}
+                {route
+                  ? `${route.source} → ${route.destination}`
+                  : "Unknown Route"}
               </p>
               <p className="text-gray-600">
                 Date: {formatDateTime(trip.date, "date")}
               </p>
               <p className="text-gray-600">
-                Departure: {formatDateTime(trip.departure_time)} | Arrival: {formatDateTime(trip.arrival_time)}
+                Departure: {formatDateTime(trip.departure_time)} | Arrival:{" "}
+                {formatDateTime(trip.arrival_time)}
               </p>
 
-              <div className="flex gap-2 mt-4">
+              <div className="flex flex-col items-center gap-2 mt-4">
                 <Button
-                  variant="destructive"
+                  variant="default"
+                  className="w-full"
                   size="sm"
-                  onClick={() =>
-                    handleDel(
-                      trip.trip_id,
-                      "trip",
-                      "/trip/del-trip",
-                      trips,
-                      setTrips,
-                      setIsLoading,
-                      setAlertMessage,
-                      setAlertFlag
-                    )
-                  }
+                  onClick={() => handleLink(trip, "edit-trip", navigate)}
                 >
-                  Delete
+                  Assign to bus
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(trip, "edit-trip", navigate)}
-                >
-                  Edit
-                </Button>
+
+                <div className="flex gap-2 w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    size="sm"
+                    onClick={() => handleEdit(trip, "edit-trip", navigate)}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    size="sm"
+                    onClick={() =>
+                      handleDel(
+                        trip.trip_id,
+                        "trip",
+                        "/trip/del-trip",
+                        trips,
+                        setTrips,
+                        setIsLoading,
+                        setAlertMessage,
+                        setAlertFlag
+                      )
+                    }
+                  >
+                    Delete
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

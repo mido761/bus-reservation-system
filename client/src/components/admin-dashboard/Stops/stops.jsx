@@ -1,85 +1,89 @@
-import React, { useState, useEffect } from "react"
-import axios from "axios"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { toast, ToastContainer } from "react-toastify"
-import "react-toastify/dist/ReactToastify.css"
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import LoadingScreen from "../../loadingScreen/loadingScreen"
-import Overlay from "../../overlayScreen/overlay"
+import LoadingScreen from "../../loadingScreen/loadingScreen";
+import Overlay from "../../overlayScreen/overlay";
 
-const backEndUrl = import.meta.env.VITE_BACK_END_URL
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Stops = () => {
-  const [stops, setStops] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [stops, setStops] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [newStop, setNewStop] = useState({
     stopName: "",
     location: "",
-  })
+  });
 
   // Fetch stops
   const fetchStops = async () => {
     try {
-      setIsLoading(true)
-      const { data } = await axios.get(`${backEndUrl}/stop/get-stops`)
-      setStops(data)
+      setIsLoading(true);
+      const { data } = await axios.get(`${backEndUrl}/stop/get-stops`);
+      setStops(data);
 
       if (data.length === 0) {
-        toast.info("No stops available yet.")
+        toast.info("No stops available yet.");
       }
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Error fetching stops!")
+      toast.error(err?.response?.data?.message || "Error fetching stops!");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Add stop
   const addStop = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setIsLoading(true)
-      await axios.post(`${backEndUrl}/stop/add-stop`, newStop)
-      toast.success("Stop added successfully!")
-      setNewStop({ stopName: "", location: "" })
-      fetchStops()
+      setIsLoading(true);
+      await axios.post(`${backEndUrl}/stop/add-stop`, newStop);
+      toast.success("Stop added successfully!");
+      setNewStop({ stopName: "", location: "" });
+      fetchStops();
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Error adding stop!")
+      toast.error(err?.response?.data?.message || "Error adding stop!");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchStops()
-  }, [])
+    fetchStops();
+  }, []);
 
   return (
-    <div className="space-y-6">
+    <>
       {/* Toast container */}
       <ToastContainer
-      position="top-center"
-      autoClose={2000}
-      hideProgressBar={true}
-      newestOnTop={true}
-      closeOnClick
-      pauseOnHover
-      draggable
-      theme="light"
-    />
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
 
       {/* Add Stop Form */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">Add Stop</CardTitle>
+          <CardTitle className="text-2xl font-semibold flex items-center gap-2">
+            ➕ Add New Stop
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={addStop} className="space-y-4">
+          <form onSubmit={addStop}>
             <div>
-              <label className="block text-sm font-medium mb-1">Stop Name</label>
+              <label className="block text-sm font-medium mb-1">
+                Stop Name
+              </label>
               <Input
                 type="text"
                 placeholder="Enter stop name"
@@ -112,7 +116,7 @@ const Stops = () => {
       </Card>
 
       {/* Stops List */}
-      <Card>
+      <Card c>
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Stops List</CardTitle>
         </CardHeader>
@@ -134,8 +138,8 @@ const Stops = () => {
 
       {isLoading && <LoadingScreen />}
       <Overlay />
-    </div>
-  )
-}
+    </>
+  );
+};
 
-export default Stops
+export default Stops;

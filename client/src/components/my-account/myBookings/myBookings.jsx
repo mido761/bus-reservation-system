@@ -91,8 +91,8 @@ const MyBookings = () => {
     );
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">My Bookings</h2>
+    <>
+      <h2 className="text-2xl font-semibold p-4">My Bookings</h2>
 
       <div className="grid gap-6 md:grid-cols-2">
         {bookings.map((booking, idx) => (
@@ -100,24 +100,34 @@ const MyBookings = () => {
             key={booking.booking_id || idx}
             className="shadow-sm hover:shadow-md transition p-4 rounded-lg"
           >
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">
+            {/* <CardHeader className="p-2">
+              <CardTitle className="text-lg font-medium text-left">
                 {booking.source} → {booking.destination}
               </CardTitle>
-              <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                <span>📅</span>
-                <span>{formatDateAndTime(booking.date, "date")}</span>
-              </div>
-            </CardHeader>
+            </CardHeader> */}
 
-            <CardContent className="space-y-2 text-sm text-gray-600">
-              <div>
-                <strong>Stop: </strong>
-                {booking.stop_name}
-              </div>
-              <div className="flex justify-between items-center">
-                <span>
-                  <strong>Status: </strong>
+            <CardContent className="w-full p-0 text-sm sm:flex sm:flex-row md:flex-col sm:justify-between">
+              <section>
+                <div className="text-xl sm:flex sm:flex-row sm:justify-between gap-4 sm:items-center">
+                  <strong className="text-primary">
+                    {" "}
+                    {booking.stop_name.toUpperCase()}{" "}
+                  </strong>
+                  {/* </div>
+
+                <div className="text-lg text-gray-600 font-bold flex items-center gap-1 mt-1"> */}
+                  <p className="text-lg text-gray-600 font-bold flex items-center gap-1 mt-1">
+                    <span>📅</span>
+                    <span>{formatDateAndTime(booking.date, "date")}</span>
+                  </p>
+                </div>
+
+                <div className="flex justify-start items-center my-4 gap-4">
+                  <span>
+                    <strong className="">
+                      EGP {booking.amount || booking.price}
+                    </strong>
+                  </span>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       statusStyles[booking.status] ||
@@ -126,36 +136,39 @@ const MyBookings = () => {
                   >
                     {booking.status.toUpperCase()}
                   </span>
-                </span>
-              </div>
-              <div>
-                <strong>Booked At: </strong>
-                {formatDateAndTime(booking.booked_at, "dateTime")}
-              </div>
-              <div>
-                <strong>Last Update: </strong>
-                {formatDateAndTime(booking.updated_at, "dateTime")}
-              </div>
+                </div>
+              </section>
+
+              <section>
+                <div>
+                  <strong className="text-gray-500">Booked At: </strong>
+                  {formatDateAndTime(booking.booked_at, "dateTime")}
+                </div>
+
+                <div>
+                  <strong className="text-gray-500">Last Update: </strong>
+                  {formatDateAndTime(booking.updated_at, "dateTime")}
+                </div>
+              </section>
 
               {/* Delete Button */}
-              <div className="pt-10 flex justify-center gap-4">
-                {booking.status === "pending" && (
-                  <Button
-                    type="button"
-                    variant="default"
-                    size="sm"
-                    onClick={() => handleComplete(booking.booking_id)}
-                    disabled={cancelledId === booking.booking_id}
-                  >
-                    {cancelledId === booking.booking_id
-                      ? "Complete..."
-                      : "Complete"}
-                  </Button>
-                )}
 
-                {!["cancelled", "failed", "expired"].includes(
-                  booking.status
-                ) && (
+              {booking.status === "pending" && (
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  onClick={() => handleComplete(booking.booking_id)}
+                  disabled={cancelledId === booking.booking_id}
+                >
+                  {cancelledId === booking.booking_id
+                    ? "Complete..."
+                    : "Complete"}
+                </Button>
+              )}
+
+              {!["cancelled", "failed", "expired"].includes(booking.status) && (
+                <div className="w-full pt-4 flex justify-center gap-4">
                   <Button
                     type="button"
                     variant="destructive"
@@ -167,13 +180,13 @@ const MyBookings = () => {
                       ? "Canceling..."
                       : "Cancel"}
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

@@ -131,12 +131,48 @@ const addTrip = async (req, res) => {
 };
 
 const linkTripBus = async (req, res) => {
+  const { busId, tripId } = req.body;
   try {
-    return res.status(200).json();
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
+    const TripCheckQ = `
+      SELECT trip_id
+      FROM trips
+      WHERE trip_id = $1
+      LIMIT 1
+    `;
+    const trip = await pool.query(TripCheckQ, [tripId]);
+
+    if (!trip.rowCount)
+      return res.status(404).json({ message: "Trip not found!" });
+
+    const BusCheckQ = `
+      SELECT bus_id
+      FROM bus
+      WHERE bus_id = $1
+      LIMIT 1
+    `;
+
+    const bus = await pool.query(BusCheckQ, [busId]);
+
+    if (!bus.rowCount)
+      return res.status(404).json({ message: "Trip not found!" });
+
+    const linkTripBusQ = `
+      INSERT 
+      INTO trip_bus (trip_id, bus_id)
+      VALUES ($1, $2)
+    `;
+    const { rows: linkRows } = await pool.query(linkTripBusQ, [tripId, busId]);
+    if (!linkRows) throw new Error("Failed to link Bus to trip!");
+
+    return res.status(200).json({
+      message: `Trip: ${trip.rows[0].trip_id} successfully linked to Bus: ${bus.rows[0].bus_id}`,
+    });
+  } catch (err) {
+    console.error("Error linking: ", err);
+    return res.status(500).json({ message: err.message });
   }
 };
+``;
 
 const editTrip = async (req, res) => {
   try {
