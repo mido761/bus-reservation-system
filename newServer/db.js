@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config({path: '../.env'});
 
 // Or use this if any error happened
-// dotenv.config();
+dotenv.config();
 
 
 

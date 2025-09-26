@@ -1,7 +1,7 @@
 import pool from "../db.js";
 
 // 🔹 Helper 1: Find or create payment
-export async function findOrCreatePayment(bookingId, price) {
+export async function findOrCreatePayment(bookingId, price, trx, senderNumber) {
   const searchQ = `
     SELECT * FROM payment
     WHERE booking_id = $1
@@ -13,11 +13,11 @@ export async function findOrCreatePayment(bookingId, price) {
 
   if (!payment || ["failed", "expired"].includes(payment.payment_status)) {
     const insertQ = `
-      INSERT INTO payment (booking_id, payment_status, payment_method, amount)
-      VALUES ($1, 'pending', 'standAlone', $2)
+      INSERT INTO payment (booking_id, payment_status, payment_method, amount, sender_number, transaction_id)
+      VALUES ($1, $2, $3, $4, $5, $6 )
       RETURNING *
     `;
-    const { rows: inserted } = await pool.query(insertQ, [bookingId, price]);
+    const { rows: inserted } = await pool.query(insertQ, [bookingId, 'pending', 'VFcash', price, senderNumber, trx]);
     payment = inserted[0];
   }
 
