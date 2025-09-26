@@ -33,17 +33,7 @@ const Footer = () => {
               {/* <Facebook className="w-6 h-6 text-white/60 hover:text-white cursor-pointer transition-colors" />
               <Twitter className="w-6 h-6 text-white/60 hover:text-white cursor-pointer transition-colors" />
               <Instagram className="w-6 h-6 text-white/60 hover:text-white cursor-pointer transition-colors" /> */}
-                <span className="font-bold text-white">
-                  WhatsApp Channel
-                </span>
-                <a
-                  href="https://whatsapp.com/channel/0029VbBLp5kJENxs4OUjVD2p"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Open WhatsApp Channel"
-                >
-                  <MessageCircle className="w-6 h-6 text-white/60 hover:text-green-500 transition-colors cursor-pointer" />
-                </a>
+              
             </div>
           </div>
 
@@ -54,7 +44,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/#/home"
-                  className="text-white/80 hover:text-white transition-colors"
+                  className="text-white/80 hover:text-white underline transition-colors"
                 >
                   Book Tickets
                 </a>
@@ -70,7 +60,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/#/refund"
-                  className="text-white/80 hover:text-white transition-colors"
+                  className="text-white/80 hover:text-white underline transition-colors"
                 >
                   Cancel/Refund
                 </a>
@@ -78,7 +68,7 @@ const Footer = () => {
               <li>
                 <a
                   href="/#/help"
-                  className="text-white/80 hover:text-white transition-colors"
+                  className="text-white/80 hover:text-white underline transition-colors"
                 >
                   Help & Support
                 </a>
@@ -128,6 +118,16 @@ const Footer = () => {
           {/* Contact & Newsletter */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Stay Connected</h3>
+            <a
+                href="https://whatsapp.com/channel/0029VbBLp5kJENxs4OUjVD2p"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Open WhatsApp Channel"
+                className="flex items-center gap-2 text-white font-bold underline hover:text-green-500 transition-colors"
+              >
+                <MessageCircle className="w-6 h-6" />
+                <span>WhatsApp Channel</span>
+              </a>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-white/80">
                 <Phone className="w-4 h-4" />
@@ -165,10 +165,10 @@ const Footer = () => {
             © 2025 BusGo. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-white/60">
-            <a href="/#/privacy" className="hover:text-white transition-colors">
+            <a href="/#/privacy" className="hover:text-white underline transition-colors">
               Privacy Policy
             </a>
-            <a href="/#/terms" className="hover:text-white transition-colors">
+            <a href="/#/terms" className="hover:text-white underline transition-colors">
               Terms of Service
             </a>
             {/* <a href="#" className="hover:text-white transition-colors">

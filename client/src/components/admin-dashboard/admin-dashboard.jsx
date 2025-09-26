@@ -5,12 +5,15 @@ import Route from "./Route/route";
 import Bus from "./Bus/bus";
 import Schedule from "./Schedule/schedule";
 import Hero from "./adminhero";
+import PassengersList from "./passengerslist/passengers-list";
 
 const MENU = [
   { key: "Trips", label: "Trips", icon: "📅", component: Schedule },
   { key: "stops", label: "Stops", icon: "🛑", component: Stop },
   { key: "routes", label: "Routes", icon: "🛣️", component: Route },
-  { key: "bus", label: "Bus", icon: "🚌", component: Bus }
+  { key: "bus", label: "Bus", icon: "🚌", component: Bus },
+  { key: "passengers-list", label: "List", icon: "👥", component: PassengersList }
+
 ];
 
 export default function AdminDashboard() {
