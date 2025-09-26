@@ -14,6 +14,8 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const AddTrip = () => {
   const [trips, setTrips] = useState([]);
+  const [buses, setBuses] = useState([]);
+  const [selectedBus, setSelectedBus] = useState(null);
   const [routes, setRoutes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,6 +42,19 @@ const AddTrip = () => {
         position: "top-center",
         autoClose: 2000,
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch all buses
+  const fetchBuses = async () => {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.get(`${backEndUrl}/bus/get-available-buses`);
+      setBuses(data.buses || []);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error fetching buses!");
     } finally {
       setIsLoading(false);
     }
@@ -90,9 +105,31 @@ const AddTrip = () => {
     }
   };
 
+  // Add a new trip
+  const handleLink = async (e, tripId, busId) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await axios.post(`${backEndUrl}/trip/link-trip-bus`, { tripId, busId });
+
+      toast.success("Trip added successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error adding trip", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchRoutes();
     fetchTrips();
+    fetchBuses();
   }, []);
 
   return (
@@ -125,8 +162,12 @@ const AddTrip = () => {
           <TripList
             trips={trips}
             routes={routes}
+            buses={buses}
+            selectedBus={selectedBus}
+            setSelectedBus={setSelectedBus}
             handleDel={handleDel}
             handleEdit={handleEdit}
+            handleLink={handleLink}
             setTrips={setTrips}
             setIsLoading={setIsLoading}
             showToast={(msg, type = "success") =>

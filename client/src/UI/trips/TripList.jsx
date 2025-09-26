@@ -1,14 +1,25 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import formatDateTime from "../../formatDateAndTime";
 
 const TripList = ({
   trips,
   routes,
+  buses,
+  selectedBus,
+  setSelectedBus,
   handleDel,
   handleEdit,
+  handleLink,
   setTrips,
   setIsLoading,
   setAlertMessage,
@@ -19,6 +30,10 @@ const TripList = ({
   if (!Array.isArray(trips) || trips.length === 0) {
     return <p className="text-gray-500">No trips available.</p>;
   }
+
+  const handleSelectChange = (value) => {
+    setSelectedBus(value); // store selected bus plate_number
+  };
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -42,11 +57,24 @@ const TripList = ({
               </p>
 
               <div className="flex flex-col items-center gap-2 mt-4">
+                <Select value={selectedBus} onValueChange={handleSelectChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose bus" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {buses.map((bus) => (
+                      <SelectItem key={bus.bus_id} value={bus.plate_number}>
+                        {bus.plate_number}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
                 <Button
                   variant="default"
                   className="w-full"
                   size="sm"
-                  onClick={() => handleLink(trip, "edit-trip", navigate)}
+                  onClick={(e) => handleLink(e, trip.trip_id)}
                 >
                   Assign to bus
                 </Button>
