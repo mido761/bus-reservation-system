@@ -132,7 +132,7 @@ export default function Checkin() {
   if (!bus) return <p className="text-center mt-10 text-gray-500">Bus not found!</p>
 
   return (
-    <div className="flex flex-col items-center p-6 space-y-6">
+    <div className="flex flex-col items-center pt-10 space-y-6">
       <Card className="w-full max-w-4xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold text-center">🚌 Bus Seat Selection</CardTitle>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button"; // ✅ Import Button
@@ -14,6 +15,7 @@ const statusStyles = {
 };
 
 const MyBookings = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [cancelledId, setCancelledId] = useState(null); // ✅ Added state
@@ -154,17 +156,27 @@ const MyBookings = () => {
               {/* Delete Button */}
 
               {booking.status === "pending" && (
-                <Button
-                  type="button"
-                  variant="default"
-                  size="sm"
-                  onClick={() => handleComplete(booking.booking_id)}
-                  disabled={cancelledId === booking.booking_id}
-                >
-                  {cancelledId === booking.booking_id
-                    ? "Complete..."
-                    : "Complete"}
-                </Button>
+                <div className="w-full pt-4 flex justify-center gap-4">
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleComplete(booking.booking_id)}
+                    disabled={cancelledId === booking.booking_id}
+                  >
+                    {cancelledId === booking.booking_id
+                      ? "Complete..."
+                      : "Complete"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    onClick={() => navigate("/passengers", { state: { busId: booking.bus_id } })}
+                  >
+                    List
+                  </Button>
+                </div>
               )}
 
               {!["cancelled", "failed", "expired"].includes(booking.status) && (

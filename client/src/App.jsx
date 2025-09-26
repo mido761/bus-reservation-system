@@ -34,7 +34,7 @@ const TicketSummary = lazy(() =>
 );
 const Profile = lazy(() => import("./components/Profile/profile.jsx"));
 const EditBus = lazy(() => import("./components/editBus/editBus.jsx"));
-const Passengers = lazy(() => import("./components/Passengers/Passengers"));
+const PassengersPage = lazy(() => import("./components/Passengers/Passengers.jsx"));
 const BlacklistPage = lazy(() =>
   import("./components/admin-dashboard/blacklist/Blacklist.jsx")
 );
@@ -78,6 +78,7 @@ const HelpSupport = lazy(() => import ("./components/policies/help_support.jsx")
 const About = lazy (() => import("./components/policies/about.jsx"))
 
 const RefundCancel = lazy (() =>import ("./components/policies/refund_cancel.jsx"))
+const PassengersList = lazy (() =>import ("./components/admin-dashboard/passengerslist/passengers-list.jsx"))
 
 function App() {
   return (
@@ -153,6 +154,16 @@ function App() {
             }
           />
           {/* Protected Routes */}
+          <Route
+            path="/passengers-list"
+            element={
+              <Auth>
+                <Navbar />
+                <PassengersList />
+                {/* <Footer /> */}
+              </Auth>
+            }
+          />
 
           <Route
             path="/my-account"
@@ -180,7 +191,7 @@ function App() {
             element={
               <Auth>
                 <Navbar />
-                <Passengers />
+                <PassengersPage />
               </Auth>
             }
           />
@@ -218,7 +229,6 @@ function App() {
               <Auth>
                 <Navbar />
                 <Checkin />
-                <Footer />
               </Auth>
             }
           />
