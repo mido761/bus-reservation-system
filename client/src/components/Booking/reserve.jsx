@@ -49,9 +49,10 @@ const Reserve = () => {
             booking: showPendingModal?.booking,
             trip,
             route,
+            selectedStop,
           },
         });
-      },
+      }
     });
     // setTimeout(() => {
 
@@ -101,8 +102,8 @@ const Reserve = () => {
       const booking = res.data.booked;
       toast.success("Your reservation was successful", {
         onClose: () => {
-          navigate("/payment", { state: { booking, trip, route } });
-        },
+          navigate("/payment", { state: { booking, trip, route, selectedStop } });
+        }
       });
     } catch (err) {
       if (err.response && err.response.status === 400) {
@@ -173,10 +174,8 @@ const Reserve = () => {
                       ✅
                     </span>
                     <pre>
-                      You selected:{" "}
-                      <strong className="text-blue-400">
-                        {selectedStop.stop_name}
-                      </strong>
+                      You selected: {" "}
+                      <strong className="text-blue-400">{selectedStop.stop_name}</strong>
                     </pre>
                   </div>
                 )}
