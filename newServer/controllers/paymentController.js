@@ -201,7 +201,7 @@ const standAlonePayment = async (req, res) => {
 
 // 🔹 Main function
 const vodafoneCash = async (req, res) => {
-  const { booking_id, trip, route, trx, senderNumber } = req.body;
+  const { booking, trip, route, trx, senderNumber } = req.body;
   try {
     // limit retries
     // const limit = await limitPaymentRetries(booking.booking_id);
@@ -224,7 +224,7 @@ const vodafoneCash = async (req, res) => {
     
     // Step 2: Get pending payment or create a new one
     const payment = await findOrCreatePayment(
-      booking_id,
+      booking.booking_id,
       trip.price,
       trx,
       senderNumber

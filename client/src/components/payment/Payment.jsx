@@ -1,9 +1,12 @@
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
+
+const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 
 const Payment = () => {
@@ -16,45 +19,35 @@ const Payment = () => {
   const [policyAccepted, setPolicyAccepted] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
 
-  const handleSubmitPayment = async (e) => {
-    e.preventDefault();
-    if (paymentMethod === "vodafone_cash") {
-      if (!transactionId || !senderPhone) {
-        setPaymentError("Please fill in all payment details.");
-        return;
-      }
-      if (!policyAccepted) {
-        setPaymentError("You must accept the payment policy.");
-        return;
-      }
-    }
-    try {
-      const res = await axios.post(
-        `${backEndUrl}/payment/vodafonecash-payment`,
-        {
-          booking: booking,
-          trip: trip,
-          route: route,
-          trx: transactionId,
-          senderNumber: senderPhone
-          
-        },
-        { withCredentials: true }
-      );
+ const handleSubmitPayment = async (e) => {
+  e.preventDefault();
 
-      
-      // Show success toast immediately with backend message
-      toast.success("Redirecting to payment page", {
-        onClose: () => {
-          window.location.href = res.data.PAYMENT_URL;
-        },
-      });
-    } catch (error) {
-      
-      toast.error(error.response?.data?.message || "An error occurred.");
+  if (paymentMethod === "vodafone_cash") {
+    if (!transactionId || !senderPhone) {
+      setPaymentError("Please fill in all payment details.");
+      return;
     }
-  ;
-    // Simulate payment submission
+    if (!policyAccepted) {
+      setPaymentError("You must accept the payment policy.");
+      return;
+    }
+  }
+
+  try {
+    console.log("res")
+    const res = await axios.post(
+      `${backEndUrl}/payment/vodafonecash-payment`,
+      {
+        booking: booking,
+        trip: trip,
+        route: route,
+        trx: transactionId,
+        senderNumber: senderPhone
+      },
+      { withCredentials: true }
+    );
+    console.log(res)
+
     toast.success("Payment submitted successfully!", {
       position: "top-center",
       autoClose: 2000,
@@ -62,12 +55,19 @@ const Payment = () => {
         window.location.hash = "#/payment";
       },
     });
+
+    // Reset form state after successful submission
     setTransactionId("");
     setSenderPhone("");
     setPolicyAccepted(false);
     setPaymentError("");
-  };
 
+  } catch (error) {
+    // toast.error(error.response?.data?.message || "An error occurred.");
+   console.log(error);
+
+  }
+};
 
   return (
     <div className="flex items-center justify-center w-full m-auto">
