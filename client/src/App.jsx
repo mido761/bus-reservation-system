@@ -25,7 +25,7 @@ const Homepage = lazy(() => import("./components/homePage/Homepage.jsx"));
 const SeatSelection = lazy(() =>
   import("./components/seatSelection/SeatSelection.jsx")
 );
-const Payment = lazy(() => import("./components/payment/Payment.jsx"));
+// const Payment = lazy(() => import("./components/payment/Payment.jsx"));
 const PaymentSuccess = lazy(() =>
   import("./components/paymentSuccess/PaymentSuccess.jsx")
 );
@@ -79,7 +79,7 @@ const About = lazy (() => import("./components/policies/about.jsx"))
 
 const RefundCancel = lazy (() =>import ("./components/policies/refund_cancel.jsx"))
 const PassengersList = lazy (() =>import ("./components/admin-dashboard/passengerslist/passengers-list.jsx"))
-
+const operators = lazy (()=>import("./components/admin-dashboard/operators/operators.jsx"))
 function App() {
   return (
     <HashRouter basename="/">
@@ -155,6 +155,16 @@ function App() {
           />
           {/* Protected Routes */}
           <Route
+            path="/operators"
+            element={
+              <Auth>
+                <Navbar />
+                <operators />
+                {/* <Footer /> */}
+              </Auth>
+            }
+          />
+          <Route
             path="/passengers-list"
             element={
               <Auth>
@@ -205,7 +215,7 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route
             path="/payment"
             element={
               <Auth>
@@ -213,15 +223,15 @@ function App() {
                 <Payment />
               </Auth>
             }
-          />
-          <Route
+          /> */}
+           <Route
             path="/payment-status"
             element={
               <Auth>
                 <Navbar />
                 <Paymentstatus />
               </Auth>
-            }
+            } 
           />
           <Route
             path="/checkin"
