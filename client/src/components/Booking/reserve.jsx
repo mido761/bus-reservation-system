@@ -1,23 +1,27 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import formatDateTime from "../../formatDateAndTime";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
+import { PendingModal } from "./PendingModal.jsx";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Reserve = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { trip, route } = location.state || {};
   const [stops, setStops] = useState([]);
   const [selectedStop, setSelectedStop] = useState(null);
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [senderPhone, setSenderPhone] = useState("");
+  const [showPendingModal, setShowPendingModal] = useState({
+    show: false,
+    booking: null,
+  });
 
   // Api call (fetch stops)
   const fetchStops = async () => {
@@ -32,46 +36,85 @@ const Reserve = () => {
   };
 
   useEffect(() => {
-    if (route?.route_id) fetchStops();
+    if (!route?.route_id) toast.error("No stops found!");
+    fetchStops();
   }, [route?.route_id]);
 
-  // Just show payment form (no backend call here)
-  const handleShowPaymentForm = () => {
-    if (!selectedStop) {
-      setBookingError("Please select a stop before continuing.");
-      return;
-    }
-    setBookingError("");
-    setShowPaymentForm(true);
+  // Pending confirm
+  const handleConfirmPendingBooking = () => {
+    toast.success("Proceeding to payment...", {
+      onClose: () => {
+        navigate("/payment", {
+          state: {
+            booking: showPendingModal?.booking,
+            trip,
+            route,
+          },
+        });
+      },
+    });
+    // setTimeout(() => {
+
+    // }, 2000);
   };
 
-  // Submit payment (front-only for now)
-  const handleSubmitPayment = () => {
-    if (!transactionId || !senderPhone) {
-      setBookingError("Please fill in all payment details.");
+  // Pending cancel
+  const handleCancelPendingBooking = () => {
+    toast.warn("Booking Cancelled!", {
+      onClose: () => {
+        navigate("/home");
+      },
+    });
+  };
+
+  // Show modal for confirmation
+  const handleConfiremReserve = async () => {
+    if (!selectedStop) {
+      setBookingError("Please select a stop before confirming.");
       return;
     }
 
+    setBookingError("");
+    setIsBooking(true);
+    try {
+      // Api call
+      const checkRes = await axios.post(
+        `${backEndUrl}/booking/filter-user-bookings`,
+        { tripId: trip.trip_id },
+        { withCredentials: true }
+      );
 
-    console.log("Submitting payment:", {
-      stop: selectedStop,
-      transactionId,
-      senderPhone,
-    });
+      // check old bookings and throw toast
+      if (checkRes.data.userBookings.length > 0) {
+        toast.warn(
+          `You already have ${checkRes.data.userBookings.length} booking(s) for this trip.`
+        );
+      }
 
-    // Toastify notification
-    toast.success("Payment submitted successfully!", {
-      position: "top-center",
-      autoClose: 2000,
-      onClose: () => {
-      window.location.hash = "#/my-account";
-    },
-    });
+      // Always proceed to booking (no window.confirm)
+      const res = await axios.post(
+        `${backEndUrl}/booking/book`,
+        { tripId: trip.trip_id, stopId: selectedStop.stop_id },
+        { withCredentials: true }
+      );
 
-    // Reset form
-    setTransactionId("");
-    setSenderPhone("");
-    setShowPaymentForm(false);
+      const booking = res.data.booked;
+      toast.success("Your reservation was successful", {
+        onClose: () => {
+          navigate("/payment", { state: { booking, trip, route } });
+        },
+      });
+    } catch (err) {
+      if (err.response && err.response.status === 400) {
+        // Pending booking case
+        const booking = err.response.data.booking;
+        setShowPendingModal({ show: true, booking: booking });
+      } else {
+        toast.error("Booking failed. Please try again.");
+      }
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   return (
@@ -113,17 +156,22 @@ const Reserve = () => {
                           : "outline"
                       }
                       className="w-full flex items-center gap-2"
-                      onClick={() => setSelectedStop(stop)}
+                      onClick={() => {
+                        setSelectedStop(stop);
+                      }}
                     >
-                      🚌
+                      <span role="img" aria-label="stop">
+                        🚌
+                      </span>
                       <span className="font-semibold">{stop.stop_name}</span>
                     </Button>
                   ))}
                 </div>
-
                 {selectedStop && (
                   <div className="mt-2 flex items-center gap-2 text-center">
-                    ✅
+                    <span role="img" aria-label="selected">
+                      ✅
+                    </span>
                     <pre>
                       You selected:{" "}
                       <strong className="text-blue-400">
@@ -140,49 +188,22 @@ const Reserve = () => {
                 )}
               </div>
 
-              {!showPaymentForm && (
-                <Button className="w-full mt-2" onClick={handleShowPaymentForm}>
-                  Complete
-                </Button>
-              )}
+              <Button
+                className="w-full mt-2"
+                onClick={handleConfiremReserve}
+                disabled={isBooking}
+              >
+                {isBooking ? "Processing..." : "procceed to payment"}
+              </Button>
 
-              {/* Vodafone Cash Payment Form */}
-              {showPaymentForm && (
-                <div className="mt-6 p-4 border rounded-lg bg-gray-50 shadow-sm">
-                  <h2 className="text-center font-bold text-lg mb-4">
-                    Vodafone Cash Details
-                  </h2>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Transaction ID
-                      </label>
-                      <Input
-                        type="text"
-                        placeholder="Enter Transaction ID"
-                        value={transactionId}
-                        onChange={(e) => setTransactionId(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Sender Phone Number
-                      </label>
-                      <Input
-                        type="tel"
-                        placeholder="e.g. 010xxxxxxxx"
-                        value={senderPhone}
-                        onChange={(e) => setSenderPhone(e.target.value)}
-                      />
-                    </div>
-                    <Button
-                      className="w-full mt-2"
-                      onClick={handleSubmitPayment}
-                    >
-                      Submit Payment
-                    </Button>
-                  </div>
-                </div>
+              {/* Pending Booking Modal */}
+              {showPendingModal.show && (
+                <PendingModal
+                  showPendingModal={showPendingModal}
+                  bookingError={bookingError}
+                  handleConfirm={handleConfirmPendingBooking}
+                  handleCancel={handleCancelPendingBooking}
+                />
               )}
             </>
           ) : (
