@@ -97,6 +97,32 @@ const getPaymentByBooking = async (req, res) => {
   }
 };
 
+const getPaymentByTrx =  async (req, res) => {
+  const { transactionId } = req.query;
+  console.log(transactionId)
+  try {
+    const getPaymentByBookingQ = `
+    SELECT 
+    *
+    FROM payment 
+    WHERE transaction_id = $1
+    ORDER BY created_at DESC, updated_at DESC
+    LIMIT 1
+    `;
+
+    const { rows } = await pool.query(getPaymentByBookingQ, [
+      transactionId,
+    ]);
+    const payment = rows[0];
+    console.log(rows[0]);
+
+    return res.status(200).json({ user_payment: payment });
+  } catch (error) {
+    console.error("Error getting payment: ", error);
+    return res.status(500).json({ message: error.message });
+  }
+}; 
+
 const addPayment = async (req, res) => {
   const { bookingId, transactionId, amount, paymentType } = req.body;
 };
@@ -797,4 +823,5 @@ export {
   refundPayment,
   standAlonePayment,
   vodafoneCash,
+  getPaymentByTrx,
 };
