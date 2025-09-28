@@ -103,11 +103,28 @@ const getPaymentByTrx =  async (req, res) => {
   try {
     const getPaymentByBookingQ = `
     SELECT 
-    *
-    FROM payment 
-    WHERE transaction_id = $1
-    ORDER BY created_at DESC, updated_at DESC
-    LIMIT 1
+        p.payment_id,
+        p.amount,
+        p.payment_method,
+        p.payment_status,
+        p.created_at AS payment_created_at,
+        p.updated_at AS payment_updated_at,
+        
+        b.booking_id,
+        b.seat_id,
+        b.booked_at AS booking_created_at,
+        
+        u.user_id,
+        u.username AS passenger_name,
+        u.email AS passenger_email,
+        u.phone_number AS passenger_phone
+
+    FROM payment p
+    JOIN booking b ON b.booking_id = p.booking_id
+    JOIN users u ON u.user_id = b.passenger_id
+    WHERE p.transaction_id = $1
+    ORDER BY p.created_at DESC, p.updated_at DESC
+    LIMIT 1;
     `;
 
     const { rows } = await pool.query(getPaymentByBookingQ, [
