@@ -185,15 +185,15 @@ const standAlonePayment = async (req, res) => {
 
 // 🔹 Main function
 const vodafoneCash = async (req, res) => {
-  const { booking, trip, route, trx, senderNumber } = req.body;
+  const { booking_id, trip, route, trx, senderNumber } = req.body;
   try {
     // limit retries
-    const limit = await limitPaymentRetries(booking.booking_id);
-    if (limit.length > 0) {
-      return res.status(429).json({
-        message: `Maximum payment attempts reached (3). Please contact support.`,
-      });
-    }
+    // const limit = await limitPaymentRetries(booking.booking_id);
+    // if (limit.length > 0) {
+    //   return res.status(429).json({
+    //     message: `Maximum payment attempts reached (3). Please contact support.`,
+    //   });
+    // }
 
     // Step 1: Get user
     const user = await findUser(req.session.userId);
@@ -205,30 +205,31 @@ const vodafoneCash = async (req, res) => {
     if (!validatePhoneNumber(senderNumber)) {
       return res.status(400).json({ message: "Incorrect phone number!" });
     }
-
+    
     // Step 2: Get pending payment or create a new one
     const payment = await findOrCreatePayment(
-      booking.booking_id,
+      booking_id,
       trip.price,
       trx,
       senderNumber
     );
-    if (payment.payment_status === "paid") {
-      return res.status(400).json({ message: "Payment already completed!" });
-    }
-    if (["failed", "expired"].includes(payment.payment_status)) {
-      return res
-        .status(400)
-        .json({ message: "This payment session is no longer valid." });
-    }
+    // if (payment.payment_status === "paid") {
+    //   console.log(payment)
+    //   return res.status(400).json({ message: "Payment already completed!" });
+    // }
+    // if (["failed", "expired"].includes(payment.payment_status)) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "This payment session is no longer valid." });
+    // }
 
-    return res.status(200).json({ PAYMENT_URL });
+    return res.status(200).json({ payment });
   } catch (error) {
-    try {
-      return res.status(400).json({ message: "Payment already succeeded." });
-    } catch (err) {
-      return res.status(400).json({ message: err.message });
-    }
+    // try {
+    //   return res.status(400).json({ message: "Payment succeeded." });
+    // } catch (err) {
+      return res.status(400).json({ message: error.message });
+    // }
   }
 };
 
