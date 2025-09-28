@@ -505,6 +505,8 @@ export {
   filterUserBookings,
   getTripBookings,
   getBusBookings,
+  // getTripPassengers,
+  // getTripsWithPassengerCounts,
   book,
   confirmBooking,
   updateBooking,
