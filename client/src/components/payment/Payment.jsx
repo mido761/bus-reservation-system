@@ -8,15 +8,15 @@ import { toast } from "react-toastify";
 
 const Payment = () => {
   const location = useLocation();
-  const { trip, route, selectedStop } = location.state || {};
-  const [paymentMethod, setPaymentMethod] = useState("vodafone_cash");
+  const {booking, trip, route, selectedStop } = location.state || {};
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [senderPhone, setSenderPhone] = useState("");
   const [paymentError, setPaymentError] = useState("");
   const [policyAccepted, setPolicyAccepted] = useState(false);
   const [showPolicy, setShowPolicy] = useState(false);
 
-  const handleSubmitPayment = (e) => {
+  const handleSubmitPayment = async (e) => {
     e.preventDefault();
     if (paymentMethod === "vodafone_cash") {
       if (!transactionId || !senderPhone) {
@@ -28,6 +28,32 @@ const Payment = () => {
         return;
       }
     }
+    try {
+      const res = await axios.post(
+        `${backEndUrl}/payment/vodafonecash-payment`,
+        {
+          booking: booking,
+          trip: trip,
+          route: route,
+          trx: transactionId,
+          senderNumber: senderPhone
+          
+        },
+        { withCredentials: true }
+      );
+
+      
+      // Show success toast immediately with backend message
+      toast.success("Redirecting to payment page", {
+        onClose: () => {
+          window.location.href = res.data.PAYMENT_URL;
+        },
+      });
+    } catch (error) {
+      
+      toast.error(error.response?.data?.message || "An error occurred.");
+    }
+  ;
     // Simulate payment submission
     toast.success("Payment submitted successfully!", {
       position: "top-center",
