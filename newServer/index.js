@@ -77,7 +77,7 @@ app.use(
 
 // Session config
 const PgSessionStore = pgSession(session);
-console.log(process.env.NODE_ENV, process.env.SESSION_SECRET);
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,

@@ -15,6 +15,7 @@ import { PaymobClient } from "../paymob/paymobClient.js";
 import { standaloneUpdate } from "../helperfunctions/webhookFun/standalone.js";
 import { rules } from "../helperfunctions/webhookFun/rules.js";
 import { refundUpdate } from "../helperfunctions/webhookFun/refund.js";
+import { confirmVfPayment } from "../VFcash/confirmPayment.js";
 
 const getUserPayments = async (req, res) => {
   try {
@@ -149,6 +150,55 @@ const standAlonePayment = async (req, res) => {
   } catch (error) {
     try {
       await handlePaymobError(error);
+      return res.status(400).json({ message: "Payment already succeeded." });
+    } catch (err) {
+      return res.status(400).json({ message: err.message });
+    }
+  }
+};
+
+// 🔹 Main function
+const vodafoneCash = async (req, res) => {
+  const { booking, trip, route, trx, senderNumber } = req.body;
+  try {
+    // limit retries
+    const limit = await limitPaymentRetries(booking.booking_id);
+    if (limit.length > 0) {
+      return res.status(429).json({
+        message: `Maximum payment attempts reached (3). Please contact support.`,
+      });
+    }
+
+    // Step 1: Get user
+    const user = await findUser(req.session.userId);
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    const validatePhoneNumber = (number) =>
+      /^\d{11}$/.test(number) && number.startsWith("01");
+
+    if (!validatePhoneNumber(senderNumber)) {
+      return res.status(400).json({ message: "Incorrect phone number!" });
+    }
+
+    // Step 2: Get pending payment or create a new one
+    const payment = await findOrCreatePayment(
+      booking.booking_id,
+      trip.price,
+      trx,
+      senderNumber
+    );
+    if (payment.payment_status === "paid") {
+      return res.status(400).json({ message: "Payment already completed!" });
+    }
+    if (["failed", "expired"].includes(payment.payment_status)) {
+      return res
+        .status(400)
+        .json({ message: "This payment session is no longer valid." });
+    }
+
+    return res.status(200).json({ PAYMENT_URL });
+  } catch (error) {
+    try {
       return res.status(400).json({ message: "Payment already succeeded." });
     } catch (err) {
       return res.status(400).json({ message: err.message });
@@ -468,6 +518,37 @@ const webhook = async (req, res) => {
 let tareq =
   "dummy line for not mixing the two commented functions until i finish";
 
+const confirmPayment = async (req, res) => {
+  console.log("POST /payment/confirm called");
+
+  const client = await pool.connect();
+  try {
+    const {bookingId} = req.body;
+
+    const confirm = await confirmVfPayment(
+      client,
+      bookingId
+    );
+    console.log(confirm);
+
+    return res.status(200).json({ ok: true,  });
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Confrim error:", err);
+
+    if (err.code === "22P02") {
+      return res.status(400).json({ error: "Invalid UUID format" });
+    }
+
+    return res
+      .status(err.status || 500)
+      .json({ error: err.message || "Internal server error" });
+  } finally {
+    client.release();
+  }
+};
+
 // const webhookRefund = async (req,res) => {
 
 //   console.log("POST /refund/webhook called");
@@ -715,4 +796,5 @@ export {
   editPayment,
   refundPayment,
   standAlonePayment,
+  vodafoneCash,
 };
