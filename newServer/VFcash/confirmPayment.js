@@ -75,8 +75,8 @@ export const confirmVfPayment = async (client, bookingId) => {
     // );
     await client.query("COMMIT");
     return {
-      payment: paymentUpdate[0],
-      booking: bookingRows[0],
+      payment: paymentUpdate,
+      booking: bookingRows,
       ticket: ticket,
     };
   } catch (err) {

@@ -103,18 +103,34 @@ const getPaymentByTrx =  async (req, res) => {
   try {
     const getPaymentByBookingQ = `
     SELECT 
-    *
-    FROM payment 
-    WHERE transaction_id = $1
-    ORDER BY created_at DESC, updated_at DESC
-    LIMIT 1
+        p.payment_id,
+        p.amount,
+        p.payment_method,
+        p.payment_status,
+        p.created_at AS payment_created_at,
+        p.updated_at AS payment_updated_at,
+        
+        b.booking_id,
+        b.seat_id,
+        b.booked_at AS booking_created_at,
+        
+        u.user_id,
+        u.username AS passenger_name,
+        u.email AS passenger_email,
+        u.phone_number AS passenger_phone
+
+    FROM payment p
+    JOIN booking b ON b.booking_id = p.booking_id
+    JOIN users u ON u.user_id = b.passenger_id
+    WHERE p.transaction_id = $1
+    ORDER BY p.created_at DESC, p.updated_at DESC;
     `;
 
     const { rows } = await pool.query(getPaymentByBookingQ, [
       transactionId,
     ]);
-    const payment = rows[0];
-    console.log(rows[0]);
+    const payment = rows;
+    // console.log(rows);
 
     return res.status(200).json({ user_payment: payment });
   } catch (error) {
@@ -185,15 +201,15 @@ const standAlonePayment = async (req, res) => {
 
 // 🔹 Main function
 const vodafoneCash = async (req, res) => {
-  const { booking, trip, route, trx, senderNumber } = req.body;
+  const { booking_id, trip, route, trx, senderNumber } = req.body;
   try {
     // limit retries
-    const limit = await limitPaymentRetries(booking.booking_id);
-    if (limit.length > 0) {
-      return res.status(429).json({
-        message: `Maximum payment attempts reached (3). Please contact support.`,
-      });
-    }
+    // const limit = await limitPaymentRetries(booking.booking_id);
+    // if (limit.length > 0) {
+    //   return res.status(429).json({
+    //     message: `Maximum payment attempts reached (3). Please contact support.`,
+    //   });
+    // }
 
     // Step 1: Get user
     const user = await findUser(req.session.userId);
@@ -205,30 +221,31 @@ const vodafoneCash = async (req, res) => {
     if (!validatePhoneNumber(senderNumber)) {
       return res.status(400).json({ message: "Incorrect phone number!" });
     }
-
+    
     // Step 2: Get pending payment or create a new one
     const payment = await findOrCreatePayment(
-      booking.booking_id,
+      booking_id,
       trip.price,
       trx,
       senderNumber
     );
-    if (payment.payment_status === "paid") {
-      return res.status(400).json({ message: "Payment already completed!" });
-    }
-    if (["failed", "expired"].includes(payment.payment_status)) {
-      return res
-        .status(400)
-        .json({ message: "This payment session is no longer valid." });
-    }
+    // if (payment.payment_status === "paid") {
+    //   console.log(payment)
+    //   return res.status(400).json({ message: "Payment already completed!" });
+    // }
+    // if (["failed", "expired"].includes(payment.payment_status)) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "This payment session is no longer valid." });
+    // }
 
-    return res.status(200).json({ PAYMENT_URL });
+    return res.status(200).json({ payment });
   } catch (error) {
-    try {
-      return res.status(400).json({ message: "Payment already succeeded." });
-    } catch (err) {
-      return res.status(400).json({ message: err.message });
-    }
+    // try {
+    //   return res.status(400).json({ message: "Payment succeeded." });
+    // } catch (err) {
+      return res.status(400).json({ message: error.message });
+    // }
   }
 };
 
@@ -545,7 +562,7 @@ let tareq =
   "dummy line for not mixing the two commented functions until i finish";
 
 const confirmPayment = async (req, res) => {
-  console.log("POST /payment/confirm called");
+  // console.log("POST /payment/confirm called");
 
   const client = await pool.connect();
   try {
@@ -557,7 +574,7 @@ const confirmPayment = async (req, res) => {
     );
     console.log(confirm);
 
-    return res.status(200).json({ ok: true,  });
+    return res.status(200).json({ user_info: confirm,  });
 
   } catch (err) {
     await client.query("ROLLBACK");
@@ -824,4 +841,5 @@ export {
   standAlonePayment,
   vodafoneCash,
   getPaymentByTrx,
+  confirmPayment,
 };
