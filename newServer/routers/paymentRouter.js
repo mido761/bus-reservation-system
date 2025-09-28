@@ -1,12 +1,13 @@
 import express from "express";
-import { getUserPayments, getPaymentByBooking, addPayment, webhook, editPayment, refundPayment, standAlonePayment,vodafoneCash} from "../controllers/paymentController.js";
+import { getUserPayments, getPaymentByBooking, addPayment, webhook, editPayment, refundPayment, standAlonePayment,vodafoneCash,getPaymentByTrx} from "../controllers/paymentController.js";
 
 const router = express.Router();
 
 
 router.get('/get-user-payments', getUserPayments);
 router.get('/by-booking', getPaymentByBooking);
-router.post("/webhook", webhook)
+router.get("/by-trx",getPaymentByTrx)
+router.post("/webhook", webhook);
 // router.post("/webhook-refund", webhookRefund)
 router.post('/stand-alone-payment',standAlonePayment)
 router.post('/vodafonecash-payment',vodafoneCash)
