@@ -209,6 +209,107 @@ async function getBusBookings(req, res) {
       .json({ message: "Error fetching bookings", error: err.message });
   }
 }
+async function getTripPassengers(req, res) {
+  const tripId = req.params.tripId;
+  try {
+    // Check if trip exists with route information
+    const checkTrip = `
+    SELECT 
+      t.*,
+      r.source,
+      r.destination,
+      r.distance,
+      r.estimated_duration
+    FROM trips t
+    LEFT JOIN route r ON t.route_id = r.route_id
+    WHERE t.trip_id = $1
+    `;
+    const { rows: trip } = await pool.query(checkTrip, [tripId]);
+    if (!trip.length) {
+      return res.status(400).json({ message: "This trip doesn't exist!" });
+    }
+
+    // Get passengers with their details and payment status
+    const getPassengersQuery = `
+    SELECT 
+      u.user_id,
+      u.username as name,
+      u.phone_number,
+      u.email,
+      b.booking_id,
+      b.status as booking_status,
+      b.booked_at,
+      p.payment_id,
+      p.payment_status,
+      p.amount,
+      s.seat_number,
+      st.stop_name,
+      st.stop_id,
+      t.date,
+      t.departure_time,
+      t.arrival_time,
+      r.source,
+      r.destination
+    FROM booking b
+    JOIN users u ON b.passenger_id = u.user_id
+    LEFT JOIN payment p ON b.booking_id = p.booking_id
+    LEFT JOIN seat s ON b.seat_id = s.seat_id
+    LEFT JOIN stop st ON b.stop_id = st.stop_id
+    JOIN trips t ON b.trip_id = t.trip_id
+    LEFT JOIN route r ON t.route_id = r.route_id
+    WHERE b.trip_id = $1
+    ORDER BY b.booked_at DESC
+    `;
+
+    const { rows: passengers } = await pool.query(getPassengersQuery, [tripId]);
+    
+    // Calculate passenger counts by stop
+    const stopCounts = {};
+    passengers.forEach(passenger => {
+      const stopName = passenger.stop_name || 'Unknown Stop';
+      stopCounts[stopName] = (stopCounts[stopName] || 0) + 1;
+    });
+    
+    return res.status(200).json({
+      message: "Successfully fetched passengers",
+      passengers: passengers,
+      tripInfo: trip[0],
+      totalPassengers: passengers.length,
+      stopCounts: stopCounts
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching passengers", error: err.message });
+  }
+}
+
+async function getTripsWithPassengerCounts(req, res) {
+  try {
+    const getTripsWithCounts = `
+    SELECT 
+      t.*,
+      r.source,
+      r.destination,
+      COALESCE(passenger_counts.total_passengers, 0) as total_passengers
+    FROM trips t
+    LEFT JOIN route r ON t.route_id = r.route_id
+    LEFT JOIN (
+      SELECT 
+        trip_id,
+        COUNT(*) as total_passengers
+      FROM booking
+      GROUP BY trip_id
+    ) passenger_counts ON t.trip_id = passenger_counts.trip_id
+    ORDER BY t.date DESC, t.departure_time ASC
+    `;
+
+    const { rows: trips } = await pool.query(getTripsWithCounts);
+    return res.status(200).json(trips);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
 
 async function book(req, res) {
   const { tripId, stopId } = req.body;
@@ -505,8 +606,8 @@ export {
   filterUserBookings,
   getTripBookings,
   getBusBookings,
-  // getTripPassengers,
-  // getTripsWithPassengerCounts,
+  getTripPassengers,
+  getTripsWithPassengerCounts,
   book,
   confirmBooking,
   updateBooking,

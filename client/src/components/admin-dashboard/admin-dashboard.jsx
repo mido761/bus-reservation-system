@@ -5,7 +5,7 @@ import Route from "./Route/route";
 import Bus from "./Bus/bus";
 import Schedule from "./Schedule/schedule";
 import Hero from "./adminhero";
-import PassengersList from "./passengerslist/passengers-list";
+import PassengersList from "./passengerslist/passengers";
 import Operator from "./operators/operators";
 
 const MENU = [
