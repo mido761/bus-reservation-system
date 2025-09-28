@@ -25,7 +25,7 @@ const Homepage = lazy(() => import("./components/homePage/Homepage.jsx"));
 const SeatSelection = lazy(() =>
   import("./components/seatSelection/SeatSelection.jsx")
 );
-// const Payment = lazy(() => import("./components/payment/Payment.jsx"));
+const Payment = lazy(() => import("./components/payment/Payment.jsx"));
 const PaymentSuccess = lazy(() =>
   import("./components/paymentSuccess/PaymentSuccess.jsx")
 );
@@ -215,7 +215,7 @@ function App() {
             }
           />
 
-          {/* <Route
+          <Route
             path="/payment"
             element={
               <Auth>
@@ -223,7 +223,7 @@ function App() {
                 <Payment />
               </Auth>
             }
-          /> */}
+          />
            <Route
             path="/payment-status"
             element={

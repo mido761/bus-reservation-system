@@ -1,23 +1,19 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import formatDateTime from "../../formatDateAndTime";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "react-toastify";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Reserve = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { trip, route } = location.state || {};
   const [stops, setStops] = useState([]);
   const [selectedStop, setSelectedStop] = useState(null);
-  const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [bookingError, setBookingError] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [senderPhone, setSenderPhone] = useState("");
 
   // Api call (fetch stops)
   const fetchStops = async () => {
@@ -35,43 +31,20 @@ const Reserve = () => {
     if (route?.route_id) fetchStops();
   }, [route?.route_id]);
 
-  // Just show payment form (no backend call here)
-  const handleShowPaymentForm = () => {
+  // Navigate to Payment page
+  const handleGoToPayment = () => {
     if (!selectedStop) {
       setBookingError("Please select a stop before continuing.");
       return;
     }
     setBookingError("");
-    setShowPaymentForm(true);
-  };
-
-  // Submit payment (front-only for now)
-  const handleSubmitPayment = () => {
-    if (!transactionId || !senderPhone) {
-      setBookingError("Please fill in all payment details.");
-      return;
-    }
-
-
-    console.log("Submitting payment:", {
-      stop: selectedStop,
-      transactionId,
-      senderPhone,
+    navigate("/payment", {
+      state: {
+        trip,
+        route,
+        selectedStop,
+      },
     });
-
-    // Toastify notification
-    toast.success("Payment submitted successfully!", {
-      position: "top-center",
-      autoClose: 2000,
-      onClose: () => {
-      window.location.hash = "#/my-account";
-    },
-    });
-
-    // Reset form
-    setTransactionId("");
-    setSenderPhone("");
-    setShowPaymentForm(false);
   };
 
   return (
@@ -140,50 +113,9 @@ const Reserve = () => {
                 )}
               </div>
 
-              {!showPaymentForm && (
-                <Button className="w-full mt-2" onClick={handleShowPaymentForm}>
-                  Complete
-                </Button>
-              )}
-
-              {/* Vodafone Cash Payment Form */}
-              {showPaymentForm && (
-                <div className="mt-6 p-4 border rounded-lg bg-gray-50 shadow-sm">
-                  <h2 className="text-center font-bold text-lg mb-4">
-                    Vodafone Cash Details
-                  </h2>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Transaction ID
-                      </label>
-                      <Input
-                        type="text"
-                        placeholder="Enter Transaction ID"
-                        value={transactionId}
-                        onChange={(e) => setTransactionId(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Sender Phone Number
-                      </label>
-                      <Input
-                        type="tel"
-                        placeholder="e.g. 010xxxxxxxx"
-                        value={senderPhone}
-                        onChange={(e) => setSenderPhone(e.target.value)}
-                      />
-                    </div>
-                    <Button
-                      className="w-full mt-2"
-                      onClick={handleSubmitPayment}
-                    >
-                      Submit Payment
-                    </Button>
-                  </div>
-                </div>
-              )}
+              <Button className="w-full mt-2" onClick={handleGoToPayment}>
+                Complete
+              </Button>
             </>
           ) : (
             <div className="text-center text-destructive">
