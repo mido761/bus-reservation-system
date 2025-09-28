@@ -562,7 +562,7 @@ let tareq =
   "dummy line for not mixing the two commented functions until i finish";
 
 const confirmPayment = async (req, res) => {
-  console.log("POST /payment/confirm called");
+  // console.log("POST /payment/confirm called");
 
   const client = await pool.connect();
   try {
@@ -574,7 +574,7 @@ const confirmPayment = async (req, res) => {
     );
     console.log(confirm);
 
-    return res.status(200).json({ ok: true,  });
+    return res.status(200).json({ user_info: confirm,  });
 
   } catch (err) {
     await client.query("ROLLBACK");
@@ -841,4 +841,5 @@ export {
   standAlonePayment,
   vodafoneCash,
   getPaymentByTrx,
+  confirmPayment,
 };
