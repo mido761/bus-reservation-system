@@ -22,13 +22,13 @@ export async function sendCode(req, res) {
         .status(400)
         .json({ message: "Invalid gender. Choose male or female." });
     }
-
+    const emailLower = email.toLowerCase();
     const checkUser = `
     SELECT * FROM users
     WHERE email = $1
     `;
 
-    const { rows } = await pool.query(checkUser, [email]);
+    const { rows } = await pool.query(checkUser, [emailLower]);
     console.log(rows);
     // const userExist = await User.findOne({ email });
     if (rows.length > 0) {

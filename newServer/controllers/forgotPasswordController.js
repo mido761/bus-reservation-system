@@ -96,10 +96,7 @@ export async function requestReset(req, res) {
 
     const subject = "Your Password Reset OTP";
     const body = `Your OTP is ${otp}. It expires in 5 minutes.`;
-    const mailRes =
-      process.env.NODE_ENV === "production"
-        ? await sendGridMail(email, subject, body)
-        : await nodeMailerMail(email, subject, body);
+    const mailRes = await nodeMailerMail(email, subject, body);
     console.log("Mail res: ", mailRes);
 
     return res.status(200).json({ message: "OTP code has been sent" });
@@ -255,10 +252,7 @@ export async function resendOtp(req, res) {
 
     const subject = "Your OTP Code";
     const body = `Your OTP is ${otp}. It expires in 5 minutes.`;
-    const mailRes =
-      process.env.NODE_ENV === "production"
-        ? await sendGridMail(email, subject, body)
-        : await nodeMailerMail(email, subject, body);
+    const mailRes = await nodeMailerMail(email, subject, body);
     console.log("Mail res: ", mailRes);
 
     return res.status(201).json({ message: "OTP resent successfully" });
