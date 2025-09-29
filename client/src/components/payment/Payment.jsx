@@ -82,7 +82,11 @@ const Payment = () => {
       } else {
       }
     } catch (error) {
-      setPaymentError(error.response?.data?.message || "An error occurred.");
+      toast.error(error.response?.data?.message || "An error occurred.", {
+        position: "top-center",
+        autoClose: 2500,
+      });
+      setPaymentError("");
     } finally {
       setIsLoading(false);
     }

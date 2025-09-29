@@ -22,13 +22,13 @@ export async function sendCode(req, res) {
         .status(400)
         .json({ message: "Invalid gender. Choose male or female." });
     }
-
+    const emailLower = email.toLowerCase();
     const checkUser = `
     SELECT * FROM users
     WHERE email = $1
     `;
 
-    const { rows } = await pool.query(checkUser, [email]);
+    const { rows } = await pool.query(checkUser, [emailLower]);
     console.log(rows);
     // const userExist = await User.findOne({ email });
     if (rows.length > 0) {
@@ -38,14 +38,14 @@ export async function sendCode(req, res) {
     const verificationCode = generateVerificationCode();
 
     const token = jwt.sign(
-      { name, phoneNumber, email, password, gender, verificationCode },
+      { name, phoneNumber, emailLower, password, gender, verificationCode },
       "ARandomStringThatIsHardToGuess12345",
       { expiresIn: "10m" }
     );
 
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
-    const mailRes = await nodeMailerMail(email, subject, body);
+    const mailRes = await nodeMailerMail(emailLower, subject, body);
     console.log("Mail res: ", mailRes);
 
     return res.status(201).json({
