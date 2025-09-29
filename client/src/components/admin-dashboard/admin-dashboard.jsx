@@ -13,7 +13,7 @@ const MENU = [
   { key: "stops", label: "Stops", icon: "🛑", component: Stop },
   { key: "routes", label: "Routes", icon: "🛣️", component: Route },
   { key: "bus", label: "Bus", icon: "🚌", component: Bus },
-  { key: "passengers-list", label: "List", icon: "👥", component: PassengersList },
+  // { key: "passengers-list", label: "List", icon: "👥", component: PassengersList },
   { key: "operators", label: "Operator", icon: "👨‍💻", component: Operator }
 ];
 
