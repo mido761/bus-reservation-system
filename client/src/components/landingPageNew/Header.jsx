@@ -52,7 +52,7 @@ const Header = () => {
               size="sm"
               onClick={() => navigate("/register")}
             >
-              Sign In
+              Sign Up
             </Button>
             <Button size="sm" onClick={() => navigate("/home")}>
               Book Now
