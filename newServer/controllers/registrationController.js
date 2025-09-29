@@ -45,10 +45,7 @@ export async function sendCode(req, res) {
 
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
-    const mailRes =
-      process.env.NODE_ENV === "production"
-        ? await sendGridMail(email, subject, body)
-        : await nodeMailerMail(email, subject, body);
+    const mailRes = await nodeMailerMail(email, subject, body);
     console.log("Mail res: ", mailRes);
 
     return res.status(201).json({
@@ -137,10 +134,7 @@ export async function resendCode(req, res) {
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${newVerificationCode}</strong></p>`;
 
-    const mailRes =
-      process.env.NODE_ENV === "production"
-        ? await sendGridMail(email, subject, body)
-        : await nodeMailerMail(email, subject, body);
+    const mailRes = await nodeMailerMail(email, subject, body);
     console.log("Mail res: ", mailRes);
 
     // Respond with success message & return new token
