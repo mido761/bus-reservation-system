@@ -12,7 +12,7 @@ const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 const Payment = () => {
   const location = useLocation();
   const {booking, trip, route, selectedStop } = location.state || {};
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("vodafone_cash");
   const [transactionId, setTransactionId] = useState("");
   const [senderPhone, setSenderPhone] = useState("");
   const [paymentError, setPaymentError] = useState("");

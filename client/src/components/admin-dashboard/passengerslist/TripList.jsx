@@ -68,12 +68,12 @@ const TripList = ({ trips, selectedTrip, onTripSelect, error }) => {
                       <span>{trip.total_passengers || 0} passengers</span>
                     </div>
                   </div>
-                  <Button
+                  {/* <Button
                     variant={selectedTrip?.trip_id === trip.trip_id ? "default" : "outline"}
                     size="sm"
                   >
                     {selectedTrip?.trip_id === trip.trip_id ? "Selected" : "Select Trip"}
-                  </Button>
+                  </Button> */}
                 </div>
               </CardContent>
             </Card>

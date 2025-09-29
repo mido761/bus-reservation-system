@@ -41,7 +41,9 @@ const PassengersPage = () => {
     try {
       setLoading(true);
       setError("");
-      const res = await fetch(`${backEndUrl}/booking/get-trip-passengers/${tripId}`);
+      const res = await fetch(
+        `${backEndUrl}/booking/get-trip-passengers/${tripId}`
+      );
       if (!res.ok) throw new Error("Failed to fetch passengers");
       const data = await res.json();
       setPassengers(data.passengers || []);
@@ -58,6 +60,10 @@ const PassengersPage = () => {
   };
 
   const handleTripSelect = (trip) => {
+    if (trip === selectedTrip) {
+      setSelectedTrip(false);
+      return;
+    }
     setSelectedTrip(trip);
     fetchPassengers(trip.trip_id);
   };

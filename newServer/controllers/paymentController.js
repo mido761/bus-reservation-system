@@ -97,16 +97,18 @@ const getPaymentByBooking = async (req, res) => {
   }
 };
 
-const getPaymentByTrx =  async (req, res) => {
-  const { transactionId } = req.query;
-  console.log(transactionId)
+const getPaymentByTrx = async (req, res) => {
+  const transactionId = req.query.transactionId;
+  console.log(transactionId);
   try {
     const getPaymentByBookingQ = `
     SELECT 
         p.payment_id,
         p.amount,
+        p.transaction_id,
         p.payment_method,
         p.payment_status,
+        p.sender_number,
         p.created_at AS payment_created_at,
         p.updated_at AS payment_updated_at,
         
@@ -126,18 +128,19 @@ const getPaymentByTrx =  async (req, res) => {
     ORDER BY p.created_at DESC, p.updated_at DESC;
     `;
 
-    const { rows } = await pool.query(getPaymentByBookingQ, [
-      transactionId,
-    ]);
+    const { rows } = await pool.query(getPaymentByBookingQ, [transactionId]);
     const payment = rows;
-    // console.log(rows);
+    console.log(rows);
+    if (rows.length === 0) {
+      return res.status(400).json({ message: "Transaction ID not found!" });
+    }
 
     return res.status(200).json({ user_payment: payment });
   } catch (error) {
     console.error("Error getting payment: ", error);
     return res.status(500).json({ message: error.message });
   }
-}; 
+};
 
 const addPayment = async (req, res) => {
   const { bookingId, transactionId, amount, paymentType } = req.body;
@@ -221,7 +224,7 @@ const vodafoneCash = async (req, res) => {
     if (!validatePhoneNumber(senderNumber)) {
       return res.status(400).json({ message: "Incorrect phone number!" });
     }
-    
+
     // Step 2: Get pending payment or create a new one
     const payment = await findOrCreatePayment(
       booking.booking_id,
@@ -244,7 +247,7 @@ const vodafoneCash = async (req, res) => {
     // try {
     //   return res.status(400).json({ message: "Payment succeeded." });
     // } catch (err) {
-      return res.status(400).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
     // }
   }
 };
@@ -566,16 +569,12 @@ const confirmPayment = async (req, res) => {
 
   const client = await pool.connect();
   try {
-    const {bookingId} = req.body;
+    const { bookingId } = req.body;
 
-    const confirm = await confirmVfPayment(
-      client,
-      bookingId
-    );
+    const confirm = await confirmVfPayment(client, bookingId);
     console.log(confirm);
 
-    return res.status(200).json({ user_info: confirm,  });
-
+    return res.status(200).json({ user_info: confirm });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Confrim error:", err);

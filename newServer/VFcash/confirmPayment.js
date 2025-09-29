@@ -14,7 +14,7 @@ export const confirmVfPayment = async (client, bookingId) => {
        WHERE booking_id = $2
          AND payment_status = 'pending'
        RETURNING payment_id`,
-      ["confirm", bookingId]
+      ["confirmed", bookingId]
     );
 
     if (paymentUpdate.rowCount === 0) {

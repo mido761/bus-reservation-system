@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/get-user-payments', getUserPayments);
 router.get('/by-booking', getPaymentByBooking);
-router.get("/by-trx",getPaymentByTrx)
+router.get("/by-trx", getPaymentByTrx)
 router.post("/webhook", webhook);
 // router.post("/webhook-refund", webhookRefund)
 router.post('/stand-alone-payment',standAlonePayment);
