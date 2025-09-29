@@ -100,23 +100,19 @@ const Reserve = () => {
       );
 
       const booking = res.data.booked;
-      toast.success("Your reservation was successful", {
-        onClose: () => {
-          navigate("/payment", { state: { booking, trip, route, selectedStop } });
-        }
-      });
-    } catch (err) {
-      if (err.response && err.response.status === 400) {
-        // Pending booking case
-        const booking = err.response.data.booking;
-        setShowPendingModal({ show: true, booking: booking });
-      } else {
-        toast.error("Booking failed. Please try again.");
-      }
-    } finally {
-      setIsBooking(false);
+      toast.success("Your reservation was successful");
+    navigate("/payment", { state: { booking, trip, route, selectedStop } });
+  } catch (err) {
+    if (err.response?.status === 400) {
+      const booking = err.response.data.booking;
+      setShowPendingModal({ show: true, booking });
+    } else {
+      toast.error("Booking failed. Please try again.");
     }
-  };
+  } finally {
+    setIsBooking(false);
+  }
+};
 
   return (
     <div className="flex items-center justify-center w-full m-auto">
