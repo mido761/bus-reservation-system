@@ -78,7 +78,7 @@ const HelpSupport = lazy(() => import ("./components/policies/help_support.jsx")
 const About = lazy (() => import("./components/policies/about.jsx"))
 
 const RefundCancel = lazy (() =>import ("./components/policies/refund_cancel.jsx"))
-const PassengersList = lazy (() =>import ("./components/admin-dashboard/passengerslist/passengers.jsx"))
+// const PassengersList = lazy (() =>import ("./components/admin-dashboard/passengerslist/passengers.jsx"))
 const operators = lazy (()=>import("./components/admin-dashboard/operators/operators.jsx"))
 function App() {
   return (
@@ -164,16 +164,7 @@ function App() {
               </Auth>
             }
           />
-          <Route
-            path="/passengers-list"
-            element={
-              <Auth>
-                <Navbar />
-                <PassengersList />
-                {/* <Footer /> */}
-              </Auth>
-            }
-          />
+         
 
           <Route
             path="/my-account"
