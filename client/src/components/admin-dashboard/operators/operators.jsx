@@ -80,7 +80,7 @@ export default function Operator() {
   const handleReject = async (bookingId) => {
     setIsLoading(true);
     try {
-      await axios.post(`${backEndUrl}/booking/reject-payment`, { bookingId });
+      await axios.post(`${backEndUrl}/payment/reject-VF-payment`, { bookingId });
       setResults((prev) =>
         prev.map((b) => (b._id === bookingId ? { ...b, status: "pending" } : b))
       );

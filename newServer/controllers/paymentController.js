@@ -16,6 +16,7 @@ import { standaloneUpdate } from "../helperfunctions/webhookFun/standalone.js";
 import { rules } from "../helperfunctions/webhookFun/rules.js";
 import { refundUpdate } from "../helperfunctions/webhookFun/refund.js";
 import { confirmVfPayment } from "../VFcash/confirmPayment.js";
+import { rejectVFPayment } from "../paymob/rejectVFPayment.js";
 
 const getUserPayments = async (req, res) => {
   try {
@@ -99,27 +100,26 @@ const getPaymentByBooking = async (req, res) => {
 
 const getPaymentByTrx = async (req, res) => {
   const transactionId = req.query.transactionId;
-  console.log(transactionId);
   try {
     const getPaymentByBookingQ = `
     SELECT 
-        p.payment_id,
-        p.amount,
-        p.transaction_id,
-        p.payment_method,
-        p.payment_status,
-        p.sender_number,
-        p.created_at AS payment_created_at,
-        p.updated_at AS payment_updated_at,
-        
-        b.booking_id,
-        b.seat_id,
-        b.booked_at AS booking_created_at,
-        
-        u.user_id,
-        u.username AS passenger_name,
-        u.email AS passenger_email,
-        u.phone_number AS passenger_phone
+      p.payment_id,
+      p.amount,
+      p.transaction_id,
+      p.payment_method,
+      p.payment_status,
+      p.sender_number,
+      p.created_at AS payment_created_at,
+      p.updated_at AS payment_updated_at,
+      
+      b.booking_id,
+      b.seat_id,
+      b.booked_at AS booking_created_at,
+      
+      u.user_id,
+      u.username AS passenger_name,
+      u.email AS passenger_email,
+      u.phone_number AS passenger_phone
 
     FROM payment p
     JOIN booking b ON b.booking_id = p.booking_id
@@ -130,7 +130,6 @@ const getPaymentByTrx = async (req, res) => {
 
     const { rows } = await pool.query(getPaymentByBookingQ, [transactionId]);
     const payment = rows;
-    console.log(rows);
     if (rows.length === 0) {
       return res.status(400).json({ message: "Transaction ID not found!" });
     }
@@ -223,6 +222,14 @@ const vodafoneCash = async (req, res) => {
 
     if (!validatePhoneNumber(senderNumber)) {
       return res.status(400).json({ message: "Incorrect phone number!" });
+    }
+    const checkForTrx = 
+    `SELECT 1 FROM payment WHERE transaction_id = $1`
+
+    const result = await pool.query(checkForTrx, [trx])
+
+    if (result.rowCount > 0) {
+      return res.status(400).json({ message: "Transaction ID already exists!" })
     }
 
     // Step 2: Get pending payment or create a new one
@@ -591,6 +598,33 @@ const confirmPayment = async (req, res) => {
   }
 };
 
+
+const rejectPayment = async (req, res) => {
+  // console.log("POST /payment/confirm called");
+
+  const client = await pool.connect();
+  try {
+    const { bookingId } = req.body;
+
+    const reject = await rejectVFPayment(client, bookingId);
+
+    return res.status(200).json({ user_info: reject });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Confrim error:", err);
+
+    if (err.code === "22P02") {
+      return res.status(400).json({ error: "Invalid UUID format" });
+    }
+
+    return res
+      .status(err.status || 500)
+      .json({ error: err.message || "Internal server error" });
+  } finally {
+    client.release();
+  }
+};
+
 // const webhookRefund = async (req,res) => {
 
 //   console.log("POST /refund/webhook called");
@@ -841,4 +875,5 @@ export {
   vodafoneCash,
   getPaymentByTrx,
   confirmPayment,
+  rejectPayment,
 };
