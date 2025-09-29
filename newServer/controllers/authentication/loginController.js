@@ -18,8 +18,9 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    const emailLower = email.toLowerCase();
     const SearchForMailQuery = `SELECT * FROM users WHERE email = $1 LIMIT 1`;
-    const { rows } = await pool.query(SearchForMailQuery, [email]);
+    const { rows } = await pool.query(SearchForMailQuery, [emailLower]);
     const user = rows[0];
 
     if (!user) {
