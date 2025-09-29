@@ -13,7 +13,7 @@ export const rejectVFPayment = async (client, bookingId) => {
            updated_at = NOW()
        WHERE booking_id = $2
          AND payment_status = 'pending' 
-         OR payment_status = 'confirm'
+         OR payment_status = 'confirmed'
        RETURNING payment_id`,
       ["rejected", bookingId]
     );

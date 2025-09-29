@@ -12,7 +12,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "@/hooks/use-toast";
+import { ToastContainer, toast } from "react-toastify";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -43,11 +43,7 @@ export default function Operator() {
       });
       setResults(data.user_payment);
     } catch (err) {
-      toast({
-        title: "Error",
-        description: err?.response?.data?.message || "Error fetching bookings",
-        variant: "destructive",
-      });
+      toast.error(err?.response?.data?.message || "Error fetching bookings");
       setResults([]);
     } finally {
       setIsLoading(false);
@@ -64,13 +60,13 @@ export default function Operator() {
       setResults((prev) =>
         prev.map((b) => (b._id === bookingId ? { ...b, status: "payed" } : b))
       );
-      toast({ title: "Payment Confirmed", variant: "success" });
+      toast.success("Payment Confirmed successfully");
     } catch (err) {
-      toast({
-        title: "Error",
-        description: err?.response?.data?.message || "Error confirming payment",
-        variant: "destructive",
-      });
+      console.error(
+        "Payment confirm Error: ",
+        err?.response?.data?.message || "Error confirming payment"
+      );
+      toast.error(err?.response?.data?.message || "Error confirming payment");
     } finally {
       setIsLoading(false);
     }
@@ -80,17 +76,19 @@ export default function Operator() {
   const handleReject = async (bookingId) => {
     setIsLoading(true);
     try {
-      await axios.post(`${backEndUrl}/payment/reject-VF-payment`, { bookingId });
+      await axios.post(`${backEndUrl}/payment/reject-VF-payment`, {
+        bookingId,
+      });
       setResults((prev) =>
         prev.map((b) => (b._id === bookingId ? { ...b, status: "pending" } : b))
       );
-      toast({ title: "Payment Rejected", variant: "warning" });
+      toast.success("Payment Rejected");
     } catch (err) {
-      toast({
-        title: "Error",
-        description: err?.response?.data?.message || "Error rejecting payment",
-        variant: "destructive",
-      });
+      console.error(
+        "Payment confirm Error: ",
+        err?.response?.data?.message || "Error rejecting payment"
+      );
+      toast.error(err?.response?.data?.message || "Error rejecting payment");
     } finally {
       setIsLoading(false);
     }
@@ -175,22 +173,34 @@ export default function Operator() {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="default"
-                          disabled={row.payment_status === "paid" || isLoading}
-                          onClick={() => handleConfirm(row.booking_id)}
-                        >
-                          Confirm
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          disabled={row.payment_status === "paid" || isLoading}
-                          onClick={() => handleReject(row.booking_id)}
-                        >
-                          Reject
-                        </Button>
+                        {["pending", "rejected"].includes(
+                          row.payment_status
+                        ) && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            disabled={
+                              row.payment_status === "paid" || isLoading
+                            }
+                            onClick={() => handleConfirm(row.booking_id)}
+                          >
+                            Confirm
+                          </Button>
+                        )}
+                        {["pending", "confirmed"].includes(
+                          row.payment_status
+                        ) && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            disabled={
+                              row.payment_status === "paid" || isLoading
+                            }
+                            onClick={() => handleReject(row.booking_id)}
+                          >
+                            Reject
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
