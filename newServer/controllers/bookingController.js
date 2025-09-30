@@ -262,20 +262,20 @@ async function getTripPassengers(req, res) {
     `;
 
     const { rows: passengers } = await pool.query(getPassengersQuery, [tripId]);
-    
+
     // Calculate passenger counts by stop
     const stopCounts = {};
-    passengers.forEach(passenger => {
-      const stopName = passenger.stop_name || 'Unknown Stop';
+    passengers.forEach((passenger) => {
+      const stopName = passenger.stop_name || "Unknown Stop";
       stopCounts[stopName] = (stopCounts[stopName] || 0) + 1;
     });
-    
+
     return res.status(200).json({
       message: "Successfully fetched passengers",
       passengers: passengers,
       tripInfo: trip[0],
       totalPassengers: passengers.length,
-      stopCounts: stopCounts
+      stopCounts: stopCounts,
     });
   } catch (err) {
     return res
@@ -427,11 +427,7 @@ async function updateBooking(req, res) {
 async function cancel(req, res) {
   const { bookingId } = req.body;
   const client = await pool.connect();
-  let txnDetails,
-    transactionId,
-    paymob_payment_status,
-    paymob_refund_status,
-    amount;
+
   try {
     await client.query("BEGIN");
 
@@ -456,7 +452,7 @@ async function cancel(req, res) {
     const bookingStatus = booking[0]?.status;
     const paymentStatus = booking[0]?.payment_status;
     const paymentId = booking[0]?.payment_id;
-    amount = booking[0]?.amount;
+    const amount = booking[0]?.amount;
     console.log("paymentId: ", paymentId);
     console.log("Amount In payment: ", amount);
 
@@ -468,50 +464,50 @@ async function cancel(req, res) {
     }
 
     // Paymob CLient
-    const paymob = new PaymobClient({
-      publicKey: process.env.PUBLIC_KEY,
-      secretKey: process.env.SECRET_KEY,
-      apiKey: process.env.API_KEY,
-    });
-    [];
+    // const paymob = new PaymobClient({
+    //   publicKey: process.env.PUBLIC_KEY,
+    //   secretKey: process.env.SECRET_KEY,
+    //   apiKey: process.env.API_KEY,
+    // });
+    // [];
 
-    const token = await paymob.fetchAuthToken();
+    // const token = await paymob.fetchAuthToken();
 
-    try {
-      txnDetails = await paymob.getTxn(token, "merchant_order_id", paymentId);
+    // try {
+    //   txnDetails = await paymob.getTxn(token, "merchant_order_id", paymentId);
 
-      transactionId = txnDetails.id || null;
-      amount = txnDetails.amount_cents / 100 || null;
-      paymob_payment_status = txnDetails.order.payment_status || null;
-      paymob_refund_status = txnDetails.data.migs_order.status || null;
-      console.log("Transaction details: ", txnDetails);
-      console.log("Payment status: ", paymob_payment_status);
-      console.log("Refund status: ", paymob_refund_status);
-      console.log("Amount: ", amount);
-    } catch (err) {
-      console.log("Txn Not Found!");
-    }
+    //   transactionId = txnDetails.id || null;
+    //   amount = txnDetails.amount_cents / 100 || null;
+    //   paymob_payment_status = txnDetails.order.payment_status || null;
+    //   paymob_refund_status = txnDetails.data.migs_order.status || null;
+    //   console.log("Transaction details: ", txnDetails);
+    //   console.log("Payment status: ", paymob_payment_status);
+    //   console.log("Refund status: ", paymob_refund_status);
+    //   console.log("Amount: ", amount);
+    // } catch (err) {
+    //   console.log("Txn Not Found!");
+    // }
 
     // if (txnDetails.is_refunded)
 
     // Automatic: Refund the transaction if it's a paid standalone or captured
-    if (
-      paymob_payment_status === "PAID" &&
-      paymentStatus !== "refunded" &&
-      paymob_refund_status !== "REFUNDED"
-    ) {
-      const transactionId = txnDetails?.id || null;
-      // const amount = booking[0].amount;
-      const refundRes = await paymob.refund(transactionId, amount);
-      console.log("Refund res: ", refundRes);
-    }
+    // if (
+    //   paymob_payment_status === "PAID" &&
+    //   paymentStatus !== "refunded" &&
+    //   paymob_refund_status !== "REFUNDED"
+    // ) {
+    //   const transactionId = txnDetails?.id || null;
+    //   // const amount = booking[0].amount;
+    //   const refundRes = await paymob.refund(transactionId, amount);
+    //   console.log("Refund res: ", refundRes);
+    // }
 
     // Void the transaction if it is only authorized
-    if (paymentStatus === "authorized") {
-      const transactionId = booking[0].transaction_id;
-      const voidRes = await paymob.void(transactionId);
-      console.log("Void res: ", voidRes);
-    }
+    // if (paymentStatus === "authorized") {
+    //   const transactionId = booking[0].transaction_id;
+    //   const voidRes = await paymob.void(transactionId);
+    //   console.log("Void res: ", voidRes);
+    // }
 
     // Only cancel pending or confirmed bookings
     if (!["failed", "expired", "cancelled"].includes(bookingStatus)) {
@@ -540,23 +536,15 @@ async function cancel(req, res) {
       // Payment update Query
       const updatePaymentQ = `
         UPDATE payment
-        SET payment_status = $1, transaction_id = $2, amount = $3, updated_at = NOW(), captured_status = $4
-        WHERE booking_id = $5
-          AND payment_status = $6
+        SET payment_status = $1, updated_at = NOW()
+        WHERE booking_id = $2
+          AND (payment_status = 'pending' OR payment_status = 'paid' ) 
         RETURNING payment_id, payment_status, amount
       `;
 
       const updatedPayment = await client.query(updatePaymentQ, [
-        paymob_refund_status === "REFUNDED"
-          ? "refunded"
-          : paymob_payment_status === "PAID"
-          ? "paid"
-          : "cancelled",
-        transactionId,
-        amount,
-        null,
+        "cancelled",
         bookingId,
-        paymentStatus,
       ]);
 
       console.log("Payment: ", updatedPayment.rows);
@@ -564,30 +552,19 @@ async function cancel(req, res) {
         await client.query("ROLLBACK");
         throw new Error("Can't update payment!");
       }
+
+      // Payment update Query
+      const requestRefundQ = `
+        INSERT INTO rufund ()
+      `;
+
+      const reefundReq = await client.query(updatePaymentQ, [
+        "cancelled",
+        bookingId,
+      ]);
+
     }
 
-    // if (booking[0].captured_status === "capture") {
-    //   const body = {
-    //     transaction_id: booking[0].transaction_id,
-    //     amount_cents: booking[0].amount * 100, // still need the calculation for the fee
-    //     extras: { ee: 22 },
-    //     special_reference: `${booking[0].payment_id}`,
-    //     notification_url: `${process.env.BASE_URL}/webhook/refund`,
-    //     redirection_url: process.env.WEBHOOK_REDIRECT_URL,
-    //   };
-    //   const response = await axios.post(
-    //     "https://accept.paymob.com/api/acceptance/void_refund/refund",
-    //     body,
-    //     { headers: { Authorization: `Token ${process.env.SECRET_KEY}` } }
-    //   );
-
-    //   return res.status(200).json({
-    //     message: "refund sendsuccsfully!",
-    //   });
-    // }
-    //if(booking.captured_status === "auth"){
-
-    // }
     await client.query("COMMIT");
     return res.status(200).json({ message: "Booking cancelled successfully" });
   } catch (err) {
