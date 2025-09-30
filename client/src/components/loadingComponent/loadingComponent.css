@@ -1,60 +1,48 @@
 /* From Uiverse.io by adamgiebl */
-.loading-component{
-  background-color: transparent;
-  height: 100%;
-}
 
-.loading-component > .dots-container {
+.loading-component {
+  background: transparent;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.bus-loader {
   position: relative;
-  background-color: transparent;
-  height: 100%;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.dot {
-  height: 20px;
-  width: 20px;
-  margin-right: 10px;
-  border-radius: 10px;
-  background-color: var( --primary-color);
-  animation: pulse 1.5s infinite ease-in-out;
+.bus-icon {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  animation: bus-move 1.8s cubic-bezier(0.4, 0.8, 0.6, 1) infinite;
 }
 
-.dot:last-child {
-  margin-right: 0;
-}
-
-.dot:nth-child(1) {
-  animation-delay: -0.3s;
-}
-
-.dot:nth-child(2) {
-  animation-delay: -0.1s;
-}
-
-.dot:nth-child(3) {
-  animation-delay: 0.1s;
-}
-
-@keyframes pulse {
+@keyframes bus-move {
   0% {
-    transform: scale(0.8);
-    background-color: #4b4949;
-    box-shadow: 0 0 0 0 rgba(178, 212, 252, 0.7);
+    left: 0;
+    opacity: 0.7;
+    transform: scale(0.95) rotate(-2deg);
   }
-
-  50% {
-    transform: scale(1.2);
-    background-color: var(--primary-color);
-    box-shadow: 0 0 0 10px rgba(178, 212, 252, 0);
+  10% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
   }
-
+  80% {
+    left: calc(100% - 60px);
+    opacity: 1;
+    transform: scale(1.05) rotate(2deg);
+  }
   100% {
-    transform: scale(0.8);
-    background-color: #b3d4fc;
-    background-color: #000000;
-    box-shadow: 0 0 0 0 rgba(178, 212, 252, 0.7);
+    left: 0;
+    opacity: 0.7;
+    transform: scale(0.95) rotate(-2deg);
   }
 }
