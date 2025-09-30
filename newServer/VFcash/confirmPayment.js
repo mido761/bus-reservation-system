@@ -55,7 +55,7 @@ export const confirmVfPayment = async (client, bookingId) => {
             ROW_NUMBER() OVER (ORDER BY booked_at) AS rnk
       FROM booking
       WHERE trip_id = $1
-        AND status NOT IN ('cancelled', 'pending')
+        AND status NOT IN ('cancelled', 'pending','rejected')
     ),
     batched AS (
       SELECT booking_id,
@@ -80,7 +80,7 @@ export const confirmVfPayment = async (client, bookingId) => {
     LEFT JOIN full_batches fb ON bt.batch_num = fb.batch_num
     WHERE b.booking_id = bt.booking_id
       -- <--- important: do not touch cancelled or pending rows
-      AND b.status NOT IN ('cancelled', 'pending');
+      AND b.status NOT IN ('cancelled', 'pending','rejected');
     ` 
     const getBookingTrip = await client.query(getBookingTripQuery, [tripId,5]);
     console.log(getBookingTrip)    
