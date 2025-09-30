@@ -15,27 +15,39 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
   const [paymentStatus, setPaymentStatus] = useState("");
 
   // Memoize unique statuses for dropdowns
-  const bookingStatusOptions = useMemo(
-    () => getUniqueStatuses(passengers, "booking_status"),
-    [passengers]
-  );
+  const bookingStatusOptions = useMemo(() => {
+    const statuses = getUniqueStatuses(passengers, "booking_status");
+    // Always show 'confirmed' then 'waiting' if present, then others
+    const ordered = [];
+    if (statuses.includes("confirmed")) ordered.push("confirmed");
+    if (statuses.includes("waiting")) ordered.push("waiting");
+    ordered.push(...statuses.filter(s => s !== "confirmed" && s !== "waiting"));
+    return ordered;
+  }, [passengers]);
   const paymentStatusOptions = useMemo(
     () => getUniqueStatuses(passengers, "payment_status"),
     [passengers]
   );
 
-  // Filter passengers
+  // Filter and sort passengers
   const filteredPassengers = useMemo(() => {
-    return passengers.filter((p) => {
-      const matchesSearch =
-        !searchTerm.trim() ||
-        p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.phone_number?.includes(searchTerm) ||
-        p.email?.toLowerCase().includes(searchTerm);
-      const matchesBooking = !bookingStatus || p.booking_status === bookingStatus;
-      const matchesPayment = !paymentStatus || p.payment_status === paymentStatus;
-      return matchesSearch && matchesBooking && matchesPayment;
-    });
+    return passengers
+      .filter((p) => {
+        const matchesSearch =
+          !searchTerm.trim() ||
+          p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.phone_number?.includes(searchTerm) ||
+          p.email?.toLowerCase().includes(searchTerm);
+        const matchesBooking = !bookingStatus || p.booking_status === bookingStatus;
+        const matchesPayment = !paymentStatus || p.payment_status === paymentStatus;
+        return matchesSearch && matchesBooking && matchesPayment;
+      })
+      .sort((a, b) => {
+        // Ascending order: earliest booked_at first
+        const dateA = a.booked_at ? new Date(a.booked_at).getTime() : 0;
+        const dateB = b.booked_at ? new Date(b.booked_at).getTime() : 0;
+        return dateA - dateB;
+      });
   }, [passengers, searchTerm, bookingStatus, paymentStatus]);
 
   // Calculate filtered stats

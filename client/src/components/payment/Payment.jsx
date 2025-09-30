@@ -37,8 +37,13 @@ const Payment = () => {
   const handleSubmitPayment = async (e) => {
     e.preventDefault();
     if (paymentDetails.paymentMethod === "vodafone_cash") {
-      if (!paymentDetails.transactionId || !paymentDetails.senderPhone) {
+      const trx = paymentDetails.transactionId;
+      if (!trx || !paymentDetails.senderPhone) {
         setPaymentError("Please fill in all payment details.");
+        return;
+      }
+      if (!/^[0-9]{16}$/.test(trx)) {
+        setPaymentError("Transaction ID must be exactly 16 digits.");
         return;
       }
       if (!paymentDetails.policyAccepted) {
@@ -128,14 +133,19 @@ const Payment = () => {
                     </label>
                     <Input
                       type="text"
-                      placeholder="Enter Transaction ID"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={16}
+                      placeholder="Enter 16-digit Transaction ID"
                       value={paymentDetails.transactionId}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        // Only allow numbers, max 16 digits
+                        const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 16);
                         setPaymentDetails({
                           ...paymentDetails,
-                          transactionId: e.target.value,
-                        })
-                      }
+                          transactionId: val,
+                        });
+                      }}
                     />
                   </div>
                   <div>
