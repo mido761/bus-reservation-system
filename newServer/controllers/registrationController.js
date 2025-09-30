@@ -23,6 +23,7 @@ export async function sendCode(req, res) {
         .json({ message: "Invalid gender. Choose male or female." });
     }
     const emailLower = email.toLowerCase();
+    console.log(email, emailLower)
     const checkUser = `
     SELECT * FROM users
     WHERE email = $1
@@ -38,7 +39,7 @@ export async function sendCode(req, res) {
     const verificationCode = generateVerificationCode();
 
     const token = jwt.sign(
-      { name, phoneNumber, emailLower, password, gender, verificationCode },
+      { name, phoneNumber, email: emailLower, password, gender, verificationCode },
       "ARandomStringThatIsHardToGuess12345",
       { expiresIn: "10m" }
     );
@@ -131,6 +132,7 @@ export async function resendCode(req, res) {
     );
 
     const email = tempUser.email;
+    console.log("Resending code to:", tempUser);
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${newVerificationCode}</strong></p>`;
 
