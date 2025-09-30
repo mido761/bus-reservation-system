@@ -15,7 +15,7 @@ export const confirmVfPayment = async (client, bookingId) => {
          AND payment_status = 'pending'
          OR payment_status = 'rejected'
        RETURNING payment_id`,
-      ["confirmed", bookingId]
+      ["paid", bookingId]
     );
 
 

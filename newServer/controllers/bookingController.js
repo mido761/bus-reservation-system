@@ -516,7 +516,7 @@ async function cancel(req, res) {
         UPDATE booking
         SET status = $1, updated_at = NOW(), priority = $2
         WHERE booking_id = $3
-          AND (status = 'confirmed' OR status = 'pending')
+          AND (status = 'confirmed' OR status = 'pending' OR status = 'waiting')
         RETURNING booking_id, status
       `;
 
@@ -556,7 +556,7 @@ async function cancel(req, res) {
 
       // Payment update Query
       const requestRefundQ = `
-        INSERT INTO rufund (payment_id, amount, status)
+        INSERT INTO refund (payment_id, amount, status)
         VALUES ($1, $2, 'pending')
       `;
 
