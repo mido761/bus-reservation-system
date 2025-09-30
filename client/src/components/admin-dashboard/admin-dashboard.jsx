@@ -7,6 +7,7 @@ import Schedule from "./Schedule/schedule";
 import Hero from "./adminhero";
 import PassengersList from "./passengerslist/passengers";
 import Operator from "./operators/operators";
+import refund from "./refund/refund";
 
 const MENU = [
   { key: "Trips", label: "Trips", icon: "📅", component: Schedule },
@@ -14,7 +15,9 @@ const MENU = [
   { key: "routes", label: "Routes", icon: "🛣️", component: Route },
   { key: "bus", label: "Bus", icon: "🚌", component: Bus },
   // { key: "passengers-list", label: "List", icon: "👥", component: PassengersList },
-  { key: "operators", label: "Operator", icon: "👨‍💻", component: Operator }
+  { key: "operators", label: "Payment", icon: "👨‍💻", component: Operator },
+  { key: "refund", label: "refund", icon: "💸", component: refund }
+
 ];
 
 export default function AdminDashboard() {

@@ -80,6 +80,7 @@ const About = lazy (() => import("./components/policies/about.jsx"))
 const RefundCancel = lazy (() =>import ("./components/policies/refund_cancel.jsx"))
 // const PassengersList = lazy (() =>import ("./components/admin-dashboard/passengerslist/passengers.jsx"))
 const operators = lazy (()=>import("./components/admin-dashboard/operators/operators.jsx"))
+const refund = lazy (()=>import("./components/admin-dashboard/refund/refund.jsx"))
 function App() {
   return (
     <HashRouter basename="/">
@@ -154,6 +155,16 @@ function App() {
             }
           />
           {/* Protected Routes */}
+          <Route
+            path="/refund"
+            element={
+              <Auth>
+                <Navbar />
+                <refund />
+                {/* <Footer /> */}
+              </Auth>
+            }
+          />
           <Route
             path="/operators"
             element={
