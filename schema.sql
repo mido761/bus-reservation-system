@@ -562,3 +562,16 @@ ALTER TABLE ONLY public.trips
 
 \unrestrict e4VjTolT0LhNP6JQabBKftfWH1220MUTlO90rUfc2XzA4hOeES6Su9RmFLJlNk1
 
+
+
+// ALTER TABLE refund
+//     ALTER COLUMN refund_id SET DEFAULT gen_random_uuid(),
+//     ALTER COLUMN amount SET NOT NULL,
+//     ALTER COLUMN created_at SET DEFAULT now(),
+//     ALTER COLUMN created_at SET NOT NULL,
+//     ALTER COLUMN processed_at SET DEFAULT now(),
+//     ALTER COLUMN processed_at SET NOT NULL,
+//     ALTER COLUMN status SET DEFAULT 'pending',
+//     ALTER COLUMN status SET NOT NULL,
+//     ADD COLUMN transaction_id numeric,
+//     ALTER COLUMN payment_id SET NOT NULL;

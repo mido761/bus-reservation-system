@@ -515,7 +515,7 @@ async function cancel(req, res) {
         UPDATE booking
         SET status = $1, updated_at = NOW(), priority = $2
         WHERE booking_id = $3
-          AND (status = 'confirmed' OR status = 'pending' OR status = 'pending')
+          AND (status = 'confirmed' OR status = 'pending')
         RETURNING booking_id, status
       `;
 
@@ -532,7 +532,7 @@ async function cancel(req, res) {
       }
     }
 
-    if (booking[0].payment_id) {
+    if (paymentId) {
       // Payment update Query
       const updatePaymentQ = `
         UPDATE payment
@@ -555,14 +555,20 @@ async function cancel(req, res) {
 
       // Payment update Query
       const requestRefundQ = `
-        INSERT INTO rufund ()
+        INSERT INTO rufund (payment_id, amount, status)
+        VALUES ($1, $2, 'pending')
       `;
 
-      const reefundReq = await client.query(updatePaymentQ, [
-        "cancelled",
-        bookingId,
+      const refundReq = await client.query(requestRefundQ, [
+        paymentId,
+        amount,
       ]);
 
+      console.log("Refund: ", refundReq.rows);
+      if (!refundReq.rowCount) {
+        await client.query("ROLLBACK");
+        throw new Error("Can't issue refund request!");
+      }
     }
 
     await client.query("COMMIT");
