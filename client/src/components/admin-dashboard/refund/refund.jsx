@@ -25,7 +25,7 @@ function isEmptyObject(obj) {
   );
 }
 
-export default function Operator() {
+export default function refund() {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -122,7 +122,7 @@ export default function Operator() {
       <Card className="border border-gray-200 flex flex-col items-center">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold flex items-center gap-2">
-            👨‍💻 Operator Search
+            💸 Refund Search
           </CardTitle>
         </CardHeader>
         <CardContent>

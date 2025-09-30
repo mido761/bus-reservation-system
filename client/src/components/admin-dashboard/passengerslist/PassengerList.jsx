@@ -1,25 +1,55 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Users, Search, User, Phone, Mail } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { getStatusColor, formatDate } from "./utils";
+import { Select } from "@/components/ui/select";
+
+
+  const getUniqueStatuses = (arr, key) => {
+    return Array.from(new Set(arr.map((item) => item[key]).filter(Boolean)));
+  };
 
 const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredPassengers, setFilteredPassengers] = useState(passengers);
+  const [bookingStatus, setBookingStatus] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("");
 
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredPassengers(passengers);
-    } else {
-      const filtered = passengers.filter(
-        (p) =>
-          p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.phone_number?.includes(searchTerm) ||
-          p.email?.toLowerCase().includes(searchTerm)
-      );
-      setFilteredPassengers(filtered);
-    }
-  }, [searchTerm, passengers]);
+  // Memoize unique statuses for dropdowns
+  const bookingStatusOptions = useMemo(
+    () => getUniqueStatuses(passengers, "booking_status"),
+    [passengers]
+  );
+  const paymentStatusOptions = useMemo(
+    () => getUniqueStatuses(passengers, "payment_status"),
+    [passengers]
+  );
+
+  // Filter passengers
+  const filteredPassengers = useMemo(() => {
+    return passengers.filter((p) => {
+      const matchesSearch =
+        !searchTerm.trim() ||
+        p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.phone_number?.includes(searchTerm) ||
+        p.email?.toLowerCase().includes(searchTerm);
+      const matchesBooking = !bookingStatus || p.booking_status === bookingStatus;
+      const matchesPayment = !paymentStatus || p.payment_status === paymentStatus;
+      return matchesSearch && matchesBooking && matchesPayment;
+    });
+  }, [passengers, searchTerm, bookingStatus, paymentStatus]);
+
+  // Calculate filtered stats
+  const filteredStats = useMemo(() => {
+    const stopCounts = {};
+    filteredPassengers.forEach((p) => {
+      const stop = p.stop_name;
+      stopCounts[stop] = (stopCounts[stop] || 0) + 1;
+    });
+    return {
+      totalPassengers: filteredPassengers.length,
+      stopCounts,
+    };
+  }, [filteredPassengers]);
 
   return (
     <Card>
@@ -34,16 +64,42 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
             </p>
           </div>
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search passengers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 w-full sm:w-64"
-            />
+          {/* Search & Filters */}
+          <div className="flex flex-col sm:flex-row gap-2 items-center">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search passengers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
+              />
+            </div>
+            <select
+              value={bookingStatus}
+              onChange={(e) => setBookingStatus(e.target.value)}
+              className="border rounded-lg py-2 px-3 focus:ring-2 focus:ring-blue-500 w-full sm:w-40"
+            >
+              <option value="">All Booking Status</option>
+              {bookingStatusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            <select
+              value={paymentStatus}
+              onChange={(e) => setPaymentStatus(e.target.value)}
+              className="border rounded-lg py-2 px-3 focus:ring-2 focus:ring-blue-500 w-full sm:w-40"
+            >
+              <option value="">All Payment Status</option>
+              {paymentStatusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -53,7 +109,7 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-blue-600">Total Passengers</p>
-                <p className="text-2xl font-bold text-blue-900">{tripStats.totalPassengers}</p>
+                <p className="text-2xl font-bold text-blue-900">{filteredStats.totalPassengers}</p>
               </div>
               <Users className="w-8 h-8 text-blue-500" />
             </div>
@@ -61,11 +117,11 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
         </div>
 
         {/* Stop Counts */}
-        {Object.keys(tripStats.stopCounts).length > 0 && (
+        {Object.keys(filteredStats.stopCounts).length > 0 && (
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-3">Passengers by Stop</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {Object.entries(tripStats.stopCounts).map(([stop, count]) => (
+              {Object.entries(filteredStats.stopCounts).map(([stop, count]) => (
                 <div key={stop} className="bg-gray-50 border rounded-lg p-3 flex justify-between">
                   <p className="text-sm font-medium">{stop}</p>
                   <span className="text-lg font-bold">{count}</span>
@@ -85,8 +141,8 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
           <div className="text-center py-12">
             <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">
-              {searchTerm
-                ? "No passengers found matching your search."
+              {searchTerm || bookingStatus || paymentStatus
+                ? "No passengers found matching your filters."
                 : "No passengers found for this trip."}
             </p>
           </div>
@@ -124,7 +180,6 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">{p.name || "N/A"}</p>
-                        
                       </div>
                     </td>
                     <td className="px-6 py-4">
