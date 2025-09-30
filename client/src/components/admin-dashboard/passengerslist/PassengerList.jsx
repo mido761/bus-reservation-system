@@ -14,15 +14,19 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
   const [bookingStatus, setBookingStatus] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
 
-  // Memoize unique statuses for dropdowns
+  // Memoize unique statuses for dropdowns with grouped filters
   const bookingStatusOptions = useMemo(() => {
     const statuses = getUniqueStatuses(passengers, "booking_status");
-    // Always show 'confirmed' then 'waiting' if present, then others
-    const ordered = [];
-    if (statuses.includes("confirmed")) ordered.push("confirmed");
-    if (statuses.includes("waiting")) ordered.push("waiting");
-    ordered.push(...statuses.filter(s => s !== "confirmed" && s !== "waiting"));
-    return ordered;
+    // Remove grouped statuses from individual list
+    const exclude = ["confirmed", "waiting", "pending", "cancelled", "rejected"];
+    const others = statuses.filter(s => !exclude.includes(s));
+    return [
+      { value: "", label: "All Status" },
+      { value: "confirmed_waiting", label: "Confirmed & Waiting", show: statuses.includes("confirmed") || statuses.includes("waiting") },
+      { value: "pending", label: "Pending", show: statuses.includes("pending") },
+      { value: "cancelled_rejected", label: "Cancelled & Rejected", show: statuses.includes("cancelled") || statuses.includes("rejected") },
+      ...others.map(s => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1), show: true }))
+    ].filter(opt => opt.show !== false);
   }, [passengers]);
   const paymentStatusOptions = useMemo(
     () => getUniqueStatuses(passengers, "payment_status"),
@@ -38,7 +42,16 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
           p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           p.phone_number?.includes(searchTerm) ||
           p.email?.toLowerCase().includes(searchTerm);
-        const matchesBooking = !bookingStatus || p.booking_status === bookingStatus;
+        let matchesBooking = true;
+        if (bookingStatus === "confirmed_waiting") {
+          matchesBooking = ["confirmed", "waiting"].includes(p.booking_status);
+        } else if (bookingStatus === "pending") {
+          matchesBooking = p.booking_status === "pending";
+        } else if (bookingStatus === "cancelled_rejected") {
+          matchesBooking = ["cancelled", "rejected"].includes(p.booking_status);
+        } else if (bookingStatus) {
+          matchesBooking = p.booking_status === bookingStatus;
+        }
         const matchesPayment = !paymentStatus || p.payment_status === paymentStatus;
         return matchesSearch && matchesBooking && matchesPayment;
       })
@@ -93,11 +106,8 @@ const PassengerList = ({ selectedTrip, passengers, tripStats, loading }) => {
               onChange={(e) => setBookingStatus(e.target.value)}
               className="border rounded-lg py-2 px-3 focus:ring-2 focus:ring-blue-500 w-full sm:w-40"
             >
-              <option value="">All Booking Status</option>
-              {bookingStatusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
+              {bookingStatusOptions.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
             <select
