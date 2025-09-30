@@ -83,11 +83,7 @@ export const confirmVfPayment = async (client, bookingId) => {
       AND b.status NOT IN ('cancelled', 'pending');
     ` 
     const getBookingTrip = await client.query(getBookingTripQuery, [tripId,5]);
-    console.log(getBookingTrip)
-
-
-    
-
+    console.log(getBookingTrip)    
 
     // Create and send ticket email
     const getTicketQ = `

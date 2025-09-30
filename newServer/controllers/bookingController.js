@@ -239,6 +239,7 @@ async function getTripPassengers(req, res) {
       b.booking_id,
       b.status as booking_status,
       b.booked_at,
+      b.priority,
       p.payment_id,
       p.payment_status,
       p.amount,
