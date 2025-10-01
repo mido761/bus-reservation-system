@@ -580,6 +580,8 @@ async function cancel(req, res) {
     return res
       .status(500)
       .json({ message: "Error cancel bookings", error: err });
+  }finally{
+    client.release();
   }
 }
 

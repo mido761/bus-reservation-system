@@ -22,7 +22,7 @@ import authentication from "./middleware/authentication.js";
 import register from "./routers/registerRouter.js";
 import auth from "./routers/authRouter.js";
 import forgotPassword from "./routers/forgotPasswordRouter.js";
-import webhook from "./routers/webhookRouter.js"
+import webhook from "./routers/webhookRouter.js";
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -69,6 +69,18 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.options(
+  "*",
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
   })
 );
 
