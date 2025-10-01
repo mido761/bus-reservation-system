@@ -55,9 +55,7 @@ async function nodeMailerMail(to, subject, html) {
   try {
     const msg = {
       to,
-      from: process.env.NODE_ENV
-        ? process.env.SENDGRID_FROM_EMAIL
-        : process.env.EMAIL_USER,
+      from: process.env.EMAIL_USER,
       subject,
       html,
     };
