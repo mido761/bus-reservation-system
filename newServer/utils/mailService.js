@@ -12,18 +12,34 @@ import nodemailer from "nodemailer";
 // //   },
 // // });
 
+import { Resend } from "resend";
+
 async function nodeMailerMail(recepient, subject, body) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  // const transporter = nodemailer.createTransport({
+  //   service: "gmail",
+  //   auth: {
+  //     user: process.env.EMAIL_USER,
+  //     pass: process.env.EMAIL_PASS,
+  //   },
+  // });
+
+  // try {
+  //   const mailRes = await transporter.sendMail({
+  //     from: process.env.EMAIL_USER,
+  //     to: recepient,
+  //     subject: subject,
+  //     html: body,
+  //   });
+  //   return mailRes;
+  // } catch (err) {
+  //   throw new Error(err);
+  // }
+
+  const resend = new Resend("re_UqYZYWHT_2PouqE3uLZW39jTAEjiteK4p");
 
   try {
-    const mailRes = await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    const mailRes = await resend.emails.send({
+      from: "midoteraq@gmail.com",
       to: recepient,
       subject: subject,
       html: body,
