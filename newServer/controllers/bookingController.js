@@ -330,30 +330,30 @@ async function book(req, res) {
         AND b.trip_id = $3 
     `;
 
-    const { rows } = await client.query(checkQuery, [
-      "pending",
+    const bookings = await client.query(checkQuery, [
+      "waiting",
       req.session.userId,
       tripId,
     ]);
-    console.log(rows);
-    const checkBooking = rows[0];
+    console.log(bookings.rows);
+    const bookingsCount = bookings.rowCount;
 
-    if (checkBooking) {
-      await client.query("ROLLBACK");
-      return res.status(400).json({
-        message: "Complete pending booking first!",
-        booking: checkBooking,
-      });
-    }
-    if (!checkBooking) {
-      const passengerId = req.session.userId;
-      console.log("Passenger:", passengerId);
+    // if (bookingsCount > 1) {
+    //   await client.query("ROLLBACK");
+    //   return res.status(400).json({
+    //     message: "Only two bookings allowed!",
+    //     booking: bookings.rows,
+    //   });
+    // }
 
-      // Insert into booking
-      const addQuery = `
+    const passengerId = req.session.userId;
+    console.log("Passenger:", passengerId);
+
+    // Insert into booking
+    const addQuery = `
       WITH inserted AS (
         INSERT INTO booking (trip_id, passenger_id, stop_id, status)
-        VALUES ($1, $2, $3, 'pending')
+        VALUES ($1, $2, $3, 'waiting')
         RETURNING *
       )
       SELECT i.*, s.stop_name, s.location
@@ -361,29 +361,29 @@ async function book(req, res) {
       JOIN stop s ON i.stop_id = s.stop_id
     `;
 
-      const { rows } = await client.query(addQuery, [
-        tripId,
-        passengerId,
-        stopId,
-      ]);
-      const addBook = rows[0];
-      console.log(addBook);
+    const { rows: addBookingRows } = await client.query(addQuery, [
+      tripId,
+      passengerId,
+      stopId,
+    ]);
 
-      // Insert into tickets linked to booking
-      const addticketQ = `
+    console.log(addBookingRows[0]);
+
+    // Insert into tickets linked to booking
+    const addticketQ = `
         INSERT INTO tickets (booking_id)
         VALUES ($1)
         RETURNING *`;
-      const ticket = await client.query(addticketQ, [addBook.booking_id]);
+    const ticket = await client.query(addticketQ, [addBookingRows[0].booking_id]);
 
-      await client.query("COMMIT");
+    await client.query("COMMIT");
 
-      return res.status(201).json({
-        message: "Booked successfully!",
-        booked: addBook,
-        ticket: ticket.rows[0],
-      });
-    }
+    return res.status(201).json({
+      message: "Booked successfully!",
+      booked: addBookingRows[0],
+      ticket: ticket.rows[0],
+    });
+
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("Booking transaction failed:", error);
@@ -580,7 +580,7 @@ async function cancel(req, res) {
     return res
       .status(500)
       .json({ message: "Error cancel bookings", error: err });
-  }finally{
+  } finally {
     client.release();
   }
 }

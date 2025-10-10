@@ -107,7 +107,7 @@ export default function Navbar() {
             <DropdownMenuItem
               onClick={() => navigate("/my-account", { replace: true })}
             >
-              My Account
+              My Bookings
             </DropdownMenuItem>
           )}
           {isAuthorized && location.pathname !== "/admin-dashboard" && (
@@ -149,7 +149,7 @@ export default function Navbar() {
             variant="ghost"
             onClick={() => navigate("/my-account", { replace: true })}
           >
-            My Account
+            My Bookings
           </Button>
         )}
         {isAuthorized && location.pathname !== "/admin-dashboard" && (

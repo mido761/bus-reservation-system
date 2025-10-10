@@ -15,8 +15,8 @@ const MENU = [
   { key: "routes", label: "Routes", icon: "🛣️", component: Route },
   { key: "bus", label: "Bus", icon: "🚌", component: Bus },
   // { key: "passengers-list", label: "List", icon: "👥", component: PassengersList },
-  { key: "operators", label: "Payment", icon: "👨‍💻", component: Operator },
-  { key: "refund", label: "refund", icon: "💸", component: refund }
+  // { key: "operators", label: "Payment", icon: "👨‍💻", component: Operator },
+  // { key: "refund", label: "refund", icon: "💸", component: refund }
 
 ];
 

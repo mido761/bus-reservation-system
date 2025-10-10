@@ -12,7 +12,7 @@ import nodemailer from "nodemailer";
 // //   },
 // // });
 
-import { Resend } from "resend";
+// import { Resend } from "resend";
 
 async function sendGridMail(recepient, subject, body) {
   // const transporter = nodemailer.createTransport({
@@ -35,22 +35,23 @@ async function sendGridMail(recepient, subject, body) {
   //   throw new Error(err);
   // }
 
-  const resend = new Resend("re_UqYZYWHT_2PouqE3uLZW39jTAEjiteK4p");
+  // const resend = new Resend("re_UqYZYWHT_2PouqE3uLZW39jTAEjiteK4p");
 
-  try {
-    const mailRes = await resend.emails.send({
-      from: "midoteraq@gmail.com",
-      to: recepient,
-      subject: subject,
-      html: body,
-    });
-    return mailRes;
-  } catch (err) {
-    throw new Error(err);
-  }
+  // try {
+  //   const mailRes = await resend.emails.send({
+  //     from: "midoteraq@gmail.com",
+  //     to: recepient,
+  //     subject: subject,
+  //     html: body,
+  //   });
+  //   return mailRes;
+  // } catch (err) {
+  //   throw new Error(err);
+  // }
 }
 
 async function nodeMailerMail(to, subject, html) {
+  console.log(process.env.SENDGRID_API_KEY)
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   try {
     const msg = {

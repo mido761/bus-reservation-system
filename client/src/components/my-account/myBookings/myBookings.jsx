@@ -131,10 +131,9 @@ const MyBookings = () => {
                     </strong>
                   </span>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      statusStyles[booking.status] ||
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[booking.status] ||
                       "bg-gray-100 text-gray-700"
-                    }`}
+                      }`}
                   >
                     {booking.status.toUpperCase()}
                   </span>
@@ -147,17 +146,18 @@ const MyBookings = () => {
                   {formatDateAndTime(booking.booked_at, "dateTime")}
                 </div>
 
-                <div>
+                {/* <div>
                   <strong className="text-gray-500">Last Update: </strong>
                   {formatDateAndTime(booking.updated_at, "dateTime")}
-                </div>
+                </div> */}
               </section>
 
               {/* Delete Button */}
 
-              {booking.status === "pending" && (
-                <div className="w-full pt-4 flex justify-center gap-4">
-                  <Button
+              {booking.status && <div className="w-full pt-4 flex flex-row items-center justify-center gap-4">
+                {booking.status === "waiting" &&
+                  <div className="w-full pt-4 flex flex-row justify-center gap-4">
+                    {/* <Button
                     type="button"
                     variant="default"
                     size="sm"
@@ -167,33 +167,37 @@ const MyBookings = () => {
                     {cancelledId === booking.booking_id
                       ? "Complete..."
                       : "Complete"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="default"
-                    size="sm"
-                    onClick={() => navigate("/passengers", { state: { busId: booking.bus_id } })}
-                  >
-                    List
-                  </Button>
-                </div>
-              )}
+                  </Button> */}
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => navigate("/passengers", { state: { busId: booking.bus_id } })}
+                    >
+                      List
+                    </Button>
+                  </div>
+                }
 
-              {!["cancelled", "failed", "expired"].includes(booking.status) && (
-                <div className="w-full pt-4 flex justify-center gap-4">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleCancel(booking.booking_id)}
-                    disabled={cancelledId === booking.booking_id}
-                  >
-                    {cancelledId === booking.booking_id
-                      ? "Canceling..."
-                      : "Cancel"}
-                  </Button>
-                </div>
-              )}
+                {!["cancelled", "failed", "expired"].includes(booking.status) && (
+                  <div className="w-full pt-4 flex justify-center gap-4">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="w-full"
+                      size="sm"
+                      onClick={() => handleCancel(booking.booking_id)}
+                      disabled={cancelledId === booking.booking_id}
+                    >
+                      {cancelledId === booking.booking_id
+                        ? "Canceling..."
+                        : "Cancel"}
+                    </Button>
+                  </div>
+                )}
+              </div>}
+
             </CardContent>
           </Card>
         ))}

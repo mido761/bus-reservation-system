@@ -2,20 +2,20 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 
-import MyTrips from "./MyTrips/mytrips";
-import MyPayments from "./myPayments/myPayments";
+// import MyTrips from "./MyTrips/mytrips";
+// import MyPayments from "./myPayments/myPayments";
 import MyBookings from "./myBookings/myBookings";
 import Hero from "./Hero/hero";
 
 const MENU = [
-  { key: "mytrips", label: "My Trips", icon: "🚌", component: MyTrips },
-  {
-    key: "myPayments",
-    label: "My Payments",
-    icon: "💳",
-    component: MyPayments,
-  },
-  { key: "myBooking", label: "My Booking", icon: "📄", component: MyBookings },
+  // { key: "mytrips", label: "My Trips", icon: "🚌", component: MyTrips },
+  // {
+  //   key: "myPayments",
+  //   label: "My Payments",
+  //   icon: "💳",
+  //   component: MyPayments,
+  // },
+  { key: "myBooking", label: "My Bookings", icon: "📄", component: MyBookings },
 ];
 
 export default function UserAccount() {

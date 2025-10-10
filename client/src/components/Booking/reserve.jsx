@@ -4,7 +4,7 @@ import axios from "axios";
 import formatDateTime from "../../formatDateAndTime";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { PendingModal } from "./PendingModal.jsx";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
@@ -79,18 +79,18 @@ const Reserve = () => {
     setIsBooking(true);
     try {
       // Api call
-      const checkRes = await axios.post(
-        `${backEndUrl}/booking/filter-user-bookings`,
-        { tripId: trip.trip_id },
-        { withCredentials: true }
-      );
+      // const checkRes = await axios.post(
+      //   `${backEndUrl}/booking/filter-user-bookings`,
+      //   { tripId: trip.trip_id },
+      //   { withCredentials: true }
+      // );
 
-      // check old bookings and throw toast
-      if (checkRes.data.userBookings.length > 0) {
-        toast.warn(
-          `You already have ${checkRes.data.userBookings.length} booking(s) for this trip.`
-        );
-      }
+      // // check old bookings and throw toast
+      // if (checkRes.data.userBookings.length > 0) {
+      //   toast.warn(
+      //     `You already have ${checkRes.data.userBookings.length} booking(s) for this trip.`
+      //   );
+      // }
 
       // Always proceed to booking (no window.confirm)
       const res = await axios.post(
@@ -101,21 +101,34 @@ const Reserve = () => {
 
       const booking = res.data.booked;
       toast.success("Your reservation was successful");
-    navigate("/payment", { state: { booking, trip, route, selectedStop } });
-  } catch (err) {
-    if (err.response?.status === 400) {
-      const booking = err.response.data.booking;
-      setShowPendingModal({ show: true, booking });
-    } else {
-      toast.error("Booking failed. Please try again.");
+      // navigate("/payment", { state: { booking, trip, route, selectedStop } });
+      navigate("/my-account");
+    } catch (err) {
+      // if (err.response?.status === 400) {
+      //   const booking = err.response.data.booking;
+      //   setShowPendingModal({ show: true, booking });
+      // } else {
+        toast.error(err.response.data.message || "Booking failed. Please try again.");
+      // }
+    } finally {
+      setIsBooking(false);
     }
-  } finally {
-    setIsBooking(false);
-  }
-};
+  };
 
   return (
     <div className="flex items-center justify-center w-full m-auto">
+      {/* Toast container */}
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="light"
+      />
+
       <Card className="w-full max-w-sm md:max-w-xl mx-auto p-2">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Trip Details</CardTitle>
@@ -192,14 +205,14 @@ const Reserve = () => {
               </Button>
 
               {/* Pending Booking Modal */}
-              {showPendingModal.show && (
+              {/* {showPendingModal.show && (
                 <PendingModal
                   showPendingModal={showPendingModal}
                   bookingError={bookingError}
                   handleConfirm={handleConfirmPendingBooking}
                   handleCancel={handleCancelPendingBooking}
                 />
-              )}
+              )} */}
             </>
           ) : (
             <div className="text-center text-destructive">
