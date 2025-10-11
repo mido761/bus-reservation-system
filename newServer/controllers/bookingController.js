@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import pool from "../db.js";
 import axios from "axios";
 import { PaymobClient } from "../paymob/paymobClient.js";
+import { waitingList } from "../paymob/waitingList.js";
 
 async function getBookings(req, res) {
   // TODO: Fetch all bookings
@@ -335,7 +336,7 @@ async function book(req, res) {
       req.session.userId,
       tripId,
     ]);
-    console.log(bookings.rows);
+    // console.log(bookings.rows);
     const bookingsCount = bookings.rowCount;
 
     // if (bookingsCount > 1) {
@@ -347,7 +348,7 @@ async function book(req, res) {
     // }
 
     const passengerId = req.session.userId;
-    console.log("Passenger:", passengerId);
+    // console.log("Passenger:", passengerId);
 
     // Insert into booking
     const addQuery = `
@@ -367,7 +368,7 @@ async function book(req, res) {
       stopId,
     ]);
 
-    console.log(addBookingRows[0]);
+    // console.log(addBookingRows[0]);
 
     // Insert into tickets linked to booking
     const addticketQ = `
@@ -375,6 +376,8 @@ async function book(req, res) {
         VALUES ($1)
         RETURNING *`;
     const ticket = await client.query(addticketQ, [addBookingRows[0].booking_id]);
+
+    const waiting = await waitingList(tripId,client);
 
     await client.query("COMMIT");
 
@@ -392,7 +395,59 @@ async function book(req, res) {
     client.release();
   }
 }
+async function switchbooking(req,res) {
+  const { newTripId, newStopId,bookingId } = req.body;
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+// Check if user already has pending booking
+    const checkQuery = `
+      SELECT b.*, s.stop_name, s.location
+      FROM booking b
+      JOIN stop s 
+        ON b.stop_id = s.stop_id
+      WHERE b.booking_id = $1 
+    `;
+    
+    const booking = await client.query(checkQuery, [
+      bookingId,
+    ]);
+    // console.log(bookings.rows);
+    const bookingsCount = booking.rowCount;
+    const oldTripId = booking.rows[0].trip_id; 
+    if (bookingsCount < 1) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "you don't have this booking to switch it",
+        booking: booking.rows,
+      });
+    }
+    
+    const updateBookingQ = `
+    update booking 
+    set trip_id = $1 , stop_id = $2 , updated_at = NOW()
+    where booking_id = $3
+    ` 
+    const {row :updateBooking } = await client.query(updateBookingQ , [newTripId , newStopId ,bookingId])
+    console.log(updateBooking)
 
+    const oldTripWaiting = await waitingList(oldTripId,client);
+    const NewTripWaiting = await waitingList(newTripId,client);
+
+
+    await client.query("COMMIT");
+
+    return res.status(201).json({
+      message: "Booked successfully!",
+      booked: addBookingRows[0],
+      ticket: ticket.rows[0],
+    });
+
+
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
 async function confirmBooking(req, res) {
   // TODO: Handle booking confirmation webhook
   res.status(501).json({ message: "Not implemented" });
@@ -441,7 +496,7 @@ async function cancel(req, res) {
     `;
 
     const { rows: booking } = await client.query(getBookingInfo, [bookingId]);
-    console.log(booking);
+    console.log(booking[0]);
 
     if (!booking) {
       await client.query("ROLLBACK");
@@ -464,7 +519,7 @@ async function cancel(req, res) {
         .json({ message: "Booking already cancelled!", booking: booking });
     }
 
-    // Paymob CLient
+    {// Paymob CLient
     // const paymob = new PaymobClient({
     //   publicKey: process.env.PUBLIC_KEY,
     //   secretKey: process.env.SECRET_KEY,
@@ -509,6 +564,7 @@ async function cancel(req, res) {
     //   const voidRes = await paymob.void(transactionId);
     //   console.log("Void res: ", voidRes);
     // }
+    }
 
     // Only cancel pending or confirmed bookings
     if (!["failed", "expired", "cancelled"].includes(bookingStatus)) {
@@ -532,45 +588,48 @@ async function cancel(req, res) {
         throw new Error("Can't update booking!");
       }
     }
+    
+    const waiting = await waitingList(booking[0].trip_id,client);
 
-    if (paymentId) {
-      // Payment update Query
-      const updatePaymentQ = `
-        UPDATE payment
-        SET payment_status = $1, updated_at = NOW()
-        WHERE booking_id = $2
-          AND (payment_status = 'pending' OR payment_status = 'paid' ) 
-        RETURNING payment_id, payment_status, amount
-      `;
+  // refund algo
+  {// if (paymentId) {
+    //   // Payment update Query
+    //   const updatePaymentQ = `
+    //     UPDATE payment
+    //     SET payment_status = $1, updated_at = NOW()
+    //     WHERE booking_id = $2
+    //       AND (payment_status = 'pending' OR payment_status = 'paid' ) 
+    //     RETURNING payment_id, payment_status, amount
+    //   `;
 
-      const updatedPayment = await client.query(updatePaymentQ, [
-        "cancelled",
-        bookingId,
-      ]);
+    //   const updatedPayment = await client.query(updatePaymentQ, [
+    //     "cancelled",
+    //     bookingId,
+    //   ]);
 
-      console.log("Payment: ", updatedPayment.rows);
-      if (!updatedPayment.rowCount) {
-        await client.query("ROLLBACK");
-        throw new Error("Can't update payment!");
-      }
+    //   console.log("Payment: ", updatedPayment.rows);
+    //   if (!updatedPayment.rowCount) {
+    //     await client.query("ROLLBACK");
+    //     throw new Error("Can't update payment!");
+    //   }
 
-      // Payment update Query
-      const requestRefundQ = `
-        INSERT INTO refund (payment_id, amount, status)
-        VALUES ($1, $2, 'pending')
-      `;
+    //   // Payment update Query
+    //   const requestRefundQ = `
+    //     INSERT INTO refund (payment_id, amount, status)
+    //     VALUES ($1, $2, 'pending')
+    //   `;
 
-      const refundReq = await client.query(requestRefundQ, [
-        paymentId,
-        amount,
-      ]);
+      // const refundReq = await client.query(requestRefundQ, [
+      //   paymentId,
+      //   amount,
+      // ]);
 
-      console.log("Refund: ", refundReq.rows);
-      if (!refundReq.rowCount) {
-        await client.query("ROLLBACK");
-        throw new Error("Can't issue refund request!");
-      }
-    }
+      // console.log("Refund: ", refundReq.rows);
+      // if (!refundReq.rowCount) {
+      //   await client.query("ROLLBACK");
+      //   throw new Error("Can't issue refund request!");
+      // }
+  }
 
     await client.query("COMMIT");
     return res.status(200).json({ message: "Booking cancelled successfully" });
@@ -595,7 +654,10 @@ export {
   getTripPassengers,
   getTripsWithPassengerCounts,
   book,
+  
   confirmBooking,
   updateBooking,
+  switchbooking,
   cancel,
+
 };

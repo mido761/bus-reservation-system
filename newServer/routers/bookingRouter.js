@@ -11,6 +11,7 @@ import {
   book,
   confirmBooking,
   updateBooking,
+  switchbooking,
   cancel,
 } from "../controllers/bookingController.js";
 
@@ -25,6 +26,7 @@ router.get("/get-bus-bookings/:busId", getBusBookings);
 router.get("/get-trip-passengers/:tripId", getTripPassengers);
 router.get("/get-trips-with-counts", getTripsWithPassengerCounts);
 router.post("/book", book);
+router.post("/switch-booking", switchbooking);
 router.post("/webhook", confirmBooking);
 router.put("/update-booking", updateBooking);
 router.post("/cancel-booking", cancel);
