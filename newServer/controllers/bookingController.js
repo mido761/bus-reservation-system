@@ -10,7 +10,7 @@ async function getBookings(req, res) {
     const fetchAll = `
     SELECT *
     FROM booking
-    ORDER BY priority ASC, booked_at DESC; 
+    ORDER BY priority ASC, updated_at DESC; 
     `;
 
     const { rows: bookings } = await pool.query(fetchAll);
@@ -88,7 +88,7 @@ async function getUserBookings(req, res) {
     LEFT JOIN payment 
       ON booking.booking_id = payment.booking_id
     WHERE booking.passenger_id = $1
-    ORDER BY booking.booked_at DESC
+    ORDER BY booking.updated_at DESC
     `;
 
     const { rows: userBookings } = await pool.query(getBookingInfo, [userId]);
@@ -136,7 +136,7 @@ async function filterUserBookings(req, res) {
     LEFT JOIN seat 
       ON booking.seat_id = seat.seat_id
     WHERE booking.passenger_id = $1 AND booking.trip_id = $2
-    ORDER BY booking.booked_at DESC
+    ORDER BY booking.updated_at DESC
     `;
 
     const { rows: userBookings } = await pool.query(getBookingInfo, [
@@ -168,7 +168,7 @@ async function getTripBookings(req, res) {
     SELECT *
     FROM booking
     WHERE trip_id = $1 
-    ORDER BY priority ASC, booked_at DESC
+    ORDER BY priority ASC, updated_at DESC
     `;
 
     const { rows: tripBookings } = await pool.query(getBookingInfo, [tripId]);
@@ -196,7 +196,7 @@ async function getBusBookings(req, res) {
     SELECT *
     FROM booking
     WHERE bus_id = $1 
-    ORDER BY priority ASC, booked_at DESC
+    ORDER BY priority ASC, updated_at DESC
     `;
 
     const { rows: busBookings } = await pool.query(getBookingInfo, [busId]);
@@ -260,7 +260,7 @@ async function getTripPassengers(req, res) {
     JOIN trips t ON b.trip_id = t.trip_id
     LEFT JOIN route r ON t.route_id = r.route_id
     WHERE b.trip_id = $1
-    ORDER BY b.booked_at DESC
+    ORDER BY b.updated_at DESC
     `;
 
     const { rows: passengers } = await pool.query(getPassengersQuery, [tripId]);

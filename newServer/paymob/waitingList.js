@@ -13,7 +13,7 @@
     const getBookingTripQuery = `
       WITH ordered AS (
         SELECT booking_id,
-              ROW_NUMBER() OVER (ORDER BY booked_at) AS rnk
+              ROW_NUMBER() OVER (ORDER BY updated_at) AS rnk
         FROM booking
         WHERE trip_id = $1
           AND status NOT IN ('cancelled', 'pending','rejected')
