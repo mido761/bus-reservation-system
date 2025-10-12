@@ -41,7 +41,7 @@ const AddTrip = () => {
   const fetchTrips = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch(`${backEndUrl}/booking/get-trips-with-counts`);
+      const res = await fetch(`${backEndUrl}/trip/get-trips-with-counts`);
       if (!res.ok) throw new Error("Failed to fetch trips");
       setTrips(await res.json());
     } catch (err) {

@@ -9,20 +9,21 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-function Overlay({ alertFlag, alertMessage, setAlertFlag }) {
+function Overlay({ alertFlag, alertMessage, setAlertFlag, Title, customButton }) {
   return (
     <Dialog open={alertFlag} onOpenChange={setAlertFlag}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Notice</DialogTitle>
+          <DialogTitle>{Title || "Notice"}</DialogTitle>
           <DialogDescription asChild>
-            <div>{alertMessage}</div>
+            <div>{alertMessage && alertMessage()}</div>
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="default" onClick={() => setAlertFlag(false)}>
+          {customButton || <Button variant="default" onClick={() => setAlertFlag(false)}>
             Close
-          </Button>
+          </Button>}
+
         </DialogFooter>
       </DialogContent>
     </Dialog>
