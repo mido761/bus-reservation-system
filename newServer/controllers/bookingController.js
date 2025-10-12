@@ -110,6 +110,10 @@ async function getUserBookings(req, res) {
   }
 }
 
+async function getDriverList(req,res){
+  
+}
+
 async function filterUserBookings(req, res) {
   const userId = req.session.userId;
   const { tripId } = req.body;
