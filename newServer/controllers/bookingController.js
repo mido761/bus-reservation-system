@@ -110,8 +110,130 @@ async function getUserBookings(req, res) {
   }
 }
 
+async function getPassengerList(req, res) {
+  try {
+    // const { tripId } = req.params.tripId;
+    const tripId = req.params.tripId;
+    const userId = req.session.userId;
+    console.log("Trip ID:", tripId, "User ID:", userId);
+
+    // 1️⃣ Check if trip exists
+    const tripResult = await pool.query(
+      "SELECT * FROM trips WHERE trip_id = $1;",
+      [tripId]
+    );
+
+    if (tripResult.rows.length === 0) {
+      return res.status(404).json({ message: "Trip not found" });
+    }
+
+    // 2️⃣ Fetch all passengers for this trip (joined with user and stop)
+    const result = await pool.query(
+      `SELECT 
+          b.passenger_id,
+          u.username,
+          u.phone_number,
+          s.stop_name
+       FROM 
+          booking b
+       JOIN 
+          users u 
+          ON b.passenger_id = u.user_id
+       JOIN 
+          stop s 
+          ON b.stop_id = s.stop_id
+       WHERE 
+          b.trip_id = $1
+       ORDER BY 
+          b.updated_at ASC;`,
+      [tripId]
+    );
+
+    const passengers = result.rows;
+
+    if (passengers.length === 0) {
+      return res.status(200).json({ message: "No passengers found", data: [] });
+    }
+
+    // 3️⃣ Map results: show details only for the given user
+    const passengerList = passengers.map((p, index) => {
+      //  const passengerId = p.passenger_id ? p.passenger_id.toString() : null;
+      console.log(p.passenger_id, userId)
+      if (p.passenger_id.toString()=== userId.toString()) {
+        return {
+          position: index + 1,
+          username: p.username,
+          phone_number: p.phone_number,
+          stop_name: p.stop_name,
+        };
+      } else {
+        return index + 1; // just show index number
+      }
+    });
+
+    // 4️⃣ Return formatted list
+    res.status(200).json({
+      message: "Passenger list fetched successfully",
+      data: passengerList,
+    });
+
+  } catch (err) {
+    console.error("Error fetching passenger list:", err);
+    res.status(500).json({
+      message: "Error fetching passenger list",
+      error: err.message,
+    });
+  }
+}
+
+
+
 async function getDriverList(req,res){
+  const tripId = req.params.tripId;
+  try {
+    const checkTrip = `SELECT * FROM trips WHERE trip_id = $1`;
+    const { rows: trip } = await pool.query(checkTrip, [tripId]);
+    if (!trip) {
+      return res.status(400).json("This trip doesn't exist!");
+    }
+
+    const getBookingInfo = `
+    SELECT 
+        b.booking_id,
+        b.status,
+        b.booked_at,
+        b.updated_at, 
+        s.stop_name, 
+        u.username AS user_name, 
+        u.phone_number AS user_number
+    FROM 
+        booking b
+    JOIN 
+        stop s 
+        ON b.stop_id = s.stop_id
+    JOIN 
+        users u 
+        ON b.passenger_id = u.user_id
+    WHERE 
+        b.trip_id = $1
+        AND b.status IN ('confirmed', 'waiting')
+    ORDER BY 
+        b.updated_at DESC;
+
+    `;
+
+    const { rows: tripBookings } = await pool.query(getBookingInfo, [tripId]);
+    return res.status(200).json({
+      message: "Successfully fetched bookings",
+      tripBookings: tripBookings,
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching bookings", error: err.message });
+  }
   
+
 }
 
 async function filterUserBookings(req, res) {
@@ -651,7 +773,9 @@ async function cancel(req, res) {
 
 export {
   getBookings,
+  getDriverList,
   getBookingInfo,
+  getPassengerList,
   getUserBookings,
   filterUserBookings,
   getTripBookings,
@@ -659,7 +783,6 @@ export {
   getTripPassengers,
   getTripsWithPassengerCounts,
   book,
-  
   confirmBooking,
   updateBooking,
   switchbooking,
