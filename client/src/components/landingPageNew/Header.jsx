@@ -30,7 +30,7 @@ const Header = () => {
           </h1>
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="/#/home" className="hover:text-primary font-medium">
+            <a href="/#/" className="hover:text-primary font-medium">
               Home
             </a>
             <a href="/#/home" className="hover:text-primary font-medium">
@@ -69,7 +69,7 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem onClick={() => navigate("/home")}>
+                <DropdownMenuItem onClick={() => navigate("/")}>
                   Home
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/home")}>

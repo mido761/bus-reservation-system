@@ -65,7 +65,7 @@ export default function Navbar() {
       {/* Logo */}
       <h1
         className="flex items-center gap-2 text-xlfont-bold cursor-pointer"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/home")}
       >
         <img
           src="/gold-vip-icon-golden-sign-with-wreath-premium-vector-50461013 (1).ico"
@@ -89,9 +89,9 @@ export default function Navbar() {
           align="end"
           className="flex flex-col min-w-[180px]"
         >
-          {isAuthorized && location.pathname !== "/home" && (
+          {isAuthorized && location.pathname !== "/" && (
             <DropdownMenuItem
-              onClick={() => navigate("/home", { replace: true })}
+              onClick={() => navigate("/", { replace: true })}
             >
               Home
             </DropdownMenuItem>
@@ -128,10 +128,10 @@ export default function Navbar() {
 
       {/* Desktop Menu */}
       <div className="hidden md:flex gap-4 items-center">
-        {isAuthorized && location.pathname !== "/home" && (
+        {isAuthorized && location.pathname !== "/" && (
           <Button
             variant="ghost"
-            onClick={() => navigate("/home", { replace: true })}
+            onClick={() => navigate("/", { replace: true })}
           >
             Home
           </Button>
