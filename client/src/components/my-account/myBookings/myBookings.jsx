@@ -70,6 +70,33 @@ const MyBookings = () => {
     setShowTrips(true);
   };
 
+  const handleList = async (booking) => {
+    try {
+      // Ensure user session is valid
+      await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
+
+      // Get booking details from backend to obtain trip_id (backend returns full booking)
+      const res = await axios.get(
+        `${backEndUrl}/booking/booking-info/${booking.booking_id}`,
+        { withCredentials: true }
+      );
+
+      // booking-info endpoint returns booking rows; try to extract trip_id
+      const b = Array.isArray(res.data.booking) ? res.data.booking[0] : res.data.booking;
+      const tripId = booking.trip_id || b?.trip_id || b?.tripId || booking.tripId;
+
+      if (!tripId) {
+        toast.error("No trip selected for this booking");
+        return;
+      }
+
+      navigate("/passengers", { state: { tripId, bookingId: booking.booking_id } });
+    } catch (err) {
+      console.error("Error opening passenger list:", err);
+      toast.error(err?.response?.data?.message || "Unable to open passenger list");
+    }
+  };
+
   const handleSwitch = async (tripId, bookingId, stopId) => {
     try {
       // const res = await axios.post(`${backEndUrl}/booking/switch-booking`, { tripId, stopId, bookingId }, { withCredentials: true });
@@ -276,7 +303,7 @@ const MyBookings = () => {
                       variant="default"
                       size="sm"
                       className="w-full"
-                      onClick={() => navigate("/passengers", { state: { busId: booking.bus_id } })}
+                      onClick={() => handleList(booking)}
                     >
                       List
                     </Button>

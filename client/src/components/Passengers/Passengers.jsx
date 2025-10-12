@@ -1,194 +1,218 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
-import LoadingScreen from "../loadingScreen/loadingScreen";
-import LoadingPage from "../loadingPage/loadingPage";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { User, Phone, Mail, ArrowLeft } from "lucide-react";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
-export default function PassengersPage() {
-  const location = useLocation();
+const Passengers = () => {
+  const { state } = useLocation();
   const navigate = useNavigate();
-  const { busId } = location.state || {};
 
-  // State
-  const [seats, setSeats] = useState([]);
-  const [userInfo, setUserInfo] = useState({});
-  const [currentUser, setCurrentUser] = useState(null);
+  const [tripId] = useState(state?.tripId || "");
+  const [bookingId] = useState(state?.bookingId || "");
+  const [passengers, setPassengers] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [busDetails, setBusDetails] = useState(null);
-
-  // Modals
-  const [seatId, setSeatId] = useState("");
-  const [showCancel, setShowCancel] = useState(false);
-  const [showSwitch, setShowSwitch] = useState(false);
-  const [availableBuses, setAvailableBuses] = useState([]);
-  const [selectedNewBus, setSelectedNewBus] = useState(null);
-  const [destination, setDestination] = useState("");
-
-  /* --------------------------- Utils --------------------------- */
-  const convertTo12Hour = (time) => {
-    if (!time) return "";
-    let [h, m] = time.split(":");
-    h = parseInt(h);
-    const period = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
-    return `${h}:${m} ${period}`;
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  /* --------------------------- API Calls --------------------------- */
-  const fetchBusDetails = async () => {
-    try {
-      const { data } = await axios.get(`${backEndUrl}/form/${busId}`);
-      setBusDetails(data);
-    } catch {
-      setAlertMessage("⚠️ Failed to load bus details");
-    }
-  };
-
-  const fetchPassengers = async () => {
-    try {
-      const auth = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
-      const userID = auth.data.userId;
-      setCurrentUser(userID);
-
-      const res = await axios.post(`${backEndUrl}/seats/user/${busId}`, { userId: userID });
-      setSeats(res.data.data.finalSeatsArr || []);
-
-      const userProfile = await axios.get(`${backEndUrl}/user/profile/${userID}`);
-      setUserInfo(userProfile.data);
-    } catch {
-      setSeats([]);
-    } finally {
-      setPageLoading(false);
-    }
-  };
-
-  const handleCancel = async () => {
-    setIsLoading(true);
-    try {
-      await axios.delete(`${backEndUrl}/formselection/${busId}`, {
-        data: { seatId, userId: currentUser },
-      });
-      setSeats((s) => s.filter((seat) => seat.seatId !== seatId));
-      setAlertMessage("✅ Seat canceled successfully!");
-    } catch {
-      setAlertMessage("⚠️ You can only cancel seats 3h before departure!");
-    } finally {
-      setShowCancel(false);
-      setIsLoading(false);
-    }
-  };
-
-  /* --------------------------- Lifecycle --------------------------- */
   useEffect(() => {
-    if (busId) {
-      fetchBusDetails();
-      fetchPassengers();
+    if (!tripId) {
+      setError("No trip selected");
+      setLoading(false);
+      return;
     }
-  }, [busId]);
 
-  if (pageLoading) return <LoadingPage />;
+    const fetchPassengers = async () => {
+      try {
+        setLoading(true);
+        // Authenticated user
+        const authRes = await axios.get(`${backEndUrl}/auth`, { withCredentials: true });
+        if (authRes?.data?.userId) setCurrentUserId(String(authRes.data.userId));
 
-  /* --------------------------- Components --------------------------- */
-  const BusDetailsCard = () => (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">
-          {busDetails?.location?.pickupLocation} → {busDetails?.location?.arrivalLocation}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex items-center gap-4">
-        <Badge>{formatDate(busDetails?.schedule)}</Badge>
-        <Badge variant="secondary">{convertTo12Hour(busDetails?.departureTime)}</Badge>
-      </CardContent>
-    </Card>
-  );
+        // Fetch passengers
+        const res = await axios.get(`${backEndUrl}/booking/get-trip-passengers/${tripId}`, { withCredentials: true });
+        setPassengers(res.data.passengers || []);
+      } catch (err) {
+        console.error("Error fetching passengers:", err);
+        setError(err?.response?.data?.message || "Failed to load passengers");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const PassengersTable = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>#</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Route</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {seats.map((seat, idx) =>
-          seat.currentUser ? (
-            <TableRow key={seat.seatId}>
-              <TableCell>{idx + 1}</TableCell>
-              <TableCell>{userInfo.name}</TableCell>
-              <TableCell>{seat.route}</TableCell>
-              <TableCell className="space-x-2">
-                <Button variant="destructive" size="sm" onClick={() => { setSeatId(seat.seatId); setShowCancel(true); }}>
-                  Cancel
-                </Button>
-                <Button size="sm" onClick={() => { setSeatId(seat.seatId); setShowSwitch(true); }}>
-                  Switch
-                </Button>
-              </TableCell>
-            </TableRow>
-          ) : (
-            <TableRow key={idx}>
-              <TableCell colSpan={4}>{idx + 1}</TableCell>
-            </TableRow>
-          )
-        )}
-      </TableBody>
-    </Table>
-  );
+    fetchPassengers();
+  }, [tripId]);
 
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">Reserved Passengers</h2>
+    <div className="mt-20 px-4 sm:px-6 max-w-6xl mx-auto">
+      <Card className="shadow-md rounded-2xl">
+        {/* Header */}
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <CardTitle className="text-2xl font-semibold text-gray-800">Passengers List</CardTitle>
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+        </CardHeader>
 
-      {busDetails && <BusDetailsCard />}
-      {seats.length > 0 ? <PassengersTable /> : <p className="text-gray-500">No reserved passengers.</p>}
+        {/* Content */}
+        <CardContent>
+          {loading ? (
+            <div className="text-gray-500 text-center py-8">Loading passengers...</div>
+          ) : error ? (
+            <div className="text-red-500 text-center py-8">{error}</div>
+          ) : passengers.length === 0 ? (
+            <div className="text-gray-400 text-center py-8">No passengers for this trip.</div>
+          ) : (
+            <>
+              {/* Desktop View (Table) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      {["#", "Passenger", "Contact", "Stop", "Route"].map((h) => (
+                        <th
+                          key={h}
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-100">
+                    {passengers.map((p, idx) => {
+                      const isCurrent =
+                        String(p.passenger_id || p.user_id) === String(currentUserId) ||
+                        String(p.booking_id) === String(bookingId);
 
-      {/* Cancel Seat Modal */}
-      <Dialog open={showCancel} onOpenChange={setShowCancel}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Cancel Booking</DialogTitle>
-          </DialogHeader>
-          <p>Are you sure you want to cancel your seat?</p>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setShowCancel(false)}>Close</Button>
-            <Button variant="destructive" onClick={handleCancel}>Yes, Cancel</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+                      return (
+                        <tr
+                          key={p.booking_id || idx}
+                          className={`hover:bg-gray-50 transition-colors ${
+                            isCurrent ? "bg-white" : "bg-gray-50"
+                          }`}
+                        >
+                          <td className="px-6 py-4 text-sm text-gray-700">{idx + 1}</td>
+                          <td className="px-6 py-4 flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <User className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-900">
+                              {isCurrent ? p.name || p.username || p.user_name : "Hidden"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900">
+                            {isCurrent ? (
+                              <>
+                                <div className="flex items-center gap-2 mb-1 text-gray-700">
+                                  <Phone className="w-4 h-4 text-gray-400" />
+                                  {p.phone_number || p.user_number || "-"}
+                                </div>
+                                {p.email && (
+                                  <div className="flex items-center gap-2 text-gray-700">
+                                    <Mail className="w-4 h-4 text-gray-400" />
+                                    {p.email}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <span className="text-gray-400">Hidden</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-700">
+                            {isCurrent ? p.stop_name || "-" : "-"}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-700">
+                            {isCurrent
+                              ? `${p.source || p.route_source || ""}${
+                                  p.destination || p.route_destination
+                                    ? ` → ${p.destination || p.route_destination}`
+                                    : ""
+                                }`
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-      {/* Alerts
-      {alertMessage && (
-        <Alert className="mt-4">
-          <AlertDescription>{alertMessage}</AlertDescription>
-        </Alert>
-      )} */}
+              {/* Mobile View (Cards) */}
+              <div className="grid md:hidden gap-4 mt-4">
+                {passengers.map((p, idx) => {
+                  const isCurrent =
+                    String(p.passenger_id || p.user_id) === String(currentUserId) ||
+                    String(p.booking_id) === String(bookingId);
 
-      {isLoading && <LoadingScreen />}
+                  return (
+                    <div
+                      key={p.booking_id || idx}
+                      className={`p-4 rounded-xl border ${
+                        isCurrent ? "border-blue-300 bg-white" : "border-gray-200 bg-gray-50"
+                      } shadow-sm`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <User className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {isCurrent ? p.name || p.username || p.user_name : "Hidden"}
+                          </p>
+                          <p className="text-xs text-gray-400">#{idx + 1}</p>
+                        </div>
+                      </div>
+
+                      <div className="text-sm text-gray-700 space-y-1">
+                        <p>
+                          <span className="font-medium">Stop:</span>{" "}
+                          {isCurrent ? p.stop_name || "-" : "-"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Route:</span>{" "}
+                          {isCurrent
+                            ? `${p.source || p.route_source || ""}${
+                                p.destination || p.route_destination
+                                  ? ` → ${p.destination || p.route_destination}`
+                                  : ""
+                              }`
+                            : "-"}
+                        </p>
+                        <div className="mt-2">
+                          {isCurrent ? (
+                            <>
+                              <p className="flex items-center gap-2">
+                                <Phone className="w-4 h-4 text-gray-400" />
+                                {p.phone_number || p.user_number || "-"}
+                              </p>
+                              {p.email && (
+                                <p className="flex items-center gap-2">
+                                  <Mail className="w-4 h-4 text-gray-400" />
+                                  {p.email}
+                                </p>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-gray-400">Contact Hidden</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
-}
+};
+
+export default Passengers;
