@@ -6,7 +6,7 @@
       `SELECT * FROM trips WHERE trip_id = $1`,
       [tripId]
       );
-    console.log(tripRes[0]);   
+    // console.log(tripRes[0]);   
 
 
     //confrim the booking in the database or put it in the waiting

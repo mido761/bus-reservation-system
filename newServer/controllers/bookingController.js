@@ -399,6 +399,7 @@ async function switchbooking(req,res) {
   const { newTripId, newStopId,bookingId } = req.body;
   const client = await pool.connect();
   try {
+    // console.log(newTripId, newStopId,bookingId)
     await client.query("BEGIN");
 // Check if user already has pending booking
     const checkQuery = `
@@ -422,13 +423,14 @@ async function switchbooking(req,res) {
         booking: booking.rows,
       });
     }
-    
+
     const updateBookingQ = `
     update booking 
     set trip_id = $1 , stop_id = $2 , updated_at = NOW()
     where booking_id = $3
+    Returning *
     ` 
-    const {row :updateBooking } = await client.query(updateBookingQ , [newTripId , newStopId ,bookingId])
+    const {rows :updateBooking } = await client.query(updateBookingQ , [newTripId , newStopId ,bookingId])
     console.log(updateBooking)
 
     const oldTripWaiting = await waitingList(oldTripId,client);
@@ -439,8 +441,7 @@ async function switchbooking(req,res) {
 
     return res.status(201).json({
       message: "Booked successfully!",
-      booked: addBookingRows[0],
-      ticket: ticket.rows[0],
+      updateBooking: updateBooking
     });
 
 
