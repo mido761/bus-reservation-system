@@ -102,7 +102,7 @@ function App() {
               <Auth requireAdmin={true}>
                 <Navbar />
                 <DriverList />
-                <Footer />
+                {/* <Footer /> */}
               </Auth>
             }
           />
@@ -213,7 +213,7 @@ function App() {
             path="/passengers"
             element={
               <Auth>
-                <Navbar />
+                
                 <PassengersPage />
               </Auth>
             }
