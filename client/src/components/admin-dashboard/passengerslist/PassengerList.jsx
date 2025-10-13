@@ -14,7 +14,7 @@ const PassengerList = ({
   driverMode = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [bookingStatus, setBookingStatus] = useState("");
+  const [bookingStatus, setBookingStatus] = useState("confirmed_waiting");
   const [paymentStatus, setPaymentStatus] = useState("");
 
   // Generate dropdown options for booking & payment statuses
@@ -120,17 +120,7 @@ const PassengerList = ({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 items-center">
-            {/* Search box */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search passengers..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
-              />
-            </div>
+
 
             {/* Filters (hide in driver mode) */}
             {!driverMode && (
@@ -147,7 +137,7 @@ const PassengerList = ({
                   ))}
                 </select>
 
-                <select
+                {/* <select
                   value={paymentStatus}
                   onChange={(e) => setPaymentStatus(e.target.value)}
                   className="border rounded-lg py-2 px-3 focus:ring-2 focus:ring-blue-500 w-full sm:w-40"
@@ -158,7 +148,7 @@ const PassengerList = ({
                       {status}
                     </option>
                   ))}
-                </select>
+                </select> */}
               </>
             )}
           </div>
@@ -184,9 +174,9 @@ const PassengerList = ({
         {/* Passengers by Stop */}
         {Object.keys(filteredStats.stopCounts).length > 0 && (
           <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-3">
+            {/* <h3 className="text-lg font-semibold mb-3">
               Passengers by Stop
-            </h3>
+            </h3> */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {Object.entries(filteredStats.stopCounts).map(([stop, count]) => (
                 <div
@@ -203,6 +193,18 @@ const PassengerList = ({
       </CardHeader>
 
       <CardContent>
+        {/* Search box */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search passengers..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
+          />
+        </div>
+        
         {/* Loading / Empty / Data States */}
         {loading ? (
           <div className="flex justify-center py-12">
@@ -282,7 +284,6 @@ const PassengerList = ({
                     "Passenger",
                     "Contact",
                     "Stop",
-                    "Payment Status",
                     "Booking Status",
                     "Booked At",
                   ].map((header) => (
@@ -316,7 +317,7 @@ const PassengerList = ({
                         </div>
                       </td>
                       <td className="px-6 py-4">{p.stop_name || "N/A"}</td>
-                      <td className="px-6 py-4">
+                      {/* <td className="px-6 py-4">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
                             p.payment_status,
@@ -325,7 +326,7 @@ const PassengerList = ({
                         >
                           {p.payment_status || "N/A"}
                         </span>
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(

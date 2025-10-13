@@ -34,7 +34,8 @@ const getTripsWithPassengerCounts = async (req, res) => {
       SELECT 
         trip_id,
         COUNT(*) as total_passengers
-      FROM booking
+      FROM booking b
+      WHERE b.status IN ('confirmed', 'waiting')
       GROUP BY trip_id
     ) passenger_counts ON t.trip_id = passenger_counts.trip_id
     ORDER BY t.date DESC, t.departure_time ASC

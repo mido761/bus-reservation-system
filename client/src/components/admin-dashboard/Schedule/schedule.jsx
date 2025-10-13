@@ -172,7 +172,7 @@ const AddTrip = () => {
   return (
     <>
       {/* Add Trip Form */}
-      <Card className=" border border-gray-200">
+      <Card className="border border-gray-200">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold flex items-center gap-2">
             ➕ Add New Trip
@@ -189,7 +189,7 @@ const AddTrip = () => {
       </Card>
 
       {/* Passengers List Page (replaces TripList) */}
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Trip List */}
           <Card>

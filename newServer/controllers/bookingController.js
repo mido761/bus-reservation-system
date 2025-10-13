@@ -244,6 +244,7 @@ async function getDriverList(req,res){
         b.updated_at, 
         s.stop_name, 
         u.username AS user_name, 
+        u.user_id, 
         u.phone_number AS user_number
     FROM 
         booking b

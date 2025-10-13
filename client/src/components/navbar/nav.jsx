@@ -89,7 +89,7 @@ export default function Navbar() {
           align="end"
           className="flex flex-col min-w-[180px]"
         >
-          {isAuthorized && location.pathname !== "/" && (
+          {isAuthenticated && location.pathname !== "/" && (
             <DropdownMenuItem
               onClick={() => navigate("/", { replace: true })}
             >
@@ -135,7 +135,7 @@ export default function Navbar() {
 
       {/* Desktop Menu */}
       <div className="hidden md:flex gap-4 items-center">
-        {isAuthorized && location.pathname !== "/" && (
+        {isAuthenticated && location.pathname !== "/" && (
           <Button
             variant="ghost"
             onClick={() => navigate("/", { replace: true })}
