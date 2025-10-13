@@ -88,8 +88,8 @@ const DriverList = () => {
   const fetchPassengersForTrip = async (tripId) => {
     setLoading(true);
     try {
-      const res = await axios.get(`${backEndUrl}/booking/get-trip-passengers/${tripId}`, { withCredentials: true });
-      const users = Array.isArray(res.data.passengers) ? res.data.passengers : [];
+      const res = await axios.get(`${backEndUrl}/booking/get-driver-list/${tripId}`, { withCredentials: true });
+      const users = Array.isArray(res.data.tripBookings) ? res.data.tripBookings : [];
       setPassengers(users);
       const routeCounts = {};
       let total = users.length;
@@ -147,15 +147,15 @@ const DriverList = () => {
   }
 
   return (
-    <div className="mt-6 px-4 md:px-6">
-      <Card className="max-w-7xl mx-auto">
+    <div className="w-full min-h-screen flex justify-center mt-4 gap-4">
+      <Card className="max-w-sm w-full m-2 p-0">
         <CardHeader>
           <CardTitle className="text-2xl">Available Trips</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="max-w-sm flex gap-2 m-2 p-0">
           {Object.keys(tripsByDate).length > 0 ? (
             <div className="w-full">
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex gap-4 mb-4 overflow-x-auto whitespace-nowrap pb-2 scrollbar-hide scroll-smooth">
                 {Object.entries(tripsByDate).map(([date, trips]) => (
                   <Button
                     key={date}
@@ -163,7 +163,7 @@ const DriverList = () => {
                     onClick={() => setSelectedDate(date)}
                     className="justify-start h-auto py-2 px-3"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 inline-block ">
                       <span>{formatDate(date)}</span>
                       <span className="text-xs text-muted-foreground">{trips.length} {trips.length === 1 ? "trip" : "trips"}</span>
                     </div>
@@ -171,8 +171,8 @@ const DriverList = () => {
                 ))}
               </div>
 
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap gap-4">
                   {tripsByDate[selectedDate]?.map((trip) => (
                     <Button
                       key={trip.trip_id}
@@ -182,14 +182,14 @@ const DriverList = () => {
                     >
                       <div className="text-left">
                         <div className="font-medium">{convertTo12HourFormat(trip.departure_time)}</div>
-                        <div className="text-sm text-muted-foreground">{trip.source} → {trip.destination}</div>
+                        <div className="text-sm">{trip.source} → {trip.destination}</div>
                       </div>
                     </Button>
                   ))}
                 </div>
 
                 {selectedTripId && (
-                  <Card className="mt-4">
+                  <Card>
                     <CardHeader>
                       <CardTitle className="text-lg">
                         {(() => {
@@ -206,7 +206,7 @@ const DriverList = () => {
                         })()}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="flex flex-col gap-2">
                       <div className="flex flex-wrap gap-3">
                         <Card className="p-4">
                           <div className="text-sm text-muted-foreground">Total Passengers</div>
@@ -232,7 +232,7 @@ const DriverList = () => {
                         <LoadingComponent />
                       ) : Array.isArray(filteredPassengers) && filteredPassengers.length > 0 ? (
                         <div className="overflow-x-auto">
-                          <Table>
+                          <Table className="border border-primary-500">
                             <TableHeader>
                               <TableRow>
                                 <TableHead className="w-16">#</TableHead>
@@ -245,8 +245,8 @@ const DriverList = () => {
                               {filteredPassengers.map((passenger, idx) => (
                                 <TableRow key={idx} style={{ backgroundColor: getRowColor(idx) }}>
                                   <TableCell>{idx + 1}</TableCell>
-                                  <TableCell>{passenger.name || passenger.username}</TableCell>
-                                  <TableCell>{(isAdmin || passenger.user_id === currentUserId) ? (passenger.phone_number || passenger.phoneNumber) : ""}</TableCell>
+                                  <TableCell>{passenger.name || passenger.user_name}</TableCell>
+                                  <TableCell>{(isAdmin || passenger.user_id === currentUserId) ? (passenger.user_number || passenger.phoneNumber) : ""}</TableCell>
                                   <TableCell>{passenger.stop_name}</TableCell>
                                 </TableRow>
                               ))}

@@ -70,17 +70,17 @@ const Checkin = lazy(() => import("./components/check-in/checkin.jsx"));
 const Paymentstatus = lazy(() =>
   import("./components/paymentstatus/Paymentstatus.jsx")
 );
-const TermsOfService = lazy(() => import ("./components/policies/TermsOfService.jsx"));
-const PrivacyPolicy = lazy(() => import ("./components/policies/PrivacyPolicy.jsx"));
+const TermsOfService = lazy(() => import("./components/policies/TermsOfService.jsx"));
+const PrivacyPolicy = lazy(() => import("./components/policies/PrivacyPolicy.jsx"));
 
-const HelpSupport = lazy(() => import ("./components/policies/help_support.jsx"))
+const HelpSupport = lazy(() => import("./components/policies/help_support.jsx"))
 
-const About = lazy (() => import("./components/policies/about.jsx"))
+const About = lazy(() => import("./components/policies/about.jsx"))
 
-const RefundCancel = lazy (() =>import ("./components/policies/refund_cancel.jsx"))
+const RefundCancel = lazy(() => import("./components/policies/refund_cancel.jsx"))
 // const PassengersList = lazy (() =>import ("./components/admin-dashboard/passengerslist/passengers.jsx"))
-const operators = lazy (()=>import("./components/admin-dashboard/operators/operators.jsx"))
-const refund = lazy (()=>import("./components/admin-dashboard/refund/refund.jsx"))
+const operators = lazy(() => import("./components/admin-dashboard/operators/operators.jsx"))
+const refund = lazy(() => import("./components/admin-dashboard/refund/refund.jsx"))
 function App() {
   return (
     <HashRouter basename="/">
@@ -94,8 +94,19 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          
-          
+          {/* <Route path="/driver-list" element={<DriverList />} /> */}
+
+          <Route
+            path="/driver-list"
+            element={
+              <Auth requireAdmin={true}>
+                <Navbar />
+                <DriverList />
+                <Footer />
+              </Auth>
+            }
+          />
+
           <Route
             path="/"
             element={
@@ -175,16 +186,7 @@ function App() {
               </Auth>
             }
           />
-            <Route
-            path="/driver-list"
-            element={
-              <Auth>
-                <Navbar />
-                <DriverList />
-                {/* <Footer /> */}
-              </Auth>
-            }
-          />
+
 
           <Route
             path="/my-account"
@@ -235,14 +237,14 @@ function App() {
               </Auth>
             }
           />
-           <Route
+          <Route
             path="/payment-status"
             element={
               <Auth>
                 <Navbar />
                 <Paymentstatus />
               </Auth>
-            } 
+            }
           />
           <Route
             path="/checkin"

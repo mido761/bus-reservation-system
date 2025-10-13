@@ -18,7 +18,7 @@ const statusStyles = {
 const MyBookings = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [showTrips, setShowTrips] = useState(true);
+  const [showTrips, setShowTrips] = useState(false);
   const [trips, setTrips] = useState([]);
   const [stops, setStops] = useState([]);
   const [selectedTripId, setSelectedTripId] = useState("");
