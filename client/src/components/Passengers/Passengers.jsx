@@ -38,7 +38,7 @@ function PositionBanner({ positions }) {
   const label = positions.length > 1 ? "numbers" : "number";
   const list = positions.join(", ");
   return (
-    <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 text-blue-900 text-sm px-3 py-2 flex items-center gap-2">
+    <div className="mb-3 rounded-md border border-blue-200 bg-blue-50 text-blue-900 text-sm mt-4 px-3 py-2 flex items-center gap-2">
       <Info className="w-4 h-4" />
       <span>
         You are {label} <span className="font-semibold">{list}</span> in the list
@@ -222,7 +222,7 @@ const Passengers = () => {
   }, [loading, error, passengers, currentUserId, bookingId]);
 
   return (
-    <div className="mt-20 px-4 sm:px-6 max-w-6xl mx-auto">
+    <div className="min-h-screen mt-2 px-4 sm:px-6 max-w-6xl mx-auto">
       <PositionBanner positions={currentUserPositions} />
       <Card className="shadow-md rounded-2xl">
         <HeaderBar onBack={() => navigate(-1)} />
