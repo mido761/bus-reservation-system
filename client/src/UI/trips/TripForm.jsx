@@ -82,6 +82,37 @@ const TripForm = ({ formData, routes, handleChange, handleSubmit }) => {
         />
       </div>
 
+      {/* Price */}
+      <div className="flex flex-col">
+        <Label htmlFor="price">Price</Label>
+        <Input
+          id="price"
+          type="number"
+          name="price"
+          value={formData.price}
+          onChange={handleChange}
+          className="border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          required
+        />
+      </div>
+
+
+      {/* Min Bus Capacity */}
+      <div className="flex flex-col">
+        <Label htmlFor="min_cap">Minimum Capacity</Label>
+        <Input
+          id="min_cap"
+          type="number"
+          name="min_cap"
+          max="15"
+          value={formData.min_cap}
+          onChange={handleChange}
+          className="border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          required
+        />
+      </div>
+
+
       {/* Submit Button */}
       <div className="col-span-full flex justify-end">
         <Button

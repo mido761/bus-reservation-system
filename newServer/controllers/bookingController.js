@@ -161,7 +161,7 @@ async function getPassengerList(req, res) {
     const passengerList = passengers.map((p, index) => {
       //  const passengerId = p.passenger_id ? p.passenger_id.toString() : null;
       console.log(p.passenger_id, userId)
-      if (p.passenger_id.toString()=== userId.toString()) {
+      if (p.passenger_id.toString() === userId.toString()) {
         return {
           position: index + 1,
           username: p.username,
@@ -228,7 +228,7 @@ async function manualConfirm(req, res) {
   }
 }
 
-async function getDriverList(req,res){
+async function getDriverList(req, res) {
   const tripId = req.params.tripId;
   try {
     const checkTrip = `SELECT * FROM trips WHERE trip_id = $1`;
@@ -273,7 +273,7 @@ async function getDriverList(req,res){
       .status(500)
       .json({ message: "Error fetching bookings", error: err.message });
   }
-  
+
 
 }
 
@@ -427,6 +427,7 @@ async function getTripPassengers(req, res) {
     JOIN trips t ON b.trip_id = t.trip_id
     LEFT JOIN route r ON t.route_id = r.route_id
     WHERE b.trip_id = $1
+      AND b.status IN ('confirmed', 'waiting')
     ORDER BY b.updated_at DESC
     `;
 
@@ -480,13 +481,15 @@ async function book(req, res) {
     // console.log(bookings.rows);
     const bookingsCount = bookings.rowCount;
 
-    // if (bookingsCount > 1) {
-    //   await client.query("ROLLBACK");
-    //   return res.status(400).json({
-    //     message: "Only two bookings allowed!",
-    //     booking: bookings.rows,
-    //   });
-    // }
+    console.log(req.session.userRole)
+    const isAdmin = req.session.userRole;
+    if (bookingsCount > 1 && isAdmin !== "admin" ) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Only two bookings allowed!",
+        booking: bookings.rows,
+      });
+    }
 
     const passengerId = req.session.userId;
     // console.log("Passenger:", passengerId);

@@ -6,6 +6,15 @@ import { User, Phone, Mail, ArrowLeft, Info } from "lucide-react";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
+const statusStyles = {
+  confirmed: "bg-green-100 text-green-800",
+  waiting: "bg-yellow-100 text-yellow-800",
+  cancelled: "bg-red-100 text-red-800",
+  failed: "bg-red-100 text-red-800",
+  expired: "bg-gray-100 text-gray-700",
+  pending: "bg-blue-100 text-blue-800",
+};
+
 function isCurrentPassenger(passenger, currentUserId, bookingId) {
   const passengerId = String(passenger.passenger_id || passenger.user_id || "");
   const currentId = String(currentUserId || "");
@@ -132,10 +141,20 @@ function MobileCards({ passengers, currentUserId, bookingId }) {
             </div>
 
             <div className="text-sm text-gray-700 space-y-1">
+              <p
+                className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[passenger.booking_status] ||
+                  "bg-gray-100 text-gray-700"
+                  }`}
+              >
+                {passenger.booking_status.toUpperCase()}
+              </p>
+              
               <p>
                 <span className="font-medium">Stop:</span>{" "}
                 {current ? passenger.stop_name || "-" : "-"}
               </p>
+
+
               <p>
                 <span className="font-medium">Route:</span>{" "}
                 {current ? formatRoute(passenger) || "-" : "-"}

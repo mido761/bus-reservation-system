@@ -32,6 +32,7 @@ const MyBookings = () => {
   const [selectedTripId, setSelectedTripId] = useState("");
   const [selectedStopId, setSelectedStopId] = useState("");
   const [cancelledId, setCancelledId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("waiting" || "confirmed");
 
   // 🔹 Fetch all bookings for current user
   const fetchBookings = async () => {
@@ -94,6 +95,18 @@ const MyBookings = () => {
     return stops.filter((stop) => stop.trip_id === selectedTripId);
   }, [selectedTripId, stops]);
 
+  // 🔹 Get unique statuses from bookings
+  const availableStatuses = useMemo(() => {
+    const statuses = [...new Set(bookings.map(booking => booking.status))];
+    return statuses.sort();
+  }, [bookings]);
+
+  // 🔹 Filter bookings based on selected status
+  const filteredBookings = useMemo(() => {
+    if (statusFilter === "all") return bookings;
+    return bookings.filter(booking => booking.status === statusFilter);
+  }, [bookings, statusFilter]);
+
   // 🔹 Handle switching a booking to another trip
   const handleSwitch = async () => {
     if (!selectedTripId || !selectedBooking) {
@@ -116,7 +129,7 @@ const MyBookings = () => {
       toast.success("Trip switched successfully");
 
       // 🔁 Refresh data immediately after switching
-      await fetchBookings();
+      fetchBookings();
       fetchTrips();
       setShowTrips(false);
       setSelectedTripId("");
@@ -148,6 +161,7 @@ const MyBookings = () => {
           b.booking_id === bookingId ? { ...b, status: "cancelled" } : b
         )
       );
+      fetchBookings();
 
       toast.success("Booking cancelled successfully");
     } catch (err) {
@@ -221,11 +235,10 @@ const MyBookings = () => {
                   <div
                     key={trip.trip_id}
                     onClick={() => setSelectedTripId(trip.trip_id)}
-                    className={`border rounded p-3 cursor-pointer transition ${
-                      selectedTripId === trip.trip_id
+                    className={`border rounded p-3 cursor-pointer transition ${selectedTripId === trip.trip_id
                         ? "bg-blue-100 border-blue-400"
                         : "bg-white hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <p className="font-medium">{trip.source} → {trip.destination}</p>
                     <p className="text-xs text-gray-600">
@@ -300,10 +313,31 @@ const MyBookings = () => {
         />
       )}
 
-      <h2 className="text-2xl font-semibold p-4">My Bookings</h2>
+      <div className="p-4">
+        <h2 className="text-2xl font-semibold mb-4">My Bookings</h2>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {bookings.map((booking) => (
+        {/* Status Filter Dropdown */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Filter by Status
+          </label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="all">All Statuses</option>
+            {availableStatuses.map((status) => (
+              <option key={status} value={status}>
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 px-4">
+        {filteredBookings.map((booking) => (
           <Card key={booking.booking_id} className="shadow-sm p-4 rounded-lg">
             <CardContent className="text-sm">
               <div className="flex justify-between items-center mb-2">
@@ -328,10 +362,9 @@ const MyBookings = () => {
               </p>
 
               <p
-                className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                  statusStyles[booking.status] ||
+                className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[booking.status] ||
                   "bg-gray-100 text-gray-700"
-                }`}
+                  }`}
               >
                 {booking.status.toUpperCase()}
               </p>
@@ -368,6 +401,13 @@ const MyBookings = () => {
           </Card>
         ))}
       </div>
+
+      {/* Show message when no bookings match the filter */}
+      {filteredBookings.length === 0 && bookings.length > 0 && (
+        <div className="flex justify-center items-center h-32 text-gray-500 px-4">
+          No bookings found with status: {statusFilter}
+        </div>
+      )}
     </>
   );
 };

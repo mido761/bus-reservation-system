@@ -122,7 +122,7 @@ const getTrip = async (req, res) => {
 };
 
 const addTrip = async (req, res) => {
-  const { routeId, date, departureTime, arrivalTime } = req.body;
+  const { routeId, date, departureTime, arrivalTime, price, min_cap } = req.body;
 
   try {
     if (!routeId || !date || !departureTime || !arrivalTime) {
@@ -135,13 +135,13 @@ const addTrip = async (req, res) => {
     const formattedDate = new Date(date).toISOString().split("T")[0];
 
     const query = `
-      INSERT INTO trips (route_id, date, departure_time, arrival_time, price)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO trips (route_id, date, departure_time, arrival_time, price, min_bus_cap)
+      VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT (route_id, date, departure_time) DO NOTHING
       RETURNING *;
     `;
 
-    const values = [routeId, formattedDate, departureTime, arrivalTime, 200];
+    const values = [routeId, formattedDate, departureTime, arrivalTime, price, min_cap];
     const result = await pool.query(query, values);
 
     if (result.rows.length === 0) {
