@@ -68,6 +68,7 @@ async function getUserBookings(req, res) {
       payment.payment_id,
       payment.amount,
       trips."date",
+      trips."departure_time",
       trips.price,
       route.source,
       route.destination,

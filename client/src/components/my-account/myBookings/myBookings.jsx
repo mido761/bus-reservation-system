@@ -200,7 +200,7 @@ const MyBookings = () => {
           <p>
             <strong>Departure Time:</strong>{" "}
             {formatDateAndTime(
-              booking.departure_time || booking.time || booking.date,
+              booking.departure_time,
               "time"
             )}
           </p>
