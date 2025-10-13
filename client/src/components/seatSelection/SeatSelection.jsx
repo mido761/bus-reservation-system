@@ -6,7 +6,7 @@ import axios from "axios";
 import Overlay from "../overlayScreen/overlay";
 import LoadingPage from "../loadingPage/loadingPage";
 import LoadingScreen from "../loadingScreen/loadingScreen";
-import Pusher from "pusher-js"; // Import Pusher
+// import Pusher from "pusher-js"; // Import Pusher
 import SeatLegend from "./SeatLegend";
 import InlineAuth from "../../InlineAuth";
 
