@@ -63,10 +63,7 @@ const TripList = ({ trips, selectedTrip, onTripSelect, error }) => {
                 <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                   <div>
                     <p className="text-lg font-bold text-blue-600">{trip.price} EGP</p>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Users className="w-3 h-3" />
-                      <span>{trip.total_passengers || 0} passengers</span>
-                    </div>
+                  
                   </div>
                   {/* <Button
                     variant={selectedTrip?.trip_id === trip.trip_id ? "default" : "outline"}

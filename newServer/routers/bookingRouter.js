@@ -8,7 +8,6 @@ import {
   getTripBookings,
   getBusBookings,
   getTripPassengers,
-  getTripsWithPassengerCounts,
   getPassengerList,
   book,
   confirmBooking,
@@ -28,7 +27,6 @@ router.get("/get-driver-list/:tripId",   getDriverList);
 router.get("/get-passenger-list/:tripId",   getPassengerList);
 router.get("/get-bus-bookings/:busId", getBusBookings);
 router.get("/get-trip-passengers/:tripId", getTripPassengers);
-router.get("/get-trips-with-counts", getTripsWithPassengerCounts);
 router.post("/book", book);
 router.post("/switch-booking", switchbooking);
 router.post("/webhook", confirmBooking);

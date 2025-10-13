@@ -19,6 +19,34 @@ const getTrips = async (req, res) => {
   }
 };
 
+
+const getTripsWithPassengerCounts = async (req, res) => {
+  try {
+    const getTripsWithCounts = `
+    SELECT 
+      t.*,
+      r.source,
+      r.destination,
+      COALESCE(passenger_counts.total_passengers, 0) as total_passengers
+    FROM trips t
+    LEFT JOIN route r ON t.route_id = r.route_id
+    LEFT JOIN (
+      SELECT 
+        trip_id,
+        COUNT(*) as total_passengers
+      FROM booking
+      GROUP BY trip_id
+    ) passenger_counts ON t.trip_id = passenger_counts.trip_id
+    ORDER BY t.date DESC, t.departure_time ASC
+    `;
+
+    const { rows: trips } = await pool.query(getTripsWithCounts);
+    return res.status(200).json(trips);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 const getUserTrips = async (req, res) => {
   try {
     const getUserTrips = `
@@ -216,6 +244,7 @@ const delTrip = async (req, res) => {
 
 export {
   getTrips,
+  getTripsWithPassengerCounts,
   getUserTrips,
   getTrip,
   addTrip,
