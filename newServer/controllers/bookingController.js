@@ -481,13 +481,15 @@ async function book(req, res) {
     // console.log(bookings.rows);
     const bookingsCount = bookings.rowCount;
 
-    // if (bookingsCount > 1) {
-    //   await client.query("ROLLBACK");
-    //   return res.status(400).json({
-    //     message: "Only two bookings allowed!",
-    //     booking: bookings.rows,
-    //   });
-    // }
+    console.log(req.session.userRole)
+    const isAdmin = req.session.userRole;
+    if (bookingsCount > 1 && isAdmin !== "admin" ) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Only two bookings allowed!",
+        booking: bookings.rows,
+      });
+    }
 
     const passengerId = req.session.userId;
     // console.log("Passenger:", passengerId);

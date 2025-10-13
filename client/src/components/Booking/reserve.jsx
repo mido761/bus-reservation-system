@@ -4,8 +4,14 @@ import axios from "axios";
 import formatDateTime from "../../formatDateAndTime";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast, ToastContainer } from "react-toastify";
-import { PendingModal } from "./PendingModal.jsx";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -15,15 +21,12 @@ const Reserve = () => {
   const { trip, route } = location.state || {};
   const [stops, setStops] = useState([]);
   const [selectedStop, setSelectedStop] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [bookingError, setBookingError] = useState("");
-  const [showPendingModal, setShowPendingModal] = useState({
-    show: false,
-    booking: null,
-  });
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Api call (fetch stops)
+  // Fetch stops for the selected route
   const fetchStops = async () => {
     try {
       const res = await axios.get(
@@ -31,103 +34,70 @@ const Reserve = () => {
       );
       setStops(res.data.stops);
     } catch (err) {
+      console.error("Error fetching stops:", err);
       setStops([]);
     }
   };
 
   useEffect(() => {
-    if (!route?.route_id) toast.error("No stops found!");
-    fetchStops();
+    if (route?.route_id) {
+      fetchStops();
+    }
   }, [route?.route_id]);
 
-  // Pending confirm
-  const handleConfirmPendingBooking = () => {
-    toast.success("Proceeding to payment...", {
-      onClose: () => {
-        navigate("/payment", {
-          state: {
-            booking: showPendingModal?.booking,
-            trip,
-            route,
-            selectedStop,
-          },
-        });
-      }
-    });
-    // setTimeout(() => {
-
-    // }, 2000);
-  };
-
-  // Pending cancel
-  const handleCancelPendingBooking = () => {
-    toast.warn("Booking Cancelled!", {
-      onClose: () => {
-        navigate("/home");
-      },
-    });
-  };
-
-  // Show modal for confirmation
-  const handleConfiremReserve = async () => {
+  // Handle confirmation dialog
+  const handleShowConfirmation = () => {
     if (!selectedStop) {
-      setBookingError("Please select a stop before confirming.");
+      setBookingError("Please select a stop before proceeding.");
       return;
     }
-
     setBookingError("");
+    setShowConfirmation(true);
+  };
+
+  // Handle confirmed booking
+  const handleConfirmBooking = async () => {
+    setShowConfirmation(false);
     setIsBooking(true);
+    setBookingError("");
+    
     try {
-      // Api call
-      // const checkRes = await axios.post(
-      //   `${backEndUrl}/booking/filter-user-bookings`,
-      //   { tripId: trip.trip_id },
-      //   { withCredentials: true }
-      // );
-
-      // // check old bookings and throw toast
-      // if (checkRes.data.userBookings.length > 0) {
-      //   toast.warn(
-      //     `You already have ${checkRes.data.userBookings.length} booking(s) for this trip.`
-      //   );
-      // }
-
-      // Always proceed to booking (no window.confirm)
       const res = await axios.post(
         `${backEndUrl}/booking/book`,
         { tripId: trip.trip_id, stopId: selectedStop.stop_id },
         { withCredentials: true }
       );
 
-      const booking = res.data.booked;
-      toast.success("Your reservation was successful");
-      // navigate("/payment", { state: { booking, trip, route, selectedStop } });
-      navigate("/my-account");
+      if (res.data.booked) {
+        setIsRedirecting(true);
+        
+        // Show redirecting message and navigate after a brief delay
+        setTimeout(() => {
+          navigate("/my-account");
+        }, 1500);
+      } else {
+        setBookingError("Booking was not created successfully. Please try again.");
+      }
+      
     } catch (err) {
-      // if (err.response?.status === 400) {
-      //   const booking = err.response.data.booking;
-      //   setShowPendingModal({ show: true, booking });
-      // } else {
-        toast.error(err.response.data.message || "Booking failed. Please try again.");
-      // }
+      console.error("Booking error:", err);
+      setBookingError(
+        err.response?.data?.message || 
+        "Booking failed. Please check your connection and try again."
+      );
     } finally {
       setIsBooking(false);
     }
   };
 
+  // Handle cancel confirmation
+  const handleCancelConfirmation = () => {
+    setShowConfirmation(false);
+  };
+
+
   return (
     <div className="flex items-center justify-center w-full m-auto">
-      {/* Toast container */}
-      <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={true}
-        newestOnTop={true}
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="light"
-      />
 
       <Card className="w-full max-w-sm md:max-w-xl mx-auto p-2">
         <CardHeader>
@@ -178,41 +148,64 @@ const Reserve = () => {
                   ))}
                 </div>
                 {selectedStop && (
-                  <div className="mt-2 flex items-center gap-2 text-center">
+                  <div className="mt-2 flex items-center gap-2 text-center bg-green-50 p-2 rounded-md">
                     <span role="img" aria-label="selected">
                       ✅
                     </span>
-                    <pre>
-                      You selected: {" "}
-                      <strong className="text-blue-400">{selectedStop.stop_name}</strong>
-                    </pre>
+                    <span className="text-sm">
+                      You selected: <strong className="text-green-600">{selectedStop.stop_name}</strong>
+                    </span>
                   </div>
                 )}
 
                 {bookingError && (
-                  <pre className="text-destructive mt-2 text-xs text-center">
+                  <div className="text-destructive mt-2 text-sm text-center bg-destructive/10 p-2 rounded-md">
                     {bookingError}
-                  </pre>
+                  </div>
                 )}
               </div>
 
               <Button
                 className="w-full mt-2"
-                onClick={handleConfiremReserve}
-                disabled={isBooking}
+                onClick={handleShowConfirmation}
+                disabled={isBooking || isRedirecting}
               >
-                {isBooking ? "Processing..." : "procceed to payment"}
+                {isBooking ? "Processing..." : isRedirecting ? "Redirecting to your bookings..." : "Proceed to Payment"}
               </Button>
 
-              {/* Pending Booking Modal */}
-              {/* {showPendingModal.show && (
-                <PendingModal
-                  showPendingModal={showPendingModal}
-                  bookingError={bookingError}
-                  handleConfirm={handleConfirmPendingBooking}
-                  handleCancel={handleCancelPendingBooking}
-                />
-              )} */}
+              {/* Confirmation Dialog */}
+              <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Confirm Booking</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to proceed with this booking? You will be redirected to your bookings page after confirmation.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    <div className="space-y-2 text-sm">
+                      <div><strong>Route:</strong> {route.source} → {route.destination}</div>
+                      <div><strong>Date:</strong> {formatDateTime(trip.date, "date")}</div>
+                      <div><strong>Stop:</strong> {selectedStop?.stop_name}</div>
+                    </div>
+                  </div>
+                  <DialogFooter className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleCancelConfirmation}
+                      disabled={isBooking}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleConfirmBooking}
+                      disabled={isBooking}
+                    >
+                      {isBooking ? "Processing..." : "Confirm Booking"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </>
           ) : (
             <div className="text-center text-destructive">
