@@ -94,7 +94,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/driver-list" element={<DriverList />} />
+          
           
           <Route
             path="/"
@@ -175,7 +175,16 @@ function App() {
               </Auth>
             }
           />
-         
+            <Route
+            path="/driver-list"
+            element={
+              <Auth>
+                <Navbar />
+                <DriverList />
+                {/* <Footer /> */}
+              </Auth>
+            }
+          />
 
           <Route
             path="/my-account"
