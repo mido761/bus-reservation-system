@@ -32,7 +32,7 @@ const MyBookings = () => {
   const [selectedTripId, setSelectedTripId] = useState("");
   const [selectedStopId, setSelectedStopId] = useState("");
   const [cancelledId, setCancelledId] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("confirmed" || "waiting");
+  const [statusFilter, setStatusFilter] = useState("waiting" || "confirmed");
 
   // 🔹 Fetch all bookings for current user
   const fetchBookings = async () => {
@@ -235,11 +235,10 @@ const MyBookings = () => {
                   <div
                     key={trip.trip_id}
                     onClick={() => setSelectedTripId(trip.trip_id)}
-                    className={`border rounded p-3 cursor-pointer transition ${
-                      selectedTripId === trip.trip_id
+                    className={`border rounded p-3 cursor-pointer transition ${selectedTripId === trip.trip_id
                         ? "bg-blue-100 border-blue-400"
                         : "bg-white hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <p className="font-medium">{trip.source} → {trip.destination}</p>
                     <p className="text-xs text-gray-600">
@@ -316,7 +315,7 @@ const MyBookings = () => {
 
       <div className="p-4">
         <h2 className="text-2xl font-semibold mb-4">My Bookings</h2>
-        
+
         {/* Status Filter Dropdown */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -363,10 +362,9 @@ const MyBookings = () => {
               </p>
 
               <p
-                className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${
-                  statusStyles[booking.status] ||
+                className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[booking.status] ||
                   "bg-gray-100 text-gray-700"
-                }`}
+                  }`}
               >
                 {booking.status.toUpperCase()}
               </p>

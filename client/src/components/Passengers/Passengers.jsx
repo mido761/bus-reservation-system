@@ -148,6 +148,7 @@ function MobileCards({ passengers, currentUserId, bookingId }) {
               >
                 {passenger.booking_status.toUpperCase()}
               </p>
+              
               <p>
                 <span className="font-medium">Stop:</span>{" "}
                 {current ? passenger.stop_name || "-" : "-"}

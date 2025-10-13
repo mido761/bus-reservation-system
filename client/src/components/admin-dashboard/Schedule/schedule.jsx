@@ -8,8 +8,19 @@ import TripForm from "../../../UI/trips/TripForm";
 import { Calendar } from "lucide-react";
 import PassengerList from "../../admin-dashboard/passengerslist/PassengerList";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
+import formatDateTime from "../../../formatDateAndTime";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
+
+const statusStyles = {
+  confirmed: "bg-green-100 text-green-800",
+  waiting: "bg-yellow-100 text-yellow-800",
+  cancelled: "bg-red-100 text-red-800",
+  failed: "bg-red-100 text-red-800",
+  expired: "bg-gray-100 text-gray-700",
+  pending: "bg-blue-100 text-blue-800",
+};
+
 
 const AddTrip = () => {
   const [trips, setTrips] = useState([]);
@@ -51,6 +62,7 @@ const AddTrip = () => {
       setIsLoading(false);
     }
   };
+
   // Fetch passengers for a trip
   const fetchPassengers = async (tripId) => {
     try {
@@ -209,35 +221,32 @@ const AddTrip = () => {
                   <Card
                     key={trip.trip_id}
                     onClick={() => handleTripSelect(trip)}
-                    className={`cursor-pointer transition-all duration-200 shadow-md hover:shadow-lg ${
-                      selectedTrip?.trip_id === trip.trip_id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
+                    className={`cursor-pointer transition-all duration-200 shadow-md hover:shadow-lg ${selectedTrip?.trip_id === trip.trip_id
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                      }`}
                   >
                     <CardContent className="space-y-3 p-4">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-lg">
                           {trip.source} → {trip.destination}
                         </h3>
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full font-medium ${
-                            trip.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
+                        <p
+                          className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[trip.status] ||
+                            "bg-gray-100 text-gray-700"
+                            }`}
                         >
-                          {trip.status}
-                        </span>
+                          {trip.status.toUpperCase()}
+                        </p>
                       </div>
                       <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-blue-500" />
-                          <span>{trip.date}</span>
+                          <span>{formatDateTime(trip.date, "date")}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span>
-                            {trip.departure_time} - {trip.arrival_time}
+                            {formatDateTime(trip.departure_time)} - {formatDateTime(trip.arrival_time)}
                           </span>
                         </div>
                       </div>
