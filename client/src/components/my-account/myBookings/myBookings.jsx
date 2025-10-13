@@ -32,7 +32,7 @@ const MyBookings = () => {
   const [selectedTripId, setSelectedTripId] = useState("");
   const [selectedStopId, setSelectedStopId] = useState("");
   const [cancelledId, setCancelledId] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("confirmed" || "waiting");
 
   // 🔹 Fetch all bookings for current user
   const fetchBookings = async () => {
