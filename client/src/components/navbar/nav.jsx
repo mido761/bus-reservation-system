@@ -117,6 +117,13 @@ export default function Navbar() {
               Admin Dashboard
             </DropdownMenuItem>
           )}
+          {isAuthorized && location.pathname !== "/driver-list" && (
+            <DropdownMenuItem
+              onClick={() => navigate("/driver-list", { replace: true })}
+            >
+              Driver List
+            </DropdownMenuItem>
+          )}
           {isAuthenticated && (
             <>
               <DropdownMenuSeparator />
@@ -158,6 +165,14 @@ export default function Navbar() {
             onClick={() => navigate("/admin-dashboard", { replace: true })}
           >
             Admin Dashboard
+          </Button>
+        )}
+        {isAuthorized && location.pathname !== "/driver-list" && (
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/driver-list", { replace: true })}
+          >
+            Driver List
           </Button>
         )}
         {isAuthenticated && (
