@@ -16,7 +16,9 @@ function Overlay({ alertFlag, alertMessage, setAlertFlag, Title, customButton })
         <DialogHeader>
           <DialogTitle>{Title || "Notice"}</DialogTitle>
           <DialogDescription asChild>
-            <div>{alertMessage && alertMessage()}</div>
+            <div>
+              {typeof alertMessage === "function" ? alertMessage() : alertMessage}
+            </div>
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

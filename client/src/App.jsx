@@ -215,6 +215,7 @@ function App() {
               <Auth>
                 <Navbar />
                 <PassengersPage />
+                <Footer />
               </Auth>
             }
           />
