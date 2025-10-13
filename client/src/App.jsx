@@ -215,7 +215,7 @@ function App() {
               <Auth>
                 
                 <PassengersPage />
-                <Footer />
+                {/* <Footer /> */}
               </Auth>
             }
           />
