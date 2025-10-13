@@ -32,6 +32,8 @@ const AddTrip = () => {
     date: "",
     departureTime: "",
     arrivalTime: "",
+    price: "",
+    min_cap: ""
   });
   // Passengers page logic
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -131,7 +133,7 @@ const AddTrip = () => {
     setIsLoading(true);
     try {
       await axios.post(`${backEndUrl}/trip/add-trip`, formData);
-      setTrips((prev) => [...prev, formData]);
+      // setTrips((prev) => [...prev, formData]);
       toast.success("Trip added successfully!", {
         position: "top-center",
         autoClose: 2000,
@@ -142,6 +144,7 @@ const AddTrip = () => {
         date: "",
         departureTime: "",
         arrivalTime: "",
+        min_cap: ""
       });
       fetchTrips();
     } catch (err) {
