@@ -3,7 +3,7 @@ import pool from "../db.js"
 const getStops = async (req, res) => {
   try {
     const getquery = 'select * from stop'
-    const {rows} = await pool.query(getquery);
+    const { rows } = await pool.query(getquery);
     const stops = rows
     return res.status(200).json(stops);
   } catch (error) {
@@ -11,10 +11,10 @@ const getStops = async (req, res) => {
   }
 };
 
-const getStopsRoute = async (req , res) => {
+const getStopsRoute = async (req, res) => {
   const routeId = req.params.routeId
   try {
-    const getRouteStops= `
+    const getRouteStops = `
     SELECT rs.stop_id, rs.position, s.stop_name, s.location, s.distance_from_source, s.is_active
     FROM route_stop rs
     INNER JOIN stop s ON rs.stop_id = s.stop_id
@@ -26,7 +26,7 @@ const getStopsRoute = async (req , res) => {
 
     const stops = rows;
 
-    return res.status(200).json({stops: stops});
+    return res.status(200).json({ stops: stops });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -35,8 +35,8 @@ const getStopsRoute = async (req , res) => {
 
 
 const addStop = async (req, res) => {
-  const {stopName,location,distanceFromSource} = req.body;
-  try{
+  const { stopName, location, distanceFromSource } = req.body;
+  try {
     const checkQuery = 'SELECT * FROM stop WHERE stop_name = $1 LIMIT 1';
     const checkResult = await pool.query(checkQuery, [stopName]);
 
@@ -54,40 +54,40 @@ const addStop = async (req, res) => {
 
     const newStop = insertResult.rows[0];
     return res.status(200).json("Stop added successfully!");
-  }catch(error){
+  } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 const editStop = async (req, res) => {
-//dont know
+  //dont know
 };
 
 const delStop = async (req, res) => {
-const { stopId } = req.body;
-try {
-  // 1. Check if stop exists
-  const checkQuery = 'SELECT * FROM stop WHERE stop_id = $1 LIMIT 1';
-  const checkResult = await pool.query(checkQuery, [stopId]);
+  const { stopId } = req.body;
+  try {
+    // 1. Check if stop exists
+    const checkQuery = 'SELECT * FROM stop WHERE stop_id = $1 LIMIT 1';
+    const checkResult = await pool.query(checkQuery, [stopId]);
 
-  if (checkResult.rows.length === 0) {
-    return res.status(404).json("Stop not found!");
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json("Stop not found!");
+    }
+
+    // 2. Delete stop
+    const deleteQuery = 'DELETE FROM stop WHERE stop_Id = $1 RETURNING *';
+    const deleteResult = await pool.query(deleteQuery, [stopId]);
+
+    const deletedStop = deleteResult.rows[0];
+
+    return res.status(200).json({
+      message: "Stop deleted successfully!",
+      stop: deletedStop,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
   }
-
-  // 2. Delete stop
-  const deleteQuery = 'DELETE FROM stop WHERE stop_Id = $1 RETURNING *';
-  const deleteResult = await pool.query(deleteQuery, [stopId]);
-
-  const deletedStop = deleteResult.rows[0];
-
-  return res.status(200).json({
-    message: "Stop deleted successfully!",
-    stop: deletedStop,
-  });
-} catch (error) {
-  console.error(error);
-  return res.status(500).json({ message: error.message });
-}
 
 };
 
-export { getStops, addStop, editStop, delStop,getStopsRoute };
+export { getStops, addStop, editStop, delStop, getStopsRoute };

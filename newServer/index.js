@@ -4,12 +4,9 @@ import session from "express-session";
 import dotenv from "dotenv";
 import pool from "./db.js";
 import pgSession from "connect-pg-simple";
-import { reconcilePaymob } from "./cron jobs/reconcilePaymob.js";
+// import { reconcilePaymob } from "./cron jobs/reconcilePaymob.js";
 
-// import fs from "fs";
-// import https from "https";
 
-// import "./cron jobs/reconcileJob.js";
 import userRouter from "./routers/userRoutes.js";
 import busRouter from "./routers/busRouter.js";
 import seatRouter from "./routers/seatRouter.js";
@@ -17,13 +14,13 @@ import stopRouter from "./routers/stopRouter.js";
 import routeRouter from "./routers/routeRouter.js";
 import tripRouter from "./routers/tripRouter.js";
 import bookingRouter from "./routers/bookingRouter.js";
-import payment from "./routers/paymentRouter.js";
+// import payment from "./routers/paymentRouter.js";
 import authentication from "./middleware/authentication.js";
 import register from "./routers/registerRouter.js";
 import auth from "./routers/authRouter.js";
 import forgotPassword from "./routers/forgotPasswordRouter.js";
-import webhook from "./routers/webhookRouter.js";
-import refund from "./routers/refundRouter.js"
+// import webhook from "./routers/webhookRouter.js";
+// import refund from "./routers/refundRouter.js"
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -85,9 +82,6 @@ app.options(
   })
 );
 
-// Preflight handler is usually not needed, cors() handles OPTIONS automatically
-// You can remove app.options("*") unless you need custom behavior
-
 // Session config
 const PgSessionStore = pgSession(session);
 
@@ -116,41 +110,7 @@ app.use(
 app.use(express.json()); // For JSON payloads
 app.use(express.urlencoded({ extended: true })); // For URL-encoded form data
 
-/**
- * @route POST /notifications
- * @description Handle real-time notifications using Pusher
- * @access Public
- * @param {Object} req.body
- * @param {string} req.body.message - Notification message
- * @param {string} req.body.recepient - Target recipient
- */
-app.post("/notifications", (req, res) => {
-  const { message, recepient } = req.body;
-  pusher.trigger("notifications", "message", {
-    message: message,
-    recepient: recepient,
-  });
-  res.status(200).send({ message, recepient });
-});
 
-// Serve the verification file from the public folder
-app.get("/loaderio-a5bdf62eb0fac010d30429b361ba4fe3", (req, res) => {
-  // Path to the file in the public folder
-  const filePath = path.join(
-    __dirname,
-    "../client/public",
-    "loaderio-a5bdf62eb0fac010d30429b361ba4fe3"
-  );
-
-  // Send the file to the client
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      res.status(500).send("Error while serving the verification file.");
-    }
-  });
-});
-
-// app.use('/home', (req, res) => {res.send("Server is running")} );
 /**
  * @routes
  * @description Register route handlers
@@ -159,7 +119,7 @@ app.use("/api/register", register);
 app.use("/api/auth", auth);
 app.use("/api", forgotPassword);
 // app.use("/bus", authentication.isAuthenticated, busRouter);
-app.use("/bus", busRouter);
+app.use("/bus", authentication.isAuthoraized, busRouter);
 app.use("/seat", seatRouter);
 // app.use("/stop", authentication.isAuthenticated, stopRouter);
 app.use("/stop", stopRouter);
@@ -169,39 +129,11 @@ app.use("/route", routeRouter);
 app.use("/trip", tripRouter);
 app.use("/booking", bookingRouter);
 app.use("/user", userRouter);
-app.use("/payment", payment);
-app.use("/webhook", webhook);
-app.use("/refund",refund)
+// app.use("/payment", payment);
+// app.use("/webhook", webhook);
+// app.use("/refund",refund)
 
-// app.use((req, res) => {
-//   return res.status(404).json({ message: "Not Found" });
-// });
-/**
- * @database
- * @description MongoDB connection
- */
-// mongoose
-//   .connect(process.env.MONGO_URI)
-//   .then(() => console.log("MongoDB connected"))
-//   .catch((err) => console.error(err));
 
-/**
- * @route GET /auth/:busId
- * @description Verify authentication for specific bus access
- * @access Protected
- * @middleware isAuthenticated
- * @param {string} req.params.busId - Bus ID
- * @returns {Object} Authentication status and bus ID
- */
-app.get("/auth/:busId", authentication.isAuthenticated, (req, res) => {
-  const busId = req.params.busId;
-  req.session.busId = busId;
-  if (req.session.userId) {
-    res.status(200).json({ authenticated: true, busId: busId });
-  } else {
-    res.status(401).json({ authenticated: false });
-  }
-});
 
 /**
  * @route GET /auth
@@ -222,16 +154,16 @@ app.get("/auth", (req, res) => {
   }
 });
 
-app.get("/reconcile", async (req, res) => {
-  try {
-    const response = await reconcilePaymob();
-    return res.status(500).json({ message: response });
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ Error: "Error reconciling!", message: err.message });
-  }
-});
+// app.get("/reconcile", async (req, res) => {
+//   try {
+//     const response = await reconcilePaymob();
+//     return res.status(500).json({ message: response });
+//   } catch (err) {
+//     return res
+//       .status(500)
+//       .json({ Error: "Error reconciling!", message: err.message });
+//   }
+// });
 
 // if (process.env.NODE_ENV === "production") {
 app.use(express.static(path.join(__dirname, "../client/dist")));
