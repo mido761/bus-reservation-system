@@ -8,7 +8,10 @@
       );
     // console.log(tripRes[0]);   
 
-
+    if(tripRes[0].confirm_lock){
+      console.log("confirmtion is locked for this trip")
+      return 
+    }
     //confrim the booking in the database or put it in the waiting
     const getBookingTripQuery = `
       WITH ordered AS (

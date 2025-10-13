@@ -186,7 +186,45 @@ async function getPassengerList(req, res) {
   }
 }
 
+async function manualConfirm(req, res) {
+  const client = await pool.connect(); // get a dedicated client for the transaction
+  try {
+    const { bookings } = req.body;
 
+    await client.query('BEGIN'); // start transaction
+
+    const updateQ = `
+      UPDATE booking
+      SET status = $1
+      WHERE booking_id = $2
+      RETURNING *
+    `;
+
+    const updatedBookings = [];
+
+    for (let i = 0; i < bookings.length; i++) {
+      const b = bookings[i];
+      const result = await client.query(updateQ, [b.status, b.booking_id]);
+      updatedBookings.push(result.rows[0]);
+    }
+
+    await client.query('COMMIT'); // commit all changes if successful
+
+    res.status(200).json({
+      message: "Bookings updated successfully",
+      updated: updatedBookings,
+    });
+
+  } catch (err) {
+    await client.query('ROLLBACK'); // undo all changes if any error occurs
+    res.status(500).json({
+      message: "Error updating bookings list",
+      error: err.message,
+    });
+  } finally {
+    client.release(); // release connection back to pool
+  }
+}
 
 async function getDriverList(req,res){
   const tripId = req.params.tripId;
