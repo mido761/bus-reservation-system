@@ -27,7 +27,7 @@ router.get("/get-trip-bookings/:tripId", authentication.isAuthenticated, getTrip
 router.get("/get-driver-list/:tripId", authentication.isAuthoraized, getDriverList);
 router.get("/get-passenger-list/:tripId", authentication.isAuthenticated, getPassengerList);
 router.get("/get-bus-bookings/:busId",  authentication.isAuthenticated, getBusBookings);
-router.get("/get-trip-passengers/:tripId", authentication.isAuthoraized, getTripPassengers);
+router.get("/get-trip-passengers/:tripId", authentication.isAuthenticated, getTripPassengers);
 router.post("/book", authentication.isAuthenticated, book);
 router.post("/switch-booking", authentication.isAuthenticated, switchbooking);
 // router.post("/webhook", confirmBooking);

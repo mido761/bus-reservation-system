@@ -213,9 +213,8 @@ function App() {
             path="/passengers"
             element={
               <Auth>
-                
+                <Navbar />
                 <PassengersPage />
-                {/* <Footer /> */}
               </Auth>
             }
           />

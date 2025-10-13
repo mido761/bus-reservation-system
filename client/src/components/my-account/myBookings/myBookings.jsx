@@ -129,7 +129,7 @@ const MyBookings = () => {
       toast.success("Trip switched successfully");
 
       // 🔁 Refresh data immediately after switching
-      await fetchBookings();
+      fetchBookings();
       fetchTrips();
       setShowTrips(false);
       setSelectedTripId("");
@@ -161,6 +161,7 @@ const MyBookings = () => {
           b.booking_id === bookingId ? { ...b, status: "cancelled" } : b
         )
       );
+      fetchBookings();
 
       toast.success("Booking cancelled successfully");
     } catch (err) {
