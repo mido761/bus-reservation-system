@@ -3,67 +3,73 @@ import formatDateAndTime from "../../formatDateAndTime";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin } from "lucide-react";
+import { MapPin, DollarSign, ArrowRight } from "lucide-react";
 
-const Trips = ({ trips, isLoading, onBook, route, hasSearched, tripRefs }) => {
-  if (isLoading) {
+const Trips = ({ trips = [], isLoading, onBook, route, hasSearched, tripRefs }) => {
+  if (isLoading)
     return (
-      <div className="flex justify-center items-center py-10 text-lg font-medium text-muted-foreground">
+      <div className="flex justify-center items-center py-10 text-muted-foreground text-lg">
         Loading trips...
       </div>
     );
-  }
 
   if (!hasSearched) return null;
 
   return (
     <div className="space-y-6 mt-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-foreground">Available Trips</h2>
-          <p className="text-sm text-muted-foreground">
-            {trips.length} {trips.length === 1 ? "bus found" : "buses found"} for your route
-          </p>
-        </div>
+      <div>
+        <h2 className="text-2xl font-semibold text-foreground tracking-tight">
+          Available Trips
+        </h2>
+        <p className="text-muted-foreground text-sm mt-1">
+          {trips.length} {trips.length === 1 ? "bus" : "buses"} found for your route
+        </p>
       </div>
 
-      {/* Trips List */}
+      {/* Trip Cards */}
       {trips.length > 0 ? (
         trips.map((trip, index) => (
           <Card
             key={trip._id || index}
             ref={(el) => (tripRefs.current[index] = el)}
-            className="p-6 transition-all duration-300 hover:shadow-lg"
+            className="p-6 hover:shadow-lg transition-all duration-300 border border-border rounded-2xl"
           >
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              
               {/* Left Section */}
-              <div className="flex-1">
-                <div className="flex items-center gap-10">
-                  {/* Departure */}
-                  <div className="text-center">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-xl text-foreground">
+                    VIP BUSES
+                  </h3>
+                  <Badge variant="secondary" className="text-xs font-medium px-2 py-0.5">
+                    Standard
+                  </Badge>
+                </div>
+
+                {/* Trip Route Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 text-center sm:text-left">
+                  <div>
                     <div className="text-2xl font-bold text-foreground">
                       {formatDateAndTime(trip.departure_time, "time")}
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                      <MapPin className="w-3 h-3" />
+                    <div className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-1 mt-1">
+                      <MapPin className="w-4 h-4" />
                       {trip.source || route?.source}
                     </div>
                   </div>
 
-                  {/* Divider */}
-                  <div className="hidden sm:block text-muted-foreground">
-                    <Clock className="w-5 h-5" />
+                  {/* Arrow between source and destination */}
+                  <div className="flex items-center justify-center text-muted-foreground mt-2 sm:mt-0">
+                    <ArrowRight className="w-5 h-5" />
                   </div>
 
-                  {/* Arrival */}
-                  <div className="text-center">
+                  <div>
                     <div className="text-2xl font-bold text-foreground">
                       {formatDateAndTime(trip.arrival_time, "time")}
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center justify-center gap-1">
-                      <MapPin className="w-3 h-3" />
+                    <div className="text-sm text-muted-foreground flex items-center justify-center sm:justify-start gap-1 mt-1">
+                      <MapPin className="w-4 h-4" />
                       {trip.destination || route?.destination}
                     </div>
                   </div>
@@ -71,28 +77,28 @@ const Trips = ({ trips, isLoading, onBook, route, hasSearched, tripRefs }) => {
               </div>
 
               {/* Right Section */}
-              <div className="flex flex-col items-end gap-3 lg:min-w-[200px]">
+              <div className="flex flex-col items-end gap-4 lg:min-w-[180px]">
                 <div className="text-right">
-                  <span className="text-3xl font-bold text-foreground">
+                  <span className="flex items-center justify-end text-3xl font-bold text-foreground gap-1">
+               
                     {trip.price} EGP
                   </span>
-                  <div className="text-sm text-muted-foreground">per person</div>
                 </div>
 
                 <Button
-                  className="w-full"
                   variant="default"
+                  className="w-full font-medium text-sm py-2 rounded-xl"
                   onClick={() => onBook(trip)}
                 >
-                  Reserve
+                  Reserve Seat
                 </Button>
               </div>
             </div>
           </Card>
         ))
       ) : (
-        <p className="text-center text-muted-foreground py-8">
-          No trips found for this route.
+        <p className="text-center text-muted-foreground text-lg py-8">
+          No trips found for the selected route.
         </p>
       )}
     </div>
