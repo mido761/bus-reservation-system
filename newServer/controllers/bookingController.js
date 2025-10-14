@@ -211,7 +211,7 @@ async function manualConfirm(req, res) {
     }
 
     const updatetrip = await client.query(`update trips set confirm_lock = true where trip_id = $1  RETURNING *`,[tripId])
-    console.log(updatetrip)
+    // console.log(updatetrip.rows[0])
     await client.query('COMMIT'); // commit all changes if successful
 
     res.status(200).json({
@@ -484,8 +484,8 @@ async function book(req, res) {
     const bookingsCount = bookings.rowCount;
 
     console.log(req.session.userRole)
-    const isAdmin = req.session.userRole;
-    if (bookingsCount > 1 && isAdmin !== "admin" ) {
+    const role = req.session.userRole;
+    if (bookingsCount > 1 && role !== "admin" ) {
       await client.query("ROLLBACK");
       return res.status(400).json({
         message: "Only two bookings allowed!",
@@ -635,10 +635,9 @@ async function cancel(req, res) {
     await client.query("BEGIN");
 
     const getBookingInfo = `
-      SELECT b.*, p.*
+      SELECT b.*,t.*
       FROM booking b
-      LEFT JOIN payment p ON b.booking_id = p.booking_id
-          AND (p.payment_status = 'pending' OR p.payment_status = 'paid')
+      JOIN trips t ON b.trip_id = t.trip_id
       WHERE b.booking_id = $1;
     `;
 
@@ -651,6 +650,19 @@ async function cancel(req, res) {
         .status(200)
         .json({ message: "No booking found with this ID", booking: booking });
     }
+    const passengerId = req.session.userId;
+    const Time = Date.now()
+    console.log("time",booking[0].departure_time,"   date",booking[0].date," Date.now()", Time)
+    // console.log(req.session.userRole)
+    const role = req.session.userRole;
+    if (role !== "admin" && passengerId !== booking[0].passenger_id  ) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "you can only cancel your booking",
+        booking: bookings.rows,
+      });
+    }
+
 
     const bookingStatus = booking[0]?.status;
     const paymentStatus = booking[0]?.payment_status;
