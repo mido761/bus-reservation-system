@@ -553,13 +553,28 @@ async function switchbooking(req, res) {
       FROM booking b
       JOIN stop s 
         ON b.stop_id = s.stop_id
-      WHERE b.booking_id = $1 
+      WHERE b.booking_id = $1
     `;
+
 
     const booking = await client.query(checkQuery, [
       bookingId,
     ]);
-    // console.log(bookings.rows);
+
+    const userId = req.session.userId
+    const role = req.session.role
+
+    const isAdmin = role === "admin"
+    const sameUser = booking.rows[0].passenger_id === userId
+    const allowSwitch = sameUser || isAdmin
+
+    if (!allowSwitch) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        message: "Switch denied!"
+      });
+    }
+
     const bookingsCount = booking.rowCount;
     const oldTripId = booking.rows[0].trip_id;
     if (bookingsCount < 1) {
@@ -595,6 +610,7 @@ async function switchbooking(req, res) {
     return res.status(500).json({ message: error.message });
   }
 }
+
 async function confirmBooking(req, res) {
   // TODO: Handle booking confirmation webhook
   res.status(501).json({ message: "Not implemented" });
