@@ -191,7 +191,7 @@ async function getPassengerList(req, res) {
 async function manualConfirm(req, res) {
   const client = await pool.connect(); // get a dedicated client for the transaction
   try {
-    const { bookings } = req.body;
+    const { bookings,tripId } = req.body;
 
     await client.query('BEGIN'); // start transaction
 
@@ -210,11 +210,13 @@ async function manualConfirm(req, res) {
       updatedBookings.push(result.rows[0]);
     }
 
+    const updatetrip = await client.query(`update trips set confirm_lock = true where trip_id = $1  RETURNING *`,[tripId])
+    console.log(updatetrip)
     await client.query('COMMIT'); // commit all changes if successful
 
     res.status(200).json({
       message: "Bookings updated successfully",
-      updated: updatedBookings,
+      updated: updatedBookings, 
     });
 
   } catch (err) {
@@ -804,5 +806,6 @@ export {
   updateBooking,
   switchbooking,
   cancel,
+  manualConfirm,
 
 };
