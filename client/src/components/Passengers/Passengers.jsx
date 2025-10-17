@@ -28,10 +28,17 @@ function formatRoute(passenger) {
   return destination ? `${source} → ${destination}` : source;
 }
 
-function HeaderBar({ onBack }) {
+function HeaderBar({ onBack, status }) {
   return (
     <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-      <CardTitle className="text-2xl font-semibold text-gray-800">Passengers List</CardTitle>
+      <div className="flex items-center gap-3">
+        <CardTitle className="text-2xl font-semibold text-gray-800">Passengers List</CardTitle>
+        {status ? (
+          <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[status] || "bg-gray-100 text-gray-700"}`}>
+            {String(status).toUpperCase()}
+          </span>
+        ) : null}
+      </div>
       <button
         onClick={onBack}
         className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
@@ -195,6 +202,7 @@ const Passengers = () => {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [bookingStatus] = useState(state?.status || "");
 
   useEffect(() => {
     if (!tripId) {
@@ -244,7 +252,7 @@ const Passengers = () => {
     <div className="min-h-screen mt-2 px-4 sm:px-6 max-w-6xl mx-auto">
       <PositionBanner positions={currentUserPositions} />
       <Card className="shadow-md rounded-2xl">
-        <HeaderBar onBack={() => navigate(-1)} />
+        <HeaderBar onBack={() => navigate(-1)} status={bookingStatus} />
         <CardContent>{content}</CardContent>
       </Card>
     </div>
