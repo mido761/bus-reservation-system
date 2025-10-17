@@ -1,10 +1,11 @@
 import express from "express";
 import authentication from "../middleware/authentication.js";
-import { getTrips, getTripsWithPassengerCounts, getUserTrips, addTrip, linkTripBus, editTrip, delTrip, getTrip ,  completeTrip, cancelTrip,} from "../controllers/tripController.js";
+import { getTrips, getTripsWithPassengerCounts, getUserTrips, addTrip, linkTripBus, editTrip, delTrip, getTrip ,  completeTrip, cancelTrip, getDriverTrips} from "../controllers/tripController.js";
 
 const router = express.Router();
 
 
+router.get('/get-driver-trips', authentication.isAuthoraized, getDriverTrips);
 router.get('/get-trips', authentication.isAuthoraized, getTrips);
 router.get("/get-trips-with-counts", authentication.isAuthenticated, getTripsWithPassengerCounts);
 router.get('/get-user-trips', authentication.isAuthenticated, getUserTrips);

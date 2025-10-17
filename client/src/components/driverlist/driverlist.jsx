@@ -71,7 +71,7 @@ const DriverList = () => {
         setCurrentUserId(null);
         setIsAdmin(false);
       }
-      const response = await axios.get(`${backEndUrl}/trip/get-trips-with-counts`, { withCredentials: true });
+      const response = await axios.get(`${backEndUrl}/trip/get-driver-trips`, { withCredentials: true });
       const trips = Array.isArray(response.data) ? response.data : [];
       const sortedTrips = trips.sort((a, b) => {
         const dateCompare = new Date(a.date) - new Date(b.date);

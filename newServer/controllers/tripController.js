@@ -19,6 +19,34 @@ const getTrips = async (req, res) => {
   }
 };
 
+const getDriverTrips = async (req, res) => {
+  try {
+    const getTripsWithCounts =  `
+  SELECT 
+    t.*,
+    r.source,
+    r.destination,
+    COALESCE(passenger_counts.total_passengers, 0) AS total_passengers
+  FROM trips t
+  LEFT JOIN route r ON t.route_id = r.route_id
+  LEFT JOIN (
+    SELECT 
+      trip_id,
+      COUNT(*) AS total_passengers
+    FROM booking b
+    WHERE b.status IN ('confirmed', 'waiting')
+    GROUP BY trip_id
+  ) passenger_counts ON t.trip_id = passenger_counts.trip_id
+  WHERE t.status = 'waiting'
+  ORDER BY t.date DESC, t.departure_time ASC;
+`;
+
+    const { rows: trips } = await pool.query(getTripsWithCounts);
+    return res.status(200).json(trips);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
 
 const getTripsWithPassengerCounts = async (req, res) => {
   try {
@@ -437,4 +465,5 @@ export {
   completeTrip,
   cancelTrip,
   delTrip,
+  getDriverTrips
 };
