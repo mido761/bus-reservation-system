@@ -180,8 +180,8 @@ const DriverList = () => {
   // Sort passengers by booking time (oldest first) before filtering
   const sortedPassengers = passengers.slice().sort((a, b) => {
     // If no booked_at, don't change order
-    if (!a.booked_at || !b.booked_at) return 0;
-    return new Date(a.booked_at) - new Date(b.booked_at);
+    if (!a.updated_at || !b.updated_at) return 0;
+    return new Date(a.updated_at) - new Date(b.updated_at);
   });
 
   const filteredPassengers = sortedPassengers.filter((passenger) => {

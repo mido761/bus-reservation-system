@@ -428,8 +428,8 @@ async function getTripPassengers(req, res) {
     LEFT JOIN stop st ON b.stop_id = st.stop_id
     JOIN trips t ON b.trip_id = t.trip_id
     LEFT JOIN route r ON t.route_id = r.route_id
-    WHERE b.trip_id = $1
-    ORDER BY b.updated_at DESC
+    WHERE b.trip_id = $1 AND b.status IN ('waiting', 'confirmed')
+    ORDER BY b.updated_at ASC
     `;
 
     const { rows: passengers } = await pool.query(getPassengersQuery, [tripId]);
