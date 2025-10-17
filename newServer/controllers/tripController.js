@@ -268,7 +268,7 @@ const editTrip = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message:"error editing trip", err:error.message });
+    return res.status(500).json({ message:"error editing trip", error: err.message });
   }
 };
 

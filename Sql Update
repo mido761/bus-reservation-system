@@ -1,5 +1,8 @@
 ALTER TABLE IF EXISTS public.booking
-    ADD COLUMN "isSwitched" boolean NOT NULL DEFAULT false;
+ADD COLUMN "isSwitched" boolean NOT NULL DEFAULT false;
 
 ALTER TABLE IF EXISTS public.trips
-    ADD COLUMN cancel_allowance integer NOT NULL DEFAULT 3;
+ADD COLUMN cancel_allowance integer NOT NULL DEFAULT 3;
+
+ALTER TABLE IF EXISTS public.trips
+ADD COLUMN confirm_lock boolean NOT NULL DEFAULT false;
