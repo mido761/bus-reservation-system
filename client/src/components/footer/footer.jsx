@@ -39,16 +39,15 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Quick Links</h3>
             <ul className="space-y-2">
-              <li>
+              {/* <li>
                 <a
                   href="/#/home"
                   className="text-white/80 hover:text-white underline transition-colors"
                 >
                   Book Tickets
                 </a>
-              </li>
+              </li> */}
               {/* <li>
                 <a
                   href="#"
@@ -57,14 +56,14 @@ const Footer = () => {
                   Track Bus
                 </a>
               </li> */}
-              <li>
+              {/* <li>
                 <a
                   href="/#/refund"
                   className="text-white/80 hover:text-white underline transition-colors"
                 >
                   Cancel/Refund
                 </a>
-              </li>
+              </li> */}
               <li>
                 <a
                   href="/#/help"
@@ -139,7 +138,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-2 text-white/80">
                 <MapPin className="w-4 h-4" />
-                <span>hanaovel agamy,alexandria</span>
+                <span>Hannovel Agamy, Alexandria</span>
               </div>
             </div>
 
