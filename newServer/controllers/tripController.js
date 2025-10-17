@@ -204,8 +204,136 @@ const linkTripBus = async (req, res) => {
 ``;
 
 const editTrip = async (req, res) => {
+  const { tripId } = req.params;
+  const {
+    routeId,
+    date,
+    departureTime,
+    arrivalTime,
+    price,
+    status,
+    minBusCap,
+    confirmLock,
+  } = req.body;
+
   try {
-    return res.status(200).json();
+    const checkTrip = `
+      SELECT * 
+      FROM trips
+      WHERE trip_id= $1
+    `;
+    const { rows } = await pool.query(checkTrip, [tripId]);
+    const trip = rows[0];
+
+    if (!trip) {
+      return res.status(400).json({ message: "This trip doesn't exist!" });
+    }
+
+    const updateQuery = `
+      UPDATE trips
+      SET 
+        route_id = COALESCE($1, route_id),
+        date = COALESCE($2, date),
+        departure_time = COALESCE($3, departure_time),
+        arrival_time = COALESCE($4, arrival_time),
+        price = COALESCE($5, price),
+        status = COALESCE($6, status),
+        min_bus_cap = COALESCE($7, min_bus_cap),
+        confirm_lock = COALESCE($8, confirm_lock)
+      WHERE trip_id = $9
+      RETURNING *;
+    `;
+
+    const values = [
+      routeId,
+      date,
+      departureTime,
+      arrivalTime,
+      price,
+      status,
+      minBusCap,
+      confirmLock,
+      tripId,
+    ];
+
+    const result = await pool.query(updateQuery, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Bus not found" });
+    }
+
+    res.json({
+      message: "Bus updated successfully",
+      trip: result.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message:"error editing trip", err:error.message });
+  }
+};
+
+const completeTrip = async (req, res) => {
+  const { tripId } = req.body;
+  try {
+    const checkTrip = `
+      SELECT * 
+      FROM trips
+      WHERE trip_id= $1
+    `;
+    const { rows } = await pool.query(checkTrip, [tripId]);
+    const trip = rows[0];
+
+    if (!trip) {
+      return res.status(400).json({ message: "This trip doesn't exist!" });
+    }
+
+    const completeTripQuery = `
+    update trips
+    SET status = 'completed'
+    WHERE trip_id = $1
+    RETURNING *
+    `;
+
+    const { rows: completedTrip } = await pool.query(completeTripQuery, [tripId]);
+
+    return res.status(200).json({
+      message: "Trip canceled susccessfully!",
+      completed_trip: completedTrip,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
+const cancelTrip = async (req, res) => {
+  const { tripId } = req.body;
+  try {
+    const checkTrip = `
+      SELECT * 
+      FROM trips
+      WHERE trip_id= $1
+    `;
+    const { rows } = await pool.query(checkTrip, [tripId]);
+    const trip = rows[0];
+
+    if (!trip) {
+      return res.status(400).json({ message: "This trip doesn't exist!" });
+    }
+
+    const cancelTripQuery = `
+    update trips
+    SET status = 'canceled'
+    WHERE trip_id = $1
+    RETURNING *
+    `;
+
+    const { rows: canceledTrip } = await pool.query(cancelTripQuery, [tripId]);
+
+    return res.status(200).json({
+      message: "Trip canceled susccessfully!",
+      canceled_trip: canceledTrip,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -251,5 +379,7 @@ export {
   addTrip,
   linkTripBus,
   editTrip,
+  completeTrip,
+  cancelTrip,
   delTrip,
 };
