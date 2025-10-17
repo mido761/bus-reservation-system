@@ -59,8 +59,7 @@ const TripEditDialog = ({ open, onOpenChange, trip, onUpdated }) => {
     if (!trip?.trip_id) return;
     setSubmitting(true);
     try {
-      await axios.put(`${backEndUrl}/trip/edit-trip`, {
-        tripId: trip.trip_id,
+      await axios.put(`${backEndUrl}/trip/edit-trip/${trip.trip_id}`, {
         date: formData.date,
         departureTime: formData.departureTime,
         arrivalTime: formData.arrivalTime,
