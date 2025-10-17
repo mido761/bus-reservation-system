@@ -9,6 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import LoadingScreen from "../../loadingScreen/loadingScreen";
+import ButtonActions from "../ButtonActions";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -185,8 +186,10 @@ const Route = () => {
           {routes.map((route) => (
             <Card key={route.route_id} className="p-4 border border-gray-100 shadow-sm">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                <div>
-                  <p className="font-semibold">{route.source} → {route.destination}</p>
+                <div className="flex-1">
+                  <p className="font-semibold flex items-center gap-2">
+                    {route.source} → {route.destination}
+                  </p>
                   <ul className="ml-4 list-disc text-gray-700">
                     {route.stops
                       .sort((a, b) => a.position - b.position)
@@ -224,6 +227,12 @@ const Route = () => {
                   <Button onClick={() => handleLinkRouteStop(route.route_id)}>Link</Button>
                 </div>
               </div>
+              <div className="mt-3 flex"><ButtonActions
+                onEdit={() => console.log("Edit Route", route)}
+                onDelete={() => console.log("Delete Route", route)}
+                editLabel={"Edit"}
+                deleteLabel={"Delete"}
+              /></div>
             </Card>
           ))}
         </CardContent>

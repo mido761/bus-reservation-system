@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
+import ButtonActions from "../ButtonActions";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -126,9 +127,17 @@ const Stops = () => {
           ) : (
             <ul className="divide-y divide-gray-200">
               {stops.map((stop) => (
-                <li key={stop.stop_id} className="py-2">
-                  <span className="font-medium">{stop.stop_name}</span>
-                  <span className="text-gray-600"> — {stop.location}</span>
+                <li key={stop.stop_id} className="py-2 flex justify-between items-center">
+                  <span>
+                    <span className="font-medium">{stop.stop_name}</span>
+                    <span className="text-gray-600"> — {stop.location}</span>
+                  </span>
+                  <ButtonActions
+                    onEdit={() => console.log("Edit Stop", stop)}
+                    onDelete={() => console.log("Delete Stop", stop)}
+                    editLabel={"Edit"}
+                    deleteLabel={"Delete"}
+                  />
                 </li>
               ))}
             </ul>
