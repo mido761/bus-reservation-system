@@ -26,8 +26,8 @@ const Footer = () => {
               <span className="text-2xl font-bold">Vip Travel</span>
             </div>
             <p className="text-white/80 leading-relaxed">
-              Your trusted partner for comfortable and reliable bus travel
-              across the country. Book with confidence and travel with comfort.
+            Your trusted partner for safe and comfortable bus travel.
+            Book easily and enjoy a smooth journey.
             </p>
             <div className="flex gap-4">
               {/* <Facebook className="w-6 h-6 text-white/60 hover:text-white cursor-pointer transition-colors" />
@@ -153,9 +153,9 @@ const Footer = () => {
             © 2025 Vip Travel. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-white/60">
-            <a href="/#/privacy" className="hover:text-white underline transition-colors">
+            {/* <a href="/#/privacy" className="hover:text-white underline transition-colors">
               Privacy Policy
-            </a>
+            </a> */}
             <a href="/#/terms" className="hover:text-white underline transition-colors">
               Terms of Service
             </a>
