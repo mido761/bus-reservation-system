@@ -93,7 +93,7 @@ export default function Navbar() {
             <DropdownMenuItem
               onClick={() => navigate("/", { replace: true })}
             >
-              Home
+              Landing Page
             </DropdownMenuItem>
           )}
           {isAuthenticated && location.pathname !== "/profile" && (
