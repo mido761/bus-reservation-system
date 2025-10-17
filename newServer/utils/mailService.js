@@ -49,37 +49,22 @@ async function sendGridMail(recepient, subject, body) {
   //   throw new Error(err);
   // }
 }
-import { Resend } from 'resend';
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function nodeMailerMail(to, subject, html) {
   // console.log(process.env.SENDGRID_API_KEY)
-  // sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   try {
-    // const msg = {
-    //   to,
-    //   from: process.env.EMAIL_USER,
-    //   subject,
-    //   html,
-    // };
-
-    return await resend.emails.send({
+    const msg = {
+      to,
       from: process.env.EMAIL_USER,
-      to: to,
-      subject: subject,
-      html: html
-    });
-
-
-    //  await sgMail.send(msg);
+      subject,
+      html,
+    };
+    return await sgMail.send(msg);
   } catch (err) {
-    console.error("Resend error:", err);
+    console.error("SendGrid error:", err);
     throw err;
   }
 }
-
-
-
-
 
 export { sendGridMail, nodeMailerMail };
