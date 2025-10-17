@@ -140,7 +140,7 @@ export default function Navbar() {
             variant="ghost"
             onClick={() => navigate("/", { replace: true })}
           >
-            Home
+            Landing Page
           </Button>
         )}
         {isAuthenticated && location.pathname !== "/profile" && (

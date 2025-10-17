@@ -77,7 +77,7 @@ const Footer = () => {
                   href="/#/help"
                   className="text-white/80 hover:text-white underline transition-colors"
               >
-                  Help & Support
+                  Support
                 </a>
               </li>
             </ul>

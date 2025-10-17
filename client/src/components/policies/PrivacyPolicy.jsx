@@ -1,10 +1,21 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const PrivacyPolicy = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4 max-w-4xl">
+        <div className="mb-2">
+          <Link
+            to="/"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back
+          </Link>
+        </div>
         <Card className="shadow-xl border border-border rounded-2xl">
           <CardContent className="space-y-8 p-8 leading-relaxed">
             {/* Title */}
