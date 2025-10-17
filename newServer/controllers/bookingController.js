@@ -429,7 +429,6 @@ async function getTripPassengers(req, res) {
     JOIN trips t ON b.trip_id = t.trip_id
     LEFT JOIN route r ON t.route_id = r.route_id
     WHERE b.trip_id = $1
-      AND b.status IN ('confirmed', 'waiting')
     ORDER BY b.updated_at DESC
     `;
 

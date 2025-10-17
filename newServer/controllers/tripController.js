@@ -297,7 +297,7 @@ const completeTrip = async (req, res) => {
   UPDATE booking
   SET status = 'completed'
   WHERE trip_id = $1
-  RETURNING (SELECT * FROM completed_trip);
+  RETURNING (SELECT status FROM completed_trip);
   `;
 
   const { rows:completedTrip } = await pool.query(completeTripQuery, [tripId]);
@@ -338,7 +338,7 @@ const cancelTrip = async (req, res) => {
       UPDATE booking
       SET status = 'cancelled'
       WHERE trip_id = $1
-      RETURNING (SELECT * FROM cancelled_trip);
+      RETURNING (SELECT status FROM cancelled_trip);
     `;
 
     const { rows: cancelTripAndBookings } = await pool.query(cancelTripAndBookingsQ, [tripId]);
