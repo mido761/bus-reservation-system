@@ -23,24 +23,29 @@ export default function SearchBar({
   setDate,
   onSearch,
   setAllRoutes,
+  isSearching = false,
+  hasSearched = false,
+  hasNoResults = false,
 }) {
   const [pickupOptions, setPickupOptions] = useState([]);
   const [arrivalOptions, setArrivalOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingRoutes, setIsFetchingRoutes] = useState(false);
 
   useEffect(() => {
+    setIsFetchingRoutes(true);
     axios
       .get(`${backEndUrl}/route/get-routes`)
       .then((res) => {
         const routes = res.data || [];
         setPickupOptions([...new Set(routes.map((r) => r.source))]);
         setArrivalOptions([...new Set(routes.map((r) => r.destination))]);
-        setAllRoutes(routes);
+        setAllRoutes?.(routes);
       })
       .catch(() => {
         setPickupOptions([]);
         setArrivalOptions([]);
-      });
+      })
+      .finally(() => setIsFetchingRoutes(false));
   }, []);
 
   return (
@@ -98,10 +103,16 @@ export default function SearchBar({
         type="button"
         className="w-32"
         onClick={onSearch}
-        disabled={isLoading}
+        disabled={isSearching || isFetchingRoutes}
       >
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
+        {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
       </Button>
+
+      {hasSearched && !isSearching && hasNoResults && (
+        <div className="mt-4 font-bold text-red-600">
+          No available trips for this inputs
+        </div>
+      )}
     </section>
   );
 }

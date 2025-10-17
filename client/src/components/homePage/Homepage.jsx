@@ -130,6 +130,11 @@ const Homepage = () => {
             tripRefs={tripRefs}
           />
         )}
+        {hasSearched && !isLoading && filteredTrips.length === 0 && (
+          <div className="text-center m-12 font-bold text-red-600">
+            No available trips for this inputs
+          </div>
+        )}
       {/* </div> */}
 
       {/* Additional Information */}
