@@ -32,7 +32,7 @@ const MyBookings = () => {
   const [selectedTripId, setSelectedTripId] = useState("");
   const [selectedStopId, setSelectedStopId] = useState("");
   const [cancelledId, setCancelledId] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("waiting" || "confirmed");
+  const [statusFilter, setStatusFilter] = useState("active");
 
   // 🔹 Fetch all bookings for current user
   const fetchBookings = async () => {
@@ -104,7 +104,12 @@ const MyBookings = () => {
   // 🔹 Filter bookings based on selected status
   const filteredBookings = useMemo(() => {
     if (statusFilter === "all") return bookings;
-    return bookings.filter(booking => booking.status === statusFilter);
+    if (statusFilter === "active") {
+      return bookings.filter(
+        (booking) => booking.status === "waiting" || booking.status === "confirmed"
+      );
+    }
+    return bookings.filter((booking) => booking.status === statusFilter);
   }, [bookings, statusFilter]);
 
   // 🔹 Handle switching a booking to another trip
@@ -326,7 +331,8 @@ const MyBookings = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="all">All Statuses</option>
+            <option value="active">Waiting & Confirmed</option>
+            {/* <option value="all">All Statuses</option> */}
             {availableStatuses.map((status) => (
               <option key={status} value={status}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
