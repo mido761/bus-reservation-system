@@ -5,10 +5,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import TripForm from "../../../UI/trips/TripForm";
+import TripEditDialog from "../../../UI/trips/TripEdit";
 import { Calendar } from "lucide-react";
 import PassengerList from "../../admin-dashboard/passengerslist/PassengerList";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import formatDateTime from "../../../formatDateAndTime";
+import ButtonActions from "../ButtonActions";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -43,6 +45,8 @@ const AddTrip = () => {
     stopCounts: {},
   });
   const [error, setError] = useState("");
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingTrip, setEditingTrip] = useState(null);
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -96,6 +100,12 @@ const AddTrip = () => {
     }
     setSelectedTrip(trip);
     fetchPassengers(trip.trip_id);
+  };
+
+  const openEditDialog = (e, trip) => {
+    e.stopPropagation();
+    setEditingTrip(trip);
+    setEditOpen(true);
   };
 
   // Fetch all buses
@@ -260,6 +270,12 @@ const AddTrip = () => {
                             <span>{trip.total_passengers || 0} passengers</span>
                           </div>
                         </div>
+                        <ButtonActions
+                          onEdit={(e) => openEditDialog(e, trip)}
+                          onDelete={(e) => { e.stopPropagation(); console.log("Delete Trip", trip); }}
+                          editLabel={"Edit"}
+                          deleteLabel={"Delete"}
+                        />
                       </div>
                     </CardContent>
                   </Card>
@@ -285,6 +301,14 @@ const AddTrip = () => {
 
       {/* Toast Container */}
       <ToastContainer />
+
+      {/* Edit Trip Dialog */}
+      <TripEditDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        trip={editingTrip}
+        onUpdated={fetchTrips}
+      />
     </>
   );
 };

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 
 import LoadingScreen from "../../loadingScreen/loadingScreen";
+import ButtonActions from "../ButtonActions";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
@@ -132,6 +133,12 @@ const Bus = () => {
                         Check In Link
                       </a>
                     )}
+                    <ButtonActions
+                      onEdit={() => console.log("Edit Bus", bus)}
+                      onDelete={() => console.log("Delete Bus", bus)}
+                      editLabel={"Edit"}
+                      deleteLabel={"Delete"}
+                    />
                   </div>
                 </li>
               ))}

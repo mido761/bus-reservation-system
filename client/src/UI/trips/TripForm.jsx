@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-const TripForm = ({ formData, routes, handleChange, handleSubmit }) => {
+const TripForm = ({ formData, routes, handleChange, handleSubmit, submitLabel = "Add Trip" }) => {
   return (
     <form
       onSubmit={handleSubmit}
@@ -119,7 +119,7 @@ const TripForm = ({ formData, routes, handleChange, handleSubmit }) => {
           type="submit"
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-6 py-2 shadow-md transition"
         >
-          Add Trip
+          {submitLabel}
         </Button>
       </div>
     </form>
