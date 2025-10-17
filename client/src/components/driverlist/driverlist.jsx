@@ -300,7 +300,7 @@ const DriverList = () => {
                               Confirm Selected ({selectedBookings.length})
                             </Button>
                           )}
-                          <Table className="border border-primary-500">
+                          <Table className="border border-primary-500 text-white">
                             <TableHeader>
                               <TableRow>
                                 <TableHead className="w-8"></TableHead> {/* New checkbox column */}
