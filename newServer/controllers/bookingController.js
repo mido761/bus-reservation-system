@@ -191,7 +191,7 @@ async function getPassengerList(req, res) {
 async function manualConfirm(req, res) {
   const client = await pool.connect(); // get a dedicated client for the transaction
   try {
-    const { bookings,tripId } = req.body;
+    const { bookings, tripId } = req.body;
 
     await client.query('BEGIN'); // start transaction
 
@@ -210,13 +210,13 @@ async function manualConfirm(req, res) {
       updatedBookings.push(result.rows[0]);
     }
 
-    const updatetrip = await client.query(`update trips set confirm_lock = true where trip_id = $1  RETURNING *`,[tripId])
+    const updatetrip = await client.query(`update trips set confirm_lock = true where trip_id = $1  RETURNING *`, [tripId])
     // console.log(updatetrip.rows[0])
     await client.query('COMMIT'); // commit all changes if successful
 
     res.status(200).json({
       message: "Bookings updated successfully",
-      updated: updatedBookings, 
+      updated: updatedBookings,
     });
 
   } catch (err) {
@@ -485,7 +485,7 @@ async function book(req, res) {
 
     console.log(req.session.userRole)
     const role = req.session.userRole;
-    if (bookingsCount > 1 && role !== "admin" ) {
+    if (bookingsCount > 1 && role !== "admin") {
       await client.query("ROLLBACK");
       return res.status(400).json({
         message: "Only two bookings allowed!",
@@ -542,27 +542,26 @@ async function book(req, res) {
   }
 }
 async function switchbooking(req, res) {
-  const { newTripId, newStopId, bookingId } = req.body;
+  const { newTripId, bookingId    } = req.body;
   const client = await pool.connect();
   try {
-    // console.log(newTripId, newStopId,bookingId)
     await client.query("BEGIN");
+
     // Check if user already has pending booking
     const checkQuery = `
-      SELECT b.*, s.stop_name, s.location
+      SELECT b.*
       FROM booking b
-      JOIN stop s 
-        ON b.stop_id = s.stop_id
       WHERE b.booking_id = $1
     `;
-
 
     const booking = await client.query(checkQuery, [
       bookingId,
     ]);
 
+    console.log(bookingId, newTripId, booking.rows[0])
+
     const userId = req.session.userId
-    const role = req.session.role
+    const role = req.session.userRole
 
     const isAdmin = role === "admin"
     const sameUser = booking.rows[0].passenger_id === userId
@@ -587,11 +586,11 @@ async function switchbooking(req, res) {
 
     const updateBookingQ = `
     update booking 
-    set trip_id = $1 , stop_id = $2 , updated_at = NOW()
-    where booking_id = $3
+    set trip_id = $1 ,updated_at = NOW()
+    where booking_id = $2
     Returning *
     `
-    const { rows: updateBooking } = await client.query(updateBookingQ, [newTripId, newStopId, bookingId])
+    const { rows: updateBooking } = await client.query(updateBookingQ, [newTripId, bookingId])
     console.log(updateBooking)
 
     await waitingList(oldTripId, client); // Old trip update
@@ -600,12 +599,10 @@ async function switchbooking(req, res) {
 
     await client.query("COMMIT");
 
-    return res.status(201).json({
-      message: "Booked successfully!",
+    return res.status(200).json({
+      message: "Switched booking successfully!",
       updateBooking: updateBooking
     });
-
-
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -666,26 +663,32 @@ async function cancel(req, res) {
         .status(200)
         .json({ message: "No booking found with this ID", booking: booking });
     }
-    const passengerId = req.session.userId;
-    const Time = Date.now()
-    console.log("time",booking[0].departure_time,"   date",booking[0].date," Date.now()", Time)
-    // console.log(req.session.userRole)
-    const role = req.session.userRole;
-    if (role !== "admin" && passengerId !== booking[0].passenger_id  ) {
+
+    // const Time = Date.now()  
+    // console.log("time", booking[0].departure_time, "   date", booking[0].date, " Date.now()", Time)
+
+
+    const userId = req.session.userId
+    const role = req.session.userRole
+
+    const isAdmin = role === "admin"
+    const sameUser = booking[0].passenger_id === userId
+    const allowCancel = sameUser || isAdmin
+
+    if (!allowCancel) {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        message: "you can only cancel your booking",
-        booking: bookings.rows,
+        message: "Cancel denied!"
       });
     }
 
 
     const bookingStatus = booking[0]?.status;
-    const paymentStatus = booking[0]?.payment_status;
+    // const paymentStatus = booking[0]?.payment_status;
     const paymentId = booking[0]?.payment_id;
     const amount = booking[0]?.amount;
-    console.log("paymentId: ", paymentId);
-    console.log("Amount In payment: ", amount);
+    // console.log("paymentId: ", paymentId);
+    // console.log("Amount In payment: ", amount);
 
     // Stop if the booking is cancelled already
     if (bookingStatus === "cancelled") {
