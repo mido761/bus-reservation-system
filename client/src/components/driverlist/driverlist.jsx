@@ -127,7 +127,14 @@ const DriverList = () => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredPassengers = passengers.filter((passenger) => {
+  // Sort passengers by booking time (oldest first) before filtering
+  const sortedPassengers = passengers.slice().sort((a, b) => {
+    // If no booked_at, don't change order
+    if (!a.booked_at || !b.booked_at) return 0;
+    return new Date(a.booked_at) - new Date(b.booked_at);
+  });
+
+  const filteredPassengers = sortedPassengers.filter((passenger) => {
     const query = searchQuery.toLowerCase().trim();
     const userName = (passenger?.name || passenger?.username || "").toLowerCase();
     const rawPhone = String(passenger?.phone_number || passenger?.phoneNumber || "").toLowerCase();
@@ -136,10 +143,10 @@ const DriverList = () => {
     return userName.includes(query) || phoneNumber.includes(query) || route.includes(query);
   });
 
-  const getRowColor = (index) => {
-    const fullGroups = Math.floor(passengers.length / 15);
-    const lastGreenIndex = fullGroups * 15 - 1;
-    return index <= lastGreenIndex ? "#376c37" : "red";
+  const getRowColor = (passenger) => {
+    if ((passenger.status || '').toLowerCase() === 'confirmed') return '#376c37'; // green
+    if ((passenger.status || '').toLowerCase() === 'waiting') return '#c0392b'; // red
+    return '#fff'; // default/white
   };
 
   if (pageLoading) {
@@ -243,7 +250,7 @@ const DriverList = () => {
                             </TableHeader>
                             <TableBody>
                               {filteredPassengers.map((passenger, idx) => (
-                                <TableRow key={idx} style={{ backgroundColor: getRowColor(idx) }}>
+                                <TableRow key={idx} style={{ backgroundColor: getRowColor(passenger) }}>
                                   <TableCell>{idx + 1}</TableCell>
                                   <TableCell>{passenger.name || passenger.user_name}</TableCell>
                                   <TableCell>{(isAdmin || passenger.user_id === currentUserId) ? (passenger.user_number || passenger.phoneNumber) : ""}</TableCell>
