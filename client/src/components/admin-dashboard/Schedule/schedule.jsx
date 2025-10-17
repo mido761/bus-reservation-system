@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ToastContainer, toast } from "react-toastify";
@@ -29,6 +29,7 @@ const AddTrip = () => {
   const [buses, setBuses] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("");
   const [formData, setFormData] = useState({
     routeId: "",
     date: "",
@@ -68,6 +69,18 @@ const AddTrip = () => {
       setIsLoading(false);
     }
   };
+
+  // Derive unique statuses from trips for filter dropdown
+  const tripStatusOptions = useMemo(() => {
+    const unique = Array.from(new Set((trips || []).map((t) => t.status).filter(Boolean)));
+    return ["", ...unique];
+  }, [trips]);
+
+  // Apply status filter to trips list
+  const visibleTrips = useMemo(() => {
+    if (!statusFilter) return trips;
+    return (trips || []).filter((t) => (t.status || "").toLowerCase() === statusFilter.toLowerCase());
+  }, [trips, statusFilter]);
 
   // Fetch passengers for a trip
   const fetchPassengers = async (tripId) => {
@@ -219,9 +232,27 @@ const AddTrip = () => {
           {/* Trip List */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <Calendar className="w-6 h-6 text-blue-600" /> Select Trip
-              </CardTitle>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <Calendar className="w-6 h-6 text-blue-600" /> Select Trip
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="border rounded-lg py-2 px-3 focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
+                  >
+                    <option value="">All Status</option>
+                    {tripStatusOptions
+                      .filter((v) => v !== "")
+                      .map((status) => (
+                        <option key={status} value={status}>
+                          {String(status).charAt(0).toUpperCase() + String(status).slice(1)}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {error && (
@@ -230,7 +261,7 @@ const AddTrip = () => {
                 </div>
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {trips.map((trip) => (
+                {visibleTrips.map((trip) => (
                   <Card
                     key={trip.trip_id}
                     onClick={() => handleTripSelect(trip)}
@@ -275,6 +306,13 @@ const AddTrip = () => {
                           onDelete={(e) => { e.stopPropagation(); console.log("Delete Trip", trip); }}
                           editLabel={"Edit"}
                           deleteLabel={"Delete"}
+                          showCompleteCancel
+                          onComplete={(e) => { e.stopPropagation(); console.log("Complete Trip", trip); }}
+                          onCancel={(e) => { e.stopPropagation(); console.log("Cancel Trip", trip); }}
+                          completeLabel={"Complete"}
+                          cancelLabel={"Cancel"}
+                          completeDisabled={String(trip.status).toLowerCase() !== 'waiting'}
+                          cancelDisabled={String(trip.status).toLowerCase() === 'booked'}
                         />
                       </div>
                     </CardContent>
