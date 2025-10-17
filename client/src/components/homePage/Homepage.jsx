@@ -133,7 +133,7 @@ const Homepage = () => {
       {/* </div> */}
 
       {/* Additional Information */}
-      <AdditionalInfo />
+      {/* <AdditionalInfo /> */}
     </div>
   );
 };
