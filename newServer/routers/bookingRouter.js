@@ -15,6 +15,7 @@ import {
   updateBooking,
   switchbooking,
   cancel,
+  manualConfirm,
 } from "../controllers/bookingController.js";
 
 const router = express.Router();
@@ -30,6 +31,8 @@ router.get("/get-bus-bookings/:busId",  authentication.isAuthenticated, getBusBo
 router.get("/get-trip-passengers/:tripId", authentication.isAuthenticated, getTripPassengers);
 router.post("/book", authentication.isAuthenticated, book);
 router.post("/switch-booking", authentication.isAuthenticated, switchbooking);
+router.post("/manual-confirm", authentication.isAuthoraized,  manualConfirm);
+
 // router.post("/webhook", confirmBooking);
 // router.put("/update-booking", updateBooking);
 router.post("/cancel-booking", authentication.isAuthenticated, cancel);
