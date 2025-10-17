@@ -9,12 +9,15 @@ import "react-toastify/dist/ReactToastify.css";
 import LoadingScreen from "../../loadingScreen/loadingScreen";
 import Overlay from "../../overlayScreen/overlay";
 import ButtonActions from "../ButtonActions";
+import StopEditDialog from "../../../UI/stops/stopEdit";
 
 const backEndUrl = import.meta.env.VITE_BACK_END_URL;
 
 const Stops = () => {
   const [stops, setStops] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingStop, setEditingStop] = useState(null);
 
   const [newStop, setNewStop] = useState({
     stopName: "",
@@ -53,6 +56,63 @@ const Stops = () => {
       setIsLoading(false);
     }
   };
+
+  // Delete stop
+  const handleDel = async (e, stopId) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      console.log(stopId)
+      await axios.put(`${backEndUrl}/stop/del-stop`, { stopId });
+
+      toast.success("Stop deleted successfully", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+
+      fetchStops();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error deleting stop!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  const openEditDialog = (e, stop) => {
+    console.log(stop)
+    e.stopPropagation();
+    setEditingStop(stop);
+    setEditOpen(true);
+  };
+
+  // Edit stop
+  const handleEdit = async (e, stopId) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      console.log(stopId)
+      await axios.put(`${backEndUrl}/stop/edit-stop/${stopId}`, { stopName, location, distanceFromSource });
+
+      toast.success("Stop deleted successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+
+      fetchStops();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error deleting stop!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     fetchStops();
@@ -133,8 +193,8 @@ const Stops = () => {
                     <span className="text-gray-600"> — {stop.location}</span>
                   </span>
                   <ButtonActions
-                    onEdit={() => console.log("Edit Stop", stop)}
-                    onDelete={() => console.log("Delete Stop", stop)}
+                    onEdit={(e) => openEditDialog(e, stop)}
+                    onDelete={(e) => handleDel(e, stop.stop_id)}
                     editLabel={"Edit"}
                     deleteLabel={"Delete"}
                   />
@@ -147,6 +207,14 @@ const Stops = () => {
 
       {isLoading && <LoadingScreen />}
       <Overlay />
+
+      {/* Edit Trip Dialog */}
+      <StopEditDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        stop={editingStop}
+        onUpdated={fetchStops}
+      />
     </>
   );
 };

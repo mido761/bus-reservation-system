@@ -2,9 +2,10 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash, Check, XCircle } from "lucide-react";
 
-const ButtonActions = ({ onEdit, onDelete, onComplete, onCancel, editLabel = "Edit", deleteLabel = "Delete", completeLabel = "Complete", cancelLabel = "Cancel", editDisabled = false, deleteDisabled = false, completeDisabled = false, cancelDisabled = false, showCompleteCancel = false }) => (
+const ButtonActions = ({ onEdit, onDelete, onComplete, onCancel, editLabel = "Edit", deleteLabel = "Delete", completeLabel = "Complete", cancelLabel = "Cancel", editDisabled = false, deleteDisabled = false, completeDisabled = false, cancelDisabled = false, showComplete = false, showCancel = false }) => (
   <div className="flex flex-col gap-2">
     <div className="flex gap-2">
+      <p> {showCancel} {showComplete}</p>
       <Button
         variant="outline"
         onClick={onEdit}
@@ -26,9 +27,9 @@ const ButtonActions = ({ onEdit, onDelete, onComplete, onCancel, editLabel = "Ed
         <Trash className="w-4 h-4" /> <span className="hidden sm:inline">{deleteLabel}</span>
       </Button>
     </div>
-    {showCompleteCancel && (
+    {(
       <>
-        <Button
+        {showComplete && (<Button
           variant="default"
           onClick={onComplete}
           size="sm"
@@ -37,8 +38,8 @@ const ButtonActions = ({ onEdit, onDelete, onComplete, onCancel, editLabel = "Ed
           title={completeLabel}
         >
           <Check className="w-4 h-4" /> <span className="hidden sm:inline">{completeLabel}</span>
-        </Button>
-        <Button
+        </Button>)}
+        {showCancel && (<Button
           variant="default"
           onClick={onCancel}
           size="sm"
@@ -47,7 +48,9 @@ const ButtonActions = ({ onEdit, onDelete, onComplete, onCancel, editLabel = "Ed
           title={cancelLabel}
         >
           <XCircle className="w-4 h-4" /> <span className="hidden sm:inline">{cancelLabel}</span>
-        </Button>
+        </Button>)}
+
+
       </>
     )}
   </div>

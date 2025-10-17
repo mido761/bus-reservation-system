@@ -2,8 +2,8 @@ import pool from "../db.js"
 
 const getStops = async (req, res) => {
   try {
-    const getquery = 'select * from stop'
-    const { rows } = await pool.query(getquery);
+    const getquery = 'select * from stop where stop.is_active = $1'
+    const { rows } = await pool.query(getquery, [true]);
     const stops = rows
     return res.status(200).json(stops);
   } catch (error) {
@@ -58,13 +58,66 @@ const addStop = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
 const editStop = async (req, res) => {
-  //dont know
+  const { stopId } = req.params;
+  const {
+    stopName,
+    location,
+    distanceFromSource,
+  } = req.body;
+
+  try {
+    const checkStop = `
+      SELECT * 
+      FROM stop
+      WHERE stop_id= $1
+    `;
+    const stop = await pool.query(checkStop, [stopId]);
+    const stopRes = stop.rows[0];
+
+    if (stop.rowCount === 0) {
+      return res.status(400).json({ message: "This stop doesn't exist!" });
+    }
+
+    const updateQuery = `
+      UPDATE stop
+      SET 
+        stop_name = COALESCE($1, stop_name),
+        location = COALESCE($2, location),
+        distance_from_source = COALESCE($3, distance_from_source)
+      WHERE stop_id = $4
+      RETURNING *;
+    `;
+
+    const values = [
+      stopName,
+      location,
+      distanceFromSource,
+      stopId
+    ];
+
+    const result = await pool.query(updateQuery, values);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Error updating stop!" });
+    }
+
+    res.json({
+      message: "Stop updated successfully",
+      trip: result.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "error editing stop!", error: err.message });
+  }
 };
 
 const delStop = async (req, res) => {
   const { stopId } = req.body;
   try {
+    console.log(stopId)
     // 1. Check if stop exists
     const checkQuery = 'SELECT * FROM stop WHERE stop_id = $1 LIMIT 1';
     const checkResult = await pool.query(checkQuery, [stopId]);
@@ -73,15 +126,15 @@ const delStop = async (req, res) => {
       return res.status(404).json("Stop not found!");
     }
 
-    // 2. Delete stop
-    const deleteQuery = 'DELETE FROM stop WHERE stop_Id = $1 RETURNING *';
-    const deleteResult = await pool.query(deleteQuery, [stopId]);
+    // 2. Mark stop as inactive
+    const deactivateQuery = 'UPDATE stop SET is_active = false WHERE stop_Id = $1 RETURNING *';
+    const deactivateResult = await pool.query(deactivateQuery, [stopId]);
 
-    const deletedStop = deleteResult.rows[0];
+    const deactivatedStop = deactivateResult.rows[0];
 
     return res.status(200).json({
       message: "Stop deleted successfully!",
-      stop: deletedStop,
+      stop: deactivatedStop,
     });
   } catch (error) {
     console.error(error);

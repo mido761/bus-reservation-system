@@ -180,6 +180,82 @@ const AddTrip = () => {
     }
   };
 
+
+  // Complete trip
+  const handleComplete = async (e, tripId) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      console.log("Trip ID: ", tripId)
+      await axios.post(`${backEndUrl}/trip/complete-trip`, { tripId });
+      // setTrips((prev) => [...prev, formData]);
+      toast.success("Trip added successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+
+      fetchTrips();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error adding trip", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  // Cancel trip
+  const handleCancel = async (e, tripId) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      console.log("Trip ID: ", tripId)
+      await axios.post(`${backEndUrl}/trip/cancel-trip`, { tripId });
+      // setTrips((prev) => [...prev, formData]);
+      toast.success("Trip cancelled successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+
+      fetchTrips();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error adding trip", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+
+  // Delete trip
+  const handleDel = async (e, tripId) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      console.log("Trip ID: ", tripId)
+      await axios.post(`${backEndUrl}/trip/del-trip`, { tripId });
+      // setTrips((prev) => [...prev, formData]);
+      toast.success("Trip deleted successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+
+      fetchTrips();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error adding trip", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Add a new trip
   const handleLink = async (e, tripId, busId) => {
     e.preventDefault();
@@ -303,16 +379,17 @@ const AddTrip = () => {
                         </div>
                         <ButtonActions
                           onEdit={(e) => openEditDialog(e, trip)}
-                          onDelete={(e) => { e.stopPropagation(); console.log("Delete Trip", trip); }}
+                          onDelete={(e) => { e.stopPropagation(); handleDel(e, trip.trip_id); }}
                           editLabel={"Edit"}
                           deleteLabel={"Delete"}
-                          showCompleteCancel
-                          onComplete={(e) => { e.stopPropagation(); console.log("Complete Trip", trip); }}
-                          onCancel={(e) => { e.stopPropagation(); console.log("Cancel Trip", trip); }}
+                          showComplete={trip.status !== "completed"}
+                          showCancel={trip.status !== "canceled"}
+                          onComplete={(e) => { e.stopPropagation(); handleComplete(e, trip.trip_id); }}
+                          onCancel={(e) => { e.stopPropagation(); handleCancel(e, trip.trip_id) }}
                           completeLabel={"Complete"}
                           cancelLabel={"Cancel"}
-                          completeDisabled={String(trip.status).toLowerCase() !== 'waiting'}
-                          cancelDisabled={String(trip.status).toLowerCase() === 'booked'}
+                          completeDisabled={String(trip.status).toLowerCase() === 'completed'}
+                          cancelDisabled={String(trip.status).toLowerCase() === 'cancelled'}
                         />
                       </div>
                     </CardContent>

@@ -259,16 +259,16 @@ const editTrip = async (req, res) => {
     const result = await pool.query(updateQuery, values);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Bus not found" });
+      return res.status(404).json({ message: "Error updating trip!" });
     }
 
     res.json({
-      message: "Bus updated successfully",
+      message: "Trip updated successfully",
       trip: result.rows[0],
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message:"error editing trip", error: err.message });
+    return res.status(500).json({ message:"error editing trip!", error: err.message });
   }
 };
 
