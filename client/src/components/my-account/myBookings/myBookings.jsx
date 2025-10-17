@@ -193,7 +193,7 @@ const MyBookings = () => {
 
       if (!tripId) return toast.error("No trip linked to this booking");
 
-      navigate("/passengers", { state: { tripId, bookingId: booking.booking_id, status: booking.status } });
+      navigate("/passengers", { state: { tripId, bookingId: booking.booking_id } });
     } catch (err) {
       console.error("Error opening passenger list:", err);
       toast.error("Unable to open passenger list");
