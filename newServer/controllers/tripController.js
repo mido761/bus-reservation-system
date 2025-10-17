@@ -287,14 +287,21 @@ const completeTrip = async (req, res) => {
       return res.status(400).json({ message: "This trip doesn't exist!" });
     }
 
-    const completeTripQuery = `
-    update trips
+  const completeTripQuery = `
+  WITH completed_trip AS (
+    UPDATE trips
     SET status = 'completed'
     WHERE trip_id = $1
     RETURNING *
-    `;
+  )
+  UPDATE booking
+  SET status = 'completed'
+  WHERE trip_id = $1
+  RETURNING (SELECT status FROM completed_trip);
+  `;
 
-    const { rows: completedTrip } = await pool.query(completeTripQuery, [tripId]);
+  const { rows:completedTrip } = await pool.query(completeTripQuery, [tripId]);
+
 
     return res.status(200).json({
       message: "Trip canceled susccessfully!",
@@ -321,18 +328,24 @@ const cancelTrip = async (req, res) => {
       return res.status(400).json({ message: "This trip doesn't exist!" });
     }
 
-    const cancelTripQuery = `
-    update trips
-    SET status = 'canceled'
-    WHERE trip_id = $1
-    RETURNING *
+    const cancelTripAndBookingsQ = `
+      WITH cancelled_trip AS (
+        UPDATE trips
+        SET status = 'cancelled'
+        WHERE trip_id = $1
+        RETURNING *
+      )
+      UPDATE booking
+      SET status = 'cancelled'
+      WHERE trip_id = $1
+      RETURNING (SELECT status FROM cancelled_trip);
     `;
 
-    const { rows: canceledTrip } = await pool.query(cancelTripQuery, [tripId]);
+    const { rows: cancelTripAndBookings } = await pool.query(cancelTripAndBookingsQ, [tripId]);
 
     return res.status(200).json({
       message: "Trip canceled susccessfully!",
-      canceled_trip: canceledTrip,
+      cancelled_trip: cancelTripAndBookings,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });

@@ -62,7 +62,7 @@ function DesktopTable({ passengers, currentUserId, bookingId }) {
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            {["#", "Passenger", "Contact", "Stop", "Route"].map((heading) => (
+            {["#", "Passenger", "Contact", "Stop", "Status", "Route"].map((heading) => (
               <th
                 key={heading}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -108,6 +108,15 @@ function DesktopTable({ passengers, currentUserId, bookingId }) {
                   )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700">{current ? passenger.stop_name || "-" : "-"}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">
+                  <span
+                    className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusStyles[passenger.booking_status] ||
+                      "bg-gray-100 text-gray-700"
+                      }`}
+                  >
+                    {(passenger.booking_status || "-").toString().toUpperCase()}
+                  </span>
+                </td>
                 <td className="px-6 py-4 text-sm text-gray-700">{current ? formatRoute(passenger) || "-" : "-"}</td>
               </tr>
             );

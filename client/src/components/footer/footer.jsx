@@ -16,7 +16,7 @@ const Footer = () => {
   if (location.pathname === "/login" || location.pathname === "/register")
     return null;
   return (
-    <footer className="bg-primary text-white w-full mt-4">
+    <footer className="bg-primary text-white w-full">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -26,8 +26,8 @@ const Footer = () => {
               <span className="text-2xl font-bold">Vip Travel</span>
             </div>
             <p className="text-white/80 leading-relaxed">
-              Your trusted partner for comfortable and reliable bus travel
-              across the country. Book with confidence and travel with comfort.
+            Your trusted partner for safe and comfortable bus travel.
+            Book easily and enjoy a smooth journey.
             </p>
             <div className="flex gap-4">
               {/* <Facebook className="w-6 h-6 text-white/60 hover:text-white cursor-pointer transition-colors" />
@@ -65,11 +65,19 @@ const Footer = () => {
                 </a>
               </li> */}
               <li>
-                <a
+              <a 
+                href="/#/about" 
+                className="text-white/80 hover:text-white underline transition-colors"
+              >
+              About
+               </a>
+              </li>
+              <li>
+              <a
                   href="/#/help"
                   className="text-white/80 hover:text-white underline transition-colors"
-                >
-                  Help & Support
+              >
+                  Support
                 </a>
               </li>
             </ul>
@@ -128,18 +136,7 @@ const Footer = () => {
                 <span>WhatsApp Channel</span>
               </a>
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-white/80">
-                <Phone className="w-4 h-4" />
-                <span>Phone Number </span>
-              </div>
-              <div className="flex items-center gap-2 text-white/80">
-                <Mail className="w-4 h-4" />
-                <span>support.VipTravel@gmail.com</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/80">
-                <MapPin className="w-4 h-4" />
-                <span>Hannovel Agamy, Alexandria</span>
-              </div>
+ 
             </div>
 
             {/* <div className="space-y-2">
@@ -161,7 +158,7 @@ const Footer = () => {
 
         <div className="border-t border-white/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-white/60 text-sm">
-            © 2025 BusGo. All rights reserved.
+            © 2025 Vip Travel. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-white/60">
             <a href="/#/privacy" className="hover:text-white underline transition-colors">

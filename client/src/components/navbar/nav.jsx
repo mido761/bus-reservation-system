@@ -93,7 +93,7 @@ export default function Navbar() {
             <DropdownMenuItem
               onClick={() => navigate("/", { replace: true })}
             >
-              Home
+              Landing Page
             </DropdownMenuItem>
           )}
           {isAuthenticated && location.pathname !== "/profile" && (
@@ -140,7 +140,7 @@ export default function Navbar() {
             variant="ghost"
             onClick={() => navigate("/", { replace: true })}
           >
-            Home
+            Landing Page
           </Button>
         )}
         {isAuthenticated && location.pathname !== "/profile" && (
