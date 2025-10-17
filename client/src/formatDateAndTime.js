@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-const formatDateTime = (time = "00:00:00", type = "time", timeZone = "EET") => {
+const formatDateTime = (time = "00:00:00", type = "time", timeZone = "UTC") => {
   let luxonDateTime;
 
   // Case 1: full datetime string (e.g. "2025-09-03T15:30:00")
