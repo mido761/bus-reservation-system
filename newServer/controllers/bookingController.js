@@ -542,7 +542,7 @@ async function book(req, res) {
   }
 }
 async function switchbooking(req, res) {
-  const { newTripId, bookingId    } = req.body;
+  const { newTripId, bookingId } = req.body;
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -684,6 +684,13 @@ async function cancel(req, res) {
 
 
     const bookingStatus = booking[0]?.status;
+    const isSwitched = booking[0]?.isSwitched;
+
+    if (isSwitched) {
+      return res
+        .status(400)
+        .json({ message: "Can't cancel after swtiching!", booking: booking });
+    }
     // const paymentStatus = booking[0]?.payment_status;
     const paymentId = booking[0]?.payment_id;
     const amount = booking[0]?.amount;
@@ -693,7 +700,7 @@ async function cancel(req, res) {
     // Stop if the booking is cancelled already
     if (bookingStatus === "cancelled") {
       return res
-        .status(200)
+        .status(400)
         .json({ message: "Booking already cancelled!", booking: booking });
     }
 
