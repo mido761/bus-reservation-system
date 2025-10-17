@@ -211,6 +211,48 @@ const editTrip = async (req, res) => {
   }
 };
 
+const confirmTrip = async (req, res) => {
+  try {
+    return res.status(200).json();
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const cancelTrip = async (req, res) => {
+  const { tripId } = req.body;
+  try {
+    const checkTrip = `
+      SELECT * 
+      FROM trips
+      WHERE trip_id= $1
+    `;
+    const { rowCount: tripsCount } = await pool.query(checkTrip, [tripId]);
+    // const trip = rows[0];
+
+    if (tripsCount === 0) {
+      return res.status(400).json({ message: "This trip doesn't exist!" });
+    }
+
+    const cancelTripQuery = `
+    UPDATE trips
+    SET trip.status = $2
+    WHERE trip_id = $1
+    RETURNING *
+    `;
+
+    const { rows: cancelledTrip } = await pool.query(cancelTripQuery, [tripId, "cancelled"]);
+
+    return res.status(200).json({
+      message: "Trip cancelled susccessfully!",
+      cancelled_trip: cancelledTrip,
+    });
+  } catch (error) {
+    console.error("Error cancelling trip: ", error.response.data.message)
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const delTrip = async (req, res) => {
   const { tripId } = req.body;
   try {
