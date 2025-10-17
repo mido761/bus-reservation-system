@@ -54,6 +54,11 @@ const DriverList = () => {
   const [passengersCount, setPassengersCount] = useState({ total: 0, byRoute: {} });
   const [currentUserId, setCurrentUserId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  // --- new states for selection and overlay
+  const [selectedBookings, setSelectedBookings] = useState([]); // store selected booking_ids for confirm
+  const [showConfirmOverlay, setShowConfirmOverlay] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [overlayMsg, setOverlayMsg] = useState("");
 
   const fetchTripList = async () => {
     try {
@@ -116,6 +121,51 @@ const DriverList = () => {
     }
   };
 
+  const handleSelectBooking = (bookingId) => {
+    setSelectedBookings((prev) =>
+      prev.includes(bookingId)
+        ? prev.filter((id) => id !== bookingId)
+        : [...prev, bookingId]
+    );
+  };
+  const isWaitingOrConfirmed = (status) => (
+    ["waiting", "confirmed"].includes((status || "").toLowerCase())
+  );
+  const handleConfirmModal = () => {
+    if(selectedBookings.length) setShowConfirmOverlay(true);
+  };
+  const handleOverlayCancel = () => {
+    setShowConfirmOverlay(false);
+  };
+  const handleConfirmBookings = async () => {
+    setIsSubmitting(true);
+    try {
+      // Map all selected bookings (waiting->confirmed, confirmed->waiting)
+      const toUpdate = filteredPassengers
+        .filter(p => selectedBookings.includes(p.booking_id))
+        .map(p => {
+          let newStatus = (p.status||'').toLowerCase() === 'waiting' ? 'confirmed' : 'waiting';
+          return { booking_id: p.booking_id, status: newStatus };
+        });
+      if (toUpdate.length === 0) {
+        setOverlayMsg("No bookings selected.");
+        setIsSubmitting(false); return;
+      }
+      await axios.post(
+        `${backEndUrl}/booking/manual-confirm`,
+        { bookings: toUpdate, tripId: selectedTripId },
+        { withCredentials: true }
+      );
+      setOverlayMsg('Status updated!');
+      setShowConfirmOverlay(false);
+      setSelectedBookings([]);
+      fetchPassengersForTrip(selectedTripId); // Refresh
+    } catch (e) {
+      setOverlayMsg("Error updating status");
+    }
+    setIsSubmitting(false);
+  };
+
   useEffect(() => {
     fetchTripList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,7 +177,14 @@ const DriverList = () => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredPassengers = passengers.filter((passenger) => {
+  // Sort passengers by booking time (oldest first) before filtering
+  const sortedPassengers = passengers.slice().sort((a, b) => {
+    // If no booked_at, don't change order
+    if (!a.booked_at || !b.booked_at) return 0;
+    return new Date(a.booked_at) - new Date(b.booked_at);
+  });
+
+  const filteredPassengers = sortedPassengers.filter((passenger) => {
     const query = searchQuery.toLowerCase().trim();
     const userName = (passenger?.name || passenger?.username || "").toLowerCase();
     const rawPhone = String(passenger?.phone_number || passenger?.phoneNumber || "").toLowerCase();
@@ -136,10 +193,10 @@ const DriverList = () => {
     return userName.includes(query) || phoneNumber.includes(query) || route.includes(query);
   });
 
-  const getRowColor = (index) => {
-    const fullGroups = Math.floor(passengers.length / 15);
-    const lastGreenIndex = fullGroups * 15 - 1;
-    return index <= lastGreenIndex ? "#376c37" : "red";
+  const getRowColor = (passenger) => {
+    if ((passenger.status || '').toLowerCase() === 'confirmed') return '#376c37'; // green
+    if ((passenger.status || '').toLowerCase() === 'waiting') return '#c0392b'; // red
+    return '#fff'; // default/white
   };
 
   if (pageLoading) {
@@ -232,9 +289,21 @@ const DriverList = () => {
                         <LoadingComponent />
                       ) : Array.isArray(filteredPassengers) && filteredPassengers.length > 0 ? (
                         <div className="overflow-x-auto">
+                          {/* Confirm Button for selected bookings */}
+                          {selectedBookings.length > 0 && (
+                            <Button
+                              className="mb-2"
+                              variant="default"
+                              disabled={isSubmitting}
+                              onClick={handleConfirmModal}
+                            >
+                              Confirm Selected ({selectedBookings.length})
+                            </Button>
+                          )}
                           <Table className="border border-primary-500">
                             <TableHeader>
                               <TableRow>
+                                <TableHead className="w-8"></TableHead> {/* New checkbox column */}
                                 <TableHead className="w-16">#</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Phone</TableHead>
@@ -243,7 +312,17 @@ const DriverList = () => {
                             </TableHeader>
                             <TableBody>
                               {filteredPassengers.map((passenger, idx) => (
-                                <TableRow key={idx} style={{ backgroundColor: getRowColor(idx) }}>
+                                <TableRow key={idx} style={{ backgroundColor: getRowColor(passenger) }}>
+                                  <TableCell>
+                                    {isWaitingOrConfirmed(passenger.status) && (
+                                      <input
+                                        type="checkbox"
+                                        checked={selectedBookings.includes(passenger.booking_id)}
+                                        onChange={() => handleSelectBooking(passenger.booking_id)}
+                                        disabled={isSubmitting || (!isAdmin && (passenger.status||"").toLowerCase()==="confirmed")}
+                                      />
+                                    )}
+                                  </TableCell>
                                   <TableCell>{idx + 1}</TableCell>
                                   <TableCell>{passenger.name || passenger.user_name}</TableCell>
                                   <TableCell>{(isAdmin || passenger.user_id === currentUserId) ? (passenger.user_number || passenger.phoneNumber) : ""}</TableCell>
@@ -256,6 +335,25 @@ const DriverList = () => {
                       ) : (
                         <div className="text-sm text-muted-foreground">No passengers found matching your search.</div>
                       )}
+                      {/* Overlay for confirmation */}
+                      {showConfirmOverlay && (
+                        <Overlay
+                          alertFlag={showConfirmOverlay}
+                          setAlertFlag={setShowConfirmOverlay}
+                          Title="Manual Confirmation"
+                          alertMessage={`Are you sure you want to confirm status for ${selectedBookings.length} booking(s)?`}
+                          customButton={
+                            <div className="flex gap-2">
+                              <Button variant="outline" onClick={handleOverlayCancel} disabled={isSubmitting}>No</Button>
+                              <Button onClick={handleConfirmBookings} variant="default" disabled={isSubmitting}>
+                                {isSubmitting ? 'Confirming...' : 'Yes, confirm'}
+                              </Button>
+                            </div>
+                          }
+                        />
+                      )}
+                      {/* Success/Error message after action */}
+                      {overlayMsg && <div className="mt-2 text-sm text-primary-600">{overlayMsg}</div>}
                     </CardContent>
                   </Card>
                 )}

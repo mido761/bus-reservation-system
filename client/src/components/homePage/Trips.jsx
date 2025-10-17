@@ -20,7 +20,7 @@ const amenities = ["wifi", "power", "coffee"];
 const busType = "Standard";
 const isPopular = false;
 const operator = "VIP Travel";
-const originalPrice = 250;
+const originalPrice = 160;
 const seatsLeft = 15;
 
 const Trips = ({
@@ -235,7 +235,7 @@ const Trips = ({
                 <div className="flex items-center gap-2">
                   {originalPrice && (
                     <span className="text-sm text-muted-foreground line-through">
-                      <span className="text-sm">EGP</span> {trip.price + 40}
+                      <span className="text-sm">EGP</span> {originalPrice}
                     </span>
                   )}
                   <span className="text-3xl font-bold text-foreground flex items-center gap-1">
