@@ -117,7 +117,7 @@ async function getPassengerList(req, res) {
     // const { tripId } = req.params.tripId;
     const tripId = req.params.tripId;
     const userId = req.session.userId;
-    console.log("Trip ID:", tripId, "User ID:", userId);
+    // console.log("Trip ID:", tripId, "User ID:", userId);
 
     // 1️⃣ Check if trip exists
     const tripResult = await pool.query(
@@ -160,7 +160,7 @@ async function getPassengerList(req, res) {
     // 3️⃣ Map results: show details only for the given user
     const passengerList = passengers.map((p, index) => {
       //  const passengerId = p.passenger_id ? p.passenger_id.toString() : null;
-      console.log(p.passenger_id, userId)
+      // console.log(p.passenger_id, userId)
       if (p.passenger_id.toString() === userId.toString()) {
         return {
           position: index + 1,
@@ -482,7 +482,7 @@ async function book(req, res) {
     // console.log(bookings.rows);
     const bookingsCount = bookings.rowCount;
 
-    console.log(req.session.userRole)
+    // console.log(req.session.userRole)
     const role = req.session.userRole;
     if (bookingsCount > 1 && role !== "admin") {
       await client.query("ROLLBACK");
@@ -557,7 +557,7 @@ async function switchbooking(req, res) {
       bookingId,
     ]);
 
-    console.log(bookingId, newTripId, booking.rows[0])
+    // console.log(bookingId, newTripId, booking.rows[0])
 
     const userId = req.session.userId
     const role = req.session.userRole
@@ -590,8 +590,8 @@ async function switchbooking(req, res) {
     Returning *
     `
     const { rows: updateBooking } = await client.query(updateBookingQ, [newTripId, bookingId])
-    console.log(updateBooking)
-
+    // console.log(updateBooking)
+// 
     await waitingList(oldTripId, client); // Old trip update
     await waitingList(newTripId, client); // New trip update
 
@@ -654,7 +654,7 @@ async function cancel(req, res) {
     `;
 
     const { rows: booking } = await client.query(getBookingInfo, [bookingId]);
-    console.log(booking[0]);
+    // console.log(booking[0]);
 
     if (!booking) {
       await client.query("ROLLBACK");
@@ -766,7 +766,7 @@ async function cancel(req, res) {
         bookingId,
       ]);
 
-      console.log("Booking: ", cancelledBooking.rows);
+      // console.log("Booking: ", cancelledBooking.rows);
       if (!cancelledBooking.rowCount) {
         await client.query("ROLLBACK");
         throw new Error("Can't update booking!");

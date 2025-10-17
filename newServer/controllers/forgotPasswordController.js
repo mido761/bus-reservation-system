@@ -67,10 +67,10 @@ export async function requestReset(req, res) {
       "SELECT user_id FROM users WHERE email = $1",
       [email]
     );
-    console.log(user);
+    // console.log(user);
 
     if (user.length === 0) {
-      console.log(user);
+      // console.log(user);
       return res.status(400).json({ message: "This email does not exist!" });
     }
 
@@ -97,7 +97,7 @@ export async function requestReset(req, res) {
     const subject = "Your Password Reset OTP";
     const body = `Your OTP is ${otp}. It expires in 5 minutes.`;
     const mailRes = await nodeMailerMail(email, subject, body);
-    console.log("Mail res: ", mailRes);
+    // console.log("Mail res: ", mailRes);
 
     return res.status(200).json({ message: "OTP code has been sent" });
   } catch (err) {
@@ -109,7 +109,7 @@ export async function requestReset(req, res) {
 // POST /auth/reset-password
 export async function resetPassword(req, res) {
   const { email, otp, password } = req.body;
-  console.log(email, otp, password);
+  // console.log(email, otp, password);
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -253,7 +253,7 @@ export async function resendOtp(req, res) {
     const subject = "Your OTP Code";
     const body = `Your OTP is ${otp}. It expires in 5 minutes.`;
     const mailRes = await nodeMailerMail(email, subject, body);
-    console.log("Mail res: ", mailRes);
+    // console.log("Mail res: ", mailRes);
 
     return res.status(201).json({ message: "OTP resent successfully" });
   } catch (err) {

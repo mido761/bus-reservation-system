@@ -51,7 +51,7 @@ async function sendGridMail(recepient, subject, body) {
 }
 
 async function nodeMailerMail(to, subject, html) {
-  console.log(process.env.SENDGRID_API_KEY)
+  // console.log(process.env.SENDGRID_API_KEY)
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   try {
     const msg = {

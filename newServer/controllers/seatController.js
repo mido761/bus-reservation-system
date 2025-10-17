@@ -62,7 +62,7 @@ const checkIn = async (req, res) => {
 
     // Get the trip of the current Bus
     const trip = await getActiveTrip(client, busId);
-    console.log(trip);
+    // console.log(trip);
     if (trip.length === 0) {
       await client.query("ROLLBACK");
       return res.status(404).json({
@@ -70,15 +70,15 @@ const checkIn = async (req, res) => {
       });
     }
     const tripId = trip[0].trip_id;
-    console.log("Trip: ", tripId);
+    // console.log("Trip: ", tripId);
 
     // Count user's bookings for this trip
     const bookingCount = await getBookingCount(client, tripId, userId);
-    console.log(bookingCount);
-
+    // console.log(bookingCount);
+// 
     // Count seats already checked in by this user for this trip
     const checkedInCount = await getCheckedInCount(client, tripId, userId);
-    console.log(checkedInCount);
+    // console.log(checkedInCount);
 
     if (checkedInCount >= bookingCount) {
       await client.query("ROLLBACK");
@@ -121,7 +121,7 @@ const cancelCheckIn = async (req, res) => {
 
     // Check if the seat is already checked in
     const seat = await getSeat(client, seatId);
-    console.log("Seat: ", seat);
+    // console.log("Seat: ", seat);
     if (seat?.status === "Available") {
       await client.query("ROLLBACK");
       return res.status(400).json({
@@ -132,7 +132,7 @@ const cancelCheckIn = async (req, res) => {
     }
 
     const booking = await getBooking(client, seatId);
-    console.log("Booking: ", booking);
+    // console.log("Booking: ", booking);
     const currentPassenger = booking?.passenger_id;
     if (currentPassenger !== userId) {
       return res.status(400).json({
@@ -144,7 +144,7 @@ const cancelCheckIn = async (req, res) => {
 
     // Get the trip of the current Bus
     const trip = await getActiveTrip(client, busId);
-    console.log(trip);
+    // console.log(trip);
     if (trip.length === 0) {
       await client.query("ROLLBACK");
       return res.status(404).json({

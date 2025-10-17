@@ -46,7 +46,7 @@ const getUserPayments = async (req, res) => {
 
 const getPaymentByBooking = async (req, res) => {
   const { bookingId } = req.query;
-  console.log(bookingId);
+  // console.log(bookingId);
   try {
     const getPaymentByBookingQ = `
     SELECT 
@@ -68,7 +68,7 @@ const getPaymentByBooking = async (req, res) => {
       bookingId,
     ]);
     const payment = rows[0];
-    console.log(rows[0]);
+    // console.log(rows[0]);
 
     // Paymob CLient
     const paymob = new PaymobClient({
@@ -579,7 +579,7 @@ const confirmPayment = async (req, res) => {
     const { bookingId } = req.body;
 
     const confirm = await confirmVfPayment(client, bookingId);
-    console.log(confirm);
+    // console.log(confirm);
 
     return res.status(200).json({ user_info: confirm });
   } catch (err) {

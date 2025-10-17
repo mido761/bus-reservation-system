@@ -101,7 +101,7 @@ const addRoutes = async (req, res) => {
       isActive,
     ]);
     const newRoute = insertRes.rows[0];
-    console.log(newRoute);
+    // console.log(newRoute);
 
     return res
       .status(200)
@@ -122,7 +122,7 @@ const linkStop = async (req, res) => {
 
     const { rows } = await pool.query(link, [routeId, stopId, position]);
     const route_stop = rows;
-    console.log(rows);
+    // console.log(rows);
 
     return res.status(200).json({ newLink: route_stop });
   } catch (error) {
