@@ -36,9 +36,7 @@ const Header = () => {
             <a href="/#/home" className="hover:text-primary font-medium">
               Routes
             </a>
-            <a href="/#/about" className="hover:text-primary font-medium">
-              About
-            </a>
+           
             <a href="/#/help" className="hover:text-primary font-medium">
               Contact
             </a>
@@ -75,9 +73,7 @@ const Header = () => {
                 <DropdownMenuItem onClick={() => navigate("/home")}>
                   Routes
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/about")}>
-                  About
-                </DropdownMenuItem>
+             
                 <DropdownMenuItem onClick={() => navigate("/help")}>
                   Contact
                 </DropdownMenuItem>

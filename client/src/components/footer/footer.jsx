@@ -65,10 +65,18 @@ const Footer = () => {
                 </a>
               </li> */}
               <li>
-                <a
+              <a 
+                href="/#/about" 
+                className="text-white/80 hover:text-white underline transition-colors"
+              >
+              About
+               </a>
+              </li>
+              <li>
+              <a
                   href="/#/help"
                   className="text-white/80 hover:text-white underline transition-colors"
-                >
+              >
                   Help & Support
                 </a>
               </li>
@@ -153,9 +161,9 @@ const Footer = () => {
             © 2025 Vip Travel. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-white/60">
-            {/* <a href="/#/privacy" className="hover:text-white underline transition-colors">
+            <a href="/#/privacy" className="hover:text-white underline transition-colors">
               Privacy Policy
-            </a> */}
+            </a>
             <a href="/#/terms" className="hover:text-white underline transition-colors">
               Terms of Service
             </a>
