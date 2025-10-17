@@ -25,10 +25,19 @@ const formatDateTime = (time = "00:00:00", type = "time", timeZone = "UTC") => {
     return null;
   }
 
+  // ✅ Force 12-hour (AM/PM) format across all devices
+  const twelveHourOptions = { hour12: true };
+
   const formats = {
-    dateTime: luxonDateTime.toLocaleString(DateTime.DATETIME_MED),
+    dateTime: luxonDateTime.toLocaleString({
+      ...DateTime.DATETIME_MED,
+      ...twelveHourOptions,
+    }),
     date: luxonDateTime.toLocaleString(DateTime.DATE_MED),
-    time: luxonDateTime.toLocaleString(DateTime.TIME_SIMPLE),
+    time: luxonDateTime.toLocaleString({
+      ...DateTime.TIME_SIMPLE,
+      ...twelveHourOptions,
+    }),
   };
 
   return formats[type] || null;
