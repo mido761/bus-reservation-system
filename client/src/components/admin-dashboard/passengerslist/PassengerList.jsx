@@ -84,8 +84,8 @@ const PassengerList = ({
         return matchesSearch && matchesBooking && matchesPayment;
       })
       .sort((a, b) => {
-        const dateA = a.booked_at ? new Date(a.booked_at).getTime() : 0;
-        const dateB = b.booked_at ? new Date(b.booked_at).getTime() : 0;
+        const dateA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+        const dateB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
         return dateA - dateB;
       });
   }, [passengers, searchTerm, bookingStatus, paymentStatus]);
