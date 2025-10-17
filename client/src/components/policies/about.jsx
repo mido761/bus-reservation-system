@@ -1,22 +1,31 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Bus, Globe } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const About = () => {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4 max-w-6xl">
-        
+        <div className="mb-2">
+          <Link
+            to="/"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back
+          </Link>
+        </div>
+
         {/* ===== Arabic Section ===== */}
         <div className="text-center max-w-3xl mx-auto mb-16" dir="rtl">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
             إحنا مين؟
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            إحنا شغالين على إننا نغير فكرة السفر بالأوتوبيس، 
-            نخليه أريح وأأمن وأسهل. هدفنا نوصّل الناس ببعض 
-            ونخلي التنقل بين المدن والجامعات أهون وأرخص 
-            باستخدام التكنولوجيا.
+            إحنا شركة نقل هدفها تسهل السفر بين المدن والجامعات بطريقة مريحة وآمنة وسهلة.
+            بنستخدم التكنولوجيا عشان نخلي تجربة الحجز والسفر أبسط وأسرع وأكتر راحة ليك.
           </p>
         </div>
 
@@ -25,11 +34,10 @@ const About = () => {
             <CardContent className="p-8 text-center space-y-4">
               <Users className="w-10 h-10 mx-auto text-primary" />
               <h3 className="text-xl font-semibold text-foreground">
-                الراكب رقم واحد
+                الراكب أولاً
               </h3>
               <p className="text-muted-foreground text-sm">
-                كل خدماتنا معمولة عشان تركب مرتاح ومطمن 
-                وتكون مبسوط طول الرحلة.
+                راحتك وسلامتك أهم أولوياتنا، وكل خدماتنا معمولة عشان تضمن تجربة سفر سهلة وممتعة.
               </p>
             </CardContent>
           </Card>
@@ -38,12 +46,11 @@ const About = () => {
             <CardContent className="p-8 text-center space-y-4">
               <Bus className="w-10 h-10 mx-auto text-primary" />
               <h3 className="text-xl font-semibold text-foreground">
-                أسطول مضمون
+                أوتوبيسات حديثة
               </h3>
               <p className="text-muted-foreground text-sm">
-                عندنا أوتوبيسات جديدة ومجهزة كويس، 
-                عشان الرحلة تبقى في معادها وآمنة 
-                وصديقة للبيئة.
+                عندنا أسطول من الأوتوبيسات الحديثة والمجهزة بأعلى معايير الأمان
+                عشان الرحلة تكون مريحة وآمنة وفي وقتها.
               </p>
             </CardContent>
           </Card>
@@ -52,11 +59,11 @@ const About = () => {
             <CardContent className="p-8 text-center space-y-4">
               <Globe className="w-10 h-10 mx-auto text-primary" />
               <h3 className="text-xl font-semibold text-foreground">
-                بنوسع المشوار
+                بنكبر كل يوم
               </h3>
               <p className="text-muted-foreground text-sm">
-                رؤيتنا إننا نزود خطوطنا أكتر وأكتر 
-                عشان التنقل يبقى أسهل بين المدن والجامعات والمناطق.
+                رؤيتنا إننا نغطي أكتر عدد ممكن من الخطوط 
+                ونوصل خدماتنا لكل المدن والجامعات.
               </p>
             </CardContent>
           </Card>
@@ -64,11 +71,11 @@ const About = () => {
 
         <div className="text-center max-w-2xl mx-auto" dir="rtl">
           <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
-            مكملين سوا
+            بنمشي معاك خطوة بخطوة
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            كل مشوار معانا مش بس نقلك من مكان لمكان، 
-            إحنا بنوصّل ثقة وأمان وتجربة سفر أحسن.
+            كل رحلة معانا مش مجرد وسيلة نقل، 
+            دي تجربة مليانة راحة وأمان وثقة في كل مشوار.
           </p>
         </div>
 
@@ -87,9 +94,10 @@ const About = () => {
             About Us
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            We are committed to redefining bus travel with comfort, safety,
-            and reliability. Our mission is to connect people and places
-            through seamless, affordable, and technology-driven transportation.
+            We are a transportation company dedicated to making travel between
+            cities and universities safer, easier, and more comfortable.
+            By using technology, we aim to make booking and traveling simpler,
+            faster, and more convenient for everyone.
           </p>
         </div>
 
@@ -98,11 +106,11 @@ const About = () => {
             <CardContent className="p-8 text-center space-y-4">
               <Users className="w-10 h-10 mx-auto text-primary" />
               <h3 className="text-xl font-semibold text-foreground">
-                Customer First
+                Passenger First
               </h3>
               <p className="text-muted-foreground text-sm">
-                Our services are designed around the needs of our passengers,
-                ensuring comfort and satisfaction in every journey.
+                Your comfort and safety are our top priorities.
+                Every service we offer is designed to give you a better travel experience.
               </p>
             </CardContent>
           </Card>
@@ -111,11 +119,11 @@ const About = () => {
             <CardContent className="p-8 text-center space-y-4">
               <Bus className="w-10 h-10 mx-auto text-primary" />
               <h3 className="text-xl font-semibold text-foreground">
-                Reliable Fleet
+                Modern Fleet
               </h3>
               <p className="text-muted-foreground text-sm">
-                We maintain a modern and well-equipped fleet, ensuring safe,
-                on-time, and eco-friendly travel across all routes.
+                We operate a fleet of modern, well-maintained buses to ensure
+                your journey is safe, on time, and comfortable.
               </p>
             </CardContent>
           </Card>
@@ -124,11 +132,11 @@ const About = () => {
             <CardContent className="p-8 text-center space-y-4">
               <Globe className="w-10 h-10 mx-auto text-primary" />
               <h3 className="text-xl font-semibold text-foreground">
-                Expanding Horizons
+                Growing Network
               </h3>
               <p className="text-muted-foreground text-sm">
-                Our vision is to expand connectivity, making travel easier
-                between cities, campuses, and communities.
+                Our vision is to expand our routes and connect more
+                cities, universities, and communities every day.
               </p>
             </CardContent>
           </Card>
@@ -136,11 +144,11 @@ const About = () => {
 
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
-            Moving Forward Together
+            Together on Every Journey
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            With every trip, we aim to deliver more than just a ride —
-            we deliver trust, safety, and a better travel experience.
+            Every trip with us is more than just transportation — it’s
+            comfort, trust, and a better travel experience.
           </p>
         </div>
       </div>

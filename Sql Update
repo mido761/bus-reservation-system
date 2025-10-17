@@ -1,0 +1,15 @@
+ALTER TABLE IF EXISTS public.booking
+ADD COLUMN "isSwitched" boolean NOT NULL DEFAULT false;
+
+ALTER TABLE IF EXISTS public.trips
+ADD COLUMN cancel_allowance integer NOT NULL DEFAULT 3;
+
+ALTER TABLE IF EXISTS public.trips
+ADD COLUMN confirm_lock boolean NOT NULL DEFAULT false;
+
+ALTER TABLE IF EXISTS public.stop
+ALTER COLUMN is_active
+SET DEFAULT true;
+
+ALTER TABLE IF EXISTS public.booking
+DROP CONSTRAINT IF EXISTS booking_stop_id_fkey;
