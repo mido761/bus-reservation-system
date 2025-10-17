@@ -157,7 +157,7 @@ const addTrip = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    console.log(routeId, date, departureTime, arrivalTime);
+    // console.log(routeId, date, departureTime, arrivalTime);
 
     // Convert date to ISO format (YYYY-MM-DD)
     const formattedDate = new Date(date).toISOString().split("T")[0];

@@ -117,7 +117,7 @@ const editStop = async (req, res) => {
 const delStop = async (req, res) => {
   const { stopId } = req.body;
   try {
-    console.log(stopId)
+    // console.log(stopId)
     // 1. Check if stop exists
     const checkQuery = 'SELECT * FROM stop WHERE stop_id = $1 LIMIT 1';
     const checkResult = await pool.query(checkQuery, [stopId]);

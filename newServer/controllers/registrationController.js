@@ -23,14 +23,14 @@ export async function sendCode(req, res) {
         .json({ message: "Invalid gender. Choose male or female." });
     }
     const emailLower = email.toLowerCase();
-    console.log(email, emailLower)
+    // console.log(email, emailLower)
     const checkUser = `
     SELECT * FROM users
     WHERE email = $1
     `;
 
     const { rows } = await pool.query(checkUser, [emailLower]);
-    console.log(rows);
+    // console.log(rows);
     // const userExist = await User.findOne({ email });
     if (rows.length > 0) {
       return res.status(400).json({ message: "Email already exists" });
@@ -47,7 +47,7 @@ export async function sendCode(req, res) {
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${verificationCode}</strong></p>`;
     const mailRes = await nodeMailerMail(emailLower, subject, body);
-    console.log("Mail res: ", mailRes);
+    // console.log("Mail res: ", mailRes);
 
     return res.status(201).json({
       message: "Registration successful! Check your email for verification.",
@@ -69,7 +69,7 @@ export async function verifyUser(req, res) {
 
     const code = tempUser.verificationCode;
 
-    console.log(enteredOtp, code, Number(code) !== Number(enteredOtp));
+    // console.log(enteredOtp, code, Number(code) !== Number(enteredOtp));
 
     // Validate the verification code
     if (Number(code) !== Number(enteredOtp)) {
@@ -132,12 +132,12 @@ export async function resendCode(req, res) {
     );
 
     const email = tempUser.email;
-    console.log("Resending code to:", tempUser);
+    // console.log("Resending code to:", tempUser);
     const subject = "Verify Your Email";
     const body = `<p>Your verification code is: <strong>${newVerificationCode}</strong></p>`;
 
     const mailRes = await nodeMailerMail(email, subject, body);
-    console.log("Mail res: ", mailRes);
+    // console.log("Mail res: ", mailRes);
 
     // Respond with success message & return new token
     return res.json({

@@ -97,7 +97,7 @@ const addBus = async (req, res) => {
     // ✅ Commit transaction if everything succeeds
     await client.query("COMMIT");
 
-    console.log(`${capacity} seats created for bus ${newBus.bus_id}`);
+    // console.log(`${capacity} seats created for bus ${newBus.bus_id}`);
 
     return res.status(200).json({
       message: "Bus added successfully!",
